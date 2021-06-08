@@ -1,0 +1,23 @@
+import discord
+from discord import embeds
+from discord.ext import commands
+import json
+import datetime
+from datetime import timedelta, datetime
+from core.common import *
+from core.checks import is_botAdmin
+
+class SkeletonCMD(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    async def view(self, ctx):
+        with open('equelRoles.json', 'r') as content_file:
+            content = content_file.read()
+
+        await ctx.send("**JSON File**")
+        await ctx.send(f"```json\n{content}\n```")
+
+def setup(bot):
+    bot.add_cog(SkeletonCMD(bot))
