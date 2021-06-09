@@ -1,12 +1,14 @@
-import discord
 import inspect
 import io
+import os
 import textwrap
 import traceback
 from contextlib import redirect_stdout
-import os
+
 import aiohttp
+import discord
 from discord.ext import commands, tasks
+
 '''
 Used by TutorVC
 '''
@@ -15,21 +17,20 @@ class TasksLoop(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.voiceCheck.start()
+        self.MainServerID = 763119924385939498
+        self.TutorVCStartCH = 784556875487248394
         
 
     def cog_unload(self):
-        self.printer.cancel()
+        self.voiceCheck.cancel()
 
     @tasks.loop(seconds=3.0)
     async def voiceCheck(self):
-        guild = await self.bot.fetch_guild(763119924385939498)
-        #botVoiceState = guild.get_member(842468709406081034)
+        guild = await self.bot.fetch_guild(self.MainServerID)
 
         voice = discord.utils.get(self.bot.voice_clients, guild=guild)
-
         if voice == None:
-            voiceChannel = await self.bot.fetch_channel(784556875487248394)
-            global vc
+            voiceChannel = await self.bot.fetch_channel(self.TutorVCStartCH)
             try:
                 vc = await voiceChannel.connect()
             except Exception as e:

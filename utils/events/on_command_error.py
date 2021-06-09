@@ -9,7 +9,6 @@ import requests
 import yarl
 import os
 import json
-from core.common import query
 import random
 
 def random_rgb(seed=None):

@@ -32,7 +32,7 @@ async def roleNameCheck(name, before, after, guild, user ,type):
             elif type == "-":
                 await user.remove_roles(helper)
             else:
-                raise "Invalid Type Syntax: roleNameCheck (type) only supports + or -."
+                raise BaseException("Invalid Type Syntax: roleNameCheck (type) only supports + or -.")
         else:
             print("Not found. (Error 2)")
 
@@ -55,6 +55,9 @@ class SkeletonCMD(commands.Cog):
         mainServer = self.bot.get_guild(778406166735880202)
         user = mainServer.get_member(before.id)
 
+        if mainServer == None:
+            return
+
         if len(before.roles) < len(after.roles):
             #New Role
             if before.guild.id == 778406166735880202:
@@ -72,7 +75,6 @@ class SkeletonCMD(commands.Cog):
 
             
         elif len(before.roles) > len(after.roles):
-            #Removed Role
             if before.guild.id == 778406166735880202:
                 return
 
@@ -85,34 +87,6 @@ class SkeletonCMD(commands.Cog):
 
             await roleNameCheck(item.name, before, after, mainServer, user, "-")
  
-
-    @commands.command()
-    async def view(self, ctx):
-        with open('equelRoles.json', 'r') as content_file:
-            content = content_file.read()
-
-        await ctx.send("**JSON File**")
-        await ctx.send(f"```json\n{content}\n```")
-
-    @commands.command()
-    @commands.is_owner()
-    async def resetnicks(self ,ctx):
-        guild = self.bot.get_guild(801974357395636254)
-        for user in guild.members:
-            if user.display_name == "#1 iza fan":
-                try:
-                    await user.edit(nick=user.name)
-                except:
-                    await ctx.send(f"Could not change {user.name}'s nickname")
-                    continue 
-        await ctx.send("Done")
-
-
-        
-
-
-
-        
 
 def setup(bot):
     bot.add_cog(SkeletonCMD(bot))

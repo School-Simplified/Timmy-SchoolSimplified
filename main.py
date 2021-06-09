@@ -10,13 +10,15 @@ import traceback
 from contextlib import redirect_stdout
 from datetime import datetime
 from pathlib import Path
-from core.checks import is_botAdmin
 
 import aiohttp
 import chat_exporter
 import discord
 from discord.ext import commands
+from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
+
+from core.checks import is_botAdmin
 
 load_dotenv()
 
@@ -27,6 +29,12 @@ intents = discord.Intents.all()
 client = commands.Bot(command_prefix="+", intents=intents, case_insensitive = True)
 client.remove_command('help')
 
+
+use_sentry(
+    client,  # Traceback tracking, DO NOT MODIFY THIS
+    dsn="https://af048b30f3fc42248210246501ef83ea@o816669.ingest.sentry.io/5807400",
+    traces_sample_rate=1.0    
+)
 
 class bcolors:
     HEADER = '\033[95m'
@@ -59,12 +67,14 @@ async def force_restart(ctx):  #Forces REPL to apply changes to everything
 
 @client.event
 async def on_ready():
+    print(client.user.name)
     now = datetime.now()
     print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Time: {now}{bcolors.ENDC}")
 
     chat_exporter.init_exporter(client)
+    '''
     guild = await client.fetch_guild(763119924385939498)
 
     voice = discord.utils.get(client.voice_clients, guild=guild)
@@ -76,16 +86,12 @@ async def on_ready():
         vc = await voiceChannel.connect()
     else:
         pass
-
+    '''
 
 
 for ext in get_extensions():
-    try:
-        client.load_extension(ext)
-    except Exception as e:
-        print(f"[FAILURE] Failed to load: {ext}\nERROR: {e}")
-    else:
-        print(f"[LOGGING] Loaded: {ext}")
+    client.load_extension(ext)
+    print(f"[LOGGING] Loaded: {ext}")
 
 
 @client.group(aliases=['cog'])

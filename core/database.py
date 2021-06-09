@@ -1,21 +1,24 @@
 import os
-from typing import Text
-from peewee import *
-from discord.enums import ExpireBehavior
-from peewee import AutoField, ForeignKeyField, Model, IntegerField, PrimaryKeyField, TextField, SqliteDatabase, DoesNotExist, DateTimeField, UUIDField, IntegrityError
-from playhouse.shortcuts import model_to_dict, dict_to_model  # these can be used to convert an item to or from json http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#model_to_dict
-from playhouse.sqlite_ext import RowIDField
 from datetime import datetime
-from peewee import MySQLDatabase
-from playhouse.shortcuts import ReconnectMixin
-from flask import Flask
+from typing import Text
+
+from discord.enums import ExpireBehavior
 from dotenv import load_dotenv
+from flask import Flask
+from peewee import *
+from playhouse.shortcuts import (  # these can be used to convert an item to or from json http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#model_to_dict
+    ReconnectMixin, dict_to_model, model_to_dict)
+from playhouse.sqlite_ext import RowIDField
 
 load_dotenv()
 
+'''
+Change to a SqliteDatabase if you don't have any MySQL Credentials.
+If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
+'''
 
 db = MySQLDatabase(os.getenv("DatabaseName"), user=os.getenv("Username"), password=os.getenv("Password"),host= os.getenv("IP"), port = int(os.getenv("PORT")))
-
+#db = SqliteDatabase("data.db")
 
 def iter_table(model_dict):
     """Iterates through a dictionary of tables, confirming they exist and creating them if necessary."""
