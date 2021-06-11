@@ -118,7 +118,7 @@ class SkeletonCMD(commands.Cog):
                         
                     await ctx.send(embed = embed)
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = f"You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
                 await ctx.send(embed = embed)
         database.db.close()
@@ -183,13 +183,13 @@ class SkeletonCMD(commands.Cog):
                 try:
                     q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                 except:
-                    embed = discord.Embed(title = "Ownership Check Failed", description = f"This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
+                    embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
                 else:
                     embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                 finally:
                     await ctx.send(embed = embed)
         else:
-            embed = discord.Embed(title = "Unknown Channel", description = f"You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+            embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                     
             await ctx.send(embed = embed)
         database.db.close()
@@ -232,13 +232,13 @@ class SkeletonCMD(commands.Cog):
 
             else:
                 await channel.delete()
-                embed = discord.Embed(title = "Partial Completion", description = f"The database indicates there is no owner or data related to this voice channel but I have still deleted the channel!", color = discord.Colour.gold())
+                embed = discord.Embed(title = "Partial Completion", description = "The database indicates there is no owner or data related to this voice channel but I have still deleted the channel!", color = discord.Colour.gold())
                     
                 await ctx.send(embed = embed)
                 print(query.authorID)
                 
         else:
-            embed = discord.Embed(title = "Unknown Channel", description = f"You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a tutoring channel!", color = discord.Colour.red())
+            embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a tutoring channel!", color = discord.Colour.red())
                     
             await ctx.send(embed = embed)
 
@@ -295,13 +295,13 @@ class SkeletonCMD(commands.Cog):
                     try:
                         q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                     except:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = f"This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
+                        embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
                     else:
                         embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = f"You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
                 await ctx.send(embed = embed)
         
@@ -349,14 +349,14 @@ class SkeletonCMD(commands.Cog):
                     try:
                         q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                     except:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = f"This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
+                        embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
                     else:
                         embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
 
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = f"You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
                 await ctx.send(embed = embed)
 
@@ -430,13 +430,13 @@ class SkeletonCMD(commands.Cog):
                     try:
                         q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                     except:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = f"This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
+                        embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
                     else:
                         embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = f"You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
                 await ctx.send(embed = embed)
 
@@ -503,13 +503,13 @@ class SkeletonCMD(commands.Cog):
                     try:
                         q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                     except:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = f"This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
+                        embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
                     else:
                         embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = f"You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
 
     @commands.command()
@@ -542,13 +542,13 @@ class SkeletonCMD(commands.Cog):
                     try:
                         q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                     except:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = f"This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
+                        embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a tutoring channel! Please use the command on an actual tutoring channel!", color = discord.Colour.red())
                     else:
                         embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = f"You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
                 await ctx.send(embed = embed)
 
