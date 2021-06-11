@@ -60,7 +60,7 @@ class CommandErrorHandler(commands.Cog):
         for line in exception:
             exception_msg += line
         
-        if isinstance(error, commands.CheckFailure) or isinstance(error, commands.CheckAnyFailure):
+        if isinstance(error, (commands.CheckFailure, commands.CheckAnyFailure)):
             return
 
         if hasattr(ctx.command, 'on_error'):
@@ -70,7 +70,7 @@ class CommandErrorHandler(commands.Cog):
             config, _ = core.common.load_config()
             print("Ignored error: " + str(ctx.command))
 
-        elif isinstance(error, commands.MissingRequiredArgument) or isinstance(error, commands.TooManyArguments):
+        elif isinstance(error, (commands.MissingRequiredArgument, commands.TooManyArguments)):
             em = discord.Embed(title = "Missing/Extra Required Arguments Passed In!", description = "You have missed one or several arguments in this command", color = 0xf5160a)
             em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
             em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
