@@ -21,7 +21,7 @@ class Emoji:
     creation = '<:creation:835213216299745291>' 
     date = '<:thewickthing:835213229294223400>'
 
-subjects = ['CS', 'English', 'Language', 'Math', 'Science', 'Social Studies', 'Algebra', 'Geometry', 'Precalc', 'Calc', 'Statistics', 'English', 'Lang', 'English', 'Lit', 'Research', 'Seminar', 'Bio' 'Chem', 'Physics', 'ASL', 'Chinese', 'French', 'German', 'Italian', 'Latin', 'Korean' ,'Russian' ,'Spanish' ,'Econ', 'Euro' ,'Psych US' ,'Gov US' 'History' ,'World History' ]
+subjects = ['CS', 'English', 'Language', 'Math', 'Science', 'Social Studies', 'Algebra', 'Geometry', 'Precalc', 'Calc', 'Statistics', 'English', 'Lang', 'English', 'Lit', 'Research', 'Seminar', 'Bio', 'Chem', 'Physics', 'ASL', 'Chinese', 'French', 'German', 'Italian', 'Latin', 'Korean' ,'Russian' ,'Spanish' ,'Econ', 'Euro' ,'Psych US' ,'Gov US', 'History' ,'World History' ]
 
 add_opt = [
             {
