@@ -15,6 +15,8 @@ import aiohttp
 import chat_exporter
 import discord
 from discord.ext import commands
+from discord_components import (Button, ButtonStyle, DiscordComponents,
+                                InteractionType)
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
 
@@ -67,13 +69,15 @@ async def force_restart(ctx):  #Forces REPL to apply changes to everything
 
 @client.event
 async def on_ready():
-    print(client.user.name)
     now = datetime.now()
+
+    print(f"Logged in as: {client.user.name}")
     print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Time: {now}{bcolors.ENDC}")
 
     chat_exporter.init_exporter(client)
+    DiscordComponents(client)
     '''
     guild = await client.fetch_guild(763119924385939498)
 
@@ -262,24 +266,10 @@ async def _eval(ctx, *, body):
         await ctx.message.add_reaction('\u2705')
 
 @client.command()
-async def help(self, ctx):
-    embed = discord.Embed(title = "Help Commands!", description = "View the help guide regarding all the commands!", color = 0xfcba03)
-
-    embed.add_field(name = "Message Counter Commands", value = "Calculate Messages in various methods!")
-    embed.add_field(name = "Find", value = "*Searches the amount of messages a single user sent in a specific channel!*\n**Usage:** `a.find <users:mention> <#channels> <days (default is 14 days)>`",inline = False)
-    embed.add_field(name = "Quota", value = "*Checks if users have sent a specific amount of messages in a group of channels!*\n**Usage:** `a.quota <users:mention> <#channels> <messages (default is 30 messages)>`",inline = True)
-
-
-    embed.add_field(name = "Misc Commands", value = "Other non-related commands!", inline = False)
-    embed.add_field(name = "Ping", value = "*Calculates the Discord API Latency*\n**Usage:** `a.ping`", inline = True)
-    embed.add_field(name = "TicketBan", value = "*Ticket bans/unbans a user!*\n**Usage:** `a.ticketban <user> <reason>`")
-    embed.set_footer(text = "Feel free to DM Space#8860 if you need anything!")
-
-    await ctx.send(embed=embed)
-
+async def help(ctx):
 
     embed = discord.Embed(title = "Help Commands", description = "All avaliable commands under this bot!", color = discord.Colour.blue())
-    embed.add_field(name = "Notion Page" ,value = f"**Notion Page:** [Help Page](https://www.notion.so/TutorVC-Guide-e28c70a5aa344a3db941b192442e664c \"Masa if you see this, ur short\")")
+    embed.add_field(name = "Notion Page" ,value = f"**Notion Page:** [https://www.notion.so/School-Simplified-Documentation-f571f98b6d4749f9ad8c3c7ae86aa18c](https://www.notion.so/School-Simplified-Documentation-f571f98b6d4749f9ad8c3c7ae86aa18c \"Masa if you see this, ur short\")")
     embed.set_footer(text = "Ping Space for any questions or concerns.")
     await ctx.send(embed = embed)
 

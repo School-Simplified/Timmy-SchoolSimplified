@@ -48,16 +48,20 @@ async def roleNameCheck(name, before, after, guild, user ,type):
 class SkeletonCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.staffServer = 778406166735880202
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         #sub server id: 827568748163760139
-        mainServer = self.bot.get_guild(778406166735880202)
+        mainServer = self.bot.get_guild(self.staffServer)
         user = mainServer.get_member(before.id)
 
         if mainServer == None:
             return
 
+        if before.guild.id != self.staffServer:
+            return
+            
         if len(before.roles) < len(after.roles):
             #New Role
             if before.guild.id == 778406166735880202:
