@@ -71,14 +71,14 @@ class CommandErrorHandler(commands.Cog):
             print("Ignored error: " + str(ctx.command))
 
         elif isinstance(error, commands.MissingRequiredArgument) or isinstance(error, commands.TooManyArguments):
-            em = discord.Embed(title = "Missing/Extra Required Arguments Passed In!", description = f"You have missed one or several arguments in this command", color = 0xf5160a)
+            em = discord.Embed(title = "Missing/Extra Required Arguments Passed In!", description = "You have missed one or several arguments in this command", color = 0xf5160a)
             em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
             em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
             await ctx.send(embed = em)
             return
 
         elif isinstance(error, commands.BadArgument):
-            em = discord.Embed(title = "Bad Argument!", description = f"Unable to parse arguments, check what arguments you provided.", color = 0xf5160a)
+            em = discord.Embed(title = "Bad Argument!", description = "Unable to parse arguments, check what arguments you provided.", color = 0xf5160a)
             em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
             em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
             await ctx.send(embed = em)
@@ -108,8 +108,8 @@ class CommandErrorHandler(commands.Cog):
                 print(gisturl)
 
 
-                embed = discord.Embed(title = "Traceback Detected!", description = f"**Hey you!** *Mr. Turtle here has found an error. I'll let the Bot Managers's know!*\nYou might also want to doublecheck what you sent and/or check out the help command!", color = 0xfc3d03)
-                embed.add_field(name = "Bug Reporting", value = f"Have any other information that could help us? Feel free to DM a Developer!")
+                embed = discord.Embed(title = "Traceback Detected!", description = "**Hey you!** *Mr. Turtle here has found an error. I'll let the Bot Managers's know!*\nYou might also want to doublecheck what you sent and/or check out the help command!", color = 0xfc3d03)
+                embed.add_field(name = "Bug Reporting", value = "Have any other information that could help us? Feel free to DM a Developer!")
                 embed.set_footer(text = f"Error: {str(error)}")
                 await ctx.send(embed = embed)
 
