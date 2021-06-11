@@ -269,7 +269,7 @@ async def _eval(ctx, *, body):
 async def help(ctx):
 
     embed = discord.Embed(title = "Help Commands", description = "All avaliable commands under this bot!", color = discord.Colour.blue())
-    embed.add_field(name = "Notion Page" ,value = f"**Notion Page:** [https://www.notion.so/School-Simplified-Documentation-f571f98b6d4749f9ad8c3c7ae86aa18c](https://www.notion.so/School-Simplified-Documentation-f571f98b6d4749f9ad8c3c7ae86aa18c \"Masa if you see this, ur short\")")
+    embed.add_field(name = "Notion Page" ,value = "**Notion Page:** [https://www.notion.so/School-Simplified-Documentation-f571f98b6d4749f9ad8c3c7ae86aa18c](https://www.notion.so/School-Simplified-Documentation-f571f98b6d4749f9ad8c3c7ae86aa18c \"Masa if you see this, ur short\")")
     embed.set_footer(text = "Ping Space for any questions or concerns.")
     await ctx.send(embed = embed)
 
