@@ -67,8 +67,8 @@ class CommandErrorHandler(commands.Cog):
             return
 
         elif isinstance(error, commands.CommandNotFound):
-            config, _ = core.common.load_config()
             print("Ignored error: " + str(ctx.command))
+            return
 
         elif isinstance(error, (commands.MissingRequiredArgument, commands.TooManyArguments)):
             em = discord.Embed(title = "Missing/Extra Required Arguments Passed In!", description = "You have missed one or several arguments in this command", color = 0xf5160a)

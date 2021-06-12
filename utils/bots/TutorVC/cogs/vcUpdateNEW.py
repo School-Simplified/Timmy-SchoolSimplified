@@ -174,8 +174,11 @@ class SkeletonCMD(commands.Cog):
                 voice_client: discord.VoiceClient = discord.utils.get(self.bot.voice_clients, guild= member.guild)
                 audio_source = discord.FFmpegPCMAudio('utils/bots/TutorVC/confirm.mp3')
                 
-
-                voice_client.play(audio_source)
+                try:
+                    voice_client.play(audio_source)
+                except Exception as e:
+                    print(f"Ignoring error:\n{e}")
+                    
                 await asyncio.sleep(2)
 
                 await acadChannel.send(content = member.mention, embed = embed)
