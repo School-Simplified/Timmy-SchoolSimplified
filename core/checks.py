@@ -10,7 +10,7 @@ Otherwise, use the same format to make your own check.
 
 from discord.ext import commands
 
-adminIDs = [409152798609899530, 491741248152141836, 450476337954553858, 449579826278563860]
+adminIDs = [409152798609899530, 491741248152141836, 450476337954553858, 449579826278563860, 415629932798935040]
 
 def predicate(ctx):
     return ctx.author.id in adminIDs
