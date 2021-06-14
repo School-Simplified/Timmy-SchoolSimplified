@@ -175,6 +175,7 @@ class SkeletonCMD(commands.Cog):
 
                 embed = discord.Embed(title = "Ended Session", description = "I have successfully ended the session!", color = discord.Colour.blue())
                 embed.add_field(name = "Time Spent", value = f"{member.mention} you have spent a total of `{day} minutes` in voice channel, **{q.name}**.")
+                embed.set_footer(text = "WARNING: Time displayed may not be accurate.")
                 await ctx.send(embed = embed)
 
                 q.delete_instance()

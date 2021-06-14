@@ -59,10 +59,13 @@ def get_extensions():  # Gets extension list dynamically
 
 async def force_restart(ctx): 
     try:
-        subprocess.run("cd", shell=True, text=True, capture_output=True, check=True)
-        subprocess.run("cd SchoolSimplified-Utils", shell=True, text=True, capture_output=True, check=True)
-        subprocess.run("nohup python3 main.py &", shell=True, text=True, capture_output=True, check=True)
+        result = subprocess.run("cd && cd SchoolSimplified-Utils", shell=True, text=True, capture_output=True, check=True)
+        res = subprocess.run("nohup python3 main.py &", shell=True, text=True, capture_output=True, check=True)
+        print("complete")
     except Exception as e:
+        print(result)
+        print(res)
+
         await ctx.send(f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}")
     finally:
         sys.exit(0)
@@ -276,10 +279,10 @@ async def help(ctx):
     await ctx.send(embed = embed)
 
 @client.command()
-async def restart(ctx):
-    await ctx.send("Restarting...")
-
-    await force_restart(ctx)
+@is_botAdmin
+async def kill(ctx):
+    await ctx.send("Goodbye!")
+    sys.exit(0)
 
 
 client.run(os.getenv("TOKEN"))
