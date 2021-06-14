@@ -252,7 +252,7 @@ class SkeletonCMD(commands.Cog):
 
         BOT = ctx.guild.get_member(842468709406081034)
         OWNER = ctx.guild.get_member(409152798609899530)
-        TMOD = discord.utils.get(ctx.guild.roles, name='Moderator Trainee')
+        TMOD = discord.utils.get(ctx.guild.roles, name='Mod Trainee')
         MOD = discord.utils.get(ctx.guild.roles, name='Moderator')
         SMOD = discord.utils.get(ctx.guild.roles, name='Senior Moderator')
         CO = discord.utils.get(ctx.guild.roles, name='CO')
