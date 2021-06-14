@@ -145,6 +145,7 @@ class SkeletonCMD(commands.Cog):
                 await channel.delete()
                 embed = discord.Embed(title = "Ended Session", description = "I have successfully ended the session!", color = discord.Colour.blue())
                 embed.add_field(name = "Time Spent", value = f"{member.mention} you have spent a total of `{day} minutes` in voice channel, **{query.name}**.")
+                embed.set_footer(text = "WARNING: Time displayed may not be accurate.")
                 await ctx.send(embed = embed)
 
                 query.delete_instance()
@@ -226,6 +227,7 @@ class SkeletonCMD(commands.Cog):
                 q.delete_instance()
                 embed = discord.Embed(title = "Ended Session", description = "I have successfully ended the session!", color = discord.Colour.blue())
                 embed.add_field(name = "Time Spent", value = f"<@{q.authorID}> you have spent a total of `{day} minutes` in voice channel, **{q.name}**.")
+                embed.set_footer(text = "WARNING: Time displayed may not be accurate.")
                 await ctx.send(embed = embed)
 
                 
@@ -254,7 +256,7 @@ class SkeletonCMD(commands.Cog):
         OWNER = ctx.guild.get_member(409152798609899530)
         TMOD = discord.utils.get(ctx.guild.roles, name='Mod Trainee')
         MOD = discord.utils.get(ctx.guild.roles, name='Moderator')
-        SMOD = discord.utils.get(ctx.guild.roles, name='Senior Moderator')
+        SMOD = discord.utils.get(ctx.guild.roles, name='Senior Mod')
         CO = discord.utils.get(ctx.guild.roles, name='CO')
         VP = discord.utils.get(ctx.guild.roles, name='VP')
 

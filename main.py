@@ -57,9 +57,11 @@ def get_extensions():  # Gets extension list dynamically
         extensions.append(str(file).replace("/", ".").replace(".py", ""))
     return extensions
 
-async def force_restart(ctx):  #Forces REPL to apply changes to everything
+async def force_restart(ctx): 
     try:
-        subprocess.run("python main.py", shell=True, text=True, capture_output=True, check=True)
+        subprocess.run("cd", shell=True, text=True, capture_output=True, check=True)
+        subprocess.run("cd SchoolSimplified-Utils", shell=True, text=True, capture_output=True, check=True)
+        subprocess.run("nohup python3 main.py &", shell=True, text=True, capture_output=True, check=True)
     except Exception as e:
         await ctx.send(f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}")
     finally:
@@ -272,6 +274,12 @@ async def help(ctx):
     embed.add_field(name = "Notion Page" ,value = "**Notion Page:** [https://www.notion.so/School-Simplified-Documentation-f571f98b6d4749f9ad8c3c7ae86aa18c](https://www.notion.so/School-Simplified-Documentation-f571f98b6d4749f9ad8c3c7ae86aa18c \"Masa if you see this, ur short\")")
     embed.set_footer(text = "Ping Space for any questions or concerns.")
     await ctx.send(embed = embed)
+
+@client.command()
+async def restart(ctx):
+    await ctx.send("Restarting...")
+
+    await force_restart(ctx)
 
 
 client.run(os.getenv("TOKEN"))

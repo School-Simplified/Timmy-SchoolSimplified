@@ -112,7 +112,7 @@ class SkeletonCMD(commands.Cog):
                             except Exception as e:
                                 print(f"Error Deleting Channel:\n{e}")
                             else:
-                                embed = discord.Embed(title = f"{member.display_name} Total Voice Minutes", description = f"{member.mention} you have spent a total of `{day} minutes` in voice channel, **{query.name}**.", color = discord.Colour.gold())
+                                embed = discord.Embed(title = f"{member.display_name} Total Voice Minutes", description = f"{member.mention} you have spent a total of `{day} minutes` in voice channel, **{query.name}**.\n**THIS TIME MAY NOT BE ACCURATE**", color = discord.Colour.gold())
                                 embed.set_footer(text = "The voice channel has been deleted!")
                                 await acadChannel.send(content = member.mention, embed = embed) 
                         else:
