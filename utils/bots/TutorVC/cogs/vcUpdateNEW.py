@@ -127,7 +127,7 @@ class SkeletonCMD(commands.Cog):
             acadChannel = await self.bot.fetch_channel(self.channel_id)
 
             team = discord.utils.get(member.guild.roles, name='Academics Team')
-            SB = discord.utils.get(member.guild.roles, name='Server Booster')
+            SB = discord.utils.get(member.guild.roles, name='Simplified Booster')
             legend = discord.utils.get(member.guild.roles, name='Legend')
 
             #if team in member.roles:

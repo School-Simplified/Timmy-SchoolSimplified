@@ -61,13 +61,33 @@ class SkeletonCMD(commands.Cog):
         self.categoryID = 776988961087422515
         self.staticChannels = [784556875487248394, 784556893799448626]
         self.presetChannels = [843637802293788692, 784556875487248394, 784556893799448626]
+
+        self.ownerID = 409152798609899530
+        self.botID = 842468709406081034
+
+        self.AT = "Academics Team"
+        self.SB = "Simplified Booster"
+        self.Legend = "Legend"
+        
+        self.TMOD = "Mod Trainee"
+        self.MOD = "Moderator"
+        self.SMOD = "Senior Mod"
+        self.CO = "CO"
+        self.VP = "VP"
+
+        self.MAT = "Marketing Team"
+        self.TT = "Technical Team"
+
+
+        
+
         
     @commands.command()
     async def rename(self, ctx, *, name = None):
         database.db.connect(reuse_if_open=True)
-        team = discord.utils.get(ctx.guild.roles, name='Academics Team')
-        SB = discord.utils.get(ctx.guild.roles, name='Server Booster')
-        legend = discord.utils.get(ctx.guild.roles, name='Legend')
+        team = discord.utils.get(ctx.guild.roles, name = self.AT)
+        SB = discord.utils.get(ctx.guild.roles, name = self.SB)
+        legend = discord.utils.get(ctx.guild.roles, name = self.Legend)
 
         member = ctx.guild.get_member(ctx.author.id)
             
@@ -126,7 +146,7 @@ class SkeletonCMD(commands.Cog):
     @commands.command()
     async def end(self, ctx):
         database.db.connect(reuse_if_open=True)
-        team = discord.utils.get(ctx.guild.roles, name='Academics Team')
+        team = discord.utils.get(ctx.guild.roles, name= self.AT)
         member = ctx.guild.get_member(ctx.author.id)
         timestamp2 = datetime.now()
 
@@ -200,7 +220,7 @@ class SkeletonCMD(commands.Cog):
     @commands.has_any_role(784202171825913856, 786610369988263976, 763420686890565641, 767580143010840616, 784202204323905546) #Acad Manager
     async def forceend(self, ctx, channel: discord.VoiceChannel):
         database.db.connect(reuse_if_open=True)
-        team = discord.utils.get(ctx.guild.roles, name='Academics Team')
+        team = discord.utils.get(ctx.guild.roles, name= self.AT)
         member = ctx.guild.get_member(ctx.author.id)
 
         if channel.id in self.presetChannels:
@@ -253,13 +273,13 @@ class SkeletonCMD(commands.Cog):
         database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
 
-        BOT = ctx.guild.get_member(842468709406081034)
-        OWNER = ctx.guild.get_member(409152798609899530)
-        TMOD = discord.utils.get(ctx.guild.roles, name='Mod Trainee')
-        MOD = discord.utils.get(ctx.guild.roles, name='Moderator')
-        SMOD = discord.utils.get(ctx.guild.roles, name='Senior Mod')
-        CO = discord.utils.get(ctx.guild.roles, name='CO')
-        VP = discord.utils.get(ctx.guild.roles, name='VP')
+        BOT = ctx.guild.get_member(self.botID)
+        OWNER = ctx.guild.get_member(self.ownerID)
+        TMOD = discord.utils.get(ctx.guild.roles, name= self.TMOD)
+        MOD = discord.utils.get(ctx.guild.roles, name= self.MOD)
+        SMOD = discord.utils.get(ctx.guild.roles, name= self.SMOD)
+        CO = discord.utils.get(ctx.guild.roles, name= self.CO)
+        VP = discord.utils.get(ctx.guild.roles, name= self.VP)
 
         voice_state = member.voice
 
@@ -451,12 +471,12 @@ class SkeletonCMD(commands.Cog):
         #database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
         timestamp2 = datetime.now()
-        MT = discord.utils.get(ctx.guild.roles, name='Moderation Team')
-        MAT = discord.utils.get(ctx.guild.roles, name='Marketing Team')
-        TT = discord.utils.get(ctx.guild.roles, name='Technical Team')
-        AT = discord.utils.get(ctx.guild.roles, name='Academics Team')
-        VP = discord.utils.get(ctx.guild.roles, name='VP')
-        CO = discord.utils.get(ctx.guild.roles, name='CO')
+        MT = discord.utils.get(ctx.guild.roles, name= self.MOD)
+        MAT = discord.utils.get(ctx.guild.roles, name= self.MAT)
+        TT = discord.utils.get(ctx.guild.roles, name=self.TT)
+        AT = discord.utils.get(ctx.guild.roles, name=self.AT)
+        VP = discord.utils.get(ctx.guild.roles, name=self.VP)
+        CO = discord.utils.get(ctx.guild.roles, name=self.CO)
 
         voice_state = member.voice
 
