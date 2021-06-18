@@ -101,6 +101,13 @@ class SkeletonCMD(commands.Cog):
         self.interaction.remove(user)
         await user.send("Session closed")
 
+
+    @commands.command()
+    @is_botAdmin
+    async def say(self, ctx, *, message):
+        await ctx.message.delete()
+        await ctx.send(message)
+
 def setup(bot):
     bot.add_cog(SkeletonCMD(bot))
 
