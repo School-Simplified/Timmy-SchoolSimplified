@@ -54,7 +54,9 @@ class TallyCMD(commands.Cog):
 
         Manager = discord.utils.get(ctx.guild.roles, name = "Academics Manager")
 
-        if Helper not in ctx.author.roles and Manager not in ctx.author.roles:
+        Moderator = discord.utils.get(ctx.guild.roles, name = "Moderator")
+
+        if Helper not in ctx.author.roles and Manager not in ctx.author.roles and Moderator not in ctx.author.roles:
             embed = discord.Embed(title = "Woah Woah Woah!", description = "You can't use this command, you require Lead Helper+ to use this!", color = 0xed1313)
             await ctx.send(embed = embed)
             return
