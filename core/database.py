@@ -138,8 +138,15 @@ class Administrators(BaseModel):
     id = AutoField()
     discordID = BigIntegerField(unique = True)
 
-    #TODO: Add Tier Levels
-    #TierLevel = IntegerField()
+    TierLevel = IntegerField(default=1)
+    '''
+    TIER LEVEL
+
+    1 - Bot Manager
+    2 - Admin
+    3 - Sudo Admin
+
+    '''
 
 app = Flask(__name__)
 

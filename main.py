@@ -21,7 +21,7 @@ from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
 
 from core import database
-from core.checks import is_botAdmin
+from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3
 
 
 load_dotenv()
@@ -106,13 +106,13 @@ for ext in get_extensions():
 
 
 @client.group(aliases=['cog'])
-@is_botAdmin
+@is_botAdmin2
 async def cogs(ctx):
     pass
 
 
 @cogs.command()
-@is_botAdmin
+@is_botAdmin2
 async def unload(ctx, ext):
     if "cogs." not in ext:
         ext = f"cogs.{ext}"
@@ -128,7 +128,7 @@ async def unload(ctx, ext):
 
 
 @cogs.command()
-@is_botAdmin
+@is_botAdmin2
 async def load(ctx, ext):
     if "cogs." not in ext:
         ext = f"cogs.{ext}"
@@ -144,7 +144,7 @@ async def load(ctx, ext):
 
 
 @cogs.command(aliases=['restart'])
-@is_botAdmin
+@is_botAdmin2
 async def reload(ctx, ext):
     if ext == "all":
         embed = discord.Embed(
@@ -170,7 +170,7 @@ async def reload(ctx, ext):
 
 
 @cogs.command()
-@is_botAdmin
+@is_botAdmin2
 async def view(ctx):
     msg = " ".join(get_extensions())
     embed = discord.Embed(title="Cogs - View", description=msg, color=0xd6b4e8)
@@ -184,7 +184,7 @@ async def ping(ctx):
     await ctx.send(embed=pingembed)
 
 @client.command(name='eval')
-@is_botAdmin
+@is_botAdmin3
 async def _eval(ctx, *, body):
     """Evaluates python code"""
     env = {
@@ -281,30 +281,53 @@ async def help(ctx):
     await ctx.send(embed = embed)
 
 @client.command()
-@is_botAdmin
+@is_botAdmin2
 async def kill(ctx):
-    await ctx.send("Goodbye!")
+    await ctx.send("Goodbye!\n- **Ended Process**")
     sys.exit(0)
 
 @client.group(aliases=['w'])
-@commands.is_owner()
+@is_botAdmin
 async def whitelist(ctx):
     pass
 
 @whitelist.command()
-@commands.is_owner()
+@is_botAdmin
 async def list(ctx):
     adminList = []
 
-    for admin in database.Administrators:
+    query1 = database.Administrators.select().where(database.Administrators.TierLevel == 1)
+    for admin in query1:
         user = await client.fetch_user(admin.discordID)
         adminList.append(f"`{user.name}` -> `{user.id}`")
 
-    adminListStr = "\n".join(adminList)
+    adminLEVEL1 = "\n".join(adminList)
+
+
+
+    adminList = []
+    query2 = database.Administrators.select().where(database.Administrators.TierLevel == 2)
+    for admin in query2:
+        user = await client.fetch_user(admin.discordID)
+        adminList.append(f"`{user.name}` -> `{user.id}`")
+
+    adminLEVEL2 = "\n".join(adminList)
+
+
+
+    adminList = []
+    query3 = database.Administrators.select().where(database.Administrators.TierLevel == 3)
+    for admin in query3:
+        user = await client.fetch_user(admin.discordID)
+        adminList.append(f"`{user.name}` -> `{user.id}`")
+
+    adminLEVEL3 = "\n".join(adminList)
+
+
 
     embed = discord.Embed(title = "Bot Administrators", description = "Whitelisted Users that have Increased Authorization", color = discord.Color.green())
-    embed.add_field(name = "Whitelisted Users", value = f"Format:\n**Username** -> **ID**\n\n{adminListStr}")
-    embed.set_footer(text = "Only Owners can add Bot Administrators.")
+    embed.add_field(name = "Whitelisted Users", value = f"Format:\n**Username** -> **ID**\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}")
+    embed.set_footer(text = "Only Owners can add Bot Administrators. | Permit 3 is the HIGHEST Authorization Level")
 
     await ctx.send(embed = embed)
     
@@ -329,13 +352,13 @@ async def remove(ctx, ID: discord.User):
 
 @whitelist.command()
 @commands.is_owner()
-async def add(ctx, ID: discord.User):
+async def add(ctx, ID: discord.User, level: int):
     database.db.connect(reuse_if_open=True)
 
-    q: database.Administrators = database.Administrators.create(discordID = ID.id)
+    q: database.Administrators = database.Administrators.create(discordID = ID.id, TierLevel = level)
     q.save()
 
-    await ctx.send(f"{ID.name} has been added successfully.")
+    await ctx.send(f"{ID.name} has been added successfully with permit level `{str(level)}``.")
 
     database.db.close()
 
