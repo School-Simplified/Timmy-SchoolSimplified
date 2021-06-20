@@ -138,6 +138,9 @@ class Administrators(BaseModel):
     id = AutoField()
     discordID = BigIntegerField(unique = True)
 
+    #TODO: Add Tier Levels
+    #TierLevel = IntegerField()
+
 app = Flask(__name__)
 
 # This hook ensures that a connection is opened to handle any queries
