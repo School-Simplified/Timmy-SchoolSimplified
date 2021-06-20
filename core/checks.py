@@ -9,10 +9,17 @@ Otherwise, use the same format to make your own check.
 '''
 
 from discord.ext import commands
+from core import database
 
-adminIDs = [409152798609899530, 491741248152141836, 450476337954553858, 449579826278563860, 409730612434567179]
+
+#adminIDs = [409152798609899530, 491741248152141836, 450476337954553858, 449579826278563860, 409730612434567179]
 
 def predicate(ctx):
+    adminIDs = []
+
+    for admin in database.Administrators:
+        adminIDs.append(admin.discordID)
+
     return ctx.author.id in adminIDs
 
 is_botAdmin = commands.check(predicate)

@@ -20,7 +20,9 @@ from discord_components import (Button, ButtonStyle, DiscordComponents,
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
 
+from core import database
 from core.checks import is_botAdmin
+
 
 load_dotenv()
 
@@ -283,6 +285,59 @@ async def help(ctx):
 async def kill(ctx):
     await ctx.send("Goodbye!")
     sys.exit(0)
+
+@client.group(aliases=['w'])
+@commands.is_owner()
+async def whitelist(ctx):
+    pass
+
+@whitelist.command()
+@commands.is_owner()
+async def list(ctx):
+    adminList = []
+
+    for admin in database.Administrators:
+        user = await client.fetch_user(admin.discordID)
+        adminList.append(f"`{user.name}` -> `{user.id}`")
+
+    adminListStr = "\n".join(adminList)
+
+    embed = discord.Embed(title = "Bot Administrators", description = "Whitelisted Users that have Increased Authorization", color = discord.Color.green())
+    embed.add_field(name = "Whitelisted Users", value = f"Format:\n**Username** -> **ID**\n\n{adminListStr}")
+    embed.set_footer(text = "Only Owners can add Bot Administrators.")
+
+    await ctx.send(embed = embed)
+    
+
+@whitelist.command()
+@commands.is_owner()
+async def remove(ctx, ID: discord.User):
+    database.db.connect(reuse_if_open=True)
+    
+    query = database.Administrators.select().where(database.Administrators.discordID == ID.id)
+    if query.exists():
+        query = query.get()
+
+        query.delete_instance()
+
+        await ctx.send("Removed user!")
+
+    else:
+        await ctx.send("Invalid Provided: (No Record Found)")
+
+    database.db.close()
+
+@whitelist.command()
+@commands.is_owner()
+async def add(ctx, ID: discord.User):
+    database.db.connect(reuse_if_open=True)
+
+    q: database.Administrators = database.Administrators.create(discordID = ID.id)
+    q.save()
+
+    await ctx.send(f"{ID.name} has been added successfully.")
+
+    database.db.close()
 
 
 client.run(os.getenv("TOKEN"))

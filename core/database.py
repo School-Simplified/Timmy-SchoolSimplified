@@ -134,6 +134,10 @@ class Tag(BaseModel):
     #embed_title = TextField()
     text = TextField()
 
+class Administrators(BaseModel):
+    id = AutoField()
+    discordID = BigIntegerField(unique = True)
+
 app = Flask(__name__)
 
 # This hook ensures that a connection is opened to handle any queries
@@ -149,5 +153,5 @@ def _db_close(exc):
     if not db.is_closed():
         db.close()
 
-tables = {"VoiceChannelInfo" : VCChannelInfo, "IgnoreThis": IgnoreThis, "helpertally": HelperTally, "questiontimestamp": QuestionTimestamp, "tag": Tag, "ChannelInfo" : ChannelInfo, "Response": Response, "ExtraResponse": ExtraResponse, "EmailsVersion2": EmailsVersion2}
+tables = {"VoiceChannelInfo" : VCChannelInfo, "IgnoreThis": IgnoreThis, "helpertally": HelperTally, "questiontimestamp": QuestionTimestamp, "tag": Tag, "ChannelInfo" : ChannelInfo, "Response": Response, "ExtraResponse": ExtraResponse, "EmailsVersion2": EmailsVersion2, "Administrators": Administrators}
 iter_table(tables)
