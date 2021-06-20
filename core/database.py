@@ -138,7 +138,7 @@ class Administrators(BaseModel):
     id = AutoField()
     discordID = BigIntegerField(unique = True)
 
-    TierLevel = IntegerField(default=1)
+    TierLevel = IntegerField(default=1, )
     '''
     TIER LEVEL
 

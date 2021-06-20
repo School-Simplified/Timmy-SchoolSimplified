@@ -343,10 +343,13 @@ async def remove(ctx, ID: discord.User):
 
         query.delete_instance()
 
-        await ctx.send("Removed user!")
+        embed = discord.Embed(title = "Successfully Removed User!", description = f"{ID.name} has been removed from the database!", color = discord.Color.green())
+        await ctx.send(embed = embed)
+
 
     else:
-        await ctx.send("Invalid Provided: (No Record Found)")
+        embed = discord.Embed(title = "Invalid User!", description = "Invalid Provided: (No Record Found)", color = discord.Color.red())
+        await ctx.send(embed = embed)
 
     database.db.close()
 
@@ -358,7 +361,8 @@ async def add(ctx, ID: discord.User, level: int):
     q: database.Administrators = database.Administrators.create(discordID = ID.id, TierLevel = level)
     q.save()
 
-    await ctx.send(f"{ID.name} has been added successfully with permit level `{str(level)}``.")
+    embed = discord.Embed(title = "Successfully Added User!", description = f"{ID.name} has been added successfully with permit level `{str(level)}`.", color = discord.Color.gold())
+    await ctx.send(embed = embed)
 
     database.db.close()
 
