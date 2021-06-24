@@ -447,7 +447,7 @@ async def add(ctx, ID: discord.User, level: int):
     database.db.close()
 
 
-@commands.command()
+@client.command()
 @is_botAdmin
 async def adminlogs(ctx):
     async def get_pages():
