@@ -457,7 +457,7 @@ async def adminlogs(ctx):
         for q in database.AdminLogging:
             modObj = await client.fetch_user(q.discordID)
 
-            embed = discord.embed(title="Query Results",
+            embed = discord.Embed(title="Query Results",
                                   description=f"Query requested by {ctx.author.mention}\nSearch Query: ADMINLOGGING")
 
             timeObj = q.datetimeObj.strftime("%x")
