@@ -84,6 +84,12 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send(embed = em)
             return
 
+        elif isinstance(error, (commands.MissingAnyRole, commands.MissingRole, commands.MissingPermissions)):
+            em = discord.Embed(title = "Invalid Permissions!", description = "You do not have the associated role in order to successfully invoke this command! Contact an administrator/developer if you believe this is invalid.", color = 0xf5160a)
+            em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
+            em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
+            await ctx.send(embed = em)
+            return
 
         else:
             error_file = Path("error.txt")

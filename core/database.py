@@ -49,7 +49,7 @@ class IgnoreThis(BaseModel):
     authorID = TextField()
 
 class HelperTally(BaseModel):
-    id = PrimaryKeyField()
+    id = AutoField()
     userID = TextField()
     CS = IntegerField(default = 0)
     English = IntegerField(default = 0)
@@ -148,6 +148,15 @@ class Administrators(BaseModel):
 
     '''
 
+class AdminLogging(BaseModel):
+    id = AutoField()
+    discordID = BigIntegerField()
+
+    action = TextField()
+    content = TextField(default = "N/A")
+
+    datetime = DateTimeField(default = datetime.now())
+
 app = Flask(__name__)
 
 # This hook ensures that a connection is opened to handle any queries
@@ -163,5 +172,5 @@ def _db_close(exc):
     if not db.is_closed():
         db.close()
 
-tables = {"VoiceChannelInfo" : VCChannelInfo, "IgnoreThis": IgnoreThis, "helpertally": HelperTally, "questiontimestamp": QuestionTimestamp, "tag": Tag, "ChannelInfo" : ChannelInfo, "Response": Response, "ExtraResponse": ExtraResponse, "EmailsVersion2": EmailsVersion2, "Administrators": Administrators}
+tables = {"VoiceChannelInfo" : VCChannelInfo, "IgnoreThis": IgnoreThis, "helpertally": HelperTally, "questiontimestamp": QuestionTimestamp, "tag": Tag, "ChannelInfo" : ChannelInfo, "Response": Response, "ExtraResponse": ExtraResponse, "EmailsVersion2": EmailsVersion2, "Administrators": Administrators, "AdminLogging": AdminLogging}
 iter_table(tables)

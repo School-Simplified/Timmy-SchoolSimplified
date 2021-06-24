@@ -43,6 +43,8 @@ add_opt = [
 class TallyCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+        self.myID = 852251896130699325
     
     @commands.command()
     async def ticketban(self, ctx, member : discord.Member, *, reason = None):
@@ -60,6 +62,17 @@ class TallyCMD(commands.Cog):
             embed = discord.Embed(title = "Woah Woah Woah!", description = "You can't use this command, you require Lead Helper+ to use this!", color = 0xed1313)
             await ctx.send(embed = embed)
             return
+
+        if member.id == self.myID:
+            embed = discord.Embed(title = "Unable to TicketBan this User", description = "Why are you trying to ticketban me?", color = 0xed1313)
+            return await ctx.send(embed = embed)
+            
+
+        if member.id == ctx.author.id:
+            embed = discord.Embed(title = "Unable to TicketBan this User", description = "Why are you trying to ticketban yourself?", color = 0xed1313)
+            return await ctx.send(embed = embed)
+
+            
 
         
         if TicketBan not in member.roles:
@@ -237,12 +250,12 @@ class TallyCMD(commands.Cog):
 
         
 
-       
+
         await your_command()
 
         listUserCompleted = ', '.join(listUserCompleted)
         
-                       
+
         
         current_time = float(time.time())
         difference = int(round(current_time - startTime))

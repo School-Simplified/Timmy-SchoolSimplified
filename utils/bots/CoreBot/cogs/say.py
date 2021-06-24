@@ -5,6 +5,7 @@ import logging
 from datetime import datetime, timedelta
 
 import discord
+from core import database
 from core.checks import is_botAdmin
 from discord.ext import commands
 from redbot.core.utils.tunnel import Tunnel
@@ -20,6 +21,9 @@ class SkeletonCMD(commands.Cog):
     @is_botAdmin
     async def _interact(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """Start receiving and sending messages as the bot through DM"""
+
+        NE = database.AdminLogging.create(discordID = ctx.author.id, action = "INTERACT")
+        NE.save()
 
         u = ctx.author
         if channel is None:
@@ -105,6 +109,9 @@ class SkeletonCMD(commands.Cog):
     @commands.command()
     @is_botAdmin
     async def say(self, ctx, *, message):
+        NE = database.AdminLogging.create(discordID = ctx.author.id, action = "INTERACT", content = message)
+        NE.save()
+
         await ctx.message.delete()
         await ctx.send(message)
 

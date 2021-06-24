@@ -154,7 +154,7 @@ class SkeletonCMD(commands.Cog):
             #if team in member.roles:
             category = discord.utils.get(member.guild.categories, id = self.categoryID)
 
-            if len(category.voice_channels) >= 15:
+            if len(category.voice_channels) >= 25:
                 embed = discord.Embed(title = "Max Channel Allowance", description = "I'm sorry! This category has reached its full capacity at **15** voice channels!\n\n**Please wait until a private voice session ends before creating a new voice channel!**", color = discord.Colour.red())
                 await member.move_to(None, reason = "Max Channel Allowance")
                 return await acadChannel.send(content = member.mention, embed = embed)
@@ -194,6 +194,7 @@ class SkeletonCMD(commands.Cog):
                 tag: database.VCChannelInfo = database.VCChannelInfo.create(ChannelID = channel.id, name = f"{member.display_name}'s Channel", authorID = member.id, used = True, datetimeObj = datetime.now(), lockStatus = "0")
                 tag.save()
 
+                '''
                 voice_client: discord.VoiceClient = discord.utils.get(self.bot.voice_clients, guild= member.guild)
                 audio_source = discord.FFmpegPCMAudio('utils/bots/TutorVC/confirm.mp3')
                 
@@ -203,6 +204,7 @@ class SkeletonCMD(commands.Cog):
                     print(f"Ignoring error:\n{e}")
                     
                 await asyncio.sleep(2)
+                '''
 
                 await acadChannel.send(content = member.mention, embed = embed)
 
