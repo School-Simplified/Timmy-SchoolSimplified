@@ -5,6 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 import re
 from datetime import datetime
+import asyncio
 
 scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
 
@@ -28,9 +29,15 @@ class BanUpdate(commands.Cog):
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         now = datetime.now()
+
         '''
 		Discord.py doesn't give us the information we need so we need to dig deeper and query the audit logs
 		'''
+
+        if guild.id != 763119924385939498:
+            return
+
+        await asyncio.sleep(4)
 
         async for logs in guild.audit_logs(limit=1, oldest_first=False, action=discord.AuditLogAction.ban):
             # Query the audit log for a type ban, user, and get the latest one.
@@ -42,6 +49,7 @@ class BanUpdate(commands.Cog):
             Okay so now we fetched everything, now we need to access the attributes from 'logs'.
             '''
 
+            
             moderator = logs.user
             target = logs.target
 

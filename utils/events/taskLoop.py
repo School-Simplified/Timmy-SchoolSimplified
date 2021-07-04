@@ -24,12 +24,12 @@ class TasksLoop(commands.Cog):
     def cog_unload(self):
         self.voiceCheck.cancel()
 
-    @tasks.loop(seconds=3.0)
+    @tasks.loop(seconds=15.0)
     async def voiceCheck(self):
+        return
         
         # This is closed off due to voice instability
         
-        return
         guild = await self.bot.fetch_guild(self.MainServerID)
 
         voice = discord.utils.get(self.bot.voice_clients, guild=guild)

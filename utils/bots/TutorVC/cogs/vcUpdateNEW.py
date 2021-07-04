@@ -1,7 +1,7 @@
 import asyncio
 import datetime
 import json
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import discord
 from core import database
@@ -12,6 +12,14 @@ from pytz import timezone
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 
+class Emoji:
+    confirm = "<:confirm:860926261966667806>"
+    deny = "<:deny:860926229335375892>"
+    warn = "<:warn:860926255443345409>"
+    lock = "<:lock:860926195087835137>"
+    unlock = "<:unlock:860926246937427989>"
+    time = "<:time:860926238737825793>"
+    loading = None
 
 def convert_time_to_seconds(time):
     try:
@@ -42,9 +50,7 @@ def showTotalMinutes(dateObj: datetime):
 
     deltaTime = now - dateObj
 
-    seconds = deltaTime.seconds
-    minutes = (seconds % 3600) // 60
-    return minutes
+    return deltaTime.total_seconds() // 60
     
 
 class SkeletonCMD(commands.Cog):
@@ -92,7 +98,7 @@ class SkeletonCMD(commands.Cog):
                 print(query.ChannelID)
                 print(before.channel.id)
                 if query.ChannelID == str(before.channel.id):
-                    embed = discord.Embed(title = "WARNING: Voice Channel is about to be deleted!", description = "If the voice session has ended, **you can ignore this!**\n\nIf it hasn't ended, please make sure you return to the channel in **2** Minutes, otherwise the channel will automatically be deleted!", color= discord.Colour.red())
+                    embed = discord.Embed(title = f"{Emoji.deny} WARNING: Voice Channel is about to be deleted!", description = "If the voice session has ended, **you can ignore this!**\n\nIf it hasn't ended, please make sure you return to the channel in **2** Minutes, otherwise the channel will automatically be deleted!", color= discord.Colour.red())
 
                     tutorChannel = await self.bot.fetch_channel(int(query.ChannelID))
                     
@@ -125,7 +131,7 @@ class SkeletonCMD(commands.Cog):
                             except Exception as e:
                                 print(f"Error Deleting Channel:\n{e}")
                             else:
-                                embed = discord.Embed(title = f"{member.display_name} Total Voice Minutes", description = f"{member.mention} you have spent a total of `{day} minutes` in voice channel, **{query.name}**.\n**THIS TIME MAY NOT BE ACCURATE**", color = discord.Colour.gold())
+                                embed = discord.Embed(title = f"{Emoji.confirm} {member.display_name} Total Voice Minutes", description = f"{member.mention} you have spent a total of `{day} minutes` in voice channel, **{query.name}**.\n**THIS TIME MAY NOT BE ACCURATE**", color = discord.Colour.gold())
                                 embed.set_footer(text = "The voice channel has been deleted!")
                                 await acadChannel.send(content = member.mention, embed = embed) 
                         else:
@@ -155,7 +161,7 @@ class SkeletonCMD(commands.Cog):
             category = discord.utils.get(member.guild.categories, id = self.categoryID)
 
             if len(category.voice_channels) >= 25:
-                embed = discord.Embed(title = "Max Channel Allowance", description = "I'm sorry! This category has reached its full capacity at **15** voice channels!\n\n**Please wait until a private voice session ends before creating a new voice channel!**", color = discord.Colour.red())
+                embed = discord.Embed(title = f"{Emoji.deny} Max Channel Allowance", description = "I'm sorry! This category has reached its full capacity at **15** voice channels!\n\n**Please wait until a private voice session ends before creating a new voice channel!**", color = discord.Colour.red())
                 await member.move_to(None, reason = "Max Channel Allowance")
                 return await acadChannel.send(content = member.mention, embed = embed)
 
@@ -163,7 +169,7 @@ class SkeletonCMD(commands.Cog):
             query = database.VCChannelInfo.select().where(database.VCChannelInfo.authorID == member.id)
             if query.exists():
                 moveToChannel = database.VCChannelInfo.select().where(database.VCChannelInfo.authorID == member.id).get()
-                embed = discord.Embed(title = "Maximum Channel Ownership Allowance", description = "I'm sorry! You already have an active voice channel and thus you can't create anymore channels.\n\n**If you would like to remove the channel without waiting the 2 minutes, use `+end`!**", color = discord.Colour.red())
+                embed = discord.Embed(title = f"{Emoji.deny} Maximum Channel Ownership Allowance", description = "I'm sorry! You already have an active voice channel and thus you can't create anymore channels.\n\n**If you would like to remove the channel without waiting the 2 minutes, use `+end`!**", color = discord.Colour.red())
                 
                 try:
                     tutorChannel = await self.bot.fetch_channel(int(moveToChannel.ChannelID))
@@ -181,12 +187,12 @@ class SkeletonCMD(commands.Cog):
                 #if team not in member.roles and SB not in member.roles and legend not in member.roles:
                 if SB not in member.roles and AT not in member.roles and legend not in member.roles and MT not in member.roles and MAT not in member.roles and TT not in member.roles and VP not in member.roles and CO not in member.roles:
             
-                    embed = discord.Embed(title = "Voice Channel Creation", description = f"✅ *Created: {member.display_name}'s Channel*", color = discord.Colour.green())
+                    embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())
                     embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\n**1)** End - `Ends your current voice session.`\n**2)** ~~ReName - `Renames your voice channel to something else.`~~\n *> ⚠️ ReName is not available to you.*\n**3)** VoiceLimit - `Changes the voice limit of your voice channel.`\n**4)** Lock - `Lock's the voice channel.`\n**5)** Unlock - `Unlocks the voice channel.`\n**6)** Permit - `Allows you to modify authorized users who can join your voice channel.`")
                     embed.set_footer(text = "If you have any questions, consult the help command! | +help")
 
                 else:
-                    embed = discord.Embed(title = "Voice Channel Creation", description = f"✅ *Created: {member.display_name}'s Channel*", color = discord.Colour.green())
+                    embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())
                     embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\n**1)** End - `Ends your current voice session.`\n**2)** ReName - `Renames your voice channel to something else.`\n**3)** VoiceLimit - `Changes the voice limit of your voice channel.`\n**4)** Lock - `Lock's the voice channel.`\n**5)** Unlock - `Unlocks the voice channel.`\n**6)** Permit - `Allows you to modify authorized users who can join your voice channel.`")
                     embed.set_footer(text = "If you have any questions, consult the help command! | +help")
 
@@ -224,7 +230,7 @@ class SkeletonCMD(commands.Cog):
                         except Exception as e:
                             print(f"Error Deleting Channel:\n{e}")
                         else:
-                            embed = discord.Embed(title = f"{member.display_name} Total Voice Minutes", description = f"{member.mention} I removed your voice channel, **{query.name}** since you left without me properly setting it up!", color = discord.Colour.gold())
+                            embed = discord.Embed(title = f"{Emoji.warn} {member.display_name} Total Voice Minutes", description = f"{member.mention} I removed your voice channel, **{query.name}** since you left without me properly setting it up!", color = discord.Colour.gold())
                             embed.set_footer(text = "The voice channel has been deleted!")
                             await acadChannel.send(content = member.mention, embed = embed)
                             print("done")

@@ -457,18 +457,15 @@ async def adminlogs(ctx):
         for q in database.AdminLogging:
             modObj = await client.fetch_user(q.discordID)
 
-            embed = discord.Embed(title="Query Results",
-                                  description=f"Query requested by {ctx.author.mention}\nSearch Query: ADMINLOGGING")
+            embed = discord.Embed(title="Query Results",description=f"Query requested by {ctx.author.mention}\nSearch Query: ADMINLOGGING")
 
-            timeObj = q.datetimeObj.strftime("%x")
-            embed.add_field(name="Data",
-                            value=f"**User:** {modObj.name}\n**User ID:** {modObj.id}\n**Action:** {q.action}\n**Content:** {q.content}\n**Date:** {timeObj}")
+            timeObj = q.datetime.strftime("%x")
+            embed.add_field(name="Data",value=f"**User:** {modObj.name}\n**User ID:** {modObj.id}\n**Action:** {q.action}\n**Content:** {q.content}\n**Date:** {timeObj}")
             embed.set_footer(text=f"ID: {q.id}")
 
             pages.append(embed)
         return pages
 
-    value = await get_pages()
 
     paginator = Paginator(pages=get_pages())
     await paginator.start(ctx)

@@ -46,7 +46,7 @@ class TallyCMD(commands.Cog):
 
         self.myID = 852251896130699325
     
-    @commands.command()
+    @commands.command(aliases=["tb"])
     async def ticketban(self, ctx, member : discord.Member, *, reason = None):
         #await ctx.send(member.id)
         #await ctx.send(member)

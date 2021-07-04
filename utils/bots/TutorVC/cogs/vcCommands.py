@@ -20,6 +20,16 @@ presetChannels = [843637802293788692, 784556875487248394, 784556893799448626]
 '''
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 
+class Emoji:
+    confirm = "<:confirm:860926261966667806>"
+    deny = "<:deny:860926229335375892>"
+    warn = "<:warn:860926255443345409>"
+    lock = "<:lock:860926195087835137>"
+    unlock = "<:unlock:860926246937427989>"
+    time = "<:time:860926238737825793>"
+    loading = None
+
+
 def convert_time_to_seconds(time):
     try:
         value = int(time[:-1]) * time_convert[time[-1]]
@@ -49,9 +59,7 @@ def showTotalMinutes(dateObj: datetime):
 
     deltaTime = now - dateObj
 
-    seconds = deltaTime.seconds
-    minutes = (seconds % 3600) // 60
-    return minutes
+    return deltaTime.total_seconds() // 60
     
 
 class SkeletonCMD(commands.Cog):
@@ -165,6 +173,8 @@ class SkeletonCMD(commands.Cog):
                 query = database.VCChannelInfo.select().where(database.VCChannelInfo.authorID == ctx.author.id).get()
 
                 day = showTotalMinutes(query.datetimeObj)
+                print(query.datetimeObj)
+
                 print(query.ChannelID)
 
                 channel = await self.bot.fetch_channel(int(query.ChannelID))
@@ -291,12 +301,12 @@ class SkeletonCMD(commands.Cog):
         voice_state = member.voice
 
         if voice_state == None:
-            embed = discord.Embed(title = "Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
+            embed = discord.Embed(title = f"{Emoji.warn} Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
             return await ctx.send(embed = embed)
         
         else:
             if voice_state.channel.id in self.presetChannels:
-                embed = discord.Embed(title = "UnAuthorized Channel Modification", description = "You are not allowed to modify these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
+                embed = discord.Embed(title = f"{Emoji.deny} UnAuthorized Channel Modification", description = "You are not allowed to modify these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
                 return await ctx.send(embed = embed)
 
             if member.voice.channel.category_id == self.categoryID:
@@ -318,20 +328,20 @@ class SkeletonCMD(commands.Cog):
                     await member.voice.channel.set_permissions(VP, connect = True, manage_channels = True, manage_permissions = True)
                     
 
-                    embed = discord.Embed(title = "Locked Voice Channel", description = "Your voice channel has been locked and now only authorized users can join it!\n\n**NOTE:** Moderators and other Administrators will always be allowed into your voice channels!", color = discord.Colour.green())
+                    embed = discord.Embed(title = f"{Emoji.confirm} Locked Voice Channel", description = "Your voice channel has been locked and now only authorized users can join it!\n\n**NOTE:** Moderators and other Administrators will always be allowed into your voice channels!", color = discord.Colour.green())
                     await ctx.send(embed = embed)
 
                 else:
                     try:
                         q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                     except:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a valid voice channel! Please use the command on an actual voice channel thats under the correct category!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = "This isn't a valid voice channel! Please use the command on an actual voice channel thats under the correct category!", color = discord.Colour.red())
                     else:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = f"{Emoji.warn} Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
                 await ctx.send(embed = embed)
         
@@ -351,12 +361,12 @@ class SkeletonCMD(commands.Cog):
         voice_state = member.voice
 
         if voice_state == None:
-            embed = discord.Embed(title = "Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
+            embed = discord.Embed(title = f"{Emoji.warn} Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
             return await ctx.send(embed = embed)
 
         else:
             if voice_state.channel.id in self.presetChannels:
-                embed = discord.Embed(title = "UnAuthorized Channel Modification", description = "You are not allowed to modify these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
+                embed = discord.Embed(title = f"{Emoji.deny} UnAuthorized Channel Modification", description = "You are not allowed to modify these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
                 return await ctx.send(embed = embed)
 
             if member.voice.channel.category_id == self.categoryID:
@@ -372,21 +382,21 @@ class SkeletonCMD(commands.Cog):
 
                     await member.voice.channel.edit(sync_permissions=True)
 
-                    embed = discord.Embed(title = "Unlocked Voice Channel", description = "Your voice channel has been unlocked and now anyone can join it!", color = discord.Colour.green())
+                    embed = discord.Embed(title = f"{Emoji.confirm} Unlocked Voice Channel", description = "Your voice channel has been unlocked and now anyone can join it!", color = discord.Colour.green())
                     await ctx.send(embed = embed)
 
                 else:
                     try:
                         q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                     except:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a valid voice channel! Please use the command on an actual voice channel thats under the correct category!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = "This isn't a valid voice channel! Please use the command on an actual voice channel thats under the correct category!", color = discord.Colour.red())
                     else:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
 
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = f"{Emoji.warn} Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
                 await ctx.send(embed = embed)
 
@@ -403,12 +413,12 @@ class SkeletonCMD(commands.Cog):
         voice_state = member.voice
 
         if voice_state == None:
-            embed = discord.Embed(title = "Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
+            embed = discord.Embed(title = f"{Emoji.warn} Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
             return await ctx.send(embed = embed)
 
         else:
             if voice_state.channel.id in self.presetChannels:
-                embed = discord.Embed(title = "UnAuthorized Channel Modification", description = "You are not allowed to modify these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
+                embed = discord.Embed(title = f"{Emoji.deny} UnAuthorized Channel Modification", description = "You are not allowed to modify these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
                 return await ctx.send(embed = embed)
 
             if member.voice.channel.category_id == self.categoryID:
@@ -419,26 +429,26 @@ class SkeletonCMD(commands.Cog):
                     print(query.lockStatus)
 
                     if query.lockStatus == "0":
-                        embed = discord.Embed(title = "Invalid Setup", description = "Hey there! This voice channel is already open to the public, if you want to limit its access to certain people. Then consider using `+lock` and then come back this command!", color = discord.Colour.blurple())
+                        embed = discord.Embed(title = f"{Emoji.deny} Invalid Setup", description = "Hey there! This voice channel is already open to the public, if you want to limit its access to certain people. Then consider using `+lock` and then come back this command!", color = discord.Colour.blurple())
                         return await ctx.send(embed = embed)
 
                     else:
                         if typeAction == "+" or typeAction.lower() == "add":
                             if user == None:
-                                return await ctx.send("Invalid User Provided...")
+                                return await ctx.send(f"{Emoji.deny} Invalid User Provided...")
                             await member.voice.channel.set_permissions(user, connect = True)
                             embed = discord.Embed(title = "Permit Setup", description = f"{user.mention} now has access to this channel!", color = discord.Colour.blurple())
                             return await ctx.send(embed = embed)
                             
                         elif typeAction == "-" or typeAction.lower() == "remove":
                             if user == None:
-                                return await ctx.send("Invalid User Provided...")
+                                return await ctx.send(f"{Emoji.deny} Invalid User Provided...")
 
                             if user.id == int(query.authorID):
-                                return await ctx.send("You can't modify your own access!")
+                                return await ctx.send(f"{Emoji.deny} You can't modify your own access!")
 
                             await member.voice.channel.set_permissions(user, overwrite=None)
-                            embed = discord.Embed(title = "Permit Setup", description = f"{user.mention}'s access has been removed from this channel!", color = discord.Colour.blurple())
+                            embed = discord.Embed(title = f"{Emoji.confirm} Permit Setup", description = f"{user.mention}'s access has been removed from this channel!", color = discord.Colour.blurple())
                             return await ctx.send(embed = embed)
 
                         elif typeAction == "=" or typeAction.lower() == "list":
@@ -450,11 +460,11 @@ class SkeletonCMD(commands.Cog):
 
                             formatVer = "\n".join(randomlist)
                             
-                            embed = discord.Embed(title = "Permit List", description = f"**Users Authorized:**\n\n{formatVer}", color = discord.Color.gold())
+                            embed = discord.Embed(title = f"{Emoji.confirm} Permit List", description = f"**Users Authorized:**\n\n{formatVer}", color = discord.Color.gold())
                             await ctx.send(embed = embed)
                         
                         else:
-                            embed = discord.Embed(title = "Invalid Operation", description = "Supported operations: `+`/add, `-`/remove, `=`/list", color = discord.Color.dark_gold())
+                            embed = discord.Embed(title = f"{Emoji.warn} Invalid Operation", description = "Supported operations: `+`/add, `-`/remove, `=`/list", color = discord.Color.dark_gold())
                             embed.add_field(name = "Documentation", value = "Hey there, it looks you didn't specify a valid operation type to this user. Take a look at this documentation!\n\n**PERMIT:**\n\nUsage: `+permit <operation> <user>`\n**Description:** Modifies your voice channel's permissions.\n**NOTE:** The argument `operation` supports `+`/add, `-`/remove, `=`/list. If you are using `=` or `list`, you do not need to specify a user.\n\n**Examples:**\n\nAdding Members -> `+permit add @Space#0001`\nRemoving Members -> `+permit remove @Space#0001`\nListing Members -> `+permit =`")
                             return await ctx.send(embed = embed)
 
@@ -462,13 +472,13 @@ class SkeletonCMD(commands.Cog):
                     try:
                         q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                     except:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a valid channel! Please use the command on an actual private voice channel!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = "This isn't a valid channel! Please use the command on an actual private voice channel!", color = discord.Colour.red())
                     else:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = f"{Emoji.warn} Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
                 await ctx.send(embed = embed)
 
@@ -490,12 +500,12 @@ class SkeletonCMD(commands.Cog):
         voice_state = member.voice
 
         if voice_state == None:
-            embed = discord.Embed(title = "Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
+            embed = discord.Embed(title = f"{Emoji.warn} Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
             return await ctx.send(embed = embed)
 
         else:
             if voice_state.channel.id in self.presetChannels:
-                embed = discord.Embed(title = "UnAuthorized Channel Modification", description = "You are not allowed to modify these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
+                embed = discord.Embed(title = f"{Emoji.deny} UnAuthorized Channel Modification", description = "You are not allowed to modify these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
                 return await ctx.send(embed = embed)
 
             if member.voice.channel.category_id == self.categoryID:
@@ -505,29 +515,29 @@ class SkeletonCMD(commands.Cog):
                     try:
                         voiceLIMIT = int(new_voice_limit)
                     except:
-                        return await ctx.send("Not a valid number!")
+                        return await ctx.send(f"{Emoji.deny} Not a valid number!")
                     else:
                         if voiceLIMIT == 0:
-                            return await ctx.send("Sorry, you can't set your voice channel to `0`!")
+                            return await ctx.send(f"{Emoji.warn} Sorry, you can't set your voice channel to `0`!")
 
                         if voiceLIMIT < 0:
-                            return await ctx.send("Sorry, you can't set your voice channel to something below `-1`!")
+                            return await ctx.send(f"{Emoji.warn} Sorry, you can't set your voice channel to something below `-1`!")
                             
                         if MT not in ctx.author.roles and MAT not in ctx.author.roles and TT not in ctx.author.roles and AT not in ctx.author.roles and VP not in ctx.author.roles and CO not in ctx.author.roles and ctx.author.id != 682715516456140838:
                             if voiceLIMIT > 4:
-                                return await ctx.send("You can't increase the voice limit to something bigger then 4 members!")
+                                return await ctx.send(f"{Emoji.warn} You can't increase the voice limit to something bigger then 4 members!")
                             
                             else:
                                 await member.voice.channel.edit(user_limit = voiceLIMIT)
-                                return await ctx.send("Successfully modified voice limit!")
+                                return await ctx.send(f"{Emoji.confirm} Successfully modified voice limit!")
 
                         else:
                             if voiceLIMIT > 10:
-                                return await ctx.send("You can't increase the voice limit to something bigger then 10 members!")
+                                return await ctx.send(f"{Emoji.warn} You can't increase the voice limit to something bigger then 10 members!")
                             
                             else:
                                 await member.voice.channel.edit(user_limit = voiceLIMIT)
-                                return await ctx.send("Successfully modified voice limit!")
+                                return await ctx.send(f"{Emoji.confirm} Successfully modified voice limit!")
                     
 
 
@@ -535,13 +545,13 @@ class SkeletonCMD(commands.Cog):
                     try:
                         q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                     except:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a voice channel! Please use the command on an actual private channel!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = "This isn't a voice channel! Please use the command on an actual private channel!", color = discord.Colour.red())
                     else:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = f"{Emoji.warn} Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
 
     @commands.command()
@@ -553,12 +563,12 @@ class SkeletonCMD(commands.Cog):
         voice_state = member.voice
 
         if voice_state == None:
-            embed = discord.Embed(title = "Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
+            embed = discord.Embed(title = f"{Emoji.warn} Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
             return await ctx.send(embed = embed)
 
         else:
             if voice_state.channel.id in self.presetChannels:
-                embed = discord.Embed(title = "UnAuthorized Channel Modification", description = "You are not allowed to modify these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
+                embed = discord.Embed(title = f"{Emoji.deny} UnAuthorized Channel Modification", description = "You are not allowed to modify these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
                 return await ctx.send(embed = embed)
 
             if member.voice.channel.category_id == self.categoryID:
@@ -566,7 +576,7 @@ class SkeletonCMD(commands.Cog):
 
                 if query.exists():
                     await user.move_to(None)
-                    embed = discord.Embed(title = "Disconnected User", description = f"Disconnected {user.mention}!", color = discord.Colour.green())
+                    embed = discord.Embed(title = f"{Emoji.confirm} Disconnected User", description = f"Disconnected {user.mention}!", color = discord.Colour.green())
                     return await ctx.send(embed = embed)
 
 
@@ -574,13 +584,13 @@ class SkeletonCMD(commands.Cog):
                     try:
                         q = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == voice_state.channel.id).get()
                     except:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = "This isn't a valid voice channel! Please use the command on an actual voice channel thats under the correct category!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = "This isn't a valid voice channel! Please use the command on an actual voice channel thats under the correct category!", color = discord.Colour.red())
                     else:
-                        embed = discord.Embed(title = "Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
-                embed = discord.Embed(title = "Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
+                embed = discord.Embed(title = f"{Emoji.warn} Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
                 await ctx.send(embed = embed)
 

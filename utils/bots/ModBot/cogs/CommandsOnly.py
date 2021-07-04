@@ -22,11 +22,12 @@ class CommandsOnly(commands.Cog):
         self.channelID = 786057630383865858
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         if message.channel.id == 786057630383865858 and not message.author.bot:
 
-            if message.content.startswith('?'):
+            if message.content.startswith('?') or message.content.startswith('+'):
                 pass
+
 
             else:
                 await message.delete()
@@ -37,8 +38,8 @@ class CommandsOnly(commands.Cog):
                     embed = discord.Embed(
                         title="Commands ONLY", description=MESSAGEC, color=discord.Colour.red())
 
-                await message.channel.send(message.author.mention, delete_after=5.0)
-                await message.channel.send(embed=embed, delete_after=5.0)
+                await message.channel.send(message.author.mention, embed=embed, delete_after=5.0)
+
 
 
 def setup(bot):

@@ -31,8 +31,8 @@ async def rawExport(channel, response):
 async def createChannel(self, payload, topic, member):
 
     guild = self.bot.get_guild(payload.guild_id)
-    VP = discord.utils.get(guild.roles, name='Vice President')
-    CO = discord.utils.get(guild.roles, name='Corporate Officer') 
+    VP = discord.utils.get(guild.roles, name='Executive (VP)')
+    CO = discord.utils.get(guild.roles, name='Senior Executive (CO)') 
     IO = discord.utils.get(guild.roles, name='Information Bot') 
     BOT = discord.utils.get(guild.roles, name='Bots') 
     CSD = await self.bot.fetch_user(827317640196128799)
@@ -87,9 +87,7 @@ async def createChannel(self, payload, topic, member):
 
     channel = await guild.create_text_channel(f'open-{st}-{num}', category = category)
 
-    print(channel.permissions_for(guild.me).manage_channels)
-    print(guild.me.top_role > VP)
-    print(guild.me.top_role > CO)
+    
 
 
 

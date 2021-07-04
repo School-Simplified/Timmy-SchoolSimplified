@@ -68,3 +68,12 @@ def prompt_config2(msg, key):
     with config_file.open("w+") as f:
         json.dump(config, f, indent=4)
 
+
+class Emoji:
+    confirm = "<:confirm:860926261966667806>"
+    deny = "<:deny:860926229335375892>"
+    warn = "<:warn:860926255443345409>"
+    lock = "<:lock:860926195087835137>"
+    unlock = "<:unlock:860926246937427989>"
+    time = "<:time:860926238737825793>"
+    loading = None
