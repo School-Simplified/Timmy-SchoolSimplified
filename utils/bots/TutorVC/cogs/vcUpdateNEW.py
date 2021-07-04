@@ -98,7 +98,7 @@ class SkeletonCMD(commands.Cog):
                 print(query.ChannelID)
                 print(before.channel.id)
                 if query.ChannelID == str(before.channel.id):
-                    embed = discord.Embed(title = f"{Emoji.deny} WARNING: Voice Channel is about to be deleted!", description = "If the voice session has ended, **you can ignore this!**\n\nIf it hasn't ended, please make sure you return to the channel in **2** Minutes, otherwise the channel will automatically be deleted!", color= discord.Colour.red())
+                    embed = discord.Embed(title = f"{Emoji.time} WARNING: Voice Channel is about to be deleted!", description = "If the voice session has ended, **you can ignore this!**\n\nIf it hasn't ended, please make sure you return to the channel in **2** Minutes, otherwise the channel will automatically be deleted!", color= discord.Colour.red())
 
                     tutorChannel = await self.bot.fetch_channel(int(query.ChannelID))
                     
