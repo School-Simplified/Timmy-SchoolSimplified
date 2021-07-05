@@ -18,6 +18,11 @@ class SkeletonCMD(commands.Cog):
 
     @commands.command()
     async def request(self, ctx):
+        if ctx.guild.id != 805593783684562965:
+            return
+
+        await ctx.message.delete()
+        
         channel = await ctx.author.create_dm()
         await ctx.send("Check DMs!")
 
