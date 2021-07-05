@@ -77,3 +77,4 @@ class Emoji:
     unlock = "<:unlock:860926246937427989>"
     time = "<:time:860926238737825793>"
     loading = None
+    redissue = "<:issue:860587949263290368>"
