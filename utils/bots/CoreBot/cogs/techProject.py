@@ -22,7 +22,7 @@ class SkeletonCMD(commands.Cog):
             return
 
         await ctx.message.delete()
-        
+
         channel = await ctx.author.create_dm()
         await ctx.send("Check DMs!")
 
@@ -80,7 +80,7 @@ class SkeletonCMD(commands.Cog):
                 embed.add_field(name = "Q5: Have you received approval from a manager for this project (or are you a manager yourself)?", value = answer5.content)
                 embed.add_field(name = "Q6: Anything else?", value = answer6.content)
 
-                PJC = await ctx.guild.fetch_channel(823725066780278824)
+                PJC = await ctx.guild.fetch_channel(849722616880300061)
                 try:
                     await PJC.send(embed = embed)
                 except:
