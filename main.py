@@ -42,6 +42,8 @@ use_sentry(
 
 publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
 
+
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -119,9 +121,14 @@ async def mainModeCheck(ctx):
         return False
 
     else:
-        return False
+        return True
 
-    
+@client.command()
+async def filters(ctx):
+
+    embed = discord.Embed(title = "Command Filters", description = "Bot Filters that the bot is subjected towards.", color = discord.Colour.gold())
+    embed.add_field(name = "Checks", value = "**Server's Monitored**\n*These servers are included in the filters listed below.*\n-> `School Simplified` | `763119924385939498`\n\n**Moderator Roles**\n*These users can execute commands anywhere regardless of channel filters.*\n-> `Moderator` | `VP` | `CO`\n\n**Command Whitelisted**\n-> `rule`\n\n**Blacklisted Categories**\n->\n<#763121170324783146>\n<#800163651805773824>\n<#774847738239385650>\n<#805299289604620328>\n<#796909060707319838>\n<#787841402381139979>\n<#830992617491529758>\n<#763857608964046899>\n<#808020719530410014>")
+    await ctx.send(embed = embed)
 
 @client.group(aliases=['cog'])
 @is_botAdmin2

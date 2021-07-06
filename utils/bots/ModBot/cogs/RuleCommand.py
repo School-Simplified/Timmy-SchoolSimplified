@@ -33,7 +33,7 @@ rulesDict = {
     16: "No mic/stream spamming in voice chats.",
     17: "No sharing of private content without the owner’s active consent.",
     18: "No impersonation.",
-    19: "Keep debates in <#861813108758413323>.",
+    19: "Keep debates in <#861832988751953920>/#debate.",
     20: "Keep chats and conversations relevant.",
     21: "Maintain a positive atmosphere."
 }

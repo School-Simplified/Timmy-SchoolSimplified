@@ -57,10 +57,15 @@ class BanUpdate(commands.Cog):
             if moderator.id == 536991182035746816:  # Wick's ID
                 banReasonAUDIT = logs.reason
 
-                banReason = re.match(
-                    r"[^[]*\[([^]]*)\]", banReasonAUDIT).groups()[0]
+                if "No reason specified by" in banReasonAUDIT:
+                    random, fullUsernameMOD = banReasonAUDIT.split("No reason specified by ")
 
-                random, fullUsernameMOD = banReasonAUDIT.split("- ")
+                else:
+                    banReason = re.match(
+                        r"[^[]*\[([^]]*)\]", banReasonAUDIT).groups()[0]
+
+                    random, fullUsernameMOD = banReasonAUDIT.split("- ")
+                    banReason = "None Specified"
 
             else:
                 banReason = logs.reason
