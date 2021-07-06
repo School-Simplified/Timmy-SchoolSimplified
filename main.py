@@ -40,6 +40,7 @@ use_sentry(
     traces_sample_rate=1.0
 )
 
+publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
 
 class bcolors:
     HEADER = '\033[95m'
@@ -95,6 +96,32 @@ for ext in get_extensions():
     client.load_extension(ext)
     print(f"[LOGGING] Loaded: {ext}")
 
+
+@client.check
+async def mainModeCheck(ctx):
+    MT = discord.utils.get(ctx.guild.roles, name= "Moderator")
+    VP = discord.utils.get(ctx.guild.roles, name= "VP")
+    CO = discord.utils.get(ctx.guild.roles, name= "CO")
+
+    if ctx.guild == None:
+        return False
+
+    elif ctx.guild.id != 763119924385939498:
+        return True
+
+    elif MT in ctx.author.roles or VP in ctx.author.roles or CO in ctx.author.roles:
+        return True
+
+    elif ctx.command.name == "rule":
+        return True
+
+    elif ctx.channel.category_id in publicCH:
+        return False
+
+    else:
+        return False
+
+    
 
 @client.group(aliases=['cog'])
 @is_botAdmin2

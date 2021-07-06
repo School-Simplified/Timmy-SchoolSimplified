@@ -59,6 +59,9 @@ class CommandErrorHandler(commands.Cog):
         sturl = stackoverflow(error)
         for line in exception:
             exception_msg += line
+
+        if ctx.command.name == "rule":
+            return "No Rule..."
         
         if isinstance(error, (commands.CheckFailure, commands.CheckAnyFailure)):
             return

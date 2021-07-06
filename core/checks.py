@@ -3,7 +3,7 @@ SETUP:
 
 If you require a specific command to be protected, you can use the built in @is_botAdmin check or create your own one here!
 
-If you wish to use the @is_botAdmin check, add your Discord ID to "adminIDs".
+If you wish to use the @is_botAdmin check, DM Space.".
 
 Otherwise, use the same format to make your own check. 
 '''

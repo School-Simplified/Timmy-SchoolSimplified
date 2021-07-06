@@ -80,7 +80,7 @@ class SkeletonCMD(commands.Cog):
                 embed.add_field(name = "Q5: Have you received approval from a manager for this project (or are you a manager yourself)?", value = answer5.content)
                 embed.add_field(name = "Q6: Anything else?", value = answer6.content)
 
-                PJC = await ctx.guild.fetch_channel(849722616880300061)
+                PJC = await self.bot.fetch_channel(849722616880300061)
                 try:
                     await PJC.send(embed = embed)
                 except:
