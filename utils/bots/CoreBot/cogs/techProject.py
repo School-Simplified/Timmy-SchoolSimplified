@@ -7,7 +7,7 @@ import random
 
 import discord
 from core import database
-from core.checks import is_botAdmin
+from core.checks import is_botAdmin, is_botAdmin3
 from discord.ext import commands
 from redbot.core.utils.tunnel import Tunnel
 
@@ -93,8 +93,18 @@ class SkeletonCMD(commands.Cog):
             await channel.send("Looks like you didn't react in time, please try again later!")
 
 
+    @commands.command()
+    @is_botAdmin3
+    async def projectR(self, ctx, user: discord.User, type, projectname, *, notes = None):
+        embed = discord.Embed(title = "Project Announcement", description = "The assignee that has taken up your project request has an update for you!", color =discord.Color.green())
+        embed.add_field(name = "Status", value = f"Project Status: `{type}`\n-> Project: {projectname}\n-> Project Assignee: {ctx.author.mention}")
+        embed.set_footer(text = "DM's are not monitored, DM your Project Requester for more information.")
+        if notes != None:
+            embed.add_field(name = "Notes", value = notes)
 
+        await user.send(embed = embed)
 
+        await ctx.send("Sent report!\n", embed = embed)
 
 def setup(bot):
     bot.add_cog(SkeletonCMD(bot))

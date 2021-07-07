@@ -59,13 +59,14 @@ class BanUpdate(commands.Cog):
 
                 if "No reason specified by" in banReasonAUDIT:
                     random, fullUsernameMOD = banReasonAUDIT.split("No reason specified by ")
+                    banReason = "None Specified"
 
                 else:
                     banReason = re.match(
                         r"[^[]*\[([^]]*)\]", banReasonAUDIT).groups()[0]
 
                     random, fullUsernameMOD = banReasonAUDIT.split("- ")
-                    banReason = "None Specified"
+                    
 
             else:
                 banReason = logs.reason
