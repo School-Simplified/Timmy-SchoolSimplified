@@ -49,6 +49,15 @@ class SkeletonCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.staffServer = 778406166735880202
+        self.mainServer = 763119924385939498
+        self.ValidRoles = ['Pre-Algebra','Algebra 1','Geometry','Algebra 2/Trigonometry','Pre-Calculus','AP Calculus AB','AP Calculus BC','AP Statistics','Multi-variable Calculus',    'Biology','Chemistry','Physics','Earth Science','AP Biology','AP Chemistry','AP Physics 1','AP Physics 2','AP Physics C: Mechanics','AP Environmental Science',    'English','AP Literature','AP Language',    'AP Chinese','AP Spanish','AP French','AP German','AP Japanese','AP Latin','American Sign Language',    'AP 2D Art & Design','AP 3D Art & Design','AP Art History','AP Drawing','AP Capstone','AP Research','AP Seminar','World History','AP World History','US History','AP US History','AP European History','US Government']
+
+        self.MathRoles = ['Pre-Algebra','Algebra 1','Geometry','Algebra 2/Trigonometry','Pre-Calculus','AP Calculus AB','AP Calculus BC','AP Statistics','Multi-variable Calculus']
+        self.ScienceRoles = ['Biology','Chemistry','Physics','Earth Science','AP Biology','AP Chemistry','AP Physics 1','AP Physics 2','AP Physics C: Mechanics','AP Environmental Science']
+        self.LARoles = ['English','AP Literature','AP Language']
+        self.LanguageRoles = ['AP Chinese','AP Spanish','AP French','AP German','AP Japanese','AP Latin','American Sign Language']
+        self.ArtRoles = ['AP 2D Art & Design','AP 3D Art & Design','AP Art History','AP Drawing','AP Capstone','AP Research','AP Seminar']
+        self.SSRoles = ['World History','AP World History','US History','AP US History','AP European History','US Government']
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -90,7 +99,100 @@ class SkeletonCMD(commands.Cog):
             item = list_difference[0]
 
             await roleNameCheck(item.name, before, after, mainServer, user, "-")
- 
+
+    @commands.Cog.listener('on_member_update')
+    async def roleSyncAcad(self, before, after):
+        if before.guild.id == self.mainServer:
+            channel = await self.bot.fetch_channel(786057630383865858)
+
+            if len(before.roles) < len(after.roles):
+                newRole = next(role for role in after.roles if role not in before.roles)
+                if newRole.name in self.ValidRoles:
+
+                    role = discord.utils.get(before.guild.roles, name=newRole.name)
+                    if role is None:
+                        raise BaseException(f"Invalid Data/Role {newRole.name}")
+
+                    fieldValue = []
+                    for member in before.guild.members:
+                        if role in member.roles:
+                            await fieldValue.append(member.mention)
+
+                    listOfMembers = ", ".join(fieldValue)
+
+                    if newRole.name in self.MathRoles:
+                        topic = "MATH"
+                        ID = 123
+                    elif newRole.name in self.ScienceRoles:
+                        topic = "SCIENCE"
+                        ID = 123
+                    elif newRole.name in self.LARoles:
+                        topic = "LA"
+                        ID = 123
+                    elif newRole.name in self.LanguageRoles:
+                        topic = "LANGUAGE"
+                        ID = 123
+                    elif newRole.name in self.ArtRoles:
+                        topic = "ART"
+                        ID = 123
+                    elif newRole.name in self.SSRoles:
+                        topic = "SS"
+                        ID = 123
+                    else:
+                        return print(newRole.name)
+                    
+                    msg = await channel.fetch_message(ID) 
+
+                    
+                    embed = discord.Embed(title = "Test Embed", description = "Test")
+                    embed.add_field(name = "Value", value = listOfMembers)
+                    await msg.edit(embed = embed)
+
+            elif len(before.roles) > len(after.roles):
+                oldRole = str(set(before.roles) - set(after.roles))
+                if oldRole.name in self.ValidRoles:
+                    role = discord.utils.get(before.guild.roles, name="VP")
+                    if role is None:
+                        raise BaseException(f"Invalid Data/Role {oldRole.name}")
+
+                    fieldValue = []
+                    for member in before.guild.members:
+                        if role in member.roles:
+                            await fieldValue.append(member.mention)
+
+                    listOfMembers = ", ".join(fieldValue)
+
+                    if oldRole.name in self.MathRoles:
+                        topic = "MATH"
+                        ID = 123
+                    elif oldRole.name in self.ScienceRoles:
+                        topic = "SCIENCE"
+                        ID = 123
+                    elif oldRole.name in self.LARoles:
+                        topic = "LA"
+                        ID = 123
+                    elif oldRole.name in self.LanguageRoles:
+                        topic = "LANGUAGE"
+                        ID = 123
+                    elif oldRole.name in self.ArtRoles:
+                        topic = "ART"
+                        ID = 123
+                    elif oldRole.name in self.SSRoles:
+                        topic = "SS"
+                        ID = 123
+                    else:
+                        return print(oldRole.name)
+
+
+                    msg = await channel.fetch_message(ID) 
+
+                    embed = discord.Embed(title = "Test Embed", description = "Test")
+                    embed.add_field(name = "Value", value = listOfMembers)
+                    await msg.edit(embed = embed)
+
+
+            
+        
 
 def setup(bot):
     bot.add_cog(SkeletonCMD(bot))

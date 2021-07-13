@@ -21,6 +21,7 @@ class SkeletonCMD(commands.Cog):
     @is_botAdmin
     async def _interact(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """Start receiving and sending messages as the bot through DM"""
+        await ctx.message.delete()
 
         NE = database.AdminLogging.create(discordID = ctx.author.id, action = "INTERACT")
         NE.save()

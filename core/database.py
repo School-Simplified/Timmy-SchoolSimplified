@@ -138,14 +138,14 @@ class Administrators(BaseModel):
     id = AutoField()
     discordID = BigIntegerField(unique = True)
 
-    TierLevel = IntegerField(default=1, )
+    TierLevel = IntegerField(default=1)
     '''
     TIER LEVEL
 
     1 - Bot Manager
     2 - Admin
     3 - Sudo Admin
-
+    4 - Owner
     '''
 
 class AdminLogging(BaseModel):

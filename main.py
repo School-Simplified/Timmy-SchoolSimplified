@@ -11,6 +11,7 @@ import traceback
 from contextlib import redirect_stdout
 from datetime import datetime
 from pathlib import Path
+from time import sleep
 
 import aiohttp
 import chat_exporter
@@ -21,9 +22,10 @@ from discord_components import (Button, ButtonStyle, DiscordComponents,
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
 from pygicord import Paginator
+from tqdm import tqdm
 
 from core import database
-from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3
+from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4
 
 load_dotenv()
 
@@ -432,17 +434,25 @@ async def list(ctx):
 
     adminLEVEL3 = "\n".join(adminList)
 
+    adminList = []
+    query4 = database.Administrators.select().where(database.Administrators.TierLevel == 4)
+    for admin in query4:
+        user = await client.fetch_user(admin.discordID)
+        adminList.append(f"`{user.name}` -> `{user.id}`")
+
+    adminLEVEL4 = "\n".join(adminList)
+
     embed = discord.Embed(title="Bot Administrators", description="Whitelisted Users that have Increased Authorization",
                           color=discord.Color.green())
     embed.add_field(name="Whitelisted Users",
-                    value=f"Format:\n**Username** -> **ID**\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}")
-    embed.set_footer(text="Only Owners can add Bot Administrators. | Permit 3 is the HIGHEST Authorization Level")
+                    value=f"Format:\n**Username** -> **ID**\n\n**Permit 4:** *Owners*\n{adminLEVEL4}\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}")
+    embed.set_footer(text="Only Owners/Permit 4's can add Bot Administrators. | Permit 3 is the HIGHEST Authorization Level")
 
     await ctx.send(embed=embed)
 
 
 @whitelist.command()
-@commands.is_owner()
+@is_botAdmin4
 async def remove(ctx, ID: discord.User):
     database.db.connect(reuse_if_open=True)
 
@@ -466,7 +476,7 @@ async def remove(ctx, ID: discord.User):
 
 
 @whitelist.command()
-@commands.is_owner()
+@is_botAdmin4
 async def add(ctx, ID: discord.User, level: int):
     database.db.connect(reuse_if_open=True)
 

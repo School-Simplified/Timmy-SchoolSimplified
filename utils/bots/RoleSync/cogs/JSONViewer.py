@@ -15,7 +15,7 @@ class SkeletonCMD(commands.Cog):
 
     @commands.command()
     async def view(self, ctx):
-        with open('equelRoles.json', 'r') as content_file:
+        with open('utils/bots/RoleSync/equelRoles.json', 'r') as content_file:
             content = content_file.read()
 
         await ctx.send("**JSON File**")

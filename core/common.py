@@ -78,3 +78,9 @@ class Emoji:
     time = "<:time:860926238737825793>"
     loading = None
     redissue = "<:issue:860587949263290368>"
+    archive = "<:file:861794167578689547>"
+    cycle = "<:cycle:861794132585611324>"
+    calender = "<:calendar:861794038739238943>"
+    addgear = "<:add5x:862875088311025675>"
+    minusgear = "<:minusgear:862875088217702421>"
+    invalidchannel = "<:invalidchannel:862875088361619477>"

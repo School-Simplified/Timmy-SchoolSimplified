@@ -50,3 +50,14 @@ def predicate_LV3(ctx):
     return ctx.author.id in adminIDs
 
 is_botAdmin3 = commands.check(predicate_LV3)
+
+def predicate_LV4(ctx):
+    adminIDs = []
+
+    query = database.Administrators.select().where(database.Administrators.TierLevel >= 4)
+    for admin in query:
+        adminIDs.append(admin.discordID)
+
+    return ctx.author.id in adminIDs
+
+is_botAdmin4 = commands.check(predicate_LV4)
