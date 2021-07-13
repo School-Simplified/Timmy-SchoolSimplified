@@ -38,7 +38,7 @@ client.remove_command('help')
 
 use_sentry(
     client,  # Traceback tracking, DO NOT MODIFY THIS
-    dsn="https://af048b30f3fc42248210246501ef83ea@o816669.ingest.sentry.io/5807400",
+    dsn=os.getenv('DSN_SENTRY'),
     traces_sample_rate=1.0
 )
 
