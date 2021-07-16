@@ -5,8 +5,12 @@ import json
 import datetime
 from datetime import timedelta, datetime
 from core.common import *
-config, _ = load_config()
 
+messageDict = {"Math": 865700012682641408, "Science": 865700962941272086, "LA": 865701191445905418, "Language": 865702156858163221, "Art": 865702814168645663, "Social Studies": 865703727792128000}
+
+config, _ = load_config("equelRoles")
+
+configA, _A = load_config("acadRoles")
 '''
 Used by RoleSync
 '''
@@ -19,7 +23,15 @@ def getEquelRank(query):
         print(config[query])
         return config[query]
 
+def getAcadRole(query):
+    print(query)
+    if query not in configA:
+        return None, None
+    else:
+        print(configA[query])
 
+        value = messageDict[configA[query]]
+        return value, configA[query]
 
 async def roleNameCheck(name, before, after, guild, user ,type):
     check = getEquelRank(name)
@@ -50,14 +62,9 @@ class SkeletonCMD(commands.Cog):
         self.bot = bot
         self.staffServer = 778406166735880202
         self.mainServer = 763119924385939498
-        self.ValidRoles = ['Pre-Algebra','Algebra 1','Geometry','Algebra 2/Trigonometry','Pre-Calculus','AP Calculus AB','AP Calculus BC','AP Statistics','Multi-variable Calculus',    'Biology','Chemistry','Physics','Earth Science','AP Biology','AP Chemistry','AP Physics 1','AP Physics 2','AP Physics C: Mechanics','AP Environmental Science',    'English','AP Literature','AP Language',    'AP Chinese','AP Spanish','AP French','AP German','AP Japanese','AP Latin','American Sign Language',    'AP 2D Art & Design','AP 3D Art & Design','AP Art History','AP Drawing','AP Capstone','AP Research','AP Seminar','World History','AP World History','US History','AP US History','AP European History','US Government']
+        self.ValidRoles = ['Pre-Algebra Tutor','Algebra 1 Tutor','Geometry Tutor','Algebra 2/Trigonometry Tutor','Pre-Calculus Tutor','AP Calculus AB Tutor','AP Calculus BC Tutor','AP Statistics Tutor','Multi-variable Calculus Tutor',    'Biology Tutor','Chemistry Tutor','Physics Tutor','Earth Science Tutor','AP Biology Tutor','AP Chemistry Tutor','AP Physics 1 Tutor','AP Physics 2 Tutor','AP Physics C: Mechanics Tutor','AP Environmental Science Tutor',    'English Tutor','AP Literature Tutor','AP Language Tutor',    'AP Chinese Tutor','AP Spanish Tutor','AP French Tutor','AP German Tutor','AP Japanese Tutor','AP Latin Tutor','American Sign Language Tutor',    'AP 2D Art & Design Tutor','AP 3D Art & Design Tutor','AP Art History Tutor','AP Drawing Tutor','AP Capstone Tutor','AP Research Tutor','AP Seminar Tutor','World History Tutor','AP World History Tutor','US History Tutor','AP US History Tutor','AP European History Tutor','US Government Tutor']
 
-        self.MathRoles = ['Pre-Algebra','Algebra 1','Geometry','Algebra 2/Trigonometry','Pre-Calculus','AP Calculus AB','AP Calculus BC','AP Statistics','Multi-variable Calculus']
-        self.ScienceRoles = ['Biology','Chemistry','Physics','Earth Science','AP Biology','AP Chemistry','AP Physics 1','AP Physics 2','AP Physics C: Mechanics','AP Environmental Science']
-        self.LARoles = ['English','AP Literature','AP Language']
-        self.LanguageRoles = ['AP Chinese','AP Spanish','AP French','AP German','AP Japanese','AP Latin','American Sign Language']
-        self.ArtRoles = ['AP 2D Art & Design','AP 3D Art & Design','AP Art History','AP Drawing','AP Capstone','AP Research','AP Seminar']
-        self.SSRoles = ['World History','AP World History','US History','AP US History','AP European History','US Government']
+        self.testRoles = ["Math", "Science", "Biology"]
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -102,12 +109,15 @@ class SkeletonCMD(commands.Cog):
 
     @commands.Cog.listener('on_member_update')
     async def roleSyncAcad(self, before, after):
-        if before.guild.id == self.mainServer:
-            channel = await self.bot.fetch_channel(786057630383865858)
+        if before.guild.id == 860897711334621194:
+            channel = await self.bot.fetch_channel(865336414954979358)
 
             if len(before.roles) < len(after.roles):
+                print("New Role:\n")
                 newRole = next(role for role in after.roles if role not in before.roles)
-                if newRole.name in self.ValidRoles:
+                if newRole.name in configA:
+                    print(newRole)
+                    print(newRole.name)
 
                     role = discord.utils.get(before.guild.roles, name=newRole.name)
                     if role is None:
@@ -116,79 +126,68 @@ class SkeletonCMD(commands.Cog):
                     fieldValue = []
                     for member in before.guild.members:
                         if role in member.roles:
-                            await fieldValue.append(member.mention)
+                            fieldValue.append(member.mention)
 
                     listOfMembers = ", ".join(fieldValue)
 
-                    if newRole.name in self.MathRoles:
-                        topic = "MATH"
-                        ID = 123
-                    elif newRole.name in self.ScienceRoles:
-                        topic = "SCIENCE"
-                        ID = 123
-                    elif newRole.name in self.LARoles:
-                        topic = "LA"
-                        ID = 123
-                    elif newRole.name in self.LanguageRoles:
-                        topic = "LANGUAGE"
-                        ID = 123
-                    elif newRole.name in self.ArtRoles:
-                        topic = "ART"
-                        ID = 123
-                    elif newRole.name in self.SSRoles:
-                        topic = "SS"
-                        ID = 123
-                    else:
-                        return print(newRole.name)
+                    ID, subject = getAcadRole(newRole.name)
                     
                     msg = await channel.fetch_message(ID) 
+                    embedORG : discord.Embed = msg.embeds[0]
 
+                    embedNEW = discord.Embed(title = embedORG.title, description = embedORG.description)
                     
-                    embed = discord.Embed(title = "Test Embed", description = "Test")
-                    embed.add_field(name = "Value", value = listOfMembers)
-                    await msg.edit(embed = embed)
+                    for field in embedORG.fields:
+                        if field.name == newRole.name:
+                            embedNEW.add_field(name = field.name, value = listOfMembers, inline = False)
+                        else:
+                            embedNEW.add_field(name = field.name, value = field.value, inline = False)
+
+                    await msg.edit(embed = embedNEW)
+
+
 
             elif len(before.roles) > len(after.roles):
-                oldRole = str(set(before.roles) - set(after.roles))
-                if oldRole.name in self.ValidRoles:
-                    role = discord.utils.get(before.guild.roles, name="VP")
-                    if role is None:
-                        raise BaseException(f"Invalid Data/Role {oldRole.name}")
+                print("Old Role:\n")
+                oldRole = (set(before.roles) - set(after.roles))
 
-                    fieldValue = []
-                    for member in before.guild.members:
-                        if role in member.roles:
-                            await fieldValue.append(member.mention)
+                for role in oldRole:
+                    print(role.name)
+                    if role.name in configA:
+                        print("Old Role Check: OKAY")
+                        #role = discord.utils.get(before.guild.roles, name=oldRole)
+                        if role is None:
+                            raise BaseException(f"Invalid Data/Role {oldRole.name}")
 
-                    listOfMembers = ", ".join(fieldValue)
+                        fieldValue = []
+                        for member in before.guild.members:
+                            if role in member.roles:
+                                fieldValue.append(member.mention)
 
-                    if oldRole.name in self.MathRoles:
-                        topic = "MATH"
-                        ID = 123
-                    elif oldRole.name in self.ScienceRoles:
-                        topic = "SCIENCE"
-                        ID = 123
-                    elif oldRole.name in self.LARoles:
-                        topic = "LA"
-                        ID = 123
-                    elif oldRole.name in self.LanguageRoles:
-                        topic = "LANGUAGE"
-                        ID = 123
-                    elif oldRole.name in self.ArtRoles:
-                        topic = "ART"
-                        ID = 123
-                    elif oldRole.name in self.SSRoles:
-                        topic = "SS"
-                        ID = 123
-                    else:
-                        return print(oldRole.name)
+                        listOfMembers = ", ".join(fieldValue)
+                        if listOfMembers == None or listOfMembers == "" or listOfMembers == " ":
+                            listOfMembers = "** **"
+
+                        ID, subject = getAcadRole(role.name)
+                        print(ID, subject)
+                        print(listOfMembers)
+                        if ID == None:
+                            return print(oldRole, role.name, role)
 
 
-                    msg = await channel.fetch_message(ID) 
+                        msg = await channel.fetch_message(ID) 
 
-                    embed = discord.Embed(title = "Test Embed", description = "Test")
-                    embed.add_field(name = "Value", value = listOfMembers)
-                    await msg.edit(embed = embed)
+                        embedORG : discord.Embed = msg.embeds[0]
+
+                        embedNEW = discord.Embed(title = embedORG.title, description = embedORG.description)
+                        
+                        for field in embedORG.fields:
+                            if field.name == role.name:
+                                embedNEW.add_field(name = field.name, value = listOfMembers, inline = False)
+                            else:
+                                embedNEW.add_field(name = field.name, value = field.value, inline = False)
+                                
+                        await msg.edit(embed = embedNEW)
 
 
             

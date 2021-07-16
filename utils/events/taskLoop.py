@@ -16,7 +16,7 @@ Used by TutorVC
 class TasksLoop(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.voiceCheck.start()
+        #self.voiceCheck.start()
         self.MainServerID = 763119924385939498
         self.TutorVCStartCH = 784556875487248394
         

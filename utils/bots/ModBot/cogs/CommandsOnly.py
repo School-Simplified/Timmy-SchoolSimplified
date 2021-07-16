@@ -9,7 +9,7 @@ from discord.ext import commands
 import discord
 from discord.ext import tasks
 from datetime import timedelta, datetime
-
+from core.common import rulesDict
 
 MESSAGEC = "Go chit chat somewhere else, this is for commands only."
 MESSAGEMASA = "Hey you ||~~short~~|| *I mean* tall mf, go chit chat somewhere you twat."
@@ -20,6 +20,7 @@ class CommandsOnly(commands.Cog):
         self.bot = bot
         self.masa_id = 736765405728735232
         self.channelID = 786057630383865858
+        self.rules = rulesDict
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -41,6 +42,23 @@ class CommandsOnly(commands.Cog):
                 await message.channel.send(message.author.mention, embed=embed, delete_after=5.0)
 
 
+    @commands.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def rule(self, ctx, num):
+        try:
+            num = int(num)
+        except ValueError:
+            await ctx.message.add_reaction("❌")
+        else:
+            if num > 14 or num <= 0:
+                await ctx.message.add_reaction("❌")
+            else:
+                RuleNumber = str(num)
+                RuleTitle, RuleDesc = self.rules[int(num)].split(" && ")
+
+                embed = discord.Embed(title = f"Rule {RuleNumber}: {RuleTitle}", description = RuleDesc, color = discord.Colour.green())
+                embed.set_footer(text = "Have a question? Feel free to DM a Moderator!")
+                await ctx.send(embed = embed)
 
 def setup(bot):
     bot.add_cog(CommandsOnly(bot))
