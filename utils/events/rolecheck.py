@@ -6,7 +6,7 @@ import datetime
 from datetime import timedelta, datetime
 from core.common import *
 
-messageDict = {"Math": 865700012682641408, "Science": 865700962941272086, "LA": 865701191445905418, "Language": 865702156858163221, "Art": 865702814168645663, "Social Studies": 865703727792128000}
+messageDict = {"Math": 865747159907303474, "Science": 865747237878497312, "English": 865747307260411904, "Language": 865747679023333376, "Art": 865747805301637130, "Social Studies": 865747390890901534, "Computer Science": 865747588866113556}
 
 config, _ = load_config("equelRoles")
 
@@ -110,16 +110,14 @@ class SkeletonCMD(commands.Cog):
     @commands.Cog.listener('on_member_update')
     async def roleSyncAcad(self, before, after):
         if before.guild.id == 860897711334621194:
-            channel = await self.bot.fetch_channel(865336414954979358)
+            channel = await self.bot.fetch_channel(865716647083507733)
 
+            #New Role
             if len(before.roles) < len(after.roles):
-                print("New Role:\n")
                 newRole = next(role for role in after.roles if role not in before.roles)
                 if newRole.name in configA:
-                    print(newRole)
-                    print(newRole.name)
-
                     role = discord.utils.get(before.guild.roles, name=newRole.name)
+
                     if role is None:
                         raise BaseException(f"Invalid Data/Role {newRole.name}")
 
@@ -135,7 +133,7 @@ class SkeletonCMD(commands.Cog):
                     msg = await channel.fetch_message(ID) 
                     embedORG : discord.Embed = msg.embeds[0]
 
-                    embedNEW = discord.Embed(title = embedORG.title, description = embedORG.description)
+                    embedNEW = discord.Embed(title = embedORG.title, description = embedORG.description, color = 0x6c7dfe)
                     
                     for field in embedORG.fields:
                         if field.name == newRole.name:
@@ -147,14 +145,12 @@ class SkeletonCMD(commands.Cog):
 
 
 
+            #Old Role
             elif len(before.roles) > len(after.roles):
-                print("Old Role:\n")
                 oldRole = (set(before.roles) - set(after.roles))
 
                 for role in oldRole:
-                    print(role.name)
                     if role.name in configA:
-                        print("Old Role Check: OKAY")
                         #role = discord.utils.get(before.guild.roles, name=oldRole)
                         if role is None:
                             raise BaseException(f"Invalid Data/Role {oldRole.name}")
@@ -179,7 +175,7 @@ class SkeletonCMD(commands.Cog):
 
                         embedORG : discord.Embed = msg.embeds[0]
 
-                        embedNEW = discord.Embed(title = embedORG.title, description = embedORG.description)
+                        embedNEW = discord.Embed(title = embedORG.title, description = embedORG.description, color = 0x6c7dfe)
                         
                         for field in embedORG.fields:
                             if field.name == role.name:
@@ -189,9 +185,6 @@ class SkeletonCMD(commands.Cog):
                                 
                         await msg.edit(embed = embedNEW)
 
-
-            
-        
 
 def setup(bot):
     bot.add_cog(SkeletonCMD(bot))

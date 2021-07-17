@@ -63,7 +63,8 @@ class SkeletonCMD(commands.Cog):
         self.presetChannels = [843637802293788692, 784556875487248394, 784556893799448626]
 
         self.ownerID = 409152798609899530
-        self.botID = 842468709406081034
+        self.botID = 852251896130699325
+        #852251896130699325
 
         self.AT = "Academics Team"
         self.SB = "Simplified Booster"
@@ -78,6 +79,22 @@ class SkeletonCMD(commands.Cog):
         self.MAT = "Marketing Team"
         self.TT = "Technical Team"
 
+        self.ST = "Senior Tutor"
+
+        #Level Roles
+
+        self.leveledRoles = ["〚Level 120〛Grandmaster","〚Level 110〛Master","〚Level 100〛Prodigy","〚Level 90〛 Legend","〚Level 80〛Connoisseur","〚Level 70 〛Professor","〚Level 60〛Mentor","〚Level 50〛Scholar","〚Level 40〛Expert","〚Level 35〛Experienced","〚Level 30〛Apprentice","〚Level 25〛Amateur","〚Level 20〛Student","〚Level 15〛Learner","〚Level 10〛Beginner","〚Level 5〛Novice","〚Level 1〛New"]
+        self.renameRoles = ["〚Level 120〛Grandmaster","〚Level 110〛Master","〚Level 100〛Prodigy","〚Level 90〛 Legend","〚Level 80〛Connoisseur","〚Level 70 〛Professor","〚Level 60〛Mentor","〚Level 50〛Scholar","〚Level 40〛Expert", "Simplified Booster", "Legend", "Moderator", "Marketing Team", "Technical Team"]
+
+        self.L120 = "〚Level 120〛Grandmaster"
+        self.L110 = "〚Level 110〛Master"
+        self.L100 = "〚Level 100〛Prodigy"
+        self.L90 = "〚Level 90〛 Legend"
+        self.L80 = "〚Level 80〛Connoisseur"
+        self.L70 = "〚Level 70 〛Professor"
+        self.L60 = "〚Level 60〛Mentor"
+        self.L50 = "〚Level 50〛Scholar"
+        self.L40 = "〚Level 40〛Expert"
 
         
 
@@ -95,11 +112,21 @@ class SkeletonCMD(commands.Cog):
         VP = discord.utils.get(ctx.guild.roles, name=self.VP)
         CO = discord.utils.get(ctx.guild.roles, name=self.CO)
 
+        L120 = discord.utils.get(ctx.guild.roles, name=self.L120)
+        L110 = discord.utils.get(ctx.guild.roles, name=self.L110)
+        L100 = discord.utils.get(ctx.guild.roles, name=self.L100)
+        L90 = discord.utils.get(ctx.guild.roles, name=self.L90)
+        L80 = discord.utils.get(ctx.guild.roles, name=self.L80)
+        L70 = discord.utils.get(ctx.guild.roles, name=self.L70)
+        L60 = discord.utils.get(ctx.guild.roles, name=self.L60)
+        L50 = discord.utils.get(ctx.guild.roles, name=self.L50)
+        L40 = discord.utils.get(ctx.guild.roles, name=self.L40)
+
         member = ctx.guild.get_member(ctx.author.id)
             
         if ctx.author.id != 415629932798935040:
-            if SB not in ctx.author.roles and AT not in ctx.author.roles and legend not in ctx.author.roles and MT not in ctx.author.roles and MAT not in ctx.author.roles and TT not in ctx.author.roles and VP not in ctx.author.roles and CO not in ctx.author.roles:
-                embed = discord.Embed(title = f"{Emoji.deny} Insufficient Rank", description = "Sorry! But only the following people who have these roles can rename their channel!\n\n- **Moderators**\n- **Marketing Team**\n- **Technical Team**\n- **Academics Team**\n- **VP**\n- **CO**\n- **Legends**\n- **Simplified Boosters**", color = discord.Colour.blurple())
+            if SB not in ctx.author.roles and AT not in ctx.author.roles and legend not in ctx.author.roles and MT not in ctx.author.roles and MAT not in ctx.author.roles and TT not in ctx.author.roles and VP not in ctx.author.roles and CO not in ctx.author.roles and L120 not in ctx.author.roles and L110 not in ctx.author.roles and L100 not in ctx.author.roles and L90 not in ctx.author.roles and L80 not in ctx.author.roles and L70 not in ctx.author.roles and L60 not in ctx.author.roles and L50 not in ctx.author.roles and L40 not in ctx.author.roles:
+                embed = discord.Embed(title = f"{Emoji.deny} Insufficient Rank", description = "Sorry! But only the following people who have these roles can rename their channel!\n\n- **Moderators**\n- **Marketing Team**\n- **Technical Team**\n- **Academics Team**\n- **VP**\n- **CO**\n- **Legends**\n- **Simplified Boosters**\n- **Level 40+**", color = discord.Colour.blurple())
                 return await ctx.send(embed = embed)
 
         voice_state = member.voice
@@ -289,6 +316,7 @@ class SkeletonCMD(commands.Cog):
         SMOD = discord.utils.get(ctx.guild.roles, name= self.SMOD)
         CO = discord.utils.get(ctx.guild.roles, name= self.CO)
         VP = discord.utils.get(ctx.guild.roles, name= self.VP)
+        ST = discord.utils.get(ctx.guild.roles, name=self.ST)
 
         voice_state = member.voice
 
@@ -317,6 +345,7 @@ class SkeletonCMD(commands.Cog):
                     await member.voice.channel.set_permissions(TMOD, connect = True)
                     await member.voice.channel.set_permissions(MOD, connect = True)
                     await member.voice.channel.set_permissions(SMOD, connect = True)
+                    await member.voice.channel.set_permissions(ST, connect = True)
                     await member.voice.channel.set_permissions(VP, connect = True, manage_channels = True, manage_permissions = True)
                     
 
