@@ -38,7 +38,7 @@ client.remove_command('help')
 
 use_sentry(
     client,  # Traceback tracking, DO NOT MODIFY THIS
-    dsn="https://af048b30f3fc42248210246501ef83ea@o816669.ingest.sentry.io/5807400",
+    dsn=os.getenv('DSN_SENTRY'),
     traces_sample_rate=1.0
 )
 
@@ -102,7 +102,7 @@ for ext in get_extensions():
 
 
 @client.check
-async def mainModeCheck(ctx):
+async def mainModeCheck(ctx: commands.Context):
     MT = discord.utils.get(ctx.guild.roles, name= "Moderator")
     VP = discord.utils.get(ctx.guild.roles, name= "VP")
     CO = discord.utils.get(ctx.guild.roles, name= "CO")
@@ -213,7 +213,7 @@ async def ping(ctx):
 
 @client.command(name='eval')
 @is_botAdmin3
-async def _eval(ctx, *, body):
+async def _eval(ctx: commands.Context, *, body):
     NE = database.AdminLogging.create(discordID=ctx.author.id, action="EVAL")
     NE.save()
 
