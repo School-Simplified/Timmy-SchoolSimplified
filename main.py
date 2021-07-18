@@ -26,6 +26,7 @@ from tqdm import tqdm
 
 from core import database
 from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4
+from core.common import Emoji, bcolors
 
 load_dotenv()
 
@@ -44,19 +45,8 @@ use_sentry(
 
 publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
 
-
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
+with open("uptime.txt", "w") as f:
+    f.write(str(time.time()))
 
 def get_extensions():  # Gets extension list dynamically
     extensions = []
@@ -82,7 +72,6 @@ async def force_restart(ctx):
     finally:
         sys.exit(0)
 
-
 @client.event
 async def on_ready():
     now = datetime.now()
@@ -96,9 +85,22 @@ async def on_ready():
     DiscordComponents(client)
 
 
-for ext in get_extensions():
-    client.load_extension(ext)
-    print(f"[LOGGING] Loaded: {ext}")
+files = get_extensions()
+i = 0 
+capLimit = len(files)
+ext = files[i]
+
+for i in tqdm(range(capLimit - 1), ascii = True, desc =f"Loading Cogs..."):
+    try:
+        client.load_extension(ext)
+    except Exception as e:
+        print(f"{ext} failed to load:\n\n{e}")
+    
+    i+=1
+    if i >= capLimit:
+        break
+    else:
+        ext = files[i]
 
 
 @client.check
@@ -106,31 +108,62 @@ async def mainModeCheck(ctx: commands.Context):
     MT = discord.utils.get(ctx.guild.roles, name= "Moderator")
     VP = discord.utils.get(ctx.guild.roles, name= "VP")
     CO = discord.utils.get(ctx.guild.roles, name= "CO")
+    SS = discord.utils.get(ctx.guild.roles, name= "Secret Service")
+    
+    CheckDB : database.CheckInformation =  database.CheckInformation.select().where(database.CheckInformation.id == 1).get()
 
-    if ctx.guild == None:
+    blacklistedUsers = []
+    for p in database.Blacklist:
+        blacklistedUsers.append(p.id)
+
+
+    adminIDs = []
+    query = database.Administrators.select().where(database.Administrators.TierLevel >= 4)
+    for admin in query:
+        adminIDs.append(admin.discordID)
+
+    #Permit 4 Check
+    if ctx.author.id in adminIDs:
+        return True
+
+
+    #Maintenance Check
+    elif CheckDB.MasterMaintenance:
+        embed = discord.Embed(title = "Master Maintenance ENABLED", description = f"{Emoji.deny} The bot is currently unavailable as it is under maintenance, check back later!", color = discord.Colour.gold())
+        embed.set_footer(text = "Need an immediate unlock? Message a Developer or SpaceTurtle#0001")
+        await ctx.send(embed = embed)
+
         return False
 
+    #Blacklist Check
+    elif ctx.author.id in blacklistedUsers:
+        return False
+    
+    #DM Check
+    elif ctx.guild == None:
+        return CheckDB.guildNone
+
+    #External Server Check
     elif ctx.guild.id != 763119924385939498:
-        return True
+        return CheckDB.externalGuild
 
-    elif MT in ctx.author.roles or VP in ctx.author.roles or CO in ctx.author.roles:
-        return True
+    #Mod Role Check
+    elif MT in ctx.author.roles or VP in ctx.author.roles or CO in ctx.author.roles or SS in ctx.author.roles:
+        return CheckDB.ModRoleBypass
 
+    #Rule Command Check
     elif ctx.command.name == "rule":
-        return True
+        return CheckDB.ruleBypass
 
+    #Public Category Check
     elif ctx.channel.category_id in publicCH:
-        return False
+        return CheckDB.publicCategories
 
+    #Else...
     else:
-        return True
+        return CheckDB.elseSituation
 
-@client.command()
-async def filters(ctx):
 
-    embed = discord.Embed(title = "Command Filters", description = "Bot Filters that the bot is subjected towards.", color = discord.Colour.gold())
-    embed.add_field(name = "Checks", value = "**Server's Monitored**\n*These servers are included in the filters listed below.*\n-> `School Simplified` | `763119924385939498`\n\n**Moderator Roles**\n*These users can execute commands anywhere regardless of channel filters.*\n-> `Moderator` | `VP` | `CO`\n\n**Command Whitelisted**\n-> `rule`\n\n**Blacklisted Categories**\n->\n<#763121170324783146>\n<#800163651805773824>\n<#774847738239385650>\n<#805299289604620328>\n<#796909060707319838>\n<#787841402381139979>\n<#830992617491529758>\n<#763857608964046899>\n<#808020719530410014>")
-    await ctx.send(embed = embed)
 
 @client.group(aliases=['cog'])
 @is_botAdmin2
@@ -206,140 +239,16 @@ async def view(ctx):
 
 @client.command()
 async def ping(ctx):
-    pingembed = discord.Embed(title="Pong! ⌛", color=0xb10d9f, description="Current Discord API Latency")
+    with open("uptime.txt", "r") as f:
+        start_time = float(f.readline())
+        current_time = float(time.time())
+        difference = int(round(current_time - start_time))
+        text = str(datetime.timedelta(seconds=difference))
+
+    pingembed = discord.Embed(title="Pong! ⌛", color=discord.Colour.gold(), description="Current Discord API Latency")
     pingembed.add_field(name="Current Ping:", value=f'{round(client.latency * 1000)}ms')
+    pingembed.add_field(name="Uptime", value = text)
     await ctx.send(embed=pingembed)
-
-
-@client.command(name='eval')
-@is_botAdmin3
-async def _eval(ctx: commands.Context, *, body):
-    NE = database.AdminLogging.create(discordID=ctx.author.id, action="EVAL")
-    NE.save()
-
-    """Evaluates python code"""
-    env = {
-        'ctx': ctx,
-        'bot': client,
-        'channel': ctx.channel,
-        'author': ctx.author,
-        'guild': ctx.guild,
-        'message': ctx.message,
-        'source': inspect.getsource
-    }
-
-    def cleanup_code(content):
-        """Automatically removes code blocks from the code."""
-        # remove ```py\n```
-        if content.startswith('```') and content.endswith('```'):
-            return '\n'.join(content.split('\n')[1:-1])
-
-        # remove `foo`
-        return content.strip('` \n')
-
-    env.update(globals())
-
-    body = cleanup_code(body)
-    stdout = io.StringIO()
-    err = out = None
-
-    to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
-
-    def paginate(text: str):
-        '''Simple generator that paginates text.'''
-        last = 0
-        pages = []
-        for curr in range(0, len(text)):
-            if curr % 1980 == 0:
-                pages.append(text[last:curr])
-                last = curr
-                appd_index = curr
-        if appd_index != len(text) - 1:
-            pages.append(text[last:curr])
-        return list(filter(lambda a: a != '', pages))
-
-    try:
-        exec(to_compile, env)
-    except Exception as e:
-        err = await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
-        return await ctx.message.add_reaction('\u2049')
-
-    func = env['func']
-    try:
-        with redirect_stdout(stdout):
-            ret = await func()
-    except Exception as e:
-        value = stdout.getvalue()
-        err = await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
-    else:
-        value = stdout.getvalue()
-        if ret is None:
-            if value:
-                try:
-
-                    out = await ctx.send(f'```py\n{value}\n```')
-                except:
-                    paginated_text = paginate(value)
-                    for page in paginated_text:
-                        if page == paginated_text[-1]:
-                            out = await ctx.send(f'```py\n{page}\n```')
-                            break
-                        await ctx.send(f'```py\n{page}\n```')
-        else:
-            try:
-                out = await ctx.send(f'```py\n{value}{ret}\n```')
-            except:
-                paginated_text = paginate(f"{value}{ret}")
-                for page in paginated_text:
-                    if page == paginated_text[-1]:
-                        out = await ctx.send(f'```py\n{page}\n```')
-                        break
-                    await ctx.send(f'```py\n{page}\n```')
-
-    if out:
-        await ctx.message.add_reaction('\u2705')  # tick
-    elif err:
-        await ctx.message.add_reaction('\u2049')  # x
-    else:
-        await ctx.message.add_reaction('\u2705')
-
-
-@client.command()
-@is_botAdmin3
-async def shell(ctx, *, command):
-    NE = database.AdminLogging.create(discordID=ctx.author.id, action="SHELL")
-    NE.save()
-
-    timestamp = datetime.now()
-    author = ctx.author
-    guild = ctx.guild
-    output = ""
-    try:
-        p = subprocess.run(command, shell=True, text=True, capture_output=True, check=True)
-        output += p.stdout
-        embed = discord.Embed(title="Shell Process", description=f"Shell Process started by {author.mention}",
-                              color=0x4c594b)
-        num_of_fields = len(output) // 1014 + 1
-        for i in range(num_of_fields):
-            embed.add_field(name="Output" if i == 0 else "\u200b",
-                            value="```bash\n" + output[i * 1014:i + 1 * 1014] + "\n```")
-        embed.set_footer(text=guild.name + " | Date: " + str(timestamp.strftime(r"%x")))
-        await ctx.send(embed=embed)
-    except Exception as error:
-        tb = error.__traceback__
-        etype = type(error)
-        exception = traceback.format_exception(etype, error, tb, chain=True)
-        exception_msg = ""
-        for line in exception:
-            exception_msg += line
-        embed = discord.Embed(title="Shell Process", description=f"Shell Process started by {author.mention}",
-                              color=0x4c594b)
-        num_of_fields = len(output) // 1014 + 1
-        for i in range(num_of_fields):
-            embed.add_field(name="Output" if i == 0 else "\u200b",
-                            value="```bash\n" + exception_msg[i * 1014:i + 1 * 1014] + "\n```")
-        embed.set_footer(text=guild.name + " | Date: " + str(timestamp.strftime(r"%x")))
-        await ctx.send(embed=embed)
 
 
 @client.command()
@@ -394,101 +303,6 @@ async def kill(ctx):
         await ctx.send("Looks like you didn't react in time, automatically aborted system exit!")
         await message.delete()
 
-
-
-
-
-
-
-@client.group(aliases=['w'])
-@is_botAdmin
-async def whitelist(ctx):
-    pass
-
-
-@whitelist.command()
-@is_botAdmin
-async def list(ctx):
-    adminList = []
-
-    query1 = database.Administrators.select().where(database.Administrators.TierLevel == 1)
-    for admin in query1:
-        user = await client.fetch_user(admin.discordID)
-        adminList.append(f"`{user.name}` -> `{user.id}`")
-
-    adminLEVEL1 = "\n".join(adminList)
-
-    adminList = []
-    query2 = database.Administrators.select().where(database.Administrators.TierLevel == 2)
-    for admin in query2:
-        user = await client.fetch_user(admin.discordID)
-        adminList.append(f"`{user.name}` -> `{user.id}`")
-
-    adminLEVEL2 = "\n".join(adminList)
-
-    adminList = []
-    query3 = database.Administrators.select().where(database.Administrators.TierLevel == 3)
-    for admin in query3:
-        user = await client.fetch_user(admin.discordID)
-        adminList.append(f"`{user.name}` -> `{user.id}`")
-
-    adminLEVEL3 = "\n".join(adminList)
-
-    adminList = []
-    query4 = database.Administrators.select().where(database.Administrators.TierLevel == 4)
-    for admin in query4:
-        user = await client.fetch_user(admin.discordID)
-        adminList.append(f"`{user.name}` -> `{user.id}`")
-
-    adminLEVEL4 = "\n".join(adminList)
-
-    embed = discord.Embed(title="Bot Administrators", description="Whitelisted Users that have Increased Authorization",
-                          color=discord.Color.green())
-    embed.add_field(name="Whitelisted Users",
-                    value=f"Format:\n**Username** -> **ID**\n\n**Permit 4:** *Owners*\n{adminLEVEL4}\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}")
-    embed.set_footer(text="Only Owners/Permit 4's can add Bot Administrators. | Permit 3 is the HIGHEST Authorization Level")
-
-    await ctx.send(embed=embed)
-
-
-@whitelist.command()
-@is_botAdmin4
-async def remove(ctx, ID: discord.User):
-    database.db.connect(reuse_if_open=True)
-
-    query = database.Administrators.select().where(database.Administrators.discordID == ID.id)
-    if query.exists():
-        query = query.get()
-
-        query.delete_instance()
-
-        embed = discord.Embed(title="Successfully Removed User!",
-                              description=f"{ID.name} has been removed from the database!", color=discord.Color.green())
-        await ctx.send(embed=embed)
-
-
-    else:
-        embed = discord.Embed(title="Invalid User!", description="Invalid Provided: (No Record Found)",
-                              color=discord.Color.red())
-        await ctx.send(embed=embed)
-
-    database.db.close()
-
-
-@whitelist.command()
-@is_botAdmin4
-async def add(ctx, ID: discord.User, level: int):
-    database.db.connect(reuse_if_open=True)
-
-    q: database.Administrators = database.Administrators.create(discordID=ID.id, TierLevel=level)
-    q.save()
-
-    embed = discord.Embed(title="Successfully Added User!",
-                          description=f"{ID.name} has been added successfully with permit level `{str(level)}`.",
-                          color=discord.Color.gold())
-    await ctx.send(embed=embed)
-
-    database.db.close()
 
 
 @client.command()
