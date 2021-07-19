@@ -191,10 +191,16 @@ class SkeletonCMD(commands.Cog):
             altServerBooster = discord.utils.get(before.guild.roles, id = 866511638726836285)
             serverbooster = discord.utils.get(before.guild.roles, id = 763399118911045672)
 
+            level35 = discord.utils.get(before.guild.roles, id = 852656232128708638)
+            DJ = discord.utils.get(before.guild.roles,name ="DJ")
+
             if len(before.roles) < len(after.roles):
                 newRole = next(role for role in after.roles if role not in before.roles)
                 if newRole.id == serverbooster.id:
                     before.add_roles(altServerBooster)
+                
+                if newRole.id == level35.id:
+                    before.add_roles(DJ)
 
 
 
