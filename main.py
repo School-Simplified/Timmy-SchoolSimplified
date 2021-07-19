@@ -10,6 +10,7 @@ import time
 import traceback
 from contextlib import redirect_stdout
 from datetime import datetime
+from datetime import timedelta
 from pathlib import Path
 from time import sleep
 
@@ -243,7 +244,7 @@ async def ping(ctx):
         start_time = float(f.readline())
         current_time = float(time.time())
         difference = int(round(current_time - start_time))
-        text = str(datetime.timedelta(seconds=difference))
+        text = str(timedelta(seconds=difference))
 
     pingembed = discord.Embed(title="Pong! ⌛", color=discord.Colour.gold(), description="Current Discord API Latency")
     pingembed.add_field(name="Current Ping:", value=f'{round(client.latency * 1000)}ms')
