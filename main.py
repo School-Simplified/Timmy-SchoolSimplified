@@ -115,11 +115,13 @@ async def mainModeCheck(ctx: commands.Context):
 
     blacklistedUsers = []
     for p in database.Blacklist:
-        blacklistedUsers.append(p.id)
+        blacklistedUsers.append(p.discordID)
+
+    print(blacklistedUsers)
 
 
     adminIDs = []
-    query = database.Administrators.select().where(database.Administrators.TierLevel >= 4)
+    query = database.Administrators.select().where(database.Administrators.TierLevel == 4)
     for admin in query:
         adminIDs.append(admin.discordID)
 
@@ -349,7 +351,7 @@ async def help(ctx):
     embed = discord.Embed(title="Help Commands", description="All avaliable commands under this bot!",
                           color=discord.Colour.blue())
     embed.add_field(name="Notion Page",
-                    value="**Notion Page:** [https://spaceturtle.tech](https://spaceturtle.tech \"Masa if you see "
+                    value="[https://schoolsimplified.org/timmy](https://schoolsimplified.org/timmy \"Masa if you see "
                           "this, ur short\")")
     embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
     embed.set_thumbnail(url="https://i.gyazo.com/a236dbfb03e11a210cccbbb718bf3539.png")

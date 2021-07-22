@@ -6,7 +6,7 @@ import datetime
 from datetime import timedelta, datetime
 from core.common import *
 
-messageDict = {"Math": 865747159907303474, "Science": 865747237878497312, "English": 865747307260411904, "Language": 865747679023333376, "Art": 865747805301637130, "Social Studies": 865747390890901534, "Computer Science": 865747588866113556}
+messageDict = {"Math": 866904767568543744, "Science": 866904901174427678, "English": 866905061182930944, "Language": 866905971519389787, "Art": 866906016602652743, "Social Studies": 866905205094481951, "Computer Science": 867550791635566623}
 
 config, _ = load_config("equelRoles")
 
@@ -107,6 +107,9 @@ class SkeletonCMD(commands.Cog):
 
             await roleNameCheck(item.name, before, after, mainServer, user, "-")
 
+
+
+
     @commands.Cog.listener('on_member_update')
     async def roleSyncAcad(self, before, after):
         if before.guild.id == 860897711334621194:
@@ -133,7 +136,9 @@ class SkeletonCMD(commands.Cog):
                     msg = await channel.fetch_message(ID) 
                     embedORG : discord.Embed = msg.embeds[0]
 
-                    embedNEW = discord.Embed(title = embedORG.title, description = embedORG.description, color = 0x6c7dfe)
+                    embedNEW = discord.Embed(title = embedORG.title, description = "** **", color = 0x6c7dfe)
+                    embedNEW.set_footer(text = "Any tutor that does not have AP in the title is a tutor for a normal College Prep/Honors class.")  
+                    
                     
                     for field in embedORG.fields:
                         if field.name == newRole.name:
@@ -175,7 +180,8 @@ class SkeletonCMD(commands.Cog):
 
                         embedORG : discord.Embed = msg.embeds[0]
 
-                        embedNEW = discord.Embed(title = embedORG.title, description = embedORG.description, color = 0x6c7dfe)
+                        embedNEW = discord.Embed(title = embedORG.title, description = "** **", color = 0x6c7dfe)
+                        embedNEW.set_footer(text = "Any tutor that does not have AP in the title is a tutor for a normal College Prep/Honors class.")  
                         
                         for field in embedORG.fields:
                             if field.name == role.name:
@@ -185,16 +191,19 @@ class SkeletonCMD(commands.Cog):
                                 
                         await msg.edit(embed = embedNEW)
 
+
+
+
     @commands.Cog.listener('on_member_update')
-    async def roleSyncAcad(self, before, after):
-        if before.guild.id == 860897711334621194:
-            altServerBooster = discord.utils.get(before.guild.roles, id = 866511638726836285)
-            serverbooster = discord.utils.get(before.guild.roles, id = 763399118911045672)
-
-            level35 = discord.utils.get(before.guild.roles, id = 852656232128708638)
-            DJ = discord.utils.get(before.guild.roles,name ="DJ")
-
+    async def serverbooster(self, before, after):
+        if before.guild.id == 763119924385939498:
             if len(before.roles) < len(after.roles):
+                altServerBooster = discord.utils.get(before.guild.roles, name = "Perks")
+                serverbooster = before.guild.premium_subscriber_role
+
+                level35 = discord.utils.get(before.guild.roles, name = "〚Level 35〛Experienced")
+                DJ = discord.utils.get(before.guild.roles,name ="DJ")
+
                 newRole = next(role for role in after.roles if role not in before.roles)
                 if newRole.id == serverbooster.id:
                     before.add_roles(altServerBooster)
@@ -205,6 +214,12 @@ class SkeletonCMD(commands.Cog):
 
 
             elif len(before.roles) > len(after.roles):
+                altServerBooster = discord.utils.get(before.guild.roles, name = "Perks")
+                serverbooster = before.guild.premium_subscriber_role
+
+                level35 = discord.utils.get(before.guild.roles, name = "〚Level 35〛Experienced")
+                DJ = discord.utils.get(before.guild.roles,name ="DJ")
+                
                 oldRole = (set(before.roles) - set(after.roles))
                 for role in oldRole:
                     if role.id == serverbooster.id:

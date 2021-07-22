@@ -10,7 +10,7 @@ from core import database
 from core.checks import is_botAdmin
 from discord.ext import commands
 from redbot.core.utils.tunnel import Tunnel
-
+from core.common import Emoji
 
 class SkeletonCMD(commands.Cog):
     def __init__(self, bot):
@@ -19,6 +19,8 @@ class SkeletonCMD(commands.Cog):
 
         self.YolkRole = "Discord Editor"
         self.YolkID = 359029243415494656
+
+        self.myID = 852251896130699325
 
 
     @commands.group(aliases=['egg'])
@@ -52,6 +54,53 @@ class SkeletonCMD(commands.Cog):
         lines = open('utils/bots/CoreBot/LogFiles/obamaGIF.txt').read().splitlines()
         myline = random.choice(lines)
         await ctx.send(myline)
+
+
+    @commands.command()
+    @commands.has_any_role("Moderator")
+    async def countban(self, ctx, member: discord.Member, *, reason = None):
+        NoCount = discord.utils.get(ctx.guild.roles, name = "NoCounting")
+    
+
+        if member.id == self.myID:
+            embed = discord.Embed(title = "Unable to CountBan this User", description = "Why are you trying to CountBan me?", color = 0xed1313)
+            return await ctx.send(embed = embed)
+            
+
+        if member.id == ctx.author.id:
+            embed = discord.Embed(title = "Unable to CountBan this User", description = "Why are you trying to CountBan yourself?", color = 0xed1313)
+            return await ctx.send(embed = embed)
+
+            
+
+        
+        if NoCount not in member.roles:
+            try:
+                if reason == None:
+                    await ctx.send("Please specify a reason for this Count Ban!")
+                    return
+
+                UpdateReason = f"CountBan requested by {ctx.author.display_name} | Reason: {reason}"
+                await member.add_roles(NoCount, reason = UpdateReason)
+            except Exception as e:
+                await ctx.send(f"ERROR:\n{e}")
+                print(e)
+            else:
+                embed = discord.Embed(title = "Count Banned!", description = f"{Emoji.confirm} {member.display_name} has been count banned!\n{Emoji.barrow} **Reason:** {reason}", color = 0xeffa16)
+                await ctx.send(embed = embed)
+
+        else:
+            try:
+                if reason == None:
+                    reason = "No Reason Given"
+
+                UpdateReason = f"Count UnBan requested by {ctx.author.display_name} | Reason: {reason}"
+                await member.remove_roles(NoCount, reason = UpdateReason)
+            except Exception as e:
+                await ctx.send(f"ERROR:\n{e}")
+            else:
+                embed = discord.Embed(title = "Count Unbanned!", description = f"{Emoji.confirm} {member.display_name} has been count unbanned!\n{Emoji.barrow} **Reason:** {reason}", color = 0xeffa16)
+                await ctx.send(embed = embed)
 
 
 

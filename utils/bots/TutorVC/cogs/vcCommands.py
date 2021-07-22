@@ -79,7 +79,7 @@ class SkeletonCMD(commands.Cog):
         self.MAT = "Marketing Team"
         self.TT = "Technical Team"
 
-        self.ST = "Senior Tutor"
+        self.ST = "Lead Tutor"
 
         #Level Roles
 
