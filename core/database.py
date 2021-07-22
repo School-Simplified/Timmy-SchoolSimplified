@@ -28,6 +28,16 @@ def iter_table(model_dict):
             db.create_tables([model_dict[key]])
             db.close()
 
+
+
+'''
+DATABASE FILES
+
+This file represents every database table and the model they follow. When fetching information from the tables, consult the typehints for possible methods!
+
+'''
+
+
 class BaseModel(Model):
     """Base Model class used for creating new tables."""
     class Meta:
@@ -35,6 +45,33 @@ class BaseModel(Model):
 
 
 class VCChannelInfo(BaseModel):
+    '''
+    # VCChannelInfo
+    Information pertaining to Private Voice Channels
+
+    `ID`: AutoField()
+    Database Entry Number.
+
+    `ChannelID`: TextField()
+    Channel ID.
+
+    `name`: TextField()
+    Current name of the channel. *This field can be modified after creation.*
+
+    `authorID`: TextField()
+    Owner of the voice channel.
+
+    `datetimeObj` DateTimeField()
+    DateTime Object that was created when the voice channel was formed.
+
+    `used` BooleanField()
+    **DEPRECATED**: Signifies if the voice channel is active.
+    *When a voice session is archived, the database entry will also be deleted. Using this attribute will no longer work.*
+    
+    `lockStatus` = bool(TextField())
+    Signifies if the voice channel is locked or not.
+    '''
+
     id = AutoField()
     ChannelID = TextField()
     name = TextField()
@@ -44,11 +81,28 @@ class VCChannelInfo(BaseModel):
     lockStatus = TextField()
 
 class IgnoreThis(BaseModel):
+    '''
+    # IgnoreThis
+    Information pertaining to the Deletion of Voice Channels
+
+    `ID`: AutoField()
+    Database Entry Number.
+
+    `ChannelID`: TextField()
+    Channel ID.
+
+    `authorID`: TextField()
+    Owner of the voice channel being deleted.
+    '''
+
     id = AutoField()
     channelID = TextField()
     authorID = TextField()
 
 class HelperTally(BaseModel):
+    '''
+    DEPRECATED
+    '''
     id = AutoField()
     userID = TextField()
     CS = IntegerField(default = 0)
@@ -87,6 +141,9 @@ class HelperTally(BaseModel):
 
 
 class QuestionTimestamp(BaseModel):
+    '''
+    DEPRECATED
+    '''
     id = PrimaryKeyField()
     userID = TextField()
     date = TextField()
@@ -95,6 +152,10 @@ class QuestionTimestamp(BaseModel):
 
 
 class Response(BaseModel):
+    '''
+    DEPRECATED
+    '''
+
     id = AutoField()
     CommunityService = TextField(default="NONE")
     Recommendation = TextField(default="NONE")
@@ -107,6 +168,10 @@ class Response(BaseModel):
     BreakApproval = TextField(default="NONE")
 
 class ExtraResponse(BaseModel):
+    '''
+    ExtraResponse Records for StaffInformation Tickets
+    DEPRECATED
+    '''
     id = AutoField()
     topic = TextField()
     field1 = TextField()
@@ -116,11 +181,19 @@ class ExtraResponse(BaseModel):
     field4= TextField(default="NONE")
 
 class EmailsVersion2(BaseModel):
+    '''
+    DEPRECATED
+    '''
+
     id = AutoField()
     supervisorID = TextField()
     supervisorEmail = TextField()
 
 class ChannelInfo(BaseModel):
+    '''
+    DEPRECATED
+    '''
+
     id = AutoField()
     ChannelID = TextField()
     topic = TextField()
@@ -128,27 +201,62 @@ class ChannelInfo(BaseModel):
     status = TextField()
 
 class Tag(BaseModel):
-    """Stores our tags accessed by the tag command."""
+    """
+    #Tag
+    Stores our tags accessed by the tag command. (WIP)
+    """
+
     id = AutoField()
     tag_name = TextField(unique=True)
     #embed_title = TextField()
     text = TextField()
 
 class Administrators(BaseModel):
+    '''
+    Administrators: 
+    List of users who are whitelisted on the bot.
+
+    `id`: AutoField()
+    Database Entry
+
+    `discordID`: BigIntegerField()
+    Discord ID
+
+    `TierLevel`: IntegerField()
+    TIER LEVEL
+
+    >>> 1 - Bot Manager\n
+    >>> 2 - Admin\n
+    >>> 3 - Sudo Admin\n
+    >>> 4 - Owner
+    '''
+
     id = AutoField()
     discordID = BigIntegerField(unique = True)
 
     TierLevel = IntegerField(default=1)
-    '''
-    TIER LEVEL
-
-    1 - Bot Manager
-    2 - Admin
-    3 - Sudo Admin
-    4 - Owner
-    '''
 
 class AdminLogging(BaseModel):
+    '''
+    # AdminLogging: 
+    List of users who are whitelisted on the bot.
+
+    `id`: AutoField()
+    Database Entry
+
+    `discordID`: BigIntegerField()
+    Discord ID
+
+    `action`: TextField()
+    Command Name
+
+    `content`: TextField()
+    `*args` passed in
+
+    `datetime`: DateTimeField()
+    DateTime Object when the command was executed.
+    '''
+
     id = AutoField()
     discordID = BigIntegerField()
 
@@ -157,20 +265,119 @@ class AdminLogging(BaseModel):
 
     datetime = DateTimeField(default = datetime.now())
 
+class CheckInformation(BaseModel):
+    '''
+    # CheckInformation: 
+    List of users who are whitelisted on the bot.
+
+    `id`: AutoField()
+    Database Entry
+
+    `MasterMaintenance`: BooleanField()
+    Ultimate Check; If this is enabled no one except Permit 4+ users are allowed to use the bot.\n
+    >>> **NOTE:** This attribute must always have a bypass to prevent lockouts, otherwise this check will ALWAYS return False.
+
+    `guildNone`: BooleanField()
+    If commands executed outside of guilds (DMs) are allowed.
+
+    `externalGuild`: BooleanField()
+    If commands executed outside of the main guild (Staff Servers, etc) are allowed.
+
+    `ModRoleBypass`: BooleanField()
+    If commands executed inside of a public/general channel by a mod+ is allowed.
+
+    `ruleBypass`: BooleanField()
+    If the command *rule* is executed in public/general channels is allowed.
+
+    `publicCategories`: BooleanField()
+    If any command (except rule) inside of a public/general channel is allowed.
+
+    `elseSituation`: BooleanField()
+    Other situations will be defaulted to/as ...
+    '''
+
+    id = AutoField()
+
+    MasterMaintenance = BooleanField()
+    guildNone = BooleanField()
+    externalGuild = BooleanField()
+    ModRoleBypass = BooleanField()
+    ruleBypass = BooleanField()
+    publicCategories = BooleanField()
+    elseSituation = BooleanField()
+
+class Blacklist(BaseModel):
+    '''
+    # Blacklist: 
+    List of users who are blacklisted on the bot.
+
+    `id`: AutoField()
+    Database Entry
+
+    `discordID`: BigIntegerField()
+    Discord ID
+    '''
+
+    id = AutoField()
+
+    discordID = BigIntegerField(unique = True)
+
+class ToDo(BaseModel):
+    '''
+    # ToDo: 
+    ToDo Command (WIP)
+
+    `id`: AutoField()
+    Database Entry
+
+    `discordID`: BigIntegerField()
+    Discord ID/owner that the specific item is assigned/associated with.
+
+    `item`: TextField()
+    ToDo Item.
+
+    '''
+
+    id = AutoField()
+
+    discordID = BigIntegerField()
+    item = TextField()
+
 app = Flask(__name__)
 
-# This hook ensures that a connection is opened to handle any queries
-# generated by the request.
 @app.before_request
 def _db_connect():
+    '''
+    This hook ensures that a connection is opened to handle any queries
+    generated by the request.
+    '''
     db.connect()
 
-# This hook ensures that the connection is closed when we've finished
-# processing the request.
+
 @app.teardown_request
 def _db_close(exc):
+    '''
+    This hook ensures that the connection is closed when we've finished
+    processing the request.
+    '''
     if not db.is_closed():
         db.close()
 
-tables = {"VoiceChannelInfo" : VCChannelInfo, "IgnoreThis": IgnoreThis, "helpertally": HelperTally, "questiontimestamp": QuestionTimestamp, "tag": Tag, "ChannelInfo" : ChannelInfo, "Response": Response, "ExtraResponse": ExtraResponse, "EmailsVersion2": EmailsVersion2, "Administrators": Administrators, "AdminLogging": AdminLogging}
+tables = {
+    "VoiceChannelInfo" : VCChannelInfo, 
+    "IgnoreThis": IgnoreThis, 
+    "helpertally": HelperTally, 
+    "questiontimestamp": QuestionTimestamp, 
+    "tag": Tag, 
+    "ChannelInfo" : ChannelInfo, 
+    "Response": Response, 
+    "ExtraResponse": ExtraResponse, 
+    "EmailsVersion2": EmailsVersion2,
+    "Administrators": Administrators, 
+    "AdminLogging": AdminLogging, 
+    "CheckInformation": CheckInformation, 
+    "Blacklist": Blacklist,
+    "ToDO": ToDo
+}
+
 iter_table(tables)

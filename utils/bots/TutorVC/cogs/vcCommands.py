@@ -208,7 +208,7 @@ class SkeletonCMD(commands.Cog):
                 return
 
             else:
-                print("Ignore VC Leave")
+                return print("Ignore VC Leave")
 
 
         if voice_state.channel.id in self.presetChannels:

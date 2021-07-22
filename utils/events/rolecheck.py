@@ -185,6 +185,33 @@ class SkeletonCMD(commands.Cog):
                                 
                         await msg.edit(embed = embedNEW)
 
+    @commands.Cog.listener('on_member_update')
+    async def roleSyncAcad(self, before, after):
+        if before.guild.id == 860897711334621194:
+            altServerBooster = discord.utils.get(before.guild.roles, id = 866511638726836285)
+            serverbooster = discord.utils.get(before.guild.roles, id = 763399118911045672)
+
+            level35 = discord.utils.get(before.guild.roles, id = 852656232128708638)
+            DJ = discord.utils.get(before.guild.roles,name ="DJ")
+
+            if len(before.roles) < len(after.roles):
+                newRole = next(role for role in after.roles if role not in before.roles)
+                if newRole.id == serverbooster.id:
+                    before.add_roles(altServerBooster)
+                
+                if newRole.id == level35.id:
+                    before.add_roles(DJ)
+
+
+
+            elif len(before.roles) > len(after.roles):
+                oldRole = (set(before.roles) - set(after.roles))
+                for role in oldRole:
+                    if role.id == serverbooster.id:
+                        before.remove_roles(altServerBooster)
+
+
+        
 
 def setup(bot):
     bot.add_cog(SkeletonCMD(bot))
