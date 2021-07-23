@@ -343,6 +343,29 @@ class ToDo(BaseModel):
     discordID = BigIntegerField()
     item = TextField()
 
+class MotivationalQuotes(BaseModel):
+    '''
+    # MotivationalQuotes
+
+    `id`: AutoField()
+    Database Entry
+
+    `discordID`: BigIntegerField()
+    Discord ID/owner that the specific item is assigned/associated with.
+
+    `item`: TextField()
+    Either a quote or message
+
+    `typeObj`: TextField()
+    Signifies what the *item* is. (Returns either Quote or Inspirational Message)
+
+    '''
+
+    id = AutoField()
+    discordID = BigIntegerField()
+    item = TextField(unique = True)
+    typeObj = TextField()
+
 app = Flask(__name__)
 
 @app.before_request
