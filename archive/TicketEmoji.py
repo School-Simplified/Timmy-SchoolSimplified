@@ -7,9 +7,9 @@ import discord
 from chat_exporter.chat_exporter import Transcript
 from core import database
 from discord.ext import commands
-from utils.bots.StaffInformation.cogs.ticketv2 import createChannel, rawExport
+#from utils.bots.StaffInformation.cogs.ticketv2 import createChannel, rawExport
 
-
+'''
 class SkeletonCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -117,7 +117,5 @@ class SkeletonCMD(commands.Cog):
 
 def setup(bot):
     bot.add_cog(SkeletonCMD(bot))
-
-
-
+'''
     

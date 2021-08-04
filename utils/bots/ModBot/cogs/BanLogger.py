@@ -37,7 +37,7 @@ class BanUpdate(commands.Cog):
         if guild.id != 763119924385939498:
             return
 
-        await asyncio.sleep(4)
+        await asyncio.sleep(15)
 
         async for logs in guild.audit_logs(limit=1, oldest_first=False, action=discord.AuditLogAction.ban):
             # Query the audit log for a type ban, user, and get the latest one.

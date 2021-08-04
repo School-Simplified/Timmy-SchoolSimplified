@@ -80,5 +80,46 @@ class CoreBotConfig(commands.Cog):
 
 
 
+
+    @commands.group(aliases=['pre'])
+    async def prefix(self, ctx):
+        pass
+
+    @prefix.command()
+    @is_botAdmin3
+    async def delete(self, ctx, num: int):
+        WhitelistedPrefix : database.WhitelistedPrefix = database.WhitelistedPrefix.select().where(database.WhitelistedPrefix.id == num).get()
+        WhitelistedPrefix.delete_instance()
+        await ctx.send(f"Field: {WhitelistedPrefix.prefix} has been deleted")
+
+    @prefix.command()
+    @is_botAdmin3
+    async def add(self, ctx, prefix):
+        WhitelistedPrefix = database.WhitelistedPrefix.create(prefix = prefix, status = True)
+        await ctx.send(f"Field: {WhitelistedPrefix.prefix} has been added!")
+
+
+
+    @prefix.command()
+    async def list(self, ctx):
+        
+        PrefixDB = database.WhitelistedPrefix
+        response = []
+
+        for entry in PrefixDB:
+            
+            if entry.status == True:
+                statusFilter = "ACTIVE"
+            else:
+                statusFilter = "DISABLED"
+
+            response.append(f"Prefix `{entry.prefix}`:\n{Emoji.barrow} {statusFilter}")
+
+
+        embed = discord.Embed(title = "Whitelisted Prefix's", description = "Bot Prefix's that are whitelisted in staff commands.", color = discord.Colour.gold())
+        embed.add_field(name = "Prefix List", value = "\n\n".join(response))
+        await ctx.send(embed = embed)
+
+
 def setup(bot):
     bot.add_cog(CoreBotConfig(bot))

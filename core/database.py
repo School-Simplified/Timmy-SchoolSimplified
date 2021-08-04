@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from pickletools import pyfrozenset
 from typing import Text
 
 from discord.enums import ExpireBehavior
@@ -203,13 +204,27 @@ class ChannelInfo(BaseModel):
 class Tag(BaseModel):
     """
     #Tag
-    Stores our tags accessed by the tag command. (WIP)
+    Stores our tags accessed by the tag command.
+
+    `id`: AutoField()
+    Database Entry
+
+    `tag_name`: TextField()
+    Name of the tag
+
+    `text`: TextField()
+    Embed Description
+
+    `imageURL`: TextField()
+    URL of the image
     """
 
     id = AutoField()
     tag_name = TextField(unique=True)
-    #embed_title = TextField()
+    embed_title = TextField()
     text = TextField()
+    imageURL = TextField(default=None)
+    
 
 class Administrators(BaseModel):
     '''
@@ -366,6 +381,81 @@ class MotivationalQuotes(BaseModel):
     item = TextField(unique = True)
     typeObj = TextField()
 
+
+class WhitelistedPrefix(BaseModel):
+    '''
+    # WhitelistedPrefix
+
+    `id`: AutoField()
+    Database Entry
+
+    `prefix`: TextField()
+    Prefix Entry
+
+    `status`: BooleanField()
+    Either shows if its disabled or enabled.
+    '''
+
+    id = AutoField()
+    prefix = TextField()
+    status = BooleanField()
+
+
+class TutorBot_Sessions(BaseModel):
+    '''
+    #TutorBot Sessions
+
+    `id`: AutoField()
+    Database Entry
+
+    `SessionID`: TextField()
+    2-3 Character ID for the specific session.
+
+    `Date`: TextField()
+    Timezone Field.
+
+    `Time`: TextField()
+    Time Field.
+
+    `StudentID`: BigIntegerField()
+    Discord ID of the Student.
+
+    `TutorID`: BigIntegerField()
+    Discord ID of the Tutor.
+
+    `Repeat`: BooleanField()
+    Boolean that states if this session is repeated.
+    '''
+
+    id = AutoField()
+    SessionID = TextField()
+    Date = TextField()
+    Time = TextField()
+    Subject = TextField()
+    StudentID = BigIntegerField()
+    TutorID = BigIntegerField()
+    Repeat = BooleanField()
+    
+
+
+class TutorBot_SkippedSessions(BaseModel):
+    '''
+    #TutorBot Sessions
+
+    `id`: AutoField()
+    Database Entry
+
+    `SessionID`: TextField()
+    2-3 Character ID for the specific session.
+
+    `endDate`: TextField()
+    mm/dd/yyyy format for when this expires
+    '''
+    id = AutoField()
+    SessionID = TextField()
+    endDate = TextField()
+
+
 app = Flask(__name__)
 
 @app.before_request
@@ -400,7 +490,8 @@ tables = {
     "AdminLogging": AdminLogging, 
     "CheckInformation": CheckInformation, 
     "Blacklist": Blacklist,
-    "ToDO": ToDo
+    "ToDO": ToDo,
+    "WhitelistedPrefix": WhitelistedPrefix
 }
 
 iter_table(tables)

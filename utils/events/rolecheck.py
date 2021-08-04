@@ -68,6 +68,7 @@ class SkeletonCMD(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
+        '''
         #sub server id: 827568748163760139
         mainServer = self.bot.get_guild(self.staffServer)
         user = mainServer.get_member(before.id)
@@ -106,6 +107,8 @@ class SkeletonCMD(commands.Cog):
             item = list_difference[0]
 
             await roleNameCheck(item.name, before, after, mainServer, user, "-")
+        '''
+        pass
 
 
 
@@ -198,7 +201,7 @@ class SkeletonCMD(commands.Cog):
     async def serverbooster(self, before, after):
         if before.guild.id == 763119924385939498:
             if len(before.roles) < len(after.roles):
-                altServerBooster = discord.utils.get(before.guild.roles, name = "Perks")
+                altServerBooster = discord.utils.get(before.guild.roles, name = "VIP")
                 serverbooster = before.guild.premium_subscriber_role
 
                 level35 = discord.utils.get(before.guild.roles, name = "〚Level 35〛Experienced")
@@ -214,7 +217,7 @@ class SkeletonCMD(commands.Cog):
 
 
             elif len(before.roles) > len(after.roles):
-                altServerBooster = discord.utils.get(before.guild.roles, name = "Perks")
+                altServerBooster = discord.utils.get(before.guild.roles, name = "VIP")
                 serverbooster = before.guild.premium_subscriber_role
 
                 level35 = discord.utils.get(before.guild.roles, name = "〚Level 35〛Experienced")

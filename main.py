@@ -51,25 +51,38 @@ with open("uptime.txt", "w") as f:
 
 def get_extensions():  # Gets extension list dynamically
     extensions = []
+    blacklistedPrefix = ['!', "__", "DEV"]
+    
     for file in Path("utils").glob("**/*.py"):
-        if "!" in file.name or "__" in file.name:
+        if blacklistedPrefix in file.name:
             continue
         extensions.append(str(file).replace("/", ".").replace(".py", ""))
     return extensions
 
 
 async def force_restart(ctx):
-    try:
-        result = subprocess.run("cd && cd SchoolSimplified-Utils", shell=True, text=True, capture_output=True,
-                                check=True)
-        res = subprocess.run("nohup python3 main.py &", shell=True, text=True, capture_output=True, check=True)
-        print("complete")
-    except Exception as e:
-        print(result)
-        print(res)
+    p = subprocess.run("git status -uno",  shell=True, text=True, capture_output=True, check=True)
 
-        await ctx.send(
-            f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}")
+    embed = discord.Embed(title = "Restarting...", description = "Doing GIT Operation (1/3)", color = discord.Color.green())
+    embed.add_field(name = "Checking GIT (1/3)", value = f"**Git Output:**\n```shell\n{p.stdout}\n```")
+
+    msg = await ctx.send(embed = embed)
+    try:
+        redenv = subprocess.run("source ~/redenv/bin/activate",  shell=True, text=True, capture_output=True,
+                                check=True)
+        
+        result = subprocess.run("cd && cd Timmy-SchoolSimplified && nohup python3 main.py &", shell=True, text=True, capture_output=True,
+                                check=True)
+
+        embed.add_field(name = "Started Environment and Additional Process (2/3)", value = "Executed `source` and `nohup`.")
+        await msg.edit(embed = embed)
+
+    except Exception as e:
+        embed = discord.Embed(title = "Operation Failed", description = e, color = discord.Color.red())
+        embed.set_footer(text = "Main bot process will be terminated.")
+
+        await ctx.send(embed = embed)
+
     finally:
         sys.exit(0)
 
@@ -84,6 +97,8 @@ async def on_ready():
 
     chat_exporter.init_exporter(client)
     DiscordComponents(client)
+
+
 
 
 files = get_extensions()
@@ -340,9 +355,13 @@ async def ping(ctx):
         difference = int(round(current_time - start_time))
         text = str(timedelta(seconds=difference))
 
+    p = subprocess.run("git describe --always", shell=True, text=True, capture_output=True, check=True)
+    output = p.stdout
+
     pingembed = discord.Embed(title="Pong! ⌛", color=discord.Colour.gold(), description="Current Discord API Latency")
     pingembed.add_field(name="Current Ping:", value=f'{round(client.latency * 1000)}ms')
-    pingembed.add_field(name="Uptime", value = text)
+    pingembed.add_field(name="Uptime", value = text, inline = False)
+    pingembed.add_field(name="GitHub Commit Version", value = f"`{output}`", inline = False)
     await ctx.send(embed=pingembed)
 
 
@@ -398,30 +417,9 @@ async def kill(ctx):
         await ctx.send("Looks like you didn't react in time, automatically aborted system exit!")
         await message.delete()
 
-
-
 @client.command()
-@is_botAdmin
-async def adminlogs(ctx):
-    async def get_pages():
-        pages = []
-        # Generate a list of embeds
-
-        for q in database.AdminLogging:
-            modObj = await client.fetch_user(q.discordID)
-
-            embed = discord.Embed(title="Query Results",description=f"Query requested by {ctx.author.mention}\nSearch Query: ADMINLOGGING")
-
-            timeObj = q.datetime.strftime("%x")
-            embed.add_field(name="Data",value=f"**User:** {modObj.name}\n**User ID:** {modObj.id}\n**Action:** {q.action}\n**Content:** {q.content}\n**Date:** {timeObj}")
-            embed.set_footer(text=f"ID: {q.id}")
-
-            pages.append(embed)
-        return pages
-
-
-    paginator = Paginator(pages=get_pages())
-    await paginator.start(ctx)
+async def gitrestart(ctx):
+    await force_restart(ctx)
 
 
 client.run(os.getenv("TOKEN"))
