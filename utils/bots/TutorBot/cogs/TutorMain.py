@@ -9,7 +9,7 @@ class TutorBotStaffCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.RepeatEmoji = {
-            True: ":black_large_square:" ,
+            True: "\U00002b1b",
             False: "🔁"
         }
 
