@@ -417,6 +417,9 @@ class TutorBot_Sessions(BaseModel):
     `Time`: TextField()
     Time Field.
 
+    `Subject`: TextField()
+    Subject Field.
+
     `StudentID`: BigIntegerField()
     Discord ID of the Student.
 
