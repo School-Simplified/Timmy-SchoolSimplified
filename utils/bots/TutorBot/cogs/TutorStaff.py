@@ -1,5 +1,6 @@
 import random
 import string
+from datetime import datetime
 
 import discord
 from core import database
@@ -22,7 +23,25 @@ class TutorBotStaffCMD(commands.Cog):
 
     @commands.command()
     async def skip(self, ctx, id):
-        pass
+        query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == id)
+        if query.exists():
+            query = query.get()
+
+
+            old = query.Date
+            new = datetime.timedelta(days=7)
+            nextweek = old + new
+
+            nw = nextweek.strftime("%-m/%-d/%Y")
+
+            query.date = nextweek
+            query.save()
+
+            await ctx.send(f"Re-scheduled Session to {nw}")
+
+        else:
+            embed = discord.Embed(title = "Invalid Session", description = "This session does not exist, please check the ID you've provided!", color = discord.Color.red())
+            await ctx.send(embed = embed)
 
 
     @commands.command()
@@ -44,12 +63,19 @@ class TutorBotStaffCMD(commands.Cog):
     async def schedule(self, ctx, date, time, id, subject, repeats: bool):
         embed = discord.Embed(title = "Confirm Schedule", description = "Please react with the appropriate reaction to verify this is your schedule.", color = discord.Color.green())
 
+        now = datetime.now()
+        year = now.strftime("%Y")
+
+        datetimeSession = datetime.strptime(f"{date}/{year}", "%-m/%-d/%Y")
+
         student = await self.bot.fetch_user(id)
         SessionID = await id_generator()
 
         embed.add_field(name = "Values", value = f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{date}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`")
         embed.set_footer(text = f"Subject: {subject}")
-        query = database.TutorBot_Sessions.create(SessionID = SessionID, Date = date, time = time, StudentID = id, TutorID = ctx.author.id, Repeat = repeats, Subject = subject)
+        query = database.TutorBot_Sessions.create(SessionID = SessionID, Date = datetimeSession, time = time, StudentID = id, TutorID = ctx.author.id, Repeat = repeats, Subject = subject)
+        query.save()
+        
         
         await ctx.send(embed = embed)
 

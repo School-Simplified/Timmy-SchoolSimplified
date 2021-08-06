@@ -2,8 +2,8 @@ import asyncio
 import datetime
 import json
 import logging
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
 
 import discord
 from core import database
@@ -86,6 +86,7 @@ class SkeletonCMD(commands.Cog):
                 except:
                     await ctx.send("Error sending the response, maybe you hit the character limit?")
                 else:
+                    category = discord.utils.get(ctx.guild.categories, name="Tech Commission Tickets")
                     await channel.send("Submitted response...")
 
 
@@ -103,7 +104,6 @@ class SkeletonCMD(commands.Cog):
             embed.add_field(name = "Notes", value = notes)
 
         await user.send(embed = embed)
-
         await ctx.send("Sent report!\n", embed = embed)
 
 def setup(bot):

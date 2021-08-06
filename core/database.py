@@ -411,7 +411,7 @@ class TutorBot_Sessions(BaseModel):
     `SessionID`: TextField()
     2-3 Character ID for the specific session.
 
-    `Date`: TextField()
+    `Date`: DateTimeField()
     Timezone Field.
 
     `Time`: TextField()
@@ -429,32 +429,13 @@ class TutorBot_Sessions(BaseModel):
 
     id = AutoField()
     SessionID = TextField()
-    Date = TextField()
+    Date = DateTimeField()
     Time = TextField()
     Subject = TextField()
     StudentID = BigIntegerField()
     TutorID = BigIntegerField()
     Repeat = BooleanField()
     
-
-
-class TutorBot_SkippedSessions(BaseModel):
-    '''
-    #TutorBot Sessions
-
-    `id`: AutoField()
-    Database Entry
-
-    `SessionID`: TextField()
-    2-3 Character ID for the specific session.
-
-    `endDate`: TextField()
-    mm/dd/yyyy format for when this expires
-    '''
-    id = AutoField()
-    SessionID = TextField()
-    endDate = TextField()
-
 
 app = Flask(__name__)
 

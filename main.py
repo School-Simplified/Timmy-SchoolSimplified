@@ -9,8 +9,7 @@ import textwrap
 import time
 import traceback
 from contextlib import redirect_stdout
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 from time import sleep
 
@@ -54,7 +53,7 @@ def get_extensions():  # Gets extension list dynamically
     blacklistedPrefix = ['!', "__", "DEV"]
     
     for file in Path("utils").glob("**/*.py"):
-        if blacklistedPrefix in file.name:
+        if "!" in file.name or "__" in file.name or "DEV" in file.name:
             continue
         extensions.append(str(file).replace("/", ".").replace(".py", ""))
     return extensions
@@ -86,6 +85,23 @@ async def force_restart(ctx):
     finally:
         sys.exit(0)
 
+def get_branch():
+    p = subprocess.run("git rev-parse --abbrev-ref HEAD",  shell=True, text=True, capture_output=True, check=True)
+    output = p.stdout
+
+    Branch = None
+    MSG = None
+
+    if output == "main":
+        Branch = "Stable"
+        MSG = "Running Stable Version"
+    
+    else:
+        Branch = "UnStable"
+        MSG = f"{bcolors.FAIL}WARNING: This Version is UnStable!{bcolors.ENDC}"
+    
+    return Branch, MSG
+
 @client.event
 async def on_ready():
     now = datetime.now()
@@ -94,6 +110,9 @@ async def on_ready():
     print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Time: {now}{bcolors.ENDC}")
+
+    branch, MSG = get_branch()
+    print(MSG)
 
     chat_exporter.init_exporter(client)
     DiscordComponents(client)
