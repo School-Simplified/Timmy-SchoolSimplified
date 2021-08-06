@@ -436,6 +436,18 @@ class TutorBot_Sessions(BaseModel):
     TutorID = BigIntegerField()
     Repeat = BooleanField()
     
+class Uptime(BaseModel):
+    '''
+    #Uptime
+
+    `id`: AutoField()
+    Database Entry
+
+    `UpStart`: FloatField()
+    Time Object of Bot being started.
+    '''
+    id = AutoField()
+    UpStart = FloatField()
 
 app = Flask(__name__)
 

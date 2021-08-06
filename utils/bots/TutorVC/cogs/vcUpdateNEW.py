@@ -180,12 +180,12 @@ class SkeletonCMD(commands.Cog):
                 if SB not in member.roles and AT not in member.roles and legend not in member.roles and MT not in member.roles and MAT not in member.roles and TT not in member.roles and VP not in member.roles and CO not in member.roles:
             
                     embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())
-                    embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\n**1)** End - `Ends your current voice session.`\n**2)** ~~ReName - `Renames your voice channel to something else.`~~\n *> ⚠️ ReName is not available to you.*\n**3)** VoiceLimit - `Changes the voice limit of your voice channel.`\n**4)** Lock - `Lock's the voice channel.`\n**5)** Unlock - `Unlocks the voice channel.`\n**6)** Permit - `Allows you to modify authorized users who can join your voice channel.`\n**7)** Disconnect - `Kicks users from your voice channel.`")
+                    embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\nhttps://spaceturtle.tech/tutorvc")
                     embed.set_footer(text = "If you have any questions, consult the help command! | +help")
 
                 else:
                     embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())
-                    embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\n**1)** End - `Ends your current voice session.`\n**2)** ReName - `Renames your voice channel to something else.`\n**3)** VoiceLimit - `Changes the voice limit of your voice channel.`\n**4)** Lock - `Lock's the voice channel.`\n**5)** Unlock - `Unlocks the voice channel.`\n**6)** Permit - `Allows you to modify authorized users who can join your voice channel.`\n**7)** Disconnect - `Kicks users from your voice channel.`")
+                    embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\nhttps://spaceturtle.tech/tutorvc")
                     embed.set_footer(text = "If you have any questions, consult the help command! | +help")
 
                 channel = await category.create_voice_channel(f"{member.display_name}'s Channel", user_limit = 2)
@@ -229,12 +229,7 @@ class SkeletonCMD(commands.Cog):
                         
                     else:
                         print("Already deleted, moving on...")
-
-
         database.db.close()
-            
-
-
 def setup(bot):
     bot.add_cog(SkeletonCMD(bot))
 

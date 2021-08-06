@@ -101,6 +101,7 @@ class SkeletonCMD(commands.Cog):
 
         
     @commands.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def rename(self, ctx, *, name = None):
         database.db.connect(reuse_if_open=True)
         SB = discord.utils.get(ctx.guild.roles, name = self.SB)
@@ -306,6 +307,7 @@ class SkeletonCMD(commands.Cog):
 
 
     @commands.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def lock(self, ctx):
         database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
@@ -375,6 +377,7 @@ class SkeletonCMD(commands.Cog):
 
 
     @commands.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def unlock(self, ctx):
         database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
@@ -427,6 +430,7 @@ class SkeletonCMD(commands.Cog):
 
 
     @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def permit(self, ctx, typeAction, user: discord.Member = None):
         database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
@@ -508,6 +512,7 @@ class SkeletonCMD(commands.Cog):
 
 
     @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def voicelimit(self, ctx, new_voice_limit):
         #database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
@@ -577,6 +582,7 @@ class SkeletonCMD(commands.Cog):
                         
 
     @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def disconnect(self, ctx, user: discord.Member):
         database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
@@ -615,17 +621,6 @@ class SkeletonCMD(commands.Cog):
                 embed = discord.Embed(title = f"{Emoji.warn} Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a channel you own!", color = discord.Colour.red())
                         
                 await ctx.send(embed = embed)
-
-
-
-
-
-
-
-
-
-
-        
 
 
 def setup(bot):

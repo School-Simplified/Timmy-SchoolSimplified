@@ -45,8 +45,14 @@ use_sentry(
 
 publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
 
-with open("uptime.txt", "w") as f:
-    f.write(str(time.time()))
+database.db.open(reuse_if_open=True)
+
+q :database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
+q.UpStart = time.time()
+q.save()
+
+database.db.close()
+
 
 def get_extensions():  # Gets extension list dynamically
     extensions = []
@@ -368,11 +374,12 @@ async def view(ctx):
 
 @client.command()
 async def ping(ctx):
-    with open("uptime.txt", "r") as f:
-        start_time = float(f.readline())
-        current_time = float(time.time())
-        difference = int(round(current_time - start_time))
-        text = str(timedelta(seconds=difference))
+    database.db.open(reuse_if_open=True)
+
+    q : database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
+    current_time = float(time.time())
+    difference = int(round(current_time - q.UpStart))
+    text = str(timedelta(seconds=difference))
 
     p = subprocess.run("git describe --always", shell=True, text=True, capture_output=True, check=True)
     output = p.stdout
@@ -382,6 +389,8 @@ async def ping(ctx):
     pingembed.add_field(name="Uptime", value = text, inline = False)
     pingembed.add_field(name="GitHub Commit Version", value = f"`{output}`", inline = False)
     await ctx.send(embed=pingembed)
+
+    database.db.close()
 
 
 @client.command()
