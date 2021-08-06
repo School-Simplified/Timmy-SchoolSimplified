@@ -96,6 +96,16 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send(embed = em)
             return
 
+        elif isinstance(error, commands.CommandOnCooldown):
+            m, s = divmod(error.retry_after, 60)
+            h, m = divmod(m, 60)
+
+            msg = "This command cannot be used again for {} minutes and {} seconds" \
+                .format(round(h), round(m), round(s))
+
+            embed = discord.Embed(title = "Command On Cooldown", description = msg, color = discord.Color.red())
+            await ctx.send(msg)
+
         else:
             error_file = Path("error.txt")
             error_file.touch()
