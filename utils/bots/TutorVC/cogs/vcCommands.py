@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 import discord
 from core import database
+from core.checks import is_botAdmin
 from core.common import Emoji
 from discord.ext import commands, tasks
 from peewee import _truncate_constraint_name
@@ -255,7 +256,7 @@ class SkeletonCMD(commands.Cog):
         database.db.close()
 
     @commands.command()
-    @commands.has_any_role(784202171825913856, 786610369988263976, 763420686890565641, 767580143010840616, 784202204323905546) #Acad Manager
+    @is_botAdmin
     async def forceend(self, ctx, channel: discord.VoiceChannel):
         database.db.connect(reuse_if_open=True)
         team = discord.utils.get(ctx.guild.roles, name= self.AT)
