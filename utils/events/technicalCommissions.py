@@ -29,10 +29,6 @@ async def createChannel(self, payload, type, *args):
     DE = discord.utils.get(guild.roles, name='Discord Editor')
     DM = discord.utils.get(guild.roles, name='Discord Manager') 
 
-    DDM = discord.utils.get(guild.roles, name='Developer Manager')
-    ADT = discord.utils.get(guild.roles, name='Assistant Developer Manager')
-    DT = discord.utils.get(guild.roles, name='Developer')
-
     num = len(category.channels)
     channel = await guild.create_text_channel(f'{type}-{num}', category = category)
 
@@ -43,10 +39,6 @@ async def createChannel(self, payload, type, *args):
 
     await channel.set_permissions(DE, send_messages = True, read_messages = True,reason="Ticket Perms")
     await channel.set_permissions(DM, send_messages = True, read_messages = True, reason="Ticket Perms")
-
-    await channel.set_permissions(DDM, send_messages = True, read_messages = True, reason="Ticket Perms")
-    await channel.set_permissions(ADT, send_messages = True, read_messages = True, reason="Ticket Perms")
-    await channel.set_permissions(DT, send_messages = True, read_messages = True, reason="Ticket Perms")
 
     await channel.send(embed = embed)
     return channel
@@ -87,31 +79,27 @@ class TechnicalTickets(commands.Cog):
             ch = self.bot.get_channel(payload.channel_id)
             guild = self.bot.get_guild(payload.guild_id)
             message = await ch.fetch_message(payload.message_id)
+
+            if message.id == 873346089745514536:
             
-            developerE = discord.utils.get(guild.emojis, name = self.developerC["EmojiID"])
-            discordE = discord.utils.get(guild.emojis, name = self.discordC["EmojiID"])
-            
-            if str(payload.emoji) == "🔒":
-                if ch.category_id in self.authCategories:
-                    TranscriptLOG = self.bot.get_channel(872915565600182282)
-                    
-                    await message.remove_reaction("🔒", payload.member)
-                    await rawExport(ch, TranscriptLOG)
-                    await ch.delete()
-
-
-            elif payload.emoji == developerE and ch.category_id == 835330150471434240:
-                await message.remove_reaction(str(payload.emoji), payload.member)
-                channel = await createChannel(self, payload, "Developer")
-
-                await channel.send()
-
+                developerE = discord.utils.get(guild.emojis, name = self.developerC["EmojiID"])
+                discordE = discord.utils.get(guild.emojis, name = self.discordC["EmojiID"])
                 
-            elif payload.emoji == discordE and ch.category_id == 835330150471434240:
-                await message.remove_reaction(str(payload.emoji), payload.member)
-                channel = await createChannel(self, payload, "Discord")
+                
+                if str(payload.emoji) == "🔒":
+                    if ch.category_id in self.authCategories:
+                        TranscriptLOG = self.bot.get_channel(872915565600182282)
+                        
+                        await message.remove_reaction("🔒", payload.member)
+                        await rawExport(ch, TranscriptLOG)
+                        await ch.delete()
 
-                await channel.send()
+                    
+                elif payload.emoji == discordE:
+                    await message.remove_reaction(str(payload.emoji), payload.member)
+                    channel = await createChannel(self, payload, "Discord")
+
+                    await channel.send()
                 
 
             

@@ -71,6 +71,9 @@ class VCChannelInfo(BaseModel):
     
     `lockStatus` = bool(TextField())
     Signifies if the voice channel is locked or not.
+
+    `TutorBotSessionID` = TextField(default=None)
+    Signifies if the voice channel is linked to a TutorSession, if so this attribute contains its ID. 
     '''
 
     id = AutoField()
@@ -80,6 +83,8 @@ class VCChannelInfo(BaseModel):
     datetimeObj = DateTimeField()
     used = BooleanField()
     lockStatus = TextField()
+
+    TutorBotSessionID = TextField(default=None)
 
 class IgnoreThis(BaseModel):
     '''

@@ -53,7 +53,7 @@ def showTotalMinutes(dateObj: datetime):
 
     deltaTime = now - dateObj
 
-    return deltaTime.total_seconds() // 60
+    return deltaTime.total_seconds() // 60, now
     
 
 class SkeletonCMD(commands.Cog):
@@ -97,6 +97,8 @@ class SkeletonCMD(commands.Cog):
         self.L60 = "〚Level 60〛Mentor"
         self.L50 = "〚Level 50〛Scholar"
         self.L40 = "〚Level 40〛Expert"
+
+        self.TutorRole = "Tutor"
 
         
 
@@ -194,7 +196,10 @@ class SkeletonCMD(commands.Cog):
             if query.exists():
                 query = database.VCChannelInfo.select().where(database.VCChannelInfo.authorID == ctx.author.id).get()
 
-                day = showTotalMinutes(query.datetimeObj)
+                day, now = showTotalMinutes(query.datetimeObj)
+                daySTR = query.datetimeObj.strftime("%H:%M:")
+                nowSTR = now.strftime("%H:%M:")
+
                 print(query.datetimeObj)
 
                 print(query.ChannelID)
@@ -206,6 +211,22 @@ class SkeletonCMD(commands.Cog):
                 embed.add_field(name = "Time Spent", value = f"{member.mention} you have spent a total of {Emoji.calender} `{day} minutes` in voice channel, **{query.name}**.")
                 embed.set_footer(text = "WARNING: Time displayed may not be accurate.")
                 await ctx.send(embed = embed)
+
+                tutorSession = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == query.TutorBotSessionID)
+                if tutorSession.exists():
+                    tutorSession = tutorSession.get()
+
+                    student = await self.bot.fetch_user(tutorSession.StudentID)
+                    tutor = await self.bot.fetch_user(tutorSession.TutorID)
+
+                    HOURCH = await self.bot.fetch_channel(self.TutorLogID)
+
+                    hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
+                    hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
+                    await HOURCH.send(embed = embed)
+
+                    embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
+                    await student.send(embed = embed)
 
                 query.delete_instance()
                 return
@@ -372,7 +393,49 @@ class SkeletonCMD(commands.Cog):
         
         database.db.close()
 
-                    
+    @commands.command()
+    async def settutor(self, ctx, tutorcode):
+        TR = discord.utils.get(ctx.guild.roles, name=self.TutorRole)
+        if TR not in ctx.author.roles:
+            return await ctx.message.add_reaction("❌")
+        else:
+            member = ctx.guild.get_member(ctx.author.id)
+            voice_state = member.voice
+
+            if voice_state == None:
+                embed = discord.Embed(title = f"{Emoji.warn} Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
+                return await ctx.send(embed = embed)
+
+            tutorSession = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == tutorcode)
+            if tutorSession.exists():
+                tutorSession = tutorSession.get()
+                if member.voice.channel.category_id == self.categoryID:
+
+                    query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == ctx.author.id) & (database.VCChannelInfo.ChannelID == voice_state.channel.id))
+                    if query.exists():
+                        query = query.get()
+                        student = await self.bot.fetch_user(tutorSession.StudentID)
+                        tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                        date = tutorSession.strftime("%m/%d/%Y")
+
+                        query.TutorBotSessionID = tutorcode
+                        query.save()
+                        
+                        hourlog = discord.Embed(title = "Tutor Session Convert Complete", description = f"I have successfully converted this voice session into a tutor session, when you end this session I will log this session for you.", color = discord.Colour.blue())
+                        hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Date:** {date}")
+                        await ctx.send(embed = hourlog)
+
+
+                    else:
+                        embed = discord.Embed(title = f"{Emoji.warn} Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
+                        return await ctx.send(embed = embed)
+                else:
+                    embed = discord.Embed(title = f"{Emoji.warn} Unknown Voice Channel", description = "You have to be in a voice channel you own in order to use this!", color = discord.Colour.dark_red())
+                    return await ctx.send(embed = embed)
+            else:
+                embed = discord.Embed(title = "Invalid Session", description = "This session does not exist, please check the ID you've provided!", color = discord.Color.red())
+                await ctx.send(embed = embed)
+
 
 
 
