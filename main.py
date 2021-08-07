@@ -9,8 +9,7 @@ import textwrap
 import time
 import traceback
 from contextlib import redirect_stdout
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 from time import sleep
 
@@ -46,32 +45,68 @@ use_sentry(
 
 publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
 
-with open("uptime.txt", "w") as f:
-    f.write(str(time.time()))
+database.db.open(reuse_if_open=True)
+
+q :database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
+q.UpStart = time.time()
+q.save()
+
+database.db.close()
+
 
 def get_extensions():  # Gets extension list dynamically
     extensions = []
+    blacklistedPrefix = ['!', "__", "DEV"]
+    
     for file in Path("utils").glob("**/*.py"):
-        if "!" in file.name or "__" in file.name:
+        if "!" in file.name or "__" in file.name or "DEV" in file.name:
             continue
         extensions.append(str(file).replace("/", ".").replace(".py", ""))
     return extensions
 
 
 async def force_restart(ctx):
-    try:
-        result = subprocess.run("cd && cd SchoolSimplified-Utils", shell=True, text=True, capture_output=True,
-                                check=True)
-        res = subprocess.run("nohup python3 main.py &", shell=True, text=True, capture_output=True, check=True)
-        print("complete")
-    except Exception as e:
-        print(result)
-        print(res)
+    p = subprocess.run("git status -uno",  shell=True, text=True, capture_output=True, check=True)
 
-        await ctx.send(
-            f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}")
+    embed = discord.Embed(title = "Restarting...", description = "Doing GIT Operation (1/3)", color = discord.Color.green())
+    embed.add_field(name = "Checking GIT (1/3)", value = f"**Git Output:**\n```shell\n{p.stdout}\n```")
+
+    msg = await ctx.send(embed = embed)
+    try:
+        redenv = subprocess.run("source ~/redenv/bin/activate",  shell=True, text=True, capture_output=True,
+                                check=True)
+        
+        result = subprocess.run("cd && cd Timmy-SchoolSimplified && nohup python3 main.py &", shell=True, text=True, capture_output=True,
+                                check=True)
+
+        embed.add_field(name = "Started Environment and Additional Process (2/3)", value = "Executed `source` and `nohup`.")
+        await msg.edit(embed = embed)
+
+    except Exception as e:
+        embed = discord.Embed(title = "Operation Failed", description = e, color = discord.Color.red())
+        embed.set_footer(text = "Main bot process will be terminated.")
+
+        await ctx.send(embed = embed)
+
     finally:
         sys.exit(0)
+
+def get_branch():
+    p = subprocess.run("git rev-parse --abbrev-ref HEAD",  shell=True, text=True, capture_output=True, check=True)
+    output = p.stdout
+
+    Branch = None
+    MSG = None
+
+    if output == "main":
+        Branch = "Stable"
+        MSG = "Running Stable Version"
+    
+    else:
+        Branch = "UnStable"
+        MSG = f"{bcolors.FAIL}WARNING: This Version is UnStable!{bcolors.ENDC}"
+    
+    return Branch, MSG
 
 @client.event
 async def on_ready():
@@ -82,8 +117,13 @@ async def on_ready():
     print(f"{bcolors.WARNING}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Time: {now}{bcolors.ENDC}")
 
+    branch, MSG = get_branch()
+    print(MSG)
+
     chat_exporter.init_exporter(client)
     DiscordComponents(client)
+
+
 
 
 files = get_extensions()
@@ -334,16 +374,23 @@ async def view(ctx):
 
 @client.command()
 async def ping(ctx):
-    with open("uptime.txt", "r") as f:
-        start_time = float(f.readline())
-        current_time = float(time.time())
-        difference = int(round(current_time - start_time))
-        text = str(timedelta(seconds=difference))
+    database.db.open(reuse_if_open=True)
+
+    q : database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
+    current_time = float(time.time())
+    difference = int(round(current_time - q.UpStart))
+    text = str(timedelta(seconds=difference))
+
+    p = subprocess.run("git describe --always", shell=True, text=True, capture_output=True, check=True)
+    output = p.stdout
 
     pingembed = discord.Embed(title="Pong! ⌛", color=discord.Colour.gold(), description="Current Discord API Latency")
     pingembed.add_field(name="Current Ping:", value=f'{round(client.latency * 1000)}ms')
-    pingembed.add_field(name="Uptime", value = text)
+    pingembed.add_field(name="Uptime", value = text, inline = False)
+    pingembed.add_field(name="GitHub Commit Version", value = f"`{output}`", inline = False)
     await ctx.send(embed=pingembed)
+
+    database.db.close()
 
 
 @client.command()
@@ -398,30 +445,9 @@ async def kill(ctx):
         await ctx.send("Looks like you didn't react in time, automatically aborted system exit!")
         await message.delete()
 
-
-
 @client.command()
-@is_botAdmin
-async def adminlogs(ctx):
-    async def get_pages():
-        pages = []
-        # Generate a list of embeds
-
-        for q in database.AdminLogging:
-            modObj = await client.fetch_user(q.discordID)
-
-            embed = discord.Embed(title="Query Results",description=f"Query requested by {ctx.author.mention}\nSearch Query: ADMINLOGGING")
-
-            timeObj = q.datetime.strftime("%x")
-            embed.add_field(name="Data",value=f"**User:** {modObj.name}\n**User ID:** {modObj.id}\n**Action:** {q.action}\n**Content:** {q.content}\n**Date:** {timeObj}")
-            embed.set_footer(text=f"ID: {q.id}")
-
-            pages.append(embed)
-        return pages
-
-
-    paginator = Paginator(pages=get_pages())
-    await paginator.start(ctx)
+async def gitrestart(ctx):
+    await force_restart(ctx)
 
 
 client.run(os.getenv("TOKEN"))

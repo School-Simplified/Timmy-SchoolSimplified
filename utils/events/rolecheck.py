@@ -1,10 +1,11 @@
+import datetime
+import json
+from datetime import datetime, timedelta
+
 import discord
+from core.common import *
 from discord import embeds
 from discord.ext import commands
-import json
-import datetime
-from datetime import timedelta, datetime
-from core.common import *
 
 messageDict = {"Math": 866904767568543744, "Science": 866904901174427678, "English": 866905061182930944, "Language": 866905971519389787, "Art": 866906016602652743, "Social Studies": 866905205094481951, "Computer Science": 867550791635566623}
 
@@ -68,6 +69,7 @@ class SkeletonCMD(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
+        '''
         #sub server id: 827568748163760139
         mainServer = self.bot.get_guild(self.staffServer)
         user = mainServer.get_member(before.id)
@@ -106,6 +108,8 @@ class SkeletonCMD(commands.Cog):
             item = list_difference[0]
 
             await roleNameCheck(item.name, before, after, mainServer, user, "-")
+        '''
+        pass
 
 
 
@@ -198,7 +202,7 @@ class SkeletonCMD(commands.Cog):
     async def serverbooster(self, before, after):
         if before.guild.id == 763119924385939498:
             if len(before.roles) < len(after.roles):
-                altServerBooster = discord.utils.get(before.guild.roles, name = "Perks")
+                altServerBooster = discord.utils.get(before.guild.roles, name = "VIP")
                 serverbooster = before.guild.premium_subscriber_role
 
                 level35 = discord.utils.get(before.guild.roles, name = "〚Level 35〛Experienced")
@@ -214,7 +218,7 @@ class SkeletonCMD(commands.Cog):
 
 
             elif len(before.roles) > len(after.roles):
-                altServerBooster = discord.utils.get(before.guild.roles, name = "Perks")
+                altServerBooster = discord.utils.get(before.guild.roles, name = "VIP")
                 serverbooster = before.guild.premium_subscriber_role
 
                 level35 = discord.utils.get(before.guild.roles, name = "〚Level 35〛Experienced")

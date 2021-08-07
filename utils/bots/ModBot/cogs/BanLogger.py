@@ -1,11 +1,12 @@
-import discord
-from discord.ext import commands
-from random import randint
-from oauth2client.service_account import ServiceAccountCredentials
-import gspread
+import asyncio
 import re
 from datetime import datetime
-import asyncio
+from random import randint
+
+import discord
+import gspread
+from discord.ext import commands
+from oauth2client.service_account import ServiceAccountCredentials
 
 scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
 
@@ -37,7 +38,7 @@ class BanUpdate(commands.Cog):
         if guild.id != 763119924385939498:
             return
 
-        await asyncio.sleep(4)
+        await asyncio.sleep(15)
 
         async for logs in guild.audit_logs(limit=1, oldest_first=False, action=discord.AuditLogAction.ban):
             # Query the audit log for a type ban, user, and get the latest one.

@@ -5,10 +5,10 @@ from datetime import date, datetime, timedelta
 
 import discord
 from core import database
+from core.common import Emoji
 from discord.ext import commands, tasks
 from peewee import _truncate_constraint_name
 from pytz import timezone
-from core.common import Emoji
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 
@@ -42,7 +42,7 @@ def showTotalMinutes(dateObj: datetime):
 
     deltaTime = now - dateObj
 
-    return deltaTime.total_seconds() // 60
+    return deltaTime.total_seconds() // 60, now
     
 
 class SkeletonCMD(commands.Cog):
@@ -53,6 +53,8 @@ class SkeletonCMD(commands.Cog):
         self.categoryID = 776988961087422515
         self.staticChannels = [784556875487248394, 784556893799448626]
         self.presetChannels = [843637802293788692, 784556875487248394, 784556893799448626]
+
+        self.TutorLogID = 873326994220265482
 
         self.AT = "Academics Team"
         self.SB = "Simplified Booster"
@@ -66,6 +68,8 @@ class SkeletonCMD(commands.Cog):
 
         self.MAT = "Marketing Team"
         self.TT = "Technical Team"
+
+        self.TutorRole = "Tutor"
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -114,7 +118,9 @@ class SkeletonCMD(commands.Cog):
                         if query.exists():
                             query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id)).get()
 
-                            day = showTotalMinutes(query.datetimeObj)
+                            day, now = showTotalMinutes(query.datetimeObj)
+                            daySTR = query.datetimeObj.strftime("%H:%M:")
+                            nowSTR = now.strftime("%H:%M:")
                             
                             query.delete_instance() 
 
@@ -125,7 +131,29 @@ class SkeletonCMD(commands.Cog):
                             else:
                                 embed = discord.Embed(title = f"{Emoji.archive} {member.display_name} Total Voice Minutes", description = f"{member.mention} you have spent a total of {Emoji.calender} `{day} minutes` in voice channel, **{query.name}**.\n**THIS TIME MAY NOT BE ACCURATE**", color = discord.Colour.gold())
                                 embed.set_footer(text = "The voice channel has been deleted!")
-                                await acadChannel.send(content = member.mention, embed = embed) 
+
+                                if query.TutorBotSessionID is not None:
+                                    tutorSession = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == query.TutorBotSessionID)
+                                    if tutorSession.exists():
+                                        tutorSession = tutorSession.get()
+
+                                        student = await self.bot.fetch_user(tutorSession.StudentID)
+                                        tutor = await self.bot.fetch_user(tutorSession.TutorID)
+
+                                        HOURCH = await self.bot.fetch_channel(self.TutorLogID)
+
+                                        hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
+                                        hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
+                                        await HOURCH.send(embed = embed)
+
+                                        embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
+                                        await student.send(embed = embed)
+
+
+                                    else:
+                                        print("No Tutor Session Found...")
+                                else:
+                                    await acadChannel.send(content = member.mention, embed = embed) 
                         else:
                             print("no query, moving on...")
                 else:
@@ -148,6 +176,7 @@ class SkeletonCMD(commands.Cog):
             AT = discord.utils.get(member.guild.roles, name=self.AT)
             VP = discord.utils.get(member.guild.roles, name=self.VP)
             CO = discord.utils.get(member.guild.roles, name=self.CO)
+            TutorRole = discord.utils.get(member.guild.roles, name=self.TutorRole)
 
             #if team in member.roles:
             category = discord.utils.get(member.guild.categories, id = self.categoryID)
@@ -180,13 +209,16 @@ class SkeletonCMD(commands.Cog):
                 if SB not in member.roles and AT not in member.roles and legend not in member.roles and MT not in member.roles and MAT not in member.roles and TT not in member.roles and VP not in member.roles and CO not in member.roles:
             
                     embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())
-                    embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\n**1)** End - `Ends your current voice session.`\n**2)** ~~ReName - `Renames your voice channel to something else.`~~\n *> ⚠️ ReName is not available to you.*\n**3)** VoiceLimit - `Changes the voice limit of your voice channel.`\n**4)** Lock - `Lock's the voice channel.`\n**5)** Unlock - `Unlocks the voice channel.`\n**6)** Permit - `Allows you to modify authorized users who can join your voice channel.`\n**7)** Disconnect - `Kicks users from your voice channel.`")
+                    embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\nhttps://schoolsimplified.org/tutorvc")
                     embed.set_footer(text = "If you have any questions, consult the help command! | +help")
 
                 else:
                     embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())
-                    embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\n**1)** End - `Ends your current voice session.`\n**2)** ReName - `Renames your voice channel to something else.`\n**3)** VoiceLimit - `Changes the voice limit of your voice channel.`\n**4)** Lock - `Lock's the voice channel.`\n**5)** Unlock - `Unlocks the voice channel.`\n**6)** Permit - `Allows you to modify authorized users who can join your voice channel.`\n**7)** Disconnect - `Kicks users from your voice channel.`")
+                    embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\nhttps://schoolsimplified.org/tutorvc")
                     embed.set_footer(text = "If you have any questions, consult the help command! | +help")
+
+                if TutorRole in member.roles:
+                    embed.add_field(name = "Convert to Tutor Session?", value = "Hey, it looks like you're a tutor! If this is going to be a tutor session please use the command `+settutor id`, replacing 'id' with your 3 digit tutor id.", inline = False)
 
                 channel = await category.create_voice_channel(f"{member.display_name}'s Channel", user_limit = 2)
                 tag: database.VCChannelInfo = database.VCChannelInfo.create(ChannelID = channel.id, name = f"{member.display_name}'s Channel", authorID = member.id, used = True, datetimeObj = datetime.now(), lockStatus = "0")
@@ -229,11 +261,7 @@ class SkeletonCMD(commands.Cog):
                         
                     else:
                         print("Already deleted, moving on...")
-
-
         database.db.close()
-            
-
 
 def setup(bot):
     bot.add_cog(SkeletonCMD(bot))

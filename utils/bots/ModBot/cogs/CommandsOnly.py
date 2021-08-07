@@ -1,15 +1,16 @@
 import inspect
 import io
+import os
 import textwrap
 import traceback
 from contextlib import redirect_stdout
-import os
+from datetime import datetime, timedelta
+
 import aiohttp
-from discord.ext import commands
 import discord
-from discord.ext import tasks
-from datetime import timedelta, datetime
+from core import database
 from core.common import rulesDict
+from discord.ext import commands, tasks
 
 MESSAGEC = "Go chit chat somewhere else, this is for commands only."
 MESSAGEMASA = "Hey you ||~~short~~|| *I mean* tall mf, go chit chat somewhere you twat."
@@ -25,11 +26,13 @@ class CommandsOnly(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.channel.id == 786057630383865858 and not message.author.bot:
+            prefix = []
 
-            if message.content.startswith('?') or message.content.startswith('+'):
+            for p in database.WhitelistedPrefix:
+                prefix.append(p.prefix)
+
+            if message.content[0] in prefix:
                 pass
-
-
             else:
                 await message.delete()
                 if message.author.id == self.masa_id:
@@ -59,6 +62,8 @@ class CommandsOnly(commands.Cog):
                 embed = discord.Embed(title = f"Rule {RuleNumber}: {RuleTitle}", description = RuleDesc, color = discord.Colour.green())
                 embed.set_footer(text = "Have a question? Feel free to DM a Moderator!")
                 await ctx.send(embed = embed)
+
+    
 
 def setup(bot):
     bot.add_cog(CommandsOnly(bot))

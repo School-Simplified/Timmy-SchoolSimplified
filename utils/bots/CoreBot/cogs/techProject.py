@@ -2,8 +2,8 @@ import asyncio
 import datetime
 import json
 import logging
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
 
 import discord
 from core import database
@@ -11,10 +11,47 @@ from core.checks import is_botAdmin, is_botAdmin3
 from discord.ext import commands
 from redbot.core.utils.tunnel import Tunnel
 
+async def createChannel(self, ctx, type, member):
+    
+    if type == "Developer":
+        guild = await self.bot.fetch_guild(ctx.guild.id)
+        category = discord.utils.get(guild.categories, id= 873261268495106119)
+        embed = discord.Embed(title = "Developer Ticket", description = f"Welcome {member.mention}! A developer will be with you shortly.", color = discord.Color.green())
+
+    else:
+        return BaseException("ERROR: unknown type")
+
+
+    DDM = discord.utils.get(guild.roles, name='Developer Manager')
+    ADT = discord.utils.get(guild.roles, name='Assistant Developer Manager')
+    DT = discord.utils.get(guild.roles, name='Developer')
+
+    num = len(category.channels)
+    channel = await guild.create_text_channel(f'{type}-{num}', category = category)
+
+    controlTicket = discord.Embed(title = "Control Panel", description = "To end this ticket, react to the lock emoji!", color = discord.Colour.gold())
+    await channel.send(member.mention)
+    msg = await channel.send(embed = controlTicket)
+    await msg.add_reaction("🔒")
+
+    await channel.set_permissions(DDM, send_messages = True, read_messages = True, reason="Ticket Perms")
+    await channel.set_permissions(ADT, send_messages = True, read_messages = True, reason="Ticket Perms")
+    await channel.set_permissions(DT, send_messages = True, read_messages = True, reason="Ticket Perms")
+
+    await channel.send(embed = embed)
+    return channel
 
 class SkeletonCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command()
+    async def techembedc(self, ctx):
+        embed = discord.Embed(title = "Technical Team Commissions", color = discord.Color.green())
+        embed.add_field(name = "Developer Commissions", value = "If you'd like to start a Developer Commission, please fill out the form via `+request` and a ticket will autoamtically be created for you!")
+        embed.add_field(name = "Discord Commissions", value = "If you'd like to start a Discord Commission, please react with <:discord:812757175465934899> !", inline = False)
+        await ctx.send(embed = embed)
+
 
     @commands.command()
     async def request(self, ctx):
@@ -86,8 +123,14 @@ class SkeletonCMD(commands.Cog):
                 except:
                     await ctx.send("Error sending the response, maybe you hit the character limit?")
                 else:
+                    category = discord.utils.get(ctx.guild.categories, name="Tech Commission Tickets")
                     await channel.send("Submitted response...")
 
+                    member = ctx.guild.get_member(ctx.author.id)
+                    TicketCH = await createChannel(self, ctx, "Developer", member)
+
+                    await TicketCH.send(ctx.author.mention, embed = embed)
+                    await channel.send(f"Please use {channel.mention} if you wish to follow up on your commission!")
 
         except asyncio.TimeoutError:
             await channel.send("Looks like you didn't react in time, please try again later!")
@@ -103,7 +146,6 @@ class SkeletonCMD(commands.Cog):
             embed.add_field(name = "Notes", value = notes)
 
         await user.send(embed = embed)
-
         await ctx.send("Sent report!\n", embed = embed)
 
 def setup(bot):

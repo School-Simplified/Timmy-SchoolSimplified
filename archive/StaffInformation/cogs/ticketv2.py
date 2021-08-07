@@ -87,9 +87,6 @@ async def createChannel(self, payload, topic, member):
 
     channel = await guild.create_text_channel(f'open-{st}-{num}', category = category)
 
-    
-
-
 
     controlTicket = discord.Embed(title = "Control Panel", description = "To end this ticket, react to the lock emoji!", color = discord.Colour.green())
     await channel.send(member.mention)

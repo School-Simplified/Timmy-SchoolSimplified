@@ -1,15 +1,17 @@
-from discord.ext import commands
-import discord
-from typing import List
+import asyncio
+import json
+import os
+import random
 import traceback
 from pathlib import Path
+from typing import List
+
 import core.common
-import asyncio
+import discord
 import requests
 import yarl
-import os
-import json
-import random
+from discord.ext import commands
+
 
 def random_rgb(seed=None):
     if seed is not None:
@@ -93,6 +95,16 @@ class CommandErrorHandler(commands.Cog):
             em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
             await ctx.send(embed = em)
             return
+
+        elif isinstance(error, commands.CommandOnCooldown):
+            m, s = divmod(error.retry_after, 60)
+            h, m = divmod(m, 60)
+
+            msg = "This command cannot be used again for {} minutes and {} seconds" \
+                .format(round(h), round(m), round(s))
+
+            embed = discord.Embed(title = "Command On Cooldown", description = msg, color = discord.Color.red())
+            await ctx.send(msg)
 
         else:
             error_file = Path("error.txt")

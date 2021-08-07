@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from pickletools import pyfrozenset
 from typing import Text
 
 from discord.enums import ExpireBehavior
@@ -70,6 +71,9 @@ class VCChannelInfo(BaseModel):
     
     `lockStatus` = bool(TextField())
     Signifies if the voice channel is locked or not.
+
+    `TutorBotSessionID` = TextField(default=None)
+    Signifies if the voice channel is linked to a TutorSession, if so this attribute contains its ID. 
     '''
 
     id = AutoField()
@@ -79,6 +83,8 @@ class VCChannelInfo(BaseModel):
     datetimeObj = DateTimeField()
     used = BooleanField()
     lockStatus = TextField()
+
+    TutorBotSessionID = TextField(default=None)
 
 class IgnoreThis(BaseModel):
     '''
@@ -203,13 +209,27 @@ class ChannelInfo(BaseModel):
 class Tag(BaseModel):
     """
     #Tag
-    Stores our tags accessed by the tag command. (WIP)
+    Stores our tags accessed by the tag command.
+
+    `id`: AutoField()
+    Database Entry
+
+    `tag_name`: TextField()
+    Name of the tag
+
+    `text`: TextField()
+    Embed Description
+
+    `imageURL`: TextField()
+    URL of the image
     """
 
     id = AutoField()
     tag_name = TextField(unique=True)
-    #embed_title = TextField()
+    embed_title = TextField()
     text = TextField()
+    imageURL = TextField(default=None)
+    
 
 class Administrators(BaseModel):
     '''
@@ -366,6 +386,77 @@ class MotivationalQuotes(BaseModel):
     item = TextField(unique = True)
     typeObj = TextField()
 
+
+class WhitelistedPrefix(BaseModel):
+    '''
+    # WhitelistedPrefix
+
+    `id`: AutoField()
+    Database Entry
+
+    `prefix`: TextField()
+    Prefix Entry
+
+    `status`: BooleanField()
+    Either shows if its disabled or enabled.
+    '''
+
+    id = AutoField()
+    prefix = TextField()
+    status = BooleanField()
+
+
+class TutorBot_Sessions(BaseModel):
+    '''
+    #TutorBot Sessions
+
+    `id`: AutoField()
+    Database Entry
+
+    `SessionID`: TextField()
+    2-3 Character ID for the specific session.
+
+    `Date`: DateTimeField()
+    Timezone Field.
+
+    `Time`: TextField()
+    Time Field.
+
+    `Subject`: TextField()
+    Subject Field.
+
+    `StudentID`: BigIntegerField()
+    Discord ID of the Student.
+
+    `TutorID`: BigIntegerField()
+    Discord ID of the Tutor.
+
+    `Repeat`: BooleanField()
+    Boolean that states if this session is repeated.
+    '''
+
+    id = AutoField()
+    SessionID = TextField()
+    Date = DateTimeField()
+    Time = TextField()
+    Subject = TextField()
+    StudentID = BigIntegerField()
+    TutorID = BigIntegerField()
+    Repeat = BooleanField()
+    
+class Uptime(BaseModel):
+    '''
+    #Uptime
+
+    `id`: AutoField()
+    Database Entry
+
+    `UpStart`: FloatField()
+    Time Object of Bot being started.
+    '''
+    id = AutoField()
+    UpStart = FloatField()
+
 app = Flask(__name__)
 
 @app.before_request
@@ -400,7 +491,8 @@ tables = {
     "AdminLogging": AdminLogging, 
     "CheckInformation": CheckInformation, 
     "Blacklist": Blacklist,
-    "ToDO": ToDo
+    "ToDO": ToDo,
+    "WhitelistedPrefix": WhitelistedPrefix
 }
 
 iter_table(tables)
