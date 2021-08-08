@@ -45,7 +45,7 @@ use_sentry(
 
 publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
 
-database.db.open(reuse_if_open=True)
+database.db.connect(reuse_if_open=True)
 
 q :database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
 q.UpStart = time.time()
@@ -374,7 +374,7 @@ async def view(ctx):
 
 @client.command()
 async def ping(ctx):
-    database.db.open(reuse_if_open=True)
+    database.db.connect(reuse_if_open=True)
 
     q : database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
     current_time = float(time.time())
