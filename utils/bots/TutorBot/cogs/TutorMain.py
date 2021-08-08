@@ -1,5 +1,3 @@
-from tkinter import E, Entry
-
 import discord
 from core import database
 from discord.ext import commands, tasks

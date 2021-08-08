@@ -492,7 +492,9 @@ tables = {
     "CheckInformation": CheckInformation, 
     "Blacklist": Blacklist,
     "ToDO": ToDo,
-    "WhitelistedPrefix": WhitelistedPrefix
+    "WhitelistedPrefix": WhitelistedPrefix,
+    "TutorBot_Sessions": TutorBot_Sessions,
+    "Uptime": Uptime
 }
 
 iter_table(tables)

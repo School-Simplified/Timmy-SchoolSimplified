@@ -53,7 +53,9 @@ def showTotalMinutes(dateObj: datetime):
 
     deltaTime = now - dateObj
 
-    return deltaTime.total_seconds() // 60, now
+    minutes = str(deltaTime.total_seconds() // 60)
+
+    return minutes, now
     
 
 class SkeletonCMD(commands.Cog):
@@ -195,10 +197,13 @@ class SkeletonCMD(commands.Cog):
             query = database.VCChannelInfo.select().where(database.VCChannelInfo.authorID == ctx.author.id)
             if query.exists():
                 query = database.VCChannelInfo.select().where(database.VCChannelInfo.authorID == ctx.author.id).get()
+                print(f"T: {query.TutorBotSessionID}")
 
                 day, now = showTotalMinutes(query.datetimeObj)
                 daySTR = query.datetimeObj.strftime("%H:%M:")
                 nowSTR = now.strftime("%H:%M:")
+
+                day = str(day)
 
                 print(query.datetimeObj)
 
@@ -217,16 +222,16 @@ class SkeletonCMD(commands.Cog):
                     tutorSession = tutorSession.get()
 
                     student = await self.bot.fetch_user(tutorSession.StudentID)
-                    tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                    #tutor = await self.bot.fetch_user(tutorSession.TutorID)
 
                     HOURCH = await self.bot.fetch_channel(self.TutorLogID)
 
-                    hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
-                    hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
-                    await HOURCH.send(embed = embed)
+                    #hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
+                    #hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
+                    #await HOURCH.send(embed = embed)
 
-                    embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
-                    await student.send(embed = embed)
+                    #embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
+                    #await student.send(embed = embed)
 
                 query.delete_instance()
                 return
@@ -248,7 +253,7 @@ class SkeletonCMD(commands.Cog):
                 tag: database.IgnoreThis = database.IgnoreThis.create(channelID = voice_state.channel.id, authorID = member.id)
                 tag.save()
 
-                day = showTotalMinutes(q.datetimeObj)
+                day, now = showTotalMinutes(q.datetimeObj)
 
                 print("In VC")   
                 await voice_state.channel.delete()

@@ -42,7 +42,9 @@ def showTotalMinutes(dateObj: datetime):
 
     deltaTime = now - dateObj
 
-    return deltaTime.total_seconds() // 60, now
+    totalmin = deltaTime.total_seconds() // 60
+
+    return totalmin, now
     
 
 class SkeletonCMD(commands.Cog):
@@ -131,10 +133,11 @@ class SkeletonCMD(commands.Cog):
                             else:
                                 embed = discord.Embed(title = f"{Emoji.archive} {member.display_name} Total Voice Minutes", description = f"{member.mention} you have spent a total of {Emoji.calender} `{day} minutes` in voice channel, **{query.name}**.\n**THIS TIME MAY NOT BE ACCURATE**", color = discord.Colour.gold())
                                 embed.set_footer(text = "The voice channel has been deleted!")
-
+                                
                                 if query.TutorBotSessionID is not None:
                                     tutorSession = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == query.TutorBotSessionID)
                                     if tutorSession.exists():
+                                        await acadChannel.send(content = member.mention, embed = embed) 
                                         tutorSession = tutorSession.get()
 
                                         student = await self.bot.fetch_user(tutorSession.StudentID)
@@ -209,12 +212,12 @@ class SkeletonCMD(commands.Cog):
                 if SB not in member.roles and AT not in member.roles and legend not in member.roles and MT not in member.roles and MAT not in member.roles and TT not in member.roles and VP not in member.roles and CO not in member.roles:
             
                     embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())
-                    embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\nhttps://schoolsimplified.org/tutorvc")
+                    embed.add_field(name = "Voice Channel Commands", value = "https://schoolsimplified.org/tutorvc")
                     embed.set_footer(text = "If you have any questions, consult the help command! | +help")
 
                 else:
                     embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())
-                    embed.add_field(name = "Voice Channel Commands", value = "**Avaliable Voice Commands:**\n\nhttps://schoolsimplified.org/tutorvc")
+                    embed.add_field(name = "Voice Channel Commands", value = "https://schoolsimplified.org/tutorvc")
                     embed.set_footer(text = "If you have any questions, consult the help command! | +help")
 
                 if TutorRole in member.roles:
