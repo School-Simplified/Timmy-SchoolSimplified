@@ -9,7 +9,6 @@ import discord
 from core import database
 from core.checks import is_botAdmin
 from discord.ext import commands
-from redbot.core.utils.tunnel import Tunnel
 
 
 class SkeletonCMD(commands.Cog):

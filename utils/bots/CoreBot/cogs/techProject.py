@@ -9,7 +9,6 @@ import discord
 from core import database
 from core.checks import is_botAdmin, is_botAdmin3
 from discord.ext import commands
-from redbot.core.utils.tunnel import Tunnel
 
 async def createChannel(self, ctx, type, member):
     

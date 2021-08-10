@@ -8,7 +8,6 @@ from core import database
 from core.checks import is_botAdmin
 from core.common import Emoji
 from discord.ext import commands, tasks
-from peewee import _truncate_constraint_name
 
 #from main import vc
 
