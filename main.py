@@ -74,7 +74,7 @@ async def force_restart(ctx):
         result = subprocess.run("cd && cd Timmy-SchoolSimplified && nohup python3 main.py &", shell=True, text=True, capture_output=True,
                                 check=True)
 
-        embed.add_field(name = "Started Environment and Additional Process (2/3)", value = "Executed `source` and `nohup`.")
+        embed.add_field(name = "Started Environment and Additional Process (2/3)", value = "Executed `source` and `nohup`.", inline = False)
         await msg.edit(embed = embed)
 
     except Exception as e:
@@ -83,7 +83,9 @@ async def force_restart(ctx):
 
         await ctx.send(embed = embed)
 
-    finally:
+    else:
+        embed.add_field(name = "Killing Old Bot Process (3/3)", value = "Executing `sys.exit(0)` now...", inline = False)
+        await msg.edit(embed = embed)
         sys.exit(0)
 
 def get_branch():
@@ -111,9 +113,6 @@ async def on_ready():
     print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Time: {now}{bcolors.ENDC}")
-
-    branch, MSG = get_branch()
-    print(MSG)
 
     chat_exporter.init_exporter(client)
     DiscordComponents(client)
