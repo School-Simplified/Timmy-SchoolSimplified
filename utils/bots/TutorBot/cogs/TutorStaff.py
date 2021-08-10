@@ -60,7 +60,7 @@ class TutorBotStaffCMD(commands.Cog):
             await ctx.send(embed = embed)
 
     @commands.command()
-    async def schedule(self, ctx, date, time, id, subject, repeats: bool):
+    async def schedule(self, ctx, date, time, student: discord.User, subject, repeats: bool):
         embed = discord.Embed(title = "Confirm Schedule", description = "Please react with the appropriate reaction to verify this is your schedule.", color = discord.Color.green())
 
         now = datetime.now()
@@ -68,7 +68,6 @@ class TutorBotStaffCMD(commands.Cog):
 
         datetimeSession = datetime.strptime(f"{date}/{year}", "%-m/%-d/%Y")
 
-        student = await self.bot.fetch_user(id)
         SessionID = await id_generator()
 
         embed.add_field(name = "Values", value = f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{date}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`")

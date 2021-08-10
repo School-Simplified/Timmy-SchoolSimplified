@@ -299,7 +299,7 @@ class SkeletonCMD(commands.Cog):
             if query.exists():
                 q: database.VCChannelInfo = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == channel.id).get()
 
-                day = showTotalMinutes(q.datetimeObj)
+                day, now = showTotalMinutes(q.datetimeObj)
 
 
                 for VCMember in channel.members:
