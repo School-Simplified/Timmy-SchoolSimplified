@@ -29,20 +29,20 @@ class CommandsOnly(commands.Cog):
             prefix = []
 
             for p in database.WhitelistedPrefix:
-                prefix.append(p.prefix)
 
-            if message.content.startswith(prefix):
-                pass
-            else:
-                await message.delete()
-                if message.author.id == self.masa_id:
-                    embed = discord.Embed(
-                        title="Commands ONLY", description=MESSAGEMASA, color=discord.Colour.red())
+                if message.content.startswith(p.prefix):
+                    break
                 else:
-                    embed = discord.Embed(
-                        title="Commands ONLY", description=MESSAGEC, color=discord.Colour.red())
+                    await message.delete()
+                    if message.author.id == self.masa_id:
+                        embed = discord.Embed(
+                            title="Commands ONLY", description=MESSAGEMASA, color=discord.Colour.red())
+                    else:
+                        embed = discord.Embed(
+                            title="Commands ONLY", description=MESSAGEC, color=discord.Colour.red())
 
-                await message.channel.send(message.author.mention, embed=embed, delete_after=5.0)
+                    await message.channel.send(message.author.mention, embed=embed, delete_after=5.0)
+                    break
 
 
     @commands.command()
