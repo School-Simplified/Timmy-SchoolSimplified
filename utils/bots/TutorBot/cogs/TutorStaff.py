@@ -63,7 +63,7 @@ class TutorBotStaffCMD(commands.Cog):
     async def schedule(self, ctx, date, time, student: discord.User, subject, repeats: bool):
         embed = discord.Embed(title = "Confirm Schedule", description = "Please react with the appropriate reaction to verify this is your schedule.", color = discord.Color.green())
 
-        now = datetime.now()
+        now = datetime.utcnow()
         year = now.strftime("%Y")
 
         datetimeSession = datetime.strptime(f"{date}/{year}", "%-m/%-d/%Y")

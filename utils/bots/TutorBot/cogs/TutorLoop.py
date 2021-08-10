@@ -12,9 +12,9 @@ class TutorBotLoop(commands.Cog):
 
     @tasks.loop(seconds=60.0)
     async def voiceCheck(self):
-        now = datetime.now()
+        now = datetime.utcnow()
         for entry in database.TutorBot_Sessions:
-            if (datetime.now() - entry.Date).seconds > 300:
+            if (datetime.utcnow() - entry.Date).seconds > 300:
                 continue
             else:
                 tutor = await self.bot.fetch_user(entry.TutorID)

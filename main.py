@@ -34,7 +34,7 @@ load_dotenv()
 intents = discord.Intents.all()
 
 # Defining client and SlashCommands
-client = commands.Bot(command_prefix="+", intents=intents, case_insensitive=True)
+client = commands.Bot(command_prefix=commands.when_mentioned_or('+'), intents=intents, case_insensitive=True)
 client.remove_command('help')
 
 use_sentry(

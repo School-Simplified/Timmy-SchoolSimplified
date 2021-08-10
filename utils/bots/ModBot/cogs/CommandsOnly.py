@@ -31,7 +31,7 @@ class CommandsOnly(commands.Cog):
             for p in database.WhitelistedPrefix:
                 prefix.append(p.prefix)
 
-            if message.content[0] in prefix:
+            if message.content.startswith(prefix):
                 pass
             else:
                 await message.delete()
