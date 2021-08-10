@@ -1,27 +1,17 @@
 import asyncio
-import inspect
-import io
-import logging
 import os
 import subprocess
 import sys
-import textwrap
 import time
-import traceback
-from contextlib import redirect_stdout
 from datetime import datetime, timedelta
 from pathlib import Path
 from time import sleep
 
-import aiohttp
 import chat_exporter
 import discord
 from discord.ext import commands
-from discord_components import (Button, ButtonStyle, DiscordComponents,
-                                InteractionType)
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
-from pygicord import Paginator
 from tqdm import tqdm
 
 from core import database
@@ -115,7 +105,6 @@ async def on_ready():
     print(f"{bcolors.WARNING}Current Time: {now}{bcolors.ENDC}")
 
     chat_exporter.init_exporter(client)
-    DiscordComponents(client)
 
 
 
