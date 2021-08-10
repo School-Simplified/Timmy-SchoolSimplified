@@ -14,20 +14,19 @@ from redbot.core.utils.tunnel import Tunnel
 async def createChannel(self, ctx, type, member):
     
     if type == "Developer":
-        guild = await self.bot.fetch_guild(ctx.guild.id)
-        category = discord.utils.get(guild.categories, id= 873261268495106119)
+        category = discord.utils.get(ctx.guild.categories, id= 873261268495106119)
         embed = discord.Embed(title = "Developer Ticket", description = f"Welcome {member.mention}! A developer will be with you shortly.", color = discord.Color.green())
 
     else:
         return BaseException("ERROR: unknown type")
 
 
-    DDM = discord.utils.get(guild.roles, name='Developer Manager')
-    ADT = discord.utils.get(guild.roles, name='Assistant Developer Manager')
-    DT = discord.utils.get(guild.roles, name='Developer')
+    DDM = discord.utils.get(ctx.guild.roles, name='Developer Manager')
+    ADT = discord.utils.get(ctx.guild.roles, name='Assistant Dev Manager')
+    DT = discord.utils.get(ctx.guild.roles, name='Developer')
 
     num = len(category.channels)
-    channel = await guild.create_text_channel(f'{type}-{num}', category = category)
+    channel = await ctx.guild.create_text_channel(f'developer-{num}', category = category)
 
     controlTicket = discord.Embed(title = "Control Panel", description = "To end this ticket, react to the lock emoji!", color = discord.Colour.gold())
     await channel.send(member.mention)
@@ -129,8 +128,8 @@ class SkeletonCMD(commands.Cog):
                     member = ctx.guild.get_member(ctx.author.id)
                     TicketCH = await createChannel(self, ctx, "Developer", member)
 
-                    await TicketCH.send(ctx.author.mention, embed = embed)
-                    await channel.send(f"Please use {channel.mention} if you wish to follow up on your commission!")
+                    await TicketCH.send("Submitted Report:", embed = embed)
+                    await channel.send(f"Please use {TicketCH.mention} if you wish to follow up on your commission!")
 
         except asyncio.TimeoutError:
             await channel.send("Looks like you didn't react in time, please try again later!")

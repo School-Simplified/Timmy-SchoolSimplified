@@ -134,29 +134,23 @@ class SkeletonCMD(commands.Cog):
                                 embed = discord.Embed(title = f"{Emoji.archive} {member.display_name} Total Voice Minutes", description = f"{member.mention} you have spent a total of {Emoji.calender} `{day} minutes` in voice channel, **{query.name}**.\n**THIS TIME MAY NOT BE ACCURATE**", color = discord.Colour.gold())
                                 embed.set_footer(text = "The voice channel has been deleted!")
                                 
-                                if query.TutorBotSessionID is not None:
-                                    tutorSession = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == query.TutorBotSessionID)
-                                    if tutorSession.exists():
-                                        await acadChannel.send(content = member.mention, embed = embed) 
-                                        tutorSession = tutorSession.get()
 
-                                        student = await self.bot.fetch_user(tutorSession.StudentID)
-                                        tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                                await acadChannel.send(content = member.mention, embed = embed) 
+                                tutorSession = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == query.TutorBotSessionID)
+                                if tutorSession.exists():
+                                    
+                                    tutorSession = tutorSession.get()
 
-                                        HOURCH = await self.bot.fetch_channel(self.TutorLogID)
+                                    student = await self.bot.fetch_user(tutorSession.StudentID)
+                                    tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                                    HOURCH = await self.bot.fetch_channel(self.TutorLogID)
 
-                                        hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
-                                        hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
-                                        await HOURCH.send(embed = embed)
+                                    hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
+                                    hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
+                                    await HOURCH.send(embed = embed)
 
-                                        embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
-                                        await student.send(embed = embed)
-
-
-                                    else:
-                                        print("No Tutor Session Found...")
-                                else:
-                                    await acadChannel.send(content = member.mention, embed = embed) 
+                                    embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
+                                    await student.send(embed = embed)
                         else:
                             print("no query, moving on...")
                 else:
@@ -165,10 +159,7 @@ class SkeletonCMD(commands.Cog):
 
 
         if after.channel != None and after.channel == lobbyStart and not member.bot:
-            #team = discord.utils.get(member.guild.roles, name='Academics Team')
             acadChannel = await self.bot.fetch_channel(self.channel_id)
-
-            
             SB = discord.utils.get(member.guild.roles, name = self.SB)
 
             legend = discord.utils.get(member.guild.roles, name = self.Legend)
@@ -204,11 +195,9 @@ class SkeletonCMD(commands.Cog):
                 return await acadChannel.send(content = member.mention, embed = embed)
 
             else:
-
                 def check(m):
                     return m.content is not None and m.channel == acadChannel and m.author is not self.bot.user and m.author == member
 
-                #if team not in member.roles and SB not in member.roles and legend not in member.roles:
                 if SB not in member.roles and AT not in member.roles and legend not in member.roles and MT not in member.roles and MAT not in member.roles and TT not in member.roles and VP not in member.roles and CO not in member.roles:
             
                     embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())

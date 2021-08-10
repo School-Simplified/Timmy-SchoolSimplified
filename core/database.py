@@ -451,11 +451,11 @@ class Uptime(BaseModel):
     `id`: AutoField()
     Database Entry
 
-    `UpStart`: FloatField()
+    `UpStart`: TextField()
     Time Object of Bot being started.
     '''
     id = AutoField()
-    UpStart = FloatField()
+    UpStart = TextField()
 
 app = Flask(__name__)
 

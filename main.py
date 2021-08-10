@@ -46,11 +46,9 @@ use_sentry(
 publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
 
 database.db.connect(reuse_if_open=True)
-
 q :database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
 q.UpStart = time.time()
 q.save()
-
 database.db.close()
 
 
@@ -73,9 +71,6 @@ async def force_restart(ctx):
 
     msg = await ctx.send(embed = embed)
     try:
-        redenv = subprocess.run("source ~/redenv/bin/activate",  shell=True, text=True, capture_output=True,
-                                check=True)
-        
         result = subprocess.run("cd && cd Timmy-SchoolSimplified && nohup python3 main.py &", shell=True, text=True, capture_output=True,
                                 check=True)
 
@@ -378,7 +373,7 @@ async def ping(ctx):
 
     q : database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
     current_time = float(time.time())
-    difference = int(round(current_time - q.UpStart))
+    difference = int(round(current_time - float(q.UpStart)))
     text = str(timedelta(seconds=difference))
 
     p = subprocess.run("git describe --always", shell=True, text=True, capture_output=True, check=True)

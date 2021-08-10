@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import io
 import json
@@ -9,39 +10,6 @@ import discord
 from chat_exporter.chat_exporter import Transcript
 from core import database
 from discord.ext import commands
-
-
-async def createChannel(self, payload, type, *args):
-    
-    if type == "Developer":
-        guild = await self.bot.fetch_guild(payload.guild_id)
-        category = discord.utils.get(guild.categories, id= 873261268495106119)
-        embed = discord.Embed(title = "Developer Ticket", description = f"Welcome {payload.member.mention}! A developer will be with you shortly.", color = discord.Color.green())
-
-    elif type == "Discord":
-        guild = await self.bot.fetch_guild(payload.guild_id)
-        category = discord.utils.get(guild.categories, id= 872911665035890708)
-        embed = discord.Embed(title = "Discord Ticket", description = f"Welcome {payload.member.mention}! A discord editor will be with you shortly.", color = discord.Color.green())
-
-    else:
-        return BaseException("ERROR: unknown type")
-
-    DE = discord.utils.get(guild.roles, name='Discord Editor')
-    DM = discord.utils.get(guild.roles, name='Discord Manager') 
-
-    num = len(category.channels)
-    channel = await guild.create_text_channel(f'{type}-{num}', category = category)
-
-    controlTicket = discord.Embed(title = "Control Panel", description = "To end this ticket, react to the lock emoji!", color = discord.Colour.gold())
-    await channel.send(payload.member.mention)
-    msg = await channel.send(embed = controlTicket)
-    await msg.add_reaction("🔒")
-
-    await channel.set_permissions(DE, send_messages = True, read_messages = True,reason="Ticket Perms")
-    await channel.set_permissions(DM, send_messages = True, read_messages = True, reason="Ticket Perms")
-
-    await channel.send(embed = embed)
-    return channel
 
 
 async def rawExport(self, channel, response):
@@ -79,27 +47,62 @@ class TechnicalTickets(commands.Cog):
             ch = self.bot.get_channel(payload.channel_id)
             guild = self.bot.get_guild(payload.guild_id)
             message = await ch.fetch_message(payload.message_id)
+            user = await self.bot.fetch_user(payload.user_id)
 
-            if message.id == 873346089745514536:
+            if int(payload.message_id) == 873346089745514536:
             
-                developerE = discord.utils.get(guild.emojis, name = self.developerC["EmojiID"])
-                discordE = discord.utils.get(guild.emojis, name = self.discordC["EmojiID"])
-                
-                
-                if str(payload.emoji) == "🔒":
-                    if ch.category_id in self.authCategories:
-                        TranscriptLOG = self.bot.get_channel(872915565600182282)
-                        
-                        await message.remove_reaction("🔒", payload.member)
-                        await rawExport(ch, TranscriptLOG)
-                        await ch.delete()
+                #developerE = discord.utils.get(guild.emojis, name = self.developerC["EmojiID"])
+                discordE = discord.utils.get(guild.emojis, id = self.discordC["EmojiID"])
 
                     
-                elif payload.emoji == discordE:
+                if payload.emoji == discordE:
                     await message.remove_reaction(str(payload.emoji), payload.member)
-                    channel = await createChannel(self, payload, "Discord")
+                    guild = self.bot.get_guild(payload.guild_id)
+                    category = discord.utils.get(guild.categories, id=872911665035890708)
+                    embed = discord.Embed(title = "Discord Ticket", description = f"Welcome {payload.member.mention}! A discord editor will be with you shortly.", color = discord.Color.green())
 
-                    await channel.send()
+                    DE = discord.utils.get(guild.roles, name='Discord Editor')
+                    DM = discord.utils.get(guild.roles, name='Discord Manager') 
+
+                    num = len(category.channels) - 1
+                    channel = await guild.create_text_channel(f'discord-{num}', category = category)
+
+                    controlTicket = discord.Embed(title = "Control Panel", description = "To end this ticket, react to the lock emoji!", color = discord.Colour.gold())
+                    await channel.send(payload.member.mention)
+                    msg = await channel.send(embed = controlTicket)
+                    await msg.add_reaction("🔒")
+
+                    await channel.set_permissions(DE, send_messages = True, read_messages = True,reason="Ticket Perms")
+                    await channel.set_permissions(DM, send_messages = True, read_messages = True, reason="Ticket Perms")
+
+                    await channel.send(embed = embed)
+                    return channel
+            
+            elif ch.category_id in self.authCategories:
+                if str(payload.emoji) == "🔒":
+                    TranscriptLOG = self.bot.get_channel(872915565600182282)
+                    msg = await ch.send("Are you sure you want to close this ticket?")
+
+                    reactions = ['✅', '❌']
+                    for emoji in reactions:
+                        await msg.add_reaction(emoji)
+
+                    def check2(reaction, user):
+                        return user == user and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌') and user is not self.bot
+
+                    try:
+                        reaction, user = await self.bot.wait_for('reaction_add', timeout=150.0, check=check2)
+                        if str(reaction.emoji) == "❌":
+                            await ch.send("Canceled Ticket Removal.")
+
+                            return await msg.delete()
+                        else:
+                            await message.remove_reaction("🔒", payload.member)
+                            await rawExport(self, ch, TranscriptLOG)
+                            await ch.delete()
+                            
+                    except asyncio.TimeoutError:
+                        await ch.send("Looks like you didn't react in time, please try again later!")
                 
 
             
