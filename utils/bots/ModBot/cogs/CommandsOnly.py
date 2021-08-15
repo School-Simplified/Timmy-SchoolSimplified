@@ -15,7 +15,6 @@ from discord.ext import commands, tasks
 MESSAGEC = "Go chit chat somewhere else, this is for commands only."
 MESSAGEMASA = "Hey you ||~~short~~|| *I mean* tall mf, go chit chat somewhere you twat."
 
-
 class CommandsOnly(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -27,22 +26,22 @@ class CommandsOnly(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.channel.id == 786057630383865858 and not message.author.bot:
             prefix = []
-
             for p in database.WhitelistedPrefix:
+                prefix.append(p.prefix)
 
-                if message.content.startswith(p.prefix):
-                    break
+            res = list(filter(message.content.startswith, prefix)) != []
+
+            if not res:
+                await message.delete()
+                if message.author.id == self.masa_id:
+                    embed = discord.Embed(
+                        title="Commands ONLY", description=MESSAGEMASA, color=discord.Colour.red())
                 else:
-                    await message.delete()
-                    if message.author.id == self.masa_id:
-                        embed = discord.Embed(
-                            title="Commands ONLY", description=MESSAGEMASA, color=discord.Colour.red())
-                    else:
-                        embed = discord.Embed(
-                            title="Commands ONLY", description=MESSAGEC, color=discord.Colour.red())
+                    embed = discord.Embed(
+                        title="Commands ONLY", description=MESSAGEC, color=discord.Colour.red())
 
-                    await message.channel.send(message.author.mention, embed=embed, delete_after=5.0)
-                    break
+                await message.channel.send(message.author.mention, embed=embed, delete_after=5.0)
+                    
 
 
     @commands.command()

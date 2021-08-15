@@ -210,10 +210,10 @@ class SkeletonCMD(commands.Cog):
 
                 newRole = next(role for role in after.roles if role not in before.roles)
                 if newRole.id == serverbooster.id:
-                    before.add_roles(altServerBooster)
+                    await before.add_roles(altServerBooster)
                 
                 if newRole.id == level35.id:
-                    before.add_roles(DJ)
+                    await before.add_roles(DJ)
 
 
 
@@ -227,7 +227,7 @@ class SkeletonCMD(commands.Cog):
                 oldRole = (set(before.roles) - set(after.roles))
                 for role in oldRole:
                     if role.id == serverbooster.id:
-                        before.remove_roles(altServerBooster)
+                        await before.remove_roles(altServerBooster)
 
 
         

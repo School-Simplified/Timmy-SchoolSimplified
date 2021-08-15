@@ -1,14 +1,14 @@
 import discord
 from core import database
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 
 class TutorBotStaffCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.RepeatEmoji = {
-            True: "\U00002b1b",
-            False: "🔁"
+            False: "\U00002b1b",
+            True: "🔁"
         }
 
     @commands.command()
@@ -19,13 +19,20 @@ class TutorBotStaffCMD(commands.Cog):
             embed = discord.Embed(title = "Scheduled Tutor Sessions", color = discord.Color.dark_blue())
             embed.add_field(name = "Schedule:", value = f"{ctx.author.name}'s Schedule:")
 
-            ListTen = []
-            i = 0
-            for entry in query:
-                studentUser = await self.bot.fetch_user(entry.StudentID)
-                ListTen.append(f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`-{entry.Date} {entry.Time} -> {studentUser.name}")
+            if query.count() == 0:
+                embed.add_field(name = "List:", value = "You have no tutor sessions yet!", inline = False)
+                
+            else:
+                ListTen = []
+                i = 0
+                for entry in query:
+                    studentUser = await self.bot.fetch_user(entry.StudentID)
+                    date = entry.Date.strftime("%m/%d/%Y")
+                    amORpm = entry.Date.strftime("%p")
+                    ListTen.append(f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {date} {entry.Time} {amORpm} -> {studentUser.name}")
 
-
+                embed.add_field(name = "List:", value = "\n".join(ListTen), inline = False)
+            await ctx.send(embed = embed)
 
         else:
             entry = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == id)

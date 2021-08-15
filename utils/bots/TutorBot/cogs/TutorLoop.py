@@ -1,48 +1,65 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from xml.sax.handler import property_dom_node
 
 import discord
 import pytz
 from core import database
 from discord.ext import commands, tasks
 
-
 class TutorBotLoop(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.est = pytz.timezone('US/Eastern')
+        self.tutorsession.start()
+
+    def cog_unload(self):
+        self.tutorsession.cancel()
 
     @tasks.loop(seconds=60.0)
-    async def voiceCheck(self):
-        now = datetime.utcnow()
-        for entry in database.TutorBot_Sessions:
-            if (datetime.utcnow() - entry.Date).seconds > 300:
-                continue
-            else:
-                tutor = await self.bot.fetch_user(entry.TutorID)
-                student = await self.bot.fetch_user(entry.StudentID)
+    async def tutorsession(self): 
+        now = datetime.now(self.est) 
+        for entry in database.TutorBot_Sessions: 
+            entry.Date = entry.Date.astimezone(self.est)
+            val = int((entry.Date - now).total_seconds())
 
-                botch = await self.bot.fetch_user(862480236965003275)
+            if (val <= 120) and not entry.ReminderSet:
+                tutor = self.bot.get_user(entry.TutorID)
+                student = self.bot.get_user(entry.StudentID)
 
+                botch = self.bot.get_channel(862480236965003275)
                 embed = discord.Embed(title = "ALERT: You have a Tutor Session Soon!", description = "Please make sure you both communicate and set up a private voice channel!", color = discord.Color.green())
                 embed.add_field(name = "Tutor Session Details", value = f"**Tutor:** {tutor.name}\n**Student:** {student.name}\n**Session ID:** {entry.SessionID}\n**Time:** {entry.Time}")
                 
                 try:
                     await tutor.send(embed = embed)
                 except:
-                    await botch.send("Unable to send a reminder DM to you {tutor.mention}!", embed = embed)
+                    await botch.send(f"Unable to send a reminder DM to you {tutor.mention}!", embed = embed)
                 try:
                     await student.send(embed = embed)
                 except:
                     print(f"Unable to Send a Reminder DM to: {student.id}")
+                
+                geten: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.id == entry.id).get()
+                
+                if geten.Repeat:
+                    old = geten.Date
+                    new = timedelta(days=7)
+                    nextweek = old + new
+                    geten.Date = nextweek
+                    
+                geten.ReminderSet = True
+                geten.save()
+            else:
+                geten: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.id == entry.id).get()
+                geten.ReminderSet = False
+                geten.save()
 
-        #M = now.strftime("%p")
-        #Time = now.strftime("%-I:%-M")
-        #Date = now.strftime("%-m/%-d/%Y")
 
-        #(database.TutorBot_Sessions.Date == Date) & (database.TutorBot_Sessions.Time == Time) & (database.TutorBot_Sessions.AMorPM == M)
-        #query = database.TutorBot_Sessions.select().where((database.TutorBot_Sessions.Date == Date) & (database.TutorBot_Sessions.Time == Time))
-        
-        #if query.exists():
-        #    pass
+    @tutorsession.before_loop
+    async def before_printer(self):
+        print('Starting Tutor Loop')
+        await self.bot.wait_until_ready()
+
 
 def setup(bot):
     bot.add_cog(TutorBotLoop(bot))

@@ -433,6 +433,9 @@ class TutorBot_Sessions(BaseModel):
 
     `Repeat`: BooleanField()
     Boolean that states if this session is repeated.
+
+    `ReminderSet`: BooleanField()
+    Boolean that states if the user and student have been notified.
     '''
 
     id = AutoField()
@@ -443,6 +446,7 @@ class TutorBot_Sessions(BaseModel):
     StudentID = BigIntegerField()
     TutorID = BigIntegerField()
     Repeat = BooleanField()
+    ReminderSet = BooleanField()
     
 class Uptime(BaseModel):
     '''

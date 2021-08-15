@@ -1,10 +1,11 @@
 import random
 import string
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import discord
+import pytz
 from core import database
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 
 async def id_generator(size=3, chars=string.ascii_uppercase):
@@ -20,24 +21,25 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
 class TutorBotStaffCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.est = pytz.timezone('US/Eastern')
 
     @commands.command()
     async def skip(self, ctx, id):
-        query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == id)
+        query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == id)
         if query.exists():
             query = query.get()
 
 
             old = query.Date
-            new = datetime.timedelta(days=7)
+            new = timedelta(days=7)
             nextweek = old + new
 
-            nw = nextweek.strftime("%-m/%-d/%Y")
+            nw = nextweek.strftime("%m/%d/%Y")
 
-            query.date = nextweek
+            query.Date = nextweek
             query.save()
 
-            await ctx.send(f"Re-scheduled Session to {nw}")
+            await ctx.send(f"Re-scheduled Session to `{nw}`")
 
         else:
             embed = discord.Embed(title = "Invalid Session", description = "This session does not exist, please check the ID you've provided!", color = discord.Color.red())
@@ -60,22 +62,21 @@ class TutorBotStaffCMD(commands.Cog):
             await ctx.send(embed = embed)
 
     @commands.command()
-    async def schedule(self, ctx, date, time, student: discord.User, subject, repeats: bool):
-        embed = discord.Embed(title = "Confirm Schedule", description = "Please react with the appropriate reaction to verify this is your schedule.", color = discord.Color.green())
-
-        now = datetime.utcnow()
+    async def schedule(self, ctx, date, time, ptz:str, student: discord.User, subject, repeats: bool):
+        embed = discord.Embed(title = "Schedule Confirmed", description = "Created session.", color = discord.Color.green())
+        now = datetime.now(self.est)
         year = now.strftime("%Y")
 
-        datetimeSession = datetime.strptime(f"{date}/{year}", "%-m/%-d/%Y")
-
+        datetimeSession = datetime.strptime(f"{date}/{year} {time} {ptz.upper()}", "%m/%d/%Y %I:%M %p")
+        datetimeSession = datetimeSession.astimezone(self.est)
         SessionID = await id_generator()
 
-        embed.add_field(name = "Values", value = f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{date}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`")
+        daterev = datetimeSession.strftime("%m/%d")
+
+        embed.add_field(name = "Values", value = f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{daterev}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`")
         embed.set_footer(text = f"Subject: {subject}")
-        query = database.TutorBot_Sessions.create(SessionID = SessionID, Date = datetimeSession, time = time, StudentID = id, TutorID = ctx.author.id, Repeat = repeats, Subject = subject)
+        query = database.TutorBot_Sessions.create(SessionID = SessionID, Date = datetimeSession, Time = time, StudentID = student.id, TutorID = ctx.author.id, Repeat = repeats, Subject = subject, ReminderSet = False)
         query.save()
-        
-        
         await ctx.send(embed = embed)
 
 def setup(bot):

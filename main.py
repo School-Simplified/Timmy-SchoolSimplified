@@ -35,6 +35,18 @@ use_sentry(
 
 publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
 
+#Start Check
+UpQ = database.Uptime.select().where(database.Uptime.id == 1)
+CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)
+if not UpQ.exists():
+    database.Uptime.create(UpStart = "1")
+    print("Created Uptime Entry.")
+
+if not CIQ.exists():
+    database.CheckInformation.create(MasterMaintenance = False, guildNone = False, externalGuild = True, ModRoleBypass = True, ruleBypass = True, publicCategory = True, elseSituation = True)
+    print("Created Uptime Entry.")
+
+
 database.db.connect(reuse_if_open=True)
 q :database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
 q.UpStart = time.time()
@@ -115,11 +127,7 @@ capLimit = len(files)
 ext = files[i]
 
 for i in tqdm(range(capLimit - 1), ascii = True, desc =f"Loading Cogs..."):
-    try:
-        client.load_extension(ext)
-    except Exception as e:
-        print(f"{ext} failed to load:\n\n{e}")
-    
+    client.load_extension(ext)
     i+=1
     if i >= capLimit:
         break
@@ -378,8 +386,8 @@ async def ping(ctx):
 
 @client.command()
 async def help(ctx):
-    embed = discord.Embed(title="Help Commands", description="All avaliable commands under this bot!",
-                          color=discord.Colour.blue())
+    embed = discord.Embed(title="Help Command",
+                          color=discord.Colour.gold())
     embed.add_field(name="Notion Page",
                     value="[https://schoolsimplified.org/timmy](https://schoolsimplified.org/timmy \"Masa if you see "
                           "this, ur short\")")

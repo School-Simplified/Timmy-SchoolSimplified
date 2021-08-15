@@ -75,7 +75,7 @@ class SkeletonCMD(commands.Cog):
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         database.db.connect(reuse_if_open=True)
-        lobbyStart = await self.bot.fetch_channel(784556875487248394)  
+        lobbyStart = await self.bot.fetch_channel(784556875487248394)
 
         if before.channel != None and (after.channel == None or after.channel.category_id != 776988961087422515 or after.channel.id in self.staticChannels) and not member.bot:
             
@@ -91,13 +91,15 @@ class SkeletonCMD(commands.Cog):
 
             if query.exists() and before.channel.category.id == self.categoryID:
                 query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id)).get()
-                
+                try:
+                    tutorChannel = await self.bot.fetch_channel(int(query.ChannelID))
+                except:
+                    tutorChannel = None
+
                 print(query.ChannelID)
                 print(before.channel.id)
                 if query.ChannelID == str(before.channel.id):
-                    embed = discord.Embed(title = f"{Emoji.time} WARNING: Voice Channel is about to be deleted!", description = "If the voice session has ended, **you can ignore this!**\n\nIf it hasn't ended, please make sure you return to the channel in **2** Minutes, otherwise the channel will automatically be deleted!", color= discord.Colour.red())
-
-                    tutorChannel = await self.bot.fetch_channel(int(query.ChannelID))
+                    embed = discord.Embed(title = f"{Emoji.time} WARNING: Voice Channel is about to be deleted!", description = "If the voice session has ended, **you can ignore this!**\n\nIf it hasn't ended, please make sure you return to the channel in **2** Minutes, otherwise the channel will automatically be deleted!", color= discord.Colour.red())                    
                     
                     if member in lobbyStart.members:
                         try:
@@ -194,6 +196,7 @@ class SkeletonCMD(commands.Cog):
                 return await acadChannel.send(content = member.mention, embed = embed)
 
             else:
+
                 def check(m):
                     return m.content is not None and m.channel == acadChannel and m.author is not self.bot.user and m.author == member
 
@@ -212,6 +215,7 @@ class SkeletonCMD(commands.Cog):
                     embed.add_field(name = "Convert to Tutor Session?", value = "Hey, it looks like you're a tutor! If this is going to be a tutor session please use the command `+settutor id`, replacing 'id' with your 3 digit tutor id.", inline = False)
 
                 channel = await category.create_voice_channel(f"{member.display_name}'s Channel", user_limit = 2)
+                await channel.set_permissions(member.guild.default_role, stream = True)
                 tag: database.VCChannelInfo = database.VCChannelInfo.create(ChannelID = channel.id, name = f"{member.display_name}'s Channel", authorID = member.id, used = True, datetimeObj = datetime.now(), lockStatus = "0")
                 tag.save()
 

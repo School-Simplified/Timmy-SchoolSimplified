@@ -121,7 +121,7 @@ class CommandErrorHandler(commands.Cog):
                 print(f"Request URL: {url}")                    
                 headers={'Authorization':'token %s'%API_TOKEN}
                 params={'scope':'gist'}
-                payload={"description":"PortalBot encountered a Traceback!","public":True,"files":{"error":{"content": f"{data}"}}}
+                payload={"description":"Timmy encountered a Traceback!","public":True,"files":{"error":{"content": f"{data}"}}}
                 res=requests.post(url,headers=headers,params=params,data=json.dumps(payload))
                 j=json.loads(res.text)
                 ID = j['id']
