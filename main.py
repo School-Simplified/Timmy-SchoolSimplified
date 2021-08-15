@@ -392,7 +392,7 @@ async def help(ctx):
                     value="[https://schoolsimplified.org/timmy](https://schoolsimplified.org/timmy \"Masa if you see "
                           "this, ur short\")")
     embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
-    embed.set_thumbnail(url="https://i.gyazo.com/a236dbfb03e11a210cccbbb718bf3539.png")
+    embed.set_thumbnail(url="https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533")
     await ctx.send(embed=embed)
 
 
