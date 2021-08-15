@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from xml.sax.handler import property_dom_node
 
 import discord
 import pytz
