@@ -1,13 +1,7 @@
 import asyncio
-import datetime
-import json
-import logging
-import random
-from datetime import datetime, timedelta
 
 import discord
-from core import database
-from core.checks import is_botAdmin, is_botAdmin3
+from core.checks import is_botAdmin3
 from discord.ext import commands
 
 async def createChannel(self, ctx, type, member):

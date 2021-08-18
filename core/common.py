@@ -1,15 +1,9 @@
 import asyncio
 import json
-import os
-import random
-from datetime import datetime
 from pathlib import Path
 from typing import Tuple
 
 import discord
-import requests
-
-from core import database
 
 
 async def paginate_embed(bot: discord.Client, ctx, embed: discord.Embed, population_func, end: int, begin: int = 1, page=1):

@@ -1,15 +1,12 @@
-import asyncio
 import json
 import os
 import random
 import traceback
 from pathlib import Path
-from typing import List
 
-import core.common
 import discord
 import requests
-import yarl
+from core import database
 from discord.ext import commands
 
 
@@ -128,11 +125,22 @@ class CommandErrorHandler(commands.Cog):
                 gisturl = f"https://gist.github.com/{ID}"
                 print(gisturl)
 
+                permitlist = []
+                query = database.Administrators.select().where(database.Administrators.TierLevel >= 3)
+                for user in query:
+                    permitlist.append(user.discordID)
 
-                embed = discord.Embed(title = "Traceback Detected!", description = "**Hey you!** *Mr. Turtle here has found an error. I'll let the Bot Managers's know!*\nYou might also want to doublecheck what you sent and/or check out the help command!", color = 0xfc3d03)
-                embed.add_field(name = "Bug Reporting", value = "Have any other information that could help us? Feel free to DM a Developer!")
-                embed.set_footer(text = f"Error: {str(error)}")
-                await ctx.send(embed = embed)
+                if ctx.author.id not in permitlist:
+                    embed = discord.Embed(title = "Traceback Detected!", description = "Timmy here has ran into an error!\nPlease check what you sent and/or check out the help command!", color = 0xfc3d03)
+                    embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/875233489727922177/876610305852051456/unknown.png")
+                    embed.set_footer(text = f"Error: {str(error)}")
+                    await ctx.send(embed = embed)
+                else:
+                    embed = discord.Embed(title = "Traceback Detected!", description = "Timmy here has ran into an error!\nTraceback has been attached below.", color = 0xfc3d03)
+                    embed.add_field(name = "GIST URL", value = gisturl)
+                    embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/875233489727922177/876610305852051456/unknown.png")
+                    embed.set_footer(text = f"Error: {str(error)}")
+                    await ctx.send(embed = embed)
 
                 guild = self.bot.get_guild(self.TechGuild)
                 channel = guild.get_channel(self.TracebackChannel)

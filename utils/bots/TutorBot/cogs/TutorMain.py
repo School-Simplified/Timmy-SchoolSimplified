@@ -32,6 +32,7 @@ class TutorBotStaffCMD(commands.Cog):
                     ListTen.append(f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {date} {entry.Time} {amORpm} -> {studentUser.name}")
 
                 embed.add_field(name = "List:", value = "\n".join(ListTen), inline = False)
+            embed.set_thumbnail(url = "https://media.discordapp.net/attachments/875233489727922177/877378910214586368/tutoring.png?width=411&height=532")
             await ctx.send(embed = embed)
 
         else:
@@ -40,7 +41,12 @@ class TutorBotStaffCMD(commands.Cog):
                 entry = entry.get()
 
                 studentUser = await self.bot.fetch_user(entry.StudentID)
-                embed = discord.Embed(title = "Tutor Session Query", description = f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`-{entry.Date} {entry.Time} -> {studentUser.name}")
+
+                date = entry.Date.strftime("%m/%d/%Y")
+                amORpm = entry.Date.strftime("%p")
+
+                embed = discord.Embed(title = "Tutor Session Query", description = f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {date} {entry.Time} {amORpm} -> {studentUser.name}")
+                await ctx.send(embed = embed)
             else:
                 embed = discord.Embed(title = "Invalid Session", description = "This session does not exist, please check the ID you've provided!", color = discord.Color.red())
                 await ctx.send(embed = embed)

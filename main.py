@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 
 from core import database
-from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4
+from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin4
 from core.common import Emoji, bcolors
 
 load_dotenv()
@@ -23,8 +23,10 @@ load_dotenv()
 # Applying towards intents
 intents = discord.Intents.all()
 
-# Defining client and SlashCommands
-client = commands.Bot(command_prefix=commands.when_mentioned_or('+'), intents=intents, case_insensitive=True)
+# Defining client
+activity=discord.Activity(type=discord.ActivityType.watching, name="+help | schoolsimplified.org/timmy")
+
+client = commands.Bot(command_prefix=commands.when_mentioned_or('+'), intents=intents, case_insensitive=True, activity = activity)
 client.remove_command('help')
 
 use_sentry(
@@ -372,8 +374,11 @@ async def ping(ctx):
     difference = int(round(current_time - float(q.UpStart)))
     text = str(timedelta(seconds=difference))
 
-    p = subprocess.run("git describe --always", shell=True, text=True, capture_output=True, check=True)
-    output = p.stdout
+    try:
+        p = subprocess.run("git describe --always", shell=True, text=True, capture_output=True, check=True)
+        output = p.stdout
+    except subprocess.CalledProcessError:
+        output = "ERROR"
 
     pingembed = discord.Embed(title="Pong! ⌛", color=discord.Colour.gold(), description="Current Discord API Latency")
     pingembed.add_field(name="Current Ping:", value=f'{round(client.latency * 1000)}ms')
@@ -395,6 +400,12 @@ async def help(ctx):
     embed.set_thumbnail(url="https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533")
     await ctx.send(embed=embed)
 
+@client.command()
+async def errorout(ctx):
+    embed = discord.Embed(title = "Traceback Detected!", description = "**Hey you!** *Timmy here has found an error.\nYou might also want to doublecheck what you sent and/or check out the help command!*", color = 0xfc3d03)
+    embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/875233489727922177/876610305852051456/unknown.png")
+    embed.set_footer(text = f"Error: masa is short")
+    await ctx.send(embed = embed)
 
 @client.command()
 @is_botAdmin2

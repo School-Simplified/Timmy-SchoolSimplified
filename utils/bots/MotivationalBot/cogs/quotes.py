@@ -1,11 +1,7 @@
 import asyncio
-from contextlib import redirect_stdout
-from datetime import datetime
 
-import aiohttp
 import discord
 from core import database
-from core.checks import is_botAdmin3
 from core.common import Emoji
 from discord.ext import commands
 from dotenv import load_dotenv

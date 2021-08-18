@@ -8,7 +8,6 @@ import traceback
 from contextlib import redirect_stdout
 from datetime import datetime
 
-import aiohttp
 import discord
 from core import database
 from core.checks import is_botAdmin3

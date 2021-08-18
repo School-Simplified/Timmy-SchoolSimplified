@@ -1,16 +1,9 @@
 import inspect
 import io
-import os
-import textwrap
-import traceback
-from contextlib import redirect_stdout
-from datetime import datetime, timedelta
-
-import aiohttp
 import discord
 from core import database
 from core.common import rulesDict
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 MESSAGEC = "Go chit chat somewhere else, this is for commands only."
 MESSAGEMASA = "Hey you ||~~short~~|| *I mean* tall mf, go chit chat somewhere you twat."

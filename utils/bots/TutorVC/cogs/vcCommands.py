@@ -1,13 +1,11 @@
-import asyncio
 import datetime
-import json
 from datetime import datetime, timedelta
 
 import discord
 from core import database
 from core.checks import is_botAdmin
 from core.common import Emoji
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 #from main import vc
 
@@ -100,6 +98,7 @@ class SkeletonCMD(commands.Cog):
         self.L40 = "〚Level 40〛Expert"
 
         self.TutorRole = "Tutor"
+        self.TutorLogID = 873326994220265482
 
         
 
@@ -199,8 +198,8 @@ class SkeletonCMD(commands.Cog):
                 print(f"T: {query.TutorBotSessionID}")
 
                 day, now = showTotalMinutes(query.datetimeObj)
-                daySTR = query.datetimeObj.strftime("%H:%M:")
-                nowSTR = now.strftime("%H:%M:")
+                daySTR = query.datetimeObj.strftime("%-I:%-M")
+                nowSTR = now.strftime("%-I:%-M")
 
                 day = str(day)
 
@@ -230,7 +229,8 @@ class SkeletonCMD(commands.Cog):
 
                     hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
                     hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
-                    await HOURCH.send(embed = embed)
+                    hourlog.set_footer(text = f"Session ID: {tutorSession.SessionID}")
+                    await HOURCH.send(embed = hourlog)
 
                     embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
                     await student.send(embed = embed)
@@ -257,8 +257,8 @@ class SkeletonCMD(commands.Cog):
                 tag.save()
 
                 day, now = showTotalMinutes(q.datetimeObj)
-                daySTR = query.datetimeObj.strftime("%H:%M:")
-                nowSTR = now.strftime("%H:%M:")
+                daySTR = q.datetimeObj.strftime("%-I:%-M")
+                nowSTR = now.strftime("%-I:%-M")
 
                 day = str(day)
 
@@ -280,8 +280,9 @@ class SkeletonCMD(commands.Cog):
                     HOURCH = await self.bot.fetch_channel(self.TutorLogID)
 
                     hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
-                    hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
-                    await HOURCH.send(embed = embed)
+                    hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student:** {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day} minutes")
+                    hourlog.set_footer(text = f"Session ID: {tutorSession.SessionID}")
+                    await HOURCH.send(embed = hourlog)
 
                     embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
                     await student.send(embed = embed)

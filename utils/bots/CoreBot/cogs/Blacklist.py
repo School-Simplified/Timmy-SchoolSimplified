@@ -1,16 +1,6 @@
-import inspect
-import io
-import logging
-import os
-import textwrap
-import traceback
-from contextlib import redirect_stdout
-
-import aiohttp
 import discord
 from core import database
-from core.checks import is_botAdmin, is_botAdmin3, is_botAdmin4
-from core.common import Emoji
+from core.checks import is_botAdmin3, is_botAdmin4
 from discord.ext import commands
 from dotenv import load_dotenv
 

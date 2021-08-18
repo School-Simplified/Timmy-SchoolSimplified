@@ -1,13 +1,6 @@
 import asyncio
-import datetime
-import json
-import logging
-import random
-from datetime import datetime, timedelta
 
 import discord
-from core import database
-from core.checks import is_botAdmin
 from discord.ext import commands
 
 

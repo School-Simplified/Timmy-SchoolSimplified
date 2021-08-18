@@ -1,10 +1,8 @@
 import datetime
-import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import discord
-from core import database
 from discord.ext import commands
 
 

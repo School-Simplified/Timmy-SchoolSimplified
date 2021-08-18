@@ -1,12 +1,6 @@
-import asyncio
-import datetime
-import json
-import logging
 import random
-from datetime import datetime, timedelta
 
 import discord
-from core import database
 from core.checks import is_botAdmin
 from core.common import Emoji
 from discord.ext import commands
@@ -32,6 +26,14 @@ class SkeletonCMD(commands.Cog):
         myline = random.choice(lines)
         await ctx.send(myline)
 
+    @commands.command()
+    @is_botAdmin
+    async def pingmasa(self,ctx, *, msg = None):
+        masa = await self.bot.fetch_user(736765405728735232)
+        if msg is not None:
+            await ctx.send(masa.mention + f" {msg}")
+        else:
+            await ctx.send(masa.mention)
 
 
     @yolk.command(invoke_without_command=True)

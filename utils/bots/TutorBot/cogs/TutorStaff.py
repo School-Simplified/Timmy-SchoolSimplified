@@ -24,6 +24,7 @@ class TutorBotStaffCMD(commands.Cog):
         self.est = pytz.timezone('US/Eastern')
 
     @commands.command()
+    @commands.has_role("Tutor")
     async def skip(self, ctx, id):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == id)
         if query.exists():
@@ -47,6 +48,7 @@ class TutorBotStaffCMD(commands.Cog):
 
 
     @commands.command()
+    @commands.has_role("Tutor")
     async def remove(self, ctx, id):
         query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == id)
         if query.exists():
@@ -62,6 +64,7 @@ class TutorBotStaffCMD(commands.Cog):
             await ctx.send(embed = embed)
 
     @commands.command()
+    @commands.has_role("Tutor")
     async def schedule(self, ctx, date, time, ptz:str, student: discord.User, subject, repeats: bool):
         embed = discord.Embed(title = "Schedule Confirmed", description = "Created session.", color = discord.Color.green())
         now = datetime.now(self.est)
@@ -69,15 +72,20 @@ class TutorBotStaffCMD(commands.Cog):
 
         datetimeSession = datetime.strptime(f"{date}/{year} {time} {ptz.upper()}", "%m/%d/%Y %I:%M %p")
         datetimeSession = datetimeSession.astimezone(self.est)
-        SessionID = await id_generator()
+        if datetimeSession > now:
+            SessionID = await id_generator()
 
-        daterev = datetimeSession.strftime("%m/%d")
+            daterev = datetimeSession.strftime("%m/%d")
 
-        embed.add_field(name = "Values", value = f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{daterev}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`")
-        embed.set_footer(text = f"Subject: {subject}")
-        query = database.TutorBot_Sessions.create(SessionID = SessionID, Date = datetimeSession, Time = time, StudentID = student.id, TutorID = ctx.author.id, Repeat = repeats, Subject = subject, ReminderSet = False)
-        query.save()
-        await ctx.send(embed = embed)
+            embed.add_field(name = "Values", value = f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{daterev}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`")
+            embed.set_footer(text = f"Subject: {subject}")
+            query = database.TutorBot_Sessions.create(SessionID = SessionID, Date = datetimeSession, Time = time, StudentID = student.id, TutorID = ctx.author.id, Repeat = repeats, Subject = subject, ReminderSet = False)
+            query.save()
+            await ctx.send(embed = embed)
+        else:
+            embed = discord.Embed(title = "Failed to Generate Session", description = f"Unfortunately this session appears to be in the past and Timmy does not support expired sessions", color = discord.Color.red())
+            await ctx.send(embed = embed)
+            
 
 def setup(bot):
     bot.add_cog(TutorBotStaffCMD(bot))

@@ -1,14 +1,8 @@
 import asyncio
-import datetime
 import io
-import json
-import logging
-from datetime import datetime, timedelta
 
 import chat_exporter
 import discord
-from chat_exporter.chat_exporter import Transcript
-from core import database
 from discord.ext import commands
 
 

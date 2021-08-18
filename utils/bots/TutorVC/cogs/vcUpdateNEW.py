@@ -1,12 +1,11 @@
 import asyncio
 import datetime
-import json
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 import discord
 from core import database
 from core.common import Emoji
-from discord.ext import commands, tasks
+from discord.ext import commands
 from pytz import timezone
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
@@ -148,6 +147,7 @@ class SkeletonCMD(commands.Cog):
 
                                     hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
                                     hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
+                                    hourlog.set_footer(text = f"Session ID: {tutorSession.SessionID}")
                                     await HOURCH.send(embed = embed)
 
                                     embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
