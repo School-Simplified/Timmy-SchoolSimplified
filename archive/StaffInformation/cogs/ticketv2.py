@@ -1,15 +1,8 @@
-import datetime
 import io
-import json
-from datetime import datetime, timedelta
-from re import A
 
 import chat_exporter
 import discord
-from chat_exporter.chat_exporter import Transcript
 from core import database
-from discord.channel import TextChannel
-from discord.errors import InvalidArgument
 from discord.ext import commands
 
 authCategories = [836005981497327616, 836006081159102474, 836006123952930847, 836006174431379476, 836006227410419742, 836006262440460369, 836006311417348128, 836006373984436255 , 836006426497384449]
