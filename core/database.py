@@ -309,7 +309,6 @@ class CheckInformation(BaseModel):
     `elseSituation`: BooleanField()
     Other situations will be defaulted to/as ...
     '''
-
     id = AutoField()
 
     MasterMaintenance = BooleanField()

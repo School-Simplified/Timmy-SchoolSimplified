@@ -24,7 +24,7 @@ load_dotenv()
 intents = discord.Intents.all()
 
 # Defining client
-activity=discord.Activity(type=discord.ActivityType.watching, name="+help | schoolsimplified.org/timmy")
+activity=discord.Activity(type=discord.ActivityType.watching, name="+help | timmy.schoolsimplified.org/tutorbot-1")
 
 client = commands.Bot(command_prefix=commands.when_mentioned_or('+'), intents=intents, case_insensitive=True, activity = activity)
 client.remove_command('help')
@@ -393,9 +393,9 @@ async def ping(ctx):
 async def help(ctx):
     embed = discord.Embed(title="Help Command",
                           color=discord.Colour.gold())
-    embed.add_field(name="Notion Page",
-                    value="[https://schoolsimplified.org/timmy](https://schoolsimplified.org/timmy \"Masa if you see "
-                          "this, ur short\")")
+    embed.add_field(name="[BETA] Documentation Page",
+                    value="[https://timmy.schoolsimplified.org](https://timmy.schoolsimplified.org \"Masa if you see "
+                          "this, ur short\")\n**Check out our new documentation! This is still a WIP, please forward any typo's or errors to Space.**")
     embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
     embed.set_thumbnail(url="https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533")
     await ctx.send(embed=embed)

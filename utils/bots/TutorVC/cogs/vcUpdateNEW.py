@@ -152,7 +152,10 @@ class SkeletonCMD(commands.Cog):
 
                                     embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
                                     await student.send(embed = embed)
-                        else:
+
+                                    embed = discord.Embed(title = "Logged Hours", description = "Hey! It looks like you've finished your tutor session, I've already went ahead and sent your session legnth in <#873326994220265482>.\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.", color = discord.Color.green())
+                                    await tutor.send(embed = embed)
+                        else:       
                             print("no query, moving on...")
                 else:
                     print("no")
@@ -203,12 +206,12 @@ class SkeletonCMD(commands.Cog):
                 if SB not in member.roles and AT not in member.roles and legend not in member.roles and MT not in member.roles and MAT not in member.roles and TT not in member.roles and VP not in member.roles and CO not in member.roles:
             
                     embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())
-                    embed.add_field(name = "Voice Channel Commands", value = "https://schoolsimplified.org/tutorvc")
+                    embed.add_field(name = "Voice Channel Commands", value = "https://timmy.schoolsimplified.org/tutorvc")
                     embed.set_footer(text = "If you have any questions, consult the help command! | +help")
 
                 else:
                     embed = discord.Embed(title = f"{Emoji.confirm} Voice Channel Creation", description = f"*Created: {member.display_name}'s Channel*", color = discord.Colour.green())
-                    embed.add_field(name = "Voice Channel Commands", value = "https://schoolsimplified.org/tutorvc")
+                    embed.add_field(name = "Voice Channel Commands", value = "https://timmy.schoolsimplified.org/tutorvc")
                     embed.set_footer(text = "If you have any questions, consult the help command! | +help")
 
                 if TutorRole in member.roles:
