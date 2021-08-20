@@ -55,7 +55,7 @@ class BanUpdate(commands.Cog):
             target = logs.target
 
             # We need to check who banned the person.
-            if moderator.id == 536991182035746816:  # Wick's ID
+            if moderator.id == 548410451818708993:  # Wick's ID
                 banReasonAUDIT = logs.reason
 
                 if "No reason specified by" in banReasonAUDIT:

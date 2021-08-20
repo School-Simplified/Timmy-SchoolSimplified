@@ -24,7 +24,7 @@ load_dotenv()
 intents = discord.Intents.all()
 
 # Defining client
-activity=discord.Activity(type=discord.ActivityType.watching, name="+help | timmy.schoolsimplified.org/tutorbot-1")
+activity=discord.Activity(type=discord.ActivityType.watching, name="+help | timmy.schoolsimplified.org")
 
 client = commands.Bot(command_prefix=commands.when_mentioned_or('+'), intents=intents, case_insensitive=True, activity = activity)
 client.remove_command('help')

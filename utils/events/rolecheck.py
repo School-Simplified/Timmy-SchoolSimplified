@@ -7,6 +7,8 @@ messageDict = {"Math": 866904767568543744, "Science": 866904901174427678, "Engli
 config, _ = load_config("equelRoles")
 
 configA, _A = load_config("acadRoles")
+
+configH, _H = load_config("hrRoles")
 '''
 Used by RoleSync
 '''
@@ -29,6 +31,13 @@ def getAcadRole(query):
         value = messageDict[configA[query]]
         return value, configA[query]
 
+def getHRRole(query):
+    print(query)
+    if query not in configH:
+        return None
+    else:
+        return configH[query]
+
 async def roleNameCheck(name, before, after, guild, user ,type):
     check = getEquelRank(name)
     if check != None:
@@ -48,7 +57,23 @@ async def roleNameCheck(name, before, after, guild, user ,type):
         print("Not in JSON")
 
 
+async def HRNameCheck(name, before, after, guild, user ,type):
+    check = getHRRole(name)
+    if check != None:
+        if name in [role.name for role in before.roles] or name in [role.name for role in after.roles]:
+            roleName = discord.utils.get(guild.roles, name=check)
 
+            if type == "+":
+                await user.add_roles(roleName)
+            elif type == "-":
+                await user.remove_roles(roleName)
+            else:
+                raise BaseException("Invalid Type Syntax: roleNameCheck (type) only supports + or -.")
+        else:
+            print("Not found. (Error 2)")
+
+    else:
+        print("Not in JSON")
 
 
 
@@ -64,8 +89,6 @@ class SkeletonCMD(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        '''
-        #sub server id: 827568748163760139
         mainServer = self.bot.get_guild(self.staffServer)
         user = mainServer.get_member(before.id)
 
@@ -88,7 +111,7 @@ class SkeletonCMD(commands.Cog):
             item = list_difference[0]
 
 
-            await roleNameCheck(item.name, before, after, mainServer, user, "+")
+            await HRNameCheck(item.name, before, after, mainServer, user, "+")
 
             
         elif len(before.roles) > len(after.roles):
@@ -102,9 +125,7 @@ class SkeletonCMD(commands.Cog):
 
             item = list_difference[0]
 
-            await roleNameCheck(item.name, before, after, mainServer, user, "-")
-        '''
-        pass
+            await HRNameCheck(item.name, before, after, mainServer, user, "-")
 
 
 
