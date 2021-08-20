@@ -87,9 +87,10 @@ class SkeletonCMD(commands.Cog):
 
         self.testRoles = ["Math", "Science", "Biology"]
 
+
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        mainServer = self.bot.get_guild(self.staffServer)
+        mainServer = self.bot.get_guild(763119924385939498)
         user = mainServer.get_member(before.id)
 
         if mainServer == None:
@@ -101,34 +102,28 @@ class SkeletonCMD(commands.Cog):
         if len(before.roles) < len(after.roles):
             #New Role
             if before.guild.id == 778406166735880202:
-                return
 
-            list_difference = []
-            for item in after.roles:
-                if item not in before.roles:
-                    list_difference.append(item)
+                list_difference = []
+                for item in after.roles:
+                    if item not in before.roles:
+                        list_difference.append(item)
 
-            item = list_difference[0]
+                item = list_difference[0]
 
-
-            await HRNameCheck(item.name, before, after, mainServer, user, "+")
+                await HRNameCheck(item.name, before, after, mainServer, user, "+")
 
             
         elif len(before.roles) > len(after.roles):
             if before.guild.id == 778406166735880202:
-                return
 
-            list_difference = []
-            for item in before.roles:
-                if item not in after.roles:
-                    list_difference.append(item)
+                list_difference = []
+                for item in before.roles:
+                    if item not in after.roles:
+                        list_difference.append(item)
 
-            item = list_difference[0]
+                item = list_difference[0]
 
-            await HRNameCheck(item.name, before, after, mainServer, user, "-")
-
-
-
+                await HRNameCheck(item.name, before, after, mainServer, user, "-")
 
     @commands.Cog.listener('on_member_update')
     async def roleSyncAcad(self, before, after):
