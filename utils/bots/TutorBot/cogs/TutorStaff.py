@@ -112,7 +112,7 @@ class TutorBotStaffCMD(commands.Cog):
             await ctx.send("You don't have any tutor sessions!")
         else:
             for session in query:
-                await session.delete_instance()
+                session.delete_instance()
             await ctx.send(f"All sessions have been deleted!\nDeleted {query.count()} sessions.")
 
 def setup(bot):
