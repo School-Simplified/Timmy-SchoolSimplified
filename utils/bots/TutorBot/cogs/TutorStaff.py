@@ -108,12 +108,13 @@ class TutorBotStaffCMD(commands.Cog):
     @commands.has_role("Tutor")
     async def clear(self, ctx):
         query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.TutorID == ctx.author.id)
-        if query.count() == 0:
+        var = query.count()
+        if var == 0:
             await ctx.send("You don't have any tutor sessions!")
         else:
             for session in query:
                 session.delete_instance()
-            await ctx.send(f"All sessions have been deleted!\nDeleted {query.count()} sessions.")
+            await ctx.send(f"All sessions have been deleted!\nDeleted {var} sessions.")
 
 def setup(bot):
     bot.add_cog(TutorBotStaffCMD(bot))
