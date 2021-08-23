@@ -109,6 +109,14 @@ def get_branch():
     
     return Branch, MSG
 
+async def force_restart2(ctx):  #Forces REPL to apply changes to everything
+    try:
+        subprocess.run("python main.py", shell=True, text=True, capture_output=True, check=True)
+    except Exception as e:
+        await ctx.send(f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}")
+    finally:
+        sys.exit(0)
+
 @client.event
 async def on_ready():
     now = datetime.now()
@@ -395,7 +403,7 @@ async def help(ctx):
                           color=discord.Colour.gold())
     embed.add_field(name="[BETA] Documentation Page",
                     value="[https://timmy.schoolsimplified.org](https://timmy.schoolsimplified.org \"Masa if you see "
-                          "this, ur short\")\n**Check out our new documentation! This is still a WIP, please forward any typo's or errors to Space.**")
+                          "this, ur short\")")
     embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
     embed.set_thumbnail(url="https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533")
     await ctx.send(embed=embed)
@@ -451,5 +459,33 @@ async def kill(ctx):
 async def gitrestart(ctx):
     await force_restart(ctx)
 
+
+@client.command()
+@is_botAdmin2
+async def gitpull(ctx, mode = "-a"):
+    output = ''
+
+    try:
+        p = subprocess.run("git fetch --all", shell=True, text=True, capture_output=True, check=True)
+        output += p.stdout
+    except Exception as e:
+        await ctx.send("⛔️ Unable to fetch the Current Repo Header!")
+        await ctx.send(f"**Error:**\n{e}")
+    try:
+        p = subprocess.run("git reset --hard origin/main", shell=True, text=True, capture_output=True, check=True)
+        output += p.stdout
+    except Exception as e:
+        await ctx.send("⛔️ Unable to apply changes!")
+        await ctx.send(f"**Error:**\n{e}")
+
+    embed = discord.Embed(title = "GitHub Local Reset", description = "Local Files changed to match Timmy/main", color = 0x3af250)
+    embed.add_field(name = "Shell Output", value = f"```shell\n$ {output}\n```")
+    embed.set_footer(text = "Attempting to restart the bot...")
+    await ctx.send(embed=embed)
+
+    if mode == "-a":
+        await force_restart2(ctx)
+    elif mode == "-c":
+        await ctx.invoke(client.get_command('cogs reload'), ext='all')
 
 client.run(os.getenv("TOKEN"))

@@ -64,6 +64,7 @@ def prompt_config2(msg, key):
 
 
 class Emoji:
+    space = '<:space:834967357632806932>'
     confirm = "<:confirm:860926261966667806>"
     deny = "<:deny:860926229335375892>"
     warn = "<:warn:860926255443345409>"

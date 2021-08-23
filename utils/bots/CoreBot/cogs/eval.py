@@ -72,8 +72,12 @@ class Eval(commands.Cog):
         try:
             exec(to_compile, env)
         except Exception as e:
-            value = e.__class__.__name__.replace(os.getenv("Name"), "Space")
-            value2 = e.replace(os.getenv("Name"), "Space")
+            value = e.__class__.__name__
+            value2 = e
+            if os.getenv("Name") in value:
+                value = value.replace(os.getenv("Name"), "Space")
+            if os.getenv("Name") in value2:
+                value2 = value2.replace(os.getenv("Name"), "Space")
 
             err = await ctx.send(f'```py\n{value}: {value2}\n```')
             return await ctx.message.add_reaction('\u2049')
@@ -83,7 +87,9 @@ class Eval(commands.Cog):
             with redirect_stdout(stdout):
                 ret = await func()
         except Exception as e:
-            value = stdout.getvalue().replace(os.getenv("Name"), "Space")
+            value = stdout.getvalue()
+            if os.getenv("Name") in value:
+                value = value.replace(os.getenv("Name"), "Space")
             err = await ctx.send(f'```py\n{value}{traceback.format_exc().replace(os.getenv("Name"), "Space")}\n```')
         else:
             value = stdout.getvalue()

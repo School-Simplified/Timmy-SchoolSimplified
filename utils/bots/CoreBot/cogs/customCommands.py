@@ -104,6 +104,11 @@ class SkeletonCMD(commands.Cog):
                 embed = discord.Embed(title = "Count Unbanned!", description = f"{Emoji.confirm} {member.display_name} has been count unbanned!\n{Emoji.barrow} **Reason:** {reason}", color = 0xeffa16)
                 await ctx.send(embed = embed)
 
+    @commands.command()
+    async def join(self, ctx, vc:discord.VoiceChannel):
+        await vc.connect()
+        await ctx.send("ok i did join")    
+
 
 
 

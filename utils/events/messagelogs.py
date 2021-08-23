@@ -8,7 +8,7 @@ from discord.ext import commands
 class SkeletonCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channels = [786068971048140820, 808919081469739008]
+        self.channels = [786068971048140820, 808919081469739008, 878792926266810418]
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):

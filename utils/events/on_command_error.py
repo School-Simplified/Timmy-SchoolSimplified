@@ -55,9 +55,10 @@ class CommandErrorHandler(commands.Cog):
         etype = type(error)
         exception = traceback.format_exception(etype, error, tb, chain=True)
         exception_msg = ""
-        sturl = stackoverflow(error)
         for line in exception:
             exception_msg += line
+        
+        error = getattr(error, 'original', error)
 
         if ctx.command.name == "rule":
             return "No Rule..."
@@ -68,7 +69,7 @@ class CommandErrorHandler(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
 
-        elif isinstance(error, commands.CommandNotFound):
+        elif isinstance(error, (commands.CommandNotFound, commands.errors.CommandNotFound)):
             print("Ignored error: " + str(ctx.command))
             return
 
@@ -86,14 +87,14 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send(embed = em)
             return
 
-        elif isinstance(error, (commands.MissingAnyRole, commands.MissingRole, commands.MissingPermissions)):
+        elif isinstance(error, (commands.MissingAnyRole, commands.MissingRole, commands.MissingPermissions, commands.errors.MissingAnyRole, commands.errors.MissingRole, commands.errors.MissingPermissions)):
             em = discord.Embed(title = "Invalid Permissions!", description = "You do not have the associated role in order to successfully invoke this command! Contact an administrator/developer if you believe this is invalid.", color = 0xf5160a)
             em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
             em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
             await ctx.send(embed = em)
             return
 
-        elif isinstance(error, commands.CommandOnCooldown):
+        elif isinstance(error, (commands.CommandOnCooldown, commands.errors.CommandOnCooldown)):
             m, s = divmod(error.retry_after, 60)
             h, m = divmod(m, 60)
 
@@ -101,7 +102,9 @@ class CommandErrorHandler(commands.Cog):
                 .format(round(h), round(m), round(s))
 
             embed = discord.Embed(title = "Command On Cooldown", description = msg, color = discord.Color.red())
-            await ctx.send(msg)
+            await ctx.send(embed = embed)
+            
+
 
         else:
             error_file = Path("error.txt")

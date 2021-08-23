@@ -45,7 +45,9 @@ class TutorBotStaffCMD(commands.Cog):
                 date = entry.Date.strftime("%m/%d/%Y")
                 amORpm = entry.Date.strftime("%p")
 
-                embed = discord.Embed(title = "Tutor Session Query", description = f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {date} {entry.Time} {amORpm} -> {studentUser.name}")
+                embed = discord.Embed(title = "Tutor Session Query", description =f"Here are the query results for {id}")
+                embed.add_field(name = "Values", value = f"**Session ID:** `{entry.SessionID}`\n**Student:** `{studentUser.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{date}`\n**Time:** `{entry.Time}`\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}")
+                embed.set_footer(text = f"Subject: {entry.Subject}")
                 await ctx.send(embed = embed)
             else:
                 embed = discord.Embed(title = "Invalid Session", description = "This session does not exist, please check the ID you've provided!", color = discord.Color.red())

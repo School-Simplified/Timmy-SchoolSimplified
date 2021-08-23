@@ -104,7 +104,7 @@ class TallyCMD(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Academics Manager", "Lead Helper")
-    async def find(self, ctx, userList: commands.Greedy[discord.Member], channelList: commands.Greedy[discord.TextChannel] = [],dayQuery : commands.Greedy[int] = [14] ):
+    async def msgfind(self, ctx, userList: commands.Greedy[discord.Member], channelList: commands.Greedy[discord.TextChannel] = [],dayQuery : commands.Greedy[int] = [14] ):
         plsDoNotShowChannels = False
 
         tempMemberList = []

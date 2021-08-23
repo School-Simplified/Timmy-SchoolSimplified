@@ -16,15 +16,19 @@ class TutorBotLoop(commands.Cog):
 
     @tasks.loop(seconds=60.0)
     async def tutorsession(self): 
-        now = datetime.now(self.est) 
-        for entry in database.TutorBot_Sessions: 
-            entry.Date = entry.Date.astimezone(self.est)
-            val = int((entry.Date - now).total_seconds())
+        now = datetime.now(self.est)
 
-            if (val <= 120) and not entry.ReminderSet:
+        for entry in database.TutorBot_Sessions: 
+            TutorSession = pytz.timezone("America/New_York").localize(entry.Date)
+            val = int((TutorSession - now).total_seconds())
+            print(val, entry.SessionID, entry.Date)
+            
+
+            if val <= 120 and val >= 1:
                 tutor = self.bot.get_user(entry.TutorID)
                 student = self.bot.get_user(entry.StudentID)
 
+                print("t")
                 botch = self.bot.get_channel(862480236965003275)
                 embed = discord.Embed(title = "ALERT: You have a Tutor Session Soon!", description = "Please make sure you both communicate and set up a private voice channel!", color = discord.Color.green())
                 embed.add_field(name = "Tutor Session Details", value = f"**Tutor:** {tutor.name}\n**Student:** {student.name}\n**Session ID:** {entry.SessionID}\n**Time:** {entry.Time}")
@@ -48,10 +52,10 @@ class TutorBotLoop(commands.Cog):
                     
                 geten.ReminderSet = True
                 geten.save()
-            else:
+            elif val < 0 and not entry.Repeat:
+                print("bout to delete this boy")
                 geten: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.id == entry.id).get()
-                geten.ReminderSet = False
-                geten.save()
+                geten.delete_instance()
 
 
     @tutorsession.before_loop

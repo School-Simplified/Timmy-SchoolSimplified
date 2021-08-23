@@ -1,6 +1,6 @@
 import random
 import string
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import discord
 import pytz
@@ -65,14 +65,16 @@ class TutorBotStaffCMD(commands.Cog):
 
     @commands.command()
     @commands.has_role("Tutor")
-    async def schedule(self, ctx, date, time, ptz:str, student: discord.User, subject, repeats: bool):
+    async def schedule(self, ctx, date, time, ampm:str, student: discord.User, subject, repeats: bool = False):
         embed = discord.Embed(title = "Schedule Confirmed", description = "Created session.", color = discord.Color.green())
-        now = datetime.now(self.est)
+        now = datetime.now()
+        now :datetime = now.astimezone(self.est)
         year = now.strftime("%Y")
 
-        datetimeSession = datetime.strptime(f"{date}/{year} {time} {ptz.upper()}", "%m/%d/%Y %I:%M %p")
-        datetimeSession = datetimeSession.astimezone(self.est)
-        if datetimeSession > now:
+        datetimeSession = datetime.strptime(f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p")
+        datetimeSession = pytz.timezone("America/New_York").localize(datetimeSession)
+
+        if datetimeSession >= now:
             SessionID = await id_generator()
 
             daterev = datetimeSession.strftime("%m/%d")
@@ -83,9 +85,35 @@ class TutorBotStaffCMD(commands.Cog):
             query.save()
             await ctx.send(embed = embed)
         else:
-            embed = discord.Embed(title = "Failed to Generate Session", description = f"Unfortunately this session appears to be in the past and Timmy does not support expired sessions", color = discord.Color.red())
+            embed = discord.Embed(title = "Failed to Generate Session", description = f"Unfortunately this session appears to be in the past and Timmy does not support expired sessions.", color = discord.Color.red())
             await ctx.send(embed = embed)
+
+    @schedule.error
+    async def schedule_error(self, ctx, error):
+        if isinstance(error, (commands.UserNotFound, commands.errors.UserNotFound)):
+            em = discord.Embed(title = "Bad Argument!", description = "Looks like you messed up an argument somewhere here!\n\n**Check the following:**\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)", color = 0xf5160a)
+            em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
+            em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
+            await ctx.send(embed = em)
+        
+        elif isinstance(error, (commands.MissingRequiredArgument, commands.errors.MissingRequiredArgument)):
+            em = discord.Embed(title = "Bad Argument!", description = "Looks like you messed up an argument somewhere here!\n\n**Check the following:**\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)", color = 0xf5160a)
+            em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
+            em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
+            await ctx.send(embed = em)
+        else:
+            raise error
             
+    @commands.command()
+    @commands.has_role("Tutor")
+    async def clear(self, ctx):
+        query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.TutorID == ctx.author.id)
+        if query.count() == 0:
+            await ctx.send("You don't have any tutor sessions!")
+        else:
+            for session in query:
+                await session.delete_instance()
+            await ctx.send(f"All sessions have been deleted!\nDeleted {query.count()} sessions.")
 
 def setup(bot):
     bot.add_cog(TutorBotStaffCMD(bot))
