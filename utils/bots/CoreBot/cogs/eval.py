@@ -31,6 +31,7 @@ class Eval(commands.Cog):
         """Evaluates python code"""
         env = {
             'ctx': ctx,
+            'self': self,
             'bot': self.bot,
             'channel': ctx.channel,
             'author': ctx.author,
@@ -81,7 +82,6 @@ class Eval(commands.Cog):
 
             err = await ctx.send(f'```py\n{value}: {value2}\n```')
             return await ctx.message.add_reaction('\u2049')
-
         func = env['func']
         try:
             with redirect_stdout(stdout):

@@ -6,10 +6,10 @@ import discord
 from core import database
 from core.common import Emoji
 from discord.ext import commands
-from pytz import timezone
+import pytz
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
-
+EST = pytz.timezone('US/Eastern')
 
 def convert_time_to_seconds(time):
     try:
@@ -24,19 +24,18 @@ def convert_time_to_seconds(time):
     
 
 def showFutureTime(time):
-    now = datetime.now()
+    now = datetime.now(EST)
     output = convert_time_to_seconds(time)
     if output == None:
         return None
 
     add = timedelta(seconds = int(output))
     now_plus_10 = now + add
-    print(now_plus_10)
 
     return now_plus_10.strftime(r"%I:%M %p")
 
 def showTotalMinutes(dateObj: datetime):
-    now = datetime.now()
+    now = datetime.now(EST)
 
     deltaTime = now - dateObj
 
@@ -119,10 +118,11 @@ class SkeletonCMD(commands.Cog):
                         query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id))
                         if query.exists():
                             query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id)).get()
+                            VCDatetime = pytz.timezone("America/New_York").localize(query.datetimeObj)
 
-                            day, now = showTotalMinutes(query.datetimeObj)
-                            daySTR = query.datetimeObj.strftime("%H:%M:")
-                            nowSTR = now.strftime("%H:%M:")
+                            day, now = showTotalMinutes(VCDatetime)
+                            daySTR = VCDatetime.strftime("%H:%M %p EST")
+                            nowSTR = now.strftime("%H:%M %p EST")
                             
                             query.delete_instance() 
 
@@ -146,15 +146,18 @@ class SkeletonCMD(commands.Cog):
                                     HOURCH = await self.bot.fetch_channel(self.TutorLogID)
 
                                     hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
-                                    hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student: {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
+                                    hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student:** {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
                                     hourlog.set_footer(text = f"Session ID: {tutorSession.SessionID}")
                                     await HOURCH.send(embed = embed)
 
-                                    embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
-                                    await student.send(embed = embed)
-
-                                    embed = discord.Embed(title = "Logged Hours", description = "Hey! It looks like you've finished your tutor session, I've already went ahead and sent your session legnth in <#873326994220265482>.\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.", color = discord.Color.green())
-                                    await tutor.send(embed = embed)
+                                    feedback = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
+                                    loggedhours = discord.Embed(title = "Logged Hours", description = "Hey! It looks like you've finished your tutor session, I've already went ahead and sent your session legnth in <#873326994220265482>.\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.", color = discord.Color.green())
+                                    
+                                    try:
+                                        await tutor.send(embed = feedback)
+                                        await student.send(embed = loggedhours)
+                                    except discord.HTTPException:
+                                        pass
                         else:       
                             print("no query, moving on...")
                 else:
@@ -219,7 +222,7 @@ class SkeletonCMD(commands.Cog):
 
                 channel = await category.create_voice_channel(f"{member.display_name}'s Channel", user_limit = 2)
                 await channel.set_permissions(member.guild.default_role, stream = True)
-                tag: database.VCChannelInfo = database.VCChannelInfo.create(ChannelID = channel.id, name = f"{member.display_name}'s Channel", authorID = member.id, used = True, datetimeObj = datetime.now(), lockStatus = "0")
+                tag: database.VCChannelInfo = database.VCChannelInfo.create(ChannelID = channel.id, name = f"{member.display_name}'s Channel", authorID = member.id, used = True, datetimeObj = datetime.now(EST), lockStatus = "0")
                 tag.save()
 
                 '''

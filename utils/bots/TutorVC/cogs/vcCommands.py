@@ -2,6 +2,7 @@ import datetime
 from datetime import datetime, timedelta
 
 import discord
+import pytz
 from core import database
 from core.checks import is_botAdmin
 from core.common import Emoji
@@ -18,7 +19,7 @@ staticChannels = [784556875487248394, 784556893799448626]
 presetChannels = [843637802293788692, 784556875487248394, 784556893799448626]
 '''
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
-
+EST = pytz.timezone('US/Eastern')
 
 
 def convert_time_to_seconds(time):
@@ -34,7 +35,7 @@ def convert_time_to_seconds(time):
     
 
 def showFutureTime(time):
-    now = datetime.now()
+    now = datetime.now(EST)
     output = convert_time_to_seconds(time)
     if output == None:
         return None
@@ -46,7 +47,7 @@ def showFutureTime(time):
     return now_plus_10.strftime(r"%I:%M %p")
 
 def showTotalMinutes(dateObj: datetime):
-    now = datetime.now()
+    now = datetime.now(EST)
 
     deltaTime = now - dateObj
 
@@ -187,7 +188,7 @@ class SkeletonCMD(commands.Cog):
         database.db.connect(reuse_if_open=True)
         team = discord.utils.get(ctx.guild.roles, name= self.AT)
         member = ctx.guild.get_member(ctx.author.id)
-        timestamp2 = datetime.now()
+        timestamp2 = datetime.now(EST)
 
         voice_state = member.voice
         if voice_state == None:
@@ -196,16 +197,13 @@ class SkeletonCMD(commands.Cog):
             if query.exists():
                 query = database.VCChannelInfo.select().where(database.VCChannelInfo.authorID == ctx.author.id).get()
                 print(f"T: {query.TutorBotSessionID}")
+                VCDatetime = pytz.timezone("America/New_York").localize(query.datetimeObj)
 
-                day, now = showTotalMinutes(query.datetimeObj)
-                daySTR = query.datetimeObj.strftime("%-I:%-M")
-                nowSTR = now.strftime("%-I:%-M")
+                day, now = showTotalMinutes(VCDatetime)
+                daySTR = VCDatetime.strftime("%-I:%-M %p EST")
+                nowSTR = now.strftime("%-I:%-M %p EST")
 
                 day = str(day)
-
-                print(query.datetimeObj)
-
-                print(query.ChannelID)
 
                 channel = await self.bot.fetch_channel(int(query.ChannelID))
 
@@ -255,10 +253,11 @@ class SkeletonCMD(commands.Cog):
                 
                 tag: database.IgnoreThis = database.IgnoreThis.create(channelID = voice_state.channel.id, authorID = member.id)
                 tag.save()
+                VCDatetime = pytz.timezone("America/New_York").localize(q.datetimeObj)
 
-                day, now = showTotalMinutes(q.datetimeObj)
-                daySTR = q.datetimeObj.strftime("%-I:%-M")
-                nowSTR = now.strftime("%-I:%-M")
+                day, now = showTotalMinutes(VCDatetime)
+                daySTR = VCDatetime.strftime("%-I:%-M %p EST")
+                nowSTR = now.strftime("%-I:%-M %p EST")
 
                 day = str(day)
 
@@ -285,7 +284,16 @@ class SkeletonCMD(commands.Cog):
                     await HOURCH.send(embed = hourlog)
 
                     embed = discord.Embed(title = "Feedback!", description = "Hey it looks like you're tutor session just ended, if you'd like to let us know how we did please fill out the form below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8", color = discord.Colour.green())
-                    await student.send(embed = embed)
+                    try:
+                        await student.send(embed = embed)
+                    except discord.HTTPException: 
+                        pass
+                    
+                    embed = discord.Embed(title = "Logged Hours", description = "Hey! It looks like you've finished your tutor session, I've already went ahead and sent your session legnth in <#873326994220265482>.\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.", color = discord.Color.green())
+                    try:
+                        await tutor.send(embed = embed)
+                    except discord.HTTPException: 
+                        pass
 
                 q.delete_instance()
                 await voice_state.channel.delete()
@@ -319,12 +327,12 @@ class SkeletonCMD(commands.Cog):
 
         if channel.category_id == self.categoryID:
             query = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == channel.id)
-            print(query)
 
             if query.exists():
                 q: database.VCChannelInfo = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == channel.id).get()
+                VCDatetime = pytz.timezone("America/New_York").localize(q.datetimeObj)
 
-                day, now = showTotalMinutes(q.datetimeObj)
+                day, now = showTotalMinutes(VCDatetime)
 
 
                 for VCMember in channel.members:
@@ -475,7 +483,7 @@ class SkeletonCMD(commands.Cog):
     async def unlock(self, ctx):
         database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
-        timestamp2 = datetime.now()
+        timestamp2 = datetime.now(EST)
 
         voice_state = member.voice
 
@@ -528,7 +536,7 @@ class SkeletonCMD(commands.Cog):
     async def permit(self, ctx, typeAction, user: discord.Member = None):
         database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
-        timestamp2 = datetime.now()
+        timestamp2 = datetime.now(EST)
 
         voice_state = member.voice
 
@@ -610,7 +618,7 @@ class SkeletonCMD(commands.Cog):
     async def voicelimit(self, ctx, new_voice_limit):
         #database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
-        timestamp2 = datetime.now()
+        timestamp2 = datetime.now(EST)
         MT = discord.utils.get(ctx.guild.roles, name= self.MOD)
         MAT = discord.utils.get(ctx.guild.roles, name= self.MAT)
         TT = discord.utils.get(ctx.guild.roles, name=self.TT)
@@ -680,7 +688,7 @@ class SkeletonCMD(commands.Cog):
     async def disconnect(self, ctx, user: discord.Member):
         database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
-        timestamp2 = datetime.now()
+        timestamp2 = datetime.now(EST)
 
         voice_state = member.voice
 

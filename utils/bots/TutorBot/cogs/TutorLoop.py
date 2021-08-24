@@ -21,8 +21,6 @@ class TutorBotLoop(commands.Cog):
         for entry in database.TutorBot_Sessions: 
             TutorSession = pytz.timezone("America/New_York").localize(entry.Date)
             val = int((TutorSession - now).total_seconds())
-            print(val, entry.SessionID, entry.Date)
-            
 
             if val <= 120 and val >= 1:
                 tutor = self.bot.get_user(entry.TutorID)
@@ -52,10 +50,23 @@ class TutorBotLoop(commands.Cog):
                     
                 geten.ReminderSet = True
                 geten.save()
+
             elif val < 0 and not entry.Repeat:
-                print("bout to delete this boy")
                 geten: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.id == entry.id).get()
                 geten.delete_instance()
+
+            elif val < 0 and entry.Repeat:
+                query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.id == entry.id).get()
+                print(query.id, val, entry.Repeat)
+                old = query.Date
+                new = timedelta(days=7)
+                nextweek = old + new
+
+                nw = nextweek.strftime("%m/%d/%Y")
+
+                query.Date = nextweek
+                query.save()
+
 
 
     @tutorsession.before_loop
