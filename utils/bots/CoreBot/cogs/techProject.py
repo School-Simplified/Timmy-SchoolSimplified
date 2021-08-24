@@ -26,6 +26,7 @@ async def createChannel(self, ctx, type, member):
     msg = await channel.send(embed = controlTicket)
     await msg.add_reaction("🔒")
 
+    await channel.set_permissions(ctx.guild.default_role, send_messages = False, read_messages = False, reason="Ticket Perms")
     await channel.set_permissions(DDM, send_messages = True, read_messages = True, reason="Ticket Perms")
     await channel.set_permissions(ADT, send_messages = True, read_messages = True, reason="Ticket Perms")
     await channel.set_permissions(DT, send_messages = True, read_messages = True, reason="Ticket Perms")

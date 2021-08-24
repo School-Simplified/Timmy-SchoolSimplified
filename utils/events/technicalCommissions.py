@@ -66,6 +66,7 @@ class TechnicalTickets(commands.Cog):
                     msg = await channel.send(embed = controlTicket)
                     await msg.add_reaction("🔒")
 
+                    await channel.set_permissions(guild.default_role, send_messages = False, read_messages = False, reason="Ticket Perms")
                     await channel.set_permissions(DE, send_messages = True, read_messages = True,reason="Ticket Perms")
                     await channel.set_permissions(DM, send_messages = True, read_messages = True, reason="Ticket Perms")
 
