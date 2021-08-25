@@ -66,7 +66,10 @@ class BanUpdate(commands.Cog):
                     banReason = re.match(
                         r"[^[]*\[([^]]*)\]", banReasonAUDIT).groups()[0]
 
-                    random, fullUsernameMOD = banReasonAUDIT.split("- ")
+                    try:
+                        random, fullUsernameMOD = banReasonAUDIT.split("- ")
+                    except ValueError:
+                        fullUsernameMOD = "Wick"
                     
 
             else:

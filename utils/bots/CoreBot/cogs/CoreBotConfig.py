@@ -1,9 +1,10 @@
 import discord
 from core import database
-from core.checks import is_botAdmin3, is_botAdmin4
+from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4
 from core.common import Emoji
 from discord.ext import commands
 from dotenv import load_dotenv
+from main import get_extensions
 
 load_dotenv()
 
@@ -111,6 +112,165 @@ class CoreBotConfig(commands.Cog):
         embed.add_field(name = "Prefix List", value = "\n\n".join(response))
         await ctx.send(embed = embed)
 
+    @commands.group(aliases=['cog'])
+    @is_botAdmin2
+    async def cogs(self, ctx):
+        pass
+
+
+    @cogs.command()
+    @is_botAdmin2
+    async def unload(self, ctx, ext):
+        if "cogs." not in ext:
+            ext = f"cogs.{ext}"
+        if ext in get_extensions():
+            self.bot.unload_extension(ext)
+            embed = discord.Embed(
+                title="Cogs - Unload", description=f"Unloaded cog: {ext}", color=0xd6b4e8)
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(
+                title="Cogs Reloaded", description=f"Cog '{ext}' not found", color=0xd6b4e8)
+            await ctx.send(embed=embed)
+
+
+    @cogs.command()
+    @is_botAdmin2
+    async def load(self, ctx, ext):
+        if "cogs." not in ext:
+            ext = f"cogs.{ext}"
+        if ext in get_extensions():
+            self.bot.load_extension(ext)
+            embed = discord.Embed(title="Cogs - Load",
+                                description=f"Loaded cog: {ext}", color=0xd6b4e8)
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(
+                title="Cogs - Load", description=f"Cog '{ext}' not found.", color=0xd6b4e8)
+            await ctx.send(embed=embed)
+
+
+    @cogs.command(aliases=['restart'])
+    @is_botAdmin2
+    async def reload(self, ctx, ext):
+        if ext == "all":
+            embed = discord.Embed(
+                title="Cogs - Reload", description="Reloaded all cogs", color=0xd6b4e8)
+            for extension in get_extensions():
+                self.bot.reload_extension(extension)
+            await ctx.send(embed=embed)
+            return
+
+        if "cogs." not in ext:
+            ext = f"cogs.{ext}"
+
+        if ext in get_extensions():
+            self.bot.reload_extension(ext)
+            embed = discord.Embed(
+                title="Cogs - Reload", description=f"Reloaded cog: {ext}", color=0xd6b4e8)
+            await ctx.send(embed=embed)
+
+        else:
+            embed = discord.Embed(
+                title="Cogs - Reload", description=f"Cog '{ext}' not found.", color=0xd6b4e8)
+            await ctx.send(embed=embed)
+
+
+    @cogs.command()
+    @is_botAdmin2
+    async def view(self, ctx):
+        msg = " ".join(get_extensions())
+        embed = discord.Embed(title="Cogs - View", description=msg, color=0xd6b4e8)
+        await ctx.send(embed=embed)
+
+    @commands.group()
+    async def w(self, ctx):
+        pass
+
+
+    @w.command()
+    @is_botAdmin
+    async def list(self, ctx):
+        adminList = []
+
+        query1 = database.Administrators.select().where(database.Administrators.TierLevel == 1)
+        for admin in query1:
+            user = await self.bot.fetch_user(admin.discordID)
+            adminList.append(f"`{user.name}` -> `{user.id}`")
+
+        adminLEVEL1 = "\n".join(adminList)
+
+        adminList = []
+        query2 = database.Administrators.select().where(database.Administrators.TierLevel == 2)
+        for admin in query2:
+            user = await self.bot.fetch_user(admin.discordID)
+            adminList.append(f"`{user.name}` -> `{user.id}`")
+
+        adminLEVEL2 = "\n".join(adminList)
+
+        adminList = []
+        query3 = database.Administrators.select().where(database.Administrators.TierLevel == 3)
+        for admin in query3:
+            user = await self.bot.fetch_user(admin.discordID)
+            adminList.append(f"`{user.name}` -> `{user.id}`")
+
+        adminLEVEL3 = "\n".join(adminList)
+
+        adminList = []
+        query4 = database.Administrators.select().where(database.Administrators.TierLevel == 4)
+        for admin in query4:
+            user = await self.bot.fetch_user(admin.discordID)
+            adminList.append(f"`{user.name}` -> `{user.id}`")
+
+        adminLEVEL4 = "\n".join(adminList)
+
+        embed = discord.Embed(title="Bot Administrators", description="Whitelisted Users that have Increased Authorization",
+                            color=discord.Color.green())
+        embed.add_field(name="Whitelisted Users",
+                        value=f"Format:\n**Username** -> **ID**\n\n**Permit 4:** *Owners*\n{adminLEVEL4}\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}")
+        embed.set_footer(text="Only Owners/Permit 4's can modify Bot Administrators. | Permit 4 is the HIGHEST Authorization Level")
+
+        await ctx.send(embed=embed)
+
+
+    @w.command()
+    @is_botAdmin4
+    async def remove(self, ctx, ID: discord.User):
+        database.db.connect(reuse_if_open=True)
+
+        query = database.Administrators.select().where(database.Administrators.discordID == ID.id)
+        if query.exists():
+            query = query.get()
+
+            query.delete_instance()
+
+            embed = discord.Embed(title="Successfully Removed User!",
+                                description=f"{ID.name} has been removed from the database!", color=discord.Color.green())
+            await ctx.send(embed=embed)
+
+
+        else:
+            embed = discord.Embed(title="Invalid User!", description="Invalid Provided: (No Record Found)",
+                                color=discord.Color.red())
+            await ctx.send(embed=embed)
+
+        database.db.close()
+
+
+    @w.command()
+    @is_botAdmin4
+    async def add(self, ctx, ID: discord.User, level: int):
+        database.db.connect(reuse_if_open=True)
+
+        q: database.Administrators = database.Administrators.create(discordID=ID.id, TierLevel=level)
+        q.save()
+
+        embed = discord.Embed(title="Successfully Added User!",
+                            description=f"{ID.name} has been added successfully with permit level `{str(level)}`.",
+                            color=discord.Color.gold())
+        await ctx.send(embed=embed)
+
+        database.db.close()
 
 def setup(bot):
     bot.add_cog(CoreBotConfig(bot))

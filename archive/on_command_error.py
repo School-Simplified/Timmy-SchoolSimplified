@@ -47,8 +47,8 @@ class CommandErrorHandler(commands.Cog):
     @commands.command()
     async def error(self, ctx, times: int = 20, msg="error"):
         raise CustomError(int(times), msg)
+        
 
-    # Checks if the command has a local error handler.
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error: Exception):
         tb = error.__traceback__

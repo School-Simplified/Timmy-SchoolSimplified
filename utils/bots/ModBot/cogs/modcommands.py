@@ -37,7 +37,7 @@ class InfoCMD(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=['find'])
-    @commands.has_any_role("Mod", "Senior Mod", "Head Mod")
+    @commands.has_any_role("Moderator", "Mod", "Senior Mod", "Head Mod")
     async def info(self, ctx, user: commands.Greedy[discord.User] = []):
         for user in user:
             #name = await User.convert(self, ctx, user)

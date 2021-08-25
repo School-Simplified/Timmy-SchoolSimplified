@@ -87,22 +87,6 @@ class TutorBotStaffCMD(commands.Cog):
         else:
             embed = discord.Embed(title = "Failed to Generate Session", description = f"Unfortunately this session appears to be in the past and Timmy does not support expired sessions.", color = discord.Color.red())
             await ctx.send(embed = embed)
-
-    @schedule.error
-    async def schedule_error(self, ctx, error):
-        if isinstance(error, (commands.UserNotFound, commands.errors.UserNotFound)):
-            em = discord.Embed(title = "Bad Argument!", description = "Looks like you messed up an argument somewhere here!\n\n**Check the following:**\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)", color = 0xf5160a)
-            em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
-            em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
-            await ctx.send(embed = em)
-        
-        elif isinstance(error, (commands.MissingRequiredArgument, commands.errors.MissingRequiredArgument)):
-            em = discord.Embed(title = "Bad Argument!", description = "Looks like you messed up an argument somewhere here!\n\n**Check the following:**\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)", color = 0xf5160a)
-            em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
-            em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
-            await ctx.send(embed = em)
-        else:
-            raise error
             
     @commands.command()
     @commands.has_role("Tutor")

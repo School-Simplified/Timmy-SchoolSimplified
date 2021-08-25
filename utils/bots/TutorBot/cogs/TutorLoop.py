@@ -23,8 +23,16 @@ class TutorBotLoop(commands.Cog):
             val = int((TutorSession - now).total_seconds())
 
             if val <= 120 and val >= 1:
+                print(entry.TutorID, entry.StudentID)
                 tutor = self.bot.get_user(entry.TutorID)
                 student = self.bot.get_user(entry.StudentID)
+
+                if tutor == None:
+                    tutor = await self.bot.fetch_user(entry.TutorID)
+                if student == None:
+                    student = await self.bot.fetch_user(entry.StudentID)
+
+                print(tutor, student)
 
                 print("t")
                 botch = self.bot.get_channel(862480236965003275)

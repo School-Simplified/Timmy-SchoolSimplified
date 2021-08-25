@@ -1,21 +1,21 @@
-import asyncio
+import json
 import os
 import subprocess
 import sys
 import time
-from datetime import datetime, timedelta
+import traceback
+from datetime import datetime
 from pathlib import Path
-from time import sleep
 
 import chat_exporter
 import discord
+import requests
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
 from tqdm import tqdm
 
 from core import database
-from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin4
 from core.common import Emoji, bcolors
 
 load_dotenv()
@@ -23,19 +23,21 @@ load_dotenv()
 # Applying towards intents
 intents = discord.Intents.all()
 
-# Defining client
+# Defining bot
 activity=discord.Activity(type=discord.ActivityType.watching, name="+help | timmy.schoolsimplified.org")
 
-client = commands.Bot(command_prefix=commands.when_mentioned_or('+'), intents=intents, case_insensitive=True, activity = activity)
-client.remove_command('help')
+bot = commands.Bot(command_prefix=commands.when_mentioned_or('+'), intents=intents, case_insensitive=True, activity = activity)
+bot.remove_command('help')
 
 use_sentry(
-    client,  # Traceback tracking, DO NOT MODIFY THIS
+    bot,  # Traceback tracking, DO NOT MODIFY THIS
     dsn=os.getenv('DSN_SENTRY'),
     traces_sample_rate=1.0
 )
 
 publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
+TechGuild = 805593783684562965
+TracebackChannel = 851949397533392936
 
 #Start Check
 UpQ = database.Uptime.select().where(database.Uptime.id == 1)
@@ -57,11 +59,9 @@ database.db.close()
 
 
 def get_extensions():  # Gets extension list dynamically
-    extensions = []
-    blacklistedPrefix = ['!', "__", "DEV"]
-    
+    extensions = []    
     for file in Path("utils").glob("**/*.py"):
-        if "!" in file.name or "__" in file.name or "DEV" in file.name:
+        if "!" in file.name or "DEV" in file.name:
             continue
         extensions.append(str(file).replace("/", ".").replace(".py", ""))
     return extensions
@@ -117,16 +117,16 @@ async def force_restart2(ctx):  #Forces REPL to apply changes to everything
     finally:
         sys.exit(0)
 
-@client.event
+@bot.event
 async def on_ready():
     now = datetime.now()
 
-    print(f"Logged in as: {client.user.name}")
+    print(f"Logged in as: {bot.user.name}")
     print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Time: {now}{bcolors.ENDC}")
 
-    chat_exporter.init_exporter(client)
+    chat_exporter.init_exporter(bot)
 
 
 
@@ -137,7 +137,7 @@ capLimit = len(files)
 ext = files[i]
 
 for i in tqdm(range(capLimit - 1), ascii = True, desc =f"Loading Cogs..."):
-    client.load_extension(ext)
+    bot.load_extension(ext)
     i+=1
     if i >= capLimit:
         break
@@ -145,7 +145,7 @@ for i in tqdm(range(capLimit - 1), ascii = True, desc =f"Loading Cogs..."):
         ext = files[i]
 
 
-@client.check
+@bot.check
 async def mainModeCheck(ctx: commands.Context):
     MT = discord.utils.get(ctx.guild.roles, name= "Moderator")
     VP = discord.utils.get(ctx.guild.roles, name= "VP")
@@ -207,285 +207,124 @@ async def mainModeCheck(ctx: commands.Context):
     else:
         return CheckDB.elseSituation
 
+@bot.event
+async def on_command_error(ctx, error: Exception):
+    tb = error.__traceback__
+    etype = type(error)
+    exception = traceback.format_exception(etype, error, tb, chain=True)
+    exception_msg = ""
+    for line in exception:
+        exception_msg += line
+    
+    error = getattr(error, 'original', error)
 
-@client.group()
-async def w(ctx):
-    pass
-
-
-@w.command()
-@is_botAdmin
-async def list(ctx):
-    adminList = []
-
-    query1 = database.Administrators.select().where(database.Administrators.TierLevel == 1)
-    for admin in query1:
-        user = await client.fetch_user(admin.discordID)
-        adminList.append(f"`{user.name}` -> `{user.id}`")
-
-    adminLEVEL1 = "\n".join(adminList)
-
-    adminList = []
-    query2 = database.Administrators.select().where(database.Administrators.TierLevel == 2)
-    for admin in query2:
-        user = await client.fetch_user(admin.discordID)
-        adminList.append(f"`{user.name}` -> `{user.id}`")
-
-    adminLEVEL2 = "\n".join(adminList)
-
-    adminList = []
-    query3 = database.Administrators.select().where(database.Administrators.TierLevel == 3)
-    for admin in query3:
-        user = await client.fetch_user(admin.discordID)
-        adminList.append(f"`{user.name}` -> `{user.id}`")
-
-    adminLEVEL3 = "\n".join(adminList)
-
-    adminList = []
-    query4 = database.Administrators.select().where(database.Administrators.TierLevel == 4)
-    for admin in query4:
-        user = await client.fetch_user(admin.discordID)
-        adminList.append(f"`{user.name}` -> `{user.id}`")
-
-    adminLEVEL4 = "\n".join(adminList)
-
-    embed = discord.Embed(title="Bot Administrators", description="Whitelisted Users that have Increased Authorization",
-                        color=discord.Color.green())
-    embed.add_field(name="Whitelisted Users",
-                    value=f"Format:\n**Username** -> **ID**\n\n**Permit 4:** *Owners*\n{adminLEVEL4}\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}")
-    embed.set_footer(text="Only Owners/Permit 4's can modify Bot Administrators. | Permit 4 is the HIGHEST Authorization Level")
-
-    await ctx.send(embed=embed)
-
-
-@w.command()
-@is_botAdmin4
-async def remove(ctx, ID: discord.User):
-    database.db.connect(reuse_if_open=True)
-
-    query = database.Administrators.select().where(database.Administrators.discordID == ID.id)
-    if query.exists():
-        query = query.get()
-
-        query.delete_instance()
-
-        embed = discord.Embed(title="Successfully Removed User!",
-                            description=f"{ID.name} has been removed from the database!", color=discord.Color.green())
-        await ctx.send(embed=embed)
-
-
-    else:
-        embed = discord.Embed(title="Invalid User!", description="Invalid Provided: (No Record Found)",
-                            color=discord.Color.red())
-        await ctx.send(embed=embed)
-
-    database.db.close()
-
-
-@w.command()
-@is_botAdmin4
-async def add(ctx, ID: discord.User, level: int):
-    database.db.connect(reuse_if_open=True)
-
-    q: database.Administrators = database.Administrators.create(discordID=ID.id, TierLevel=level)
-    q.save()
-
-    embed = discord.Embed(title="Successfully Added User!",
-                        description=f"{ID.name} has been added successfully with permit level `{str(level)}`.",
-                        color=discord.Color.gold())
-    await ctx.send(embed=embed)
-
-    database.db.close()
-
-
-
-
-
-@client.group(aliases=['cog'])
-@is_botAdmin2
-async def cogs(ctx):
-    pass
-
-
-@cogs.command()
-@is_botAdmin2
-async def unload(ctx, ext):
-    if "cogs." not in ext:
-        ext = f"cogs.{ext}"
-    if ext in get_extensions():
-        client.unload_extension(ext)
-        embed = discord.Embed(
-            title="Cogs - Unload", description=f"Unloaded cog: {ext}", color=0xd6b4e8)
-        await ctx.send(embed=embed)
-    else:
-        embed = discord.Embed(
-            title="Cogs Reloaded", description=f"Cog '{ext}' not found", color=0xd6b4e8)
-        await ctx.send(embed=embed)
-
-
-@cogs.command()
-@is_botAdmin2
-async def load(ctx, ext):
-    if "cogs." not in ext:
-        ext = f"cogs.{ext}"
-    if ext in get_extensions():
-        client.load_extension(ext)
-        embed = discord.Embed(title="Cogs - Load",
-                            description=f"Loaded cog: {ext}", color=0xd6b4e8)
-        await ctx.send(embed=embed)
-    else:
-        embed = discord.Embed(
-            title="Cogs - Load", description=f"Cog '{ext}' not found.", color=0xd6b4e8)
-        await ctx.send(embed=embed)
-
-
-@cogs.command(aliases=['restart'])
-@is_botAdmin2
-async def reload(ctx, ext):
-    if ext == "all":
-        embed = discord.Embed(
-            title="Cogs - Reload", description="Reloaded all cogs", color=0xd6b4e8)
-        for extension in get_extensions():
-            client.reload_extension(extension)
-        await ctx.send(embed=embed)
+    if ctx.command.name == "rule":
+        return "No Rule..."
+    
+    if isinstance(error, (commands.CheckFailure, commands.CheckAnyFailure)):
         return
 
-    if "cogs." not in ext:
-        ext = f"cogs.{ext}"
+    if hasattr(ctx.command, 'on_error'):
+        return
 
-    if ext in get_extensions():
-        client.reload_extension(ext)
-        embed = discord.Embed(
-            title="Cogs - Reload", description=f"Reloaded cog: {ext}", color=0xd6b4e8)
-        await ctx.send(embed=embed)
+    elif isinstance(error, (commands.CommandNotFound, commands.errors.CommandNotFound)):
+        print("Ignored error: " + str(ctx.command))
+        return
+
+    elif isinstance(error, (commands.MissingRequiredArgument, commands.TooManyArguments)):
+        if ctx.command.name == "schedule":
+            em = discord.Embed(title = "Missing/Extra Required Arguments Passed In!", description = "Looks like you messed up an argument somewhere here!\n\n**Check the following:**\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)", color = 0xf5160a)
+            em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
+            em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
+            return await ctx.send(embed = em)
+        else:
+            em = discord.Embed(title = "Missing/Extra Required Arguments Passed In!", description = "You have missed one or several arguments in this command", color = 0xf5160a)
+            em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
+            em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
+            return await ctx.send(embed = em)
+
+    elif isinstance(error, (commands.MissingAnyRole, commands.MissingRole, commands.MissingPermissions, commands.errors.MissingAnyRole, commands.errors.MissingRole, commands.errors.MissingPermissions)):
+        em = discord.Embed(title = "Invalid Permissions!", description = "You do not have the associated role in order to successfully invoke this command! Contact an administrator/developer if you believe this is invalid.", color = 0xf5160a)
+        em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
+        em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
+        await ctx.send(embed = em)
+        return
+
+    elif isinstance(error, commands.BadArgument):
+        print(ctx.command.name)
+        if ctx.command.name == "schedule":
+            em = discord.Embed(title = "Bad Argument!", description = "Looks like you messed up an argument somewhere here!\n\n**Check the following:**\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)", color = 0xf5160a)
+            em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
+            em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
+            return await ctx.send(embed = em)
+        else:
+            em = discord.Embed(title = "Bad Argument!", description = "Unable to parse arguments, check what arguments you provided.", color = 0xf5160a)
+            em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
+            em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
+            return await ctx.send(embed = em)
+
+    elif isinstance(error, (commands.CommandOnCooldown, commands.errors.CommandOnCooldown)):
+        m, s = divmod(error.retry_after, 60)
+        h, m = divmod(m, 60)
+
+        msg = "This command cannot be used again for {} minutes and {} seconds" \
+            .format(round(h), round(m), round(s))
+
+        embed = discord.Embed(title = "Command On Cooldown", description = msg, color = discord.Color.red())
+        await ctx.send(embed = embed)
+        
+
 
     else:
-        embed = discord.Embed(
-            title="Cogs - Reload", description=f"Cog '{ext}' not found.", color=0xd6b4e8)
-        await ctx.send(embed=embed)
+        error_file = Path("error.txt")
+        error_file.touch()
+        with error_file.open("w") as f:
+            f.write(exception_msg)
+        with error_file.open("r") as f:
+            #config, _ = core.common.load_config()
+            data = "\n".join([l.strip() for l in f])
 
+            GITHUB_API="https://api.github.com"
+            API_TOKEN=os.getenv("GIST")
+            url=GITHUB_API+"/gists"
+            print(f"Request URL: {url}")                    
+            headers={'Authorization':'token %s'%API_TOKEN}
+            params={'scope':'gist'}
+            payload={"description":"Timmy encountered a Traceback!","public":True,"files":{"error":{"content": f"{data}"}}}
+            res=requests.post(url,headers=headers,params=params,data=json.dumps(payload))
+            j=json.loads(res.text)
+            ID = j['id']
+            gisturl = f"https://gist.github.com/{ID}"
+            print(gisturl)
 
-@cogs.command()
-@is_botAdmin2
-async def view(ctx):
-    msg = " ".join(get_extensions())
-    embed = discord.Embed(title="Cogs - View", description=msg, color=0xd6b4e8)
-    await ctx.send(embed=embed)
+            permitlist = []
+            query = database.Administrators.select().where(database.Administrators.TierLevel >= 3)
+            for user in query:
+                permitlist.append(user.discordID)
 
+            if ctx.author.id not in permitlist:
+                embed = discord.Embed(title = "Traceback Detected!", description = "Timmy here has ran into an error!\nPlease check what you sent and/or check out the help command!", color = 0xfc3d03)
+                embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/875233489727922177/876610305852051456/unknown.png")
+                embed.set_footer(text = f"Error: {str(error)}")
+                await ctx.send(embed = embed)
+            else:
+                embed = discord.Embed(title = "Traceback Detected!", description = "Timmy here has ran into an error!\nTraceback has been attached below.", color = 0xfc3d03)
+                embed.add_field(name = "GIST URL", value = gisturl)
+                embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/875233489727922177/876610305852051456/unknown.png")
+                embed.set_footer(text = f"Error: {str(error)}")
+                await ctx.send(embed = embed)
 
-@client.command()
-async def ping(ctx):
-    database.db.connect(reuse_if_open=True)
+            guild = bot.get_guild(TechGuild)
+            channel = guild.get_channel(TracebackChannel)
 
-    q : database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
-    current_time = float(time.time())
-    difference = int(round(current_time - float(q.UpStart)))
-    text = str(timedelta(seconds=difference))
+            embed2 = discord.Embed(title = "Traceback Detected!", description = f"**Information**\n**Server:** {ctx.message.guild.name}\n**User:** {ctx.message.author.mention}\n**Command:** {ctx.command.name}", color= 0xfc3d03)
+            embed2.add_field(name = "Gist URL", value = f"[Uploaded Traceback to GIST](https://gist.github.com/{ID})")
+            await channel.send(embed = embed2)
 
-    try:
-        p = subprocess.run("git describe --always", shell=True, text=True, capture_output=True, check=True)
-        output = p.stdout
-    except subprocess.CalledProcessError:
-        output = "ERROR"
+            error_file.unlink()
 
-    pingembed = discord.Embed(title="Pong! ⌛", color=discord.Colour.gold(), description="Current Discord API Latency")
-    pingembed.add_field(name="Current Ping:", value=f'{round(client.latency * 1000)}ms')
-    pingembed.add_field(name="Uptime", value = text, inline = False)
-    pingembed.add_field(name="GitHub Commit Version", value = f"`{output}`", inline = False)
-    await ctx.send(embed=pingembed)
+    raise error
 
-    database.db.close()
+#bot.add_listener(on_command_error)
 
-
-@client.command()
-async def help(ctx):
-    embed = discord.Embed(title="Help Command",
-                          color=discord.Colour.gold())
-    embed.add_field(name="[BETA] Documentation Page",
-                    value="[https://timmy.schoolsimplified.org](https://timmy.schoolsimplified.org \"Masa if you see "
-                          "this, ur short\")")
-    embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
-    embed.set_thumbnail(url="https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533")
-    await ctx.send(embed=embed)
-
-@client.command()
-async def errorout(ctx):
-    embed = discord.Embed(title = "Traceback Detected!", description = "**Hey you!** *Timmy here has found an error.\nYou might also want to doublecheck what you sent and/or check out the help command!*", color = 0xfc3d03)
-    embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/875233489727922177/876610305852051456/unknown.png")
-    embed.set_footer(text = f"Error: masa is short")
-    await ctx.send(embed = embed)
-
-@client.command()
-@is_botAdmin2
-async def kill(ctx):
-    embed = discord.Embed(title = "Confirm System Abortion", description = "Please react with the appropriate emoji to confirm your choice!", color=discord.Colour.dark_orange())
-    embed.add_field(name="WARNING", value="Please not that this will kill the bot immediately and it will not be online unless a developer manually starts the proccess again!\nIf you don't respond in 5 seconds, the process will automatically abort.")
-    embed.set_footer(text="Abusing this system will subject your authorization removal, so choose wisely you fucking pig.")
-
-    message = await ctx.send(embed = embed)
-    
-    reactions = ['✅', '❌']
-    for emoji in reactions:
-        await message.add_reaction(emoji)
-
-    def check2(reaction, user):
-        return user == ctx.author and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌')
-
-    try:
-        reaction, user = await client.wait_for('reaction_add', timeout=5.0, check=check2)
-        if str(reaction.emoji) == "❌":
-            await ctx.send("Aborted Exit Process")
-            await message.delete()
-            return
-
-        else:
-            await message.delete()
-            database.db.connect(reuse_if_open=True)
-            NE = database.AdminLogging.create(discordID=ctx.author.id, action="KILL")
-            NE.save()
-            database.db.close()
-
-            embed = discord.Embed(title = "Initiating System Exit...", description = "Goodbye!", color=discord.Colour.dark_orange())
-            message = await ctx.send(embed = embed)
-
-            sys.exit(0)
-
-            
-    except asyncio.TimeoutError:
-        await ctx.send("Looks like you didn't react in time, automatically aborted system exit!")
-        await message.delete()
-
-@client.command()
-async def gitrestart(ctx):
-    await force_restart(ctx)
-
-
-@client.command()
-@is_botAdmin2
-async def gitpull(ctx, mode = "-a"):
-    output = ''
-
-    try:
-        p = subprocess.run("git fetch --all", shell=True, text=True, capture_output=True, check=True)
-        output += p.stdout
-    except Exception as e:
-        await ctx.send("⛔️ Unable to fetch the Current Repo Header!")
-        await ctx.send(f"**Error:**\n{e}")
-    try:
-        p = subprocess.run("git reset --hard origin/main", shell=True, text=True, capture_output=True, check=True)
-        output += p.stdout
-    except Exception as e:
-        await ctx.send("⛔️ Unable to apply changes!")
-        await ctx.send(f"**Error:**\n{e}")
-
-    embed = discord.Embed(title = "GitHub Local Reset", description = "Local Files changed to match Timmy/main", color = 0x3af250)
-    embed.add_field(name = "Shell Output", value = f"```shell\n$ {output}\n```")
-    embed.set_footer(text = "Attempting to restart the bot...")
-    await ctx.send(embed=embed)
-
-    if mode == "-a":
-        await force_restart2(ctx)
-    elif mode == "-c":
-        await ctx.invoke(client.get_command('cogs reload'), ext='all')
-
-client.run(os.getenv("TOKEN"))
+bot.run(os.getenv("TOKEN"))
