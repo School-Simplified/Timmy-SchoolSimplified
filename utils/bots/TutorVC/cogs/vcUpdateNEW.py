@@ -44,7 +44,7 @@ def showTotalMinutes(dateObj: datetime):
     return totalmin, now
     
 
-class SkeletonCMD(commands.Cog):
+class TutorVCUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -265,6 +265,6 @@ class SkeletonCMD(commands.Cog):
         database.db.close()
 
 def setup(bot):
-    bot.add_cog(SkeletonCMD(bot))
+    bot.add_cog(TutorVCUpdate(bot))
 
 

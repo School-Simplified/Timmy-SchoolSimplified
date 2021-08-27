@@ -5,6 +5,7 @@ import sys
 import time
 import traceback
 from datetime import datetime
+from difflib import get_close_matches
 from pathlib import Path
 
 import chat_exporter
@@ -16,7 +17,8 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 
 from core import database
-from core.common import Emoji, bcolors
+from core.common import Emoji, LockButton, bcolors
+from utils.events.VerificationStaff import VerifyButton
 
 load_dotenv()
 
@@ -39,6 +41,8 @@ publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 80529928
 TechGuild = 805593783684562965
 TracebackChannel = 851949397533392936
 
+
+
 #Start Check
 UpQ = database.Uptime.select().where(database.Uptime.id == 1)
 CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)
@@ -47,14 +51,18 @@ if not UpQ.exists():
     print("Created Uptime Entry.")
 
 if not CIQ.exists():
-    database.CheckInformation.create(MasterMaintenance = False, guildNone = False, externalGuild = True, ModRoleBypass = True, ruleBypass = True, publicCategory = True, elseSituation = True)
-    print("Created Uptime Entry.")
+    database.CheckInformation.create(MasterMaintenance = False, guildNone = False, externalGuild = True, ModRoleBypass = True, ruleBypass = True, publicCategory = True, elseSituation = True, PersistantChange = False)
+    print("Created CheckInformation Entry.")
 
 
 database.db.connect(reuse_if_open=True)
 q :database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
 q.UpStart = time.time()
 q.save()
+
+query: database.CheckInformation = database.CheckInformation.select().where(database.CheckInformation.id == 1).get()
+query.PersistantChange = False
+query.save()
 database.db.close()
 
 
@@ -117,9 +125,20 @@ async def force_restart2(ctx):  #Forces REPL to apply changes to everything
     finally:
         sys.exit(0)
 
+
+
+
 @bot.event
 async def on_ready():
     now = datetime.now()
+    query: database.CheckInformation = database.CheckInformation.select().where(database.CheckInformation.id == 1).get()
+    
+    if not query.PersistantChange:
+        bot.add_view(LockButton())
+        bot.add_view(VerifyButton())
+        query.PersistantChange = True
+        query.save()
+        
 
     print(f"Logged in as: {bot.user.name}")
     print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
@@ -137,7 +156,14 @@ capLimit = len(files)
 ext = files[i]
 
 for i in tqdm(range(capLimit - 1), ascii = True, desc =f"Loading Cogs..."):
-    bot.load_extension(ext)
+    try:
+        bot.load_extension(ext)
+    except (commands.errors.ExtensionAlreadyLoaded, commands.ExtensionAlreadyLoaded):
+        bot.unload_extension(ext)
+        bot.load_extension(ext)
+    except commands.ExtensionNotFound:
+        raise commands.ExtensionNotFound(ext)
+
     i+=1
     if i >= capLimit:
         break
@@ -217,9 +243,9 @@ async def on_command_error(ctx, error: Exception):
         exception_msg += line
     
     error = getattr(error, 'original', error)
-
-    if ctx.command.name == "rule":
-        return "No Rule..."
+    if ctx.command != None:
+        if ctx.command.name == "rule":
+            return "No Rule..."
     
     if isinstance(error, (commands.CheckFailure, commands.CheckAnyFailure)):
         return
@@ -228,8 +254,14 @@ async def on_command_error(ctx, error: Exception):
         return
 
     elif isinstance(error, (commands.CommandNotFound, commands.errors.CommandNotFound)):
-        print("Ignored error: " + str(ctx.command))
-        return
+        cmd = ctx.invoked_with
+        cmds = [cmd.name for cmd in bot.commands]
+        matches = get_close_matches(cmd, cmds)
+
+        if len(matches) > 0:
+            return await ctx.send(f'Command "{cmd}" not found, maybe you meant "{matches[0]}"?')
+        else:
+            return await ctx.send(f'Command "{cmd}" not found, use the help command to know what commands are available')
 
     elif isinstance(error, (commands.MissingRequiredArgument, commands.TooManyArguments)):
         if ctx.command.name == "schedule":
@@ -285,7 +317,7 @@ async def on_command_error(ctx, error: Exception):
             data = "\n".join([l.strip() for l in f])
 
             GITHUB_API="https://api.github.com"
-            API_TOKEN=os.getenv("GIST")
+            API_TOKEN= os.getenv('GIST')
             url=GITHUB_API+"/gists"
             print(f"Request URL: {url}")                    
             headers={'Authorization':'token %s'%API_TOKEN}
@@ -327,4 +359,4 @@ async def on_command_error(ctx, error: Exception):
 
 #bot.add_listener(on_command_error)
 
-bot.run(os.getenv("TOKEN"))
+bot.run(os.getenv('TOKEN'))

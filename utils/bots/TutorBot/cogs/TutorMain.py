@@ -3,7 +3,7 @@ from core import database
 from discord.ext import commands
 
 
-class TutorBotStaffCMD(commands.Cog):
+class TutorMain(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.RepeatEmoji = {
@@ -63,6 +63,6 @@ class TutorBotStaffCMD(commands.Cog):
     #async def reqinterview(self, ctx):
 
 def setup(bot):
-    bot.add_cog(TutorBotStaffCMD(bot))
+    bot.add_cog(TutorMain(bot))
 
 

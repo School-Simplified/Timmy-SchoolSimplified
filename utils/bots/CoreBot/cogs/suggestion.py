@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 
-class SkeletonCMD(commands.Cog):
+class SuggestionCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
@@ -66,7 +66,7 @@ class SkeletonCMD(commands.Cog):
         
 
 def setup(bot):
-    bot.add_cog(SkeletonCMD(bot))
+    bot.add_cog(SuggestionCMD(bot))
 
 
 

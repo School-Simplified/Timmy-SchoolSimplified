@@ -1,42 +1,58 @@
-import asyncio
-
 import discord
 from core.checks import is_botAdmin3
 from discord.ext import commands
+from core.common import TempConfirm, DropdownView, LockButton
 
-async def createChannel(self, ctx, type, member):
-    
-    if type == "Developer":
-        category = discord.utils.get(ctx.guild.categories, id= 873261268495106119)
+
+async def createChannel(self, ctx: commands.Context, type: str, member: discord.Member, discordEmbed: discord.Embed):
+    if type == "Developer Team":
+        DDM = discord.utils.get(ctx.guild.roles, name='Developer Manager')
+        ADT = discord.utils.get(ctx.guild.roles, name='Assistant Dev Manager')
+        DT = discord.utils.get(ctx.guild.roles, name='Developer')
+
+        RolePerms = [DDM, ADT, DT]
+        Title = "developer"
         embed = discord.Embed(title = "Developer Ticket", description = f"Welcome {member.mention}! A developer will be with you shortly.", color = discord.Color.green())
+        category = discord.utils.get(ctx.guild.categories, id= 873261268495106119)
 
+    elif type == "Discord Team":
+        DE = discord.utils.get(ctx.guild.roles, name='Discord Editor')
+        DM = discord.utils.get(ctx.guild.roles, name='Discord Manager') 
+
+        RolePerms = [DE, DM]
+        Title = "discord"
+        embed = discord.Embed(title = "Discord Ticket", description = f"Welcome {member.mention}! A discord editor will be with you shortly.", color = discord.Color.green())
+        category = discord.utils.get(ctx.guild.categories, id= 872911665035890708)
     else:
-        return BaseException("ERROR: unknown type")
+        raise BaseException("ERROR: unknown type")
 
-
-    DDM = discord.utils.get(ctx.guild.roles, name='Developer Manager')
-    ADT = discord.utils.get(ctx.guild.roles, name='Assistant Dev Manager')
-    DT = discord.utils.get(ctx.guild.roles, name='Developer')
 
     num = len(category.channels)
-    channel = await ctx.guild.create_text_channel(f'developer-{num}', category = category)
-
-    controlTicket = discord.Embed(title = "Control Panel", description = "To end this ticket, react to the lock emoji!", color = discord.Colour.gold())
-    await channel.send(member.mention)
-    msg = await channel.send(embed = controlTicket)
-    await msg.add_reaction("🔒")
-
+    channel: discord.TextChannel = await ctx.guild.create_text_channel(f'{Title}-{num}', category = category)
     await channel.set_permissions(ctx.guild.default_role, send_messages = False, read_messages = False, reason="Ticket Perms")
-    await channel.set_permissions(DDM, send_messages = True, read_messages = True, reason="Ticket Perms")
-    await channel.set_permissions(ADT, send_messages = True, read_messages = True, reason="Ticket Perms")
-    await channel.set_permissions(DT, send_messages = True, read_messages = True, reason="Ticket Perms")
+
+    for role in RolePerms:
+        await channel.set_permissions(role, send_messages = True, read_messages = True,reason="Ticket Perms")
+        await channel.set_permissions(role, send_messages = True, read_messages = True, reason="Ticket Perms")
+
+    controlTicket = discord.Embed(title = "Control Panel", description = "To end this ticket, click the lock button!", color = discord.Colour.gold())
+    PermLockInstance = LockButton()
+    await channel.send(member.mention)
+    await channel.send(embed = controlTicket, view = PermLockInstance)
 
     await channel.send(embed = embed)
     return channel
 
-class SkeletonCMD(commands.Cog):
+
+
+class TechProjectCMD(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot : commands.Bot = bot
+        self.decodeDict = {
+            "['Developer Team']": "Developer Team",
+            "['Discord Team']": "Discord Team",
+            "['Website Team']": "Website Team"
+        }
 
     @commands.command()
     async def techembedc(self, ctx):
@@ -47,17 +63,19 @@ class SkeletonCMD(commands.Cog):
 
 
     @commands.command()
-    async def request(self, ctx):
+    async def request(self, ctx: commands.Context):
         if ctx.guild.id != 805593783684562965:
             return
 
         await ctx.message.delete()
+        emoji = discord.utils.get(self.bot.emojis, id = 866408537503694869)
+
 
         channel = await ctx.author.create_dm()
-        await ctx.send("Check DMs!")
+        await ctx.send(f"{ctx.author.mention} Check DMs!")
 
         def check(m):
-            return m.content is not None and m.channel == channel and m.author is not self.bot.user
+            return m.content is not None and m.channel == channel and m.author.id is ctx.author.id
 
         embed = discord.Embed(title = "Reminders", description = "1) Please remember that you need to have prior permission (if you aren't a manager) before requesting a tech team project!\n\n2) Make sure the responses you provide are **short** and **to the point!**\n3) **If you have any questions, DM a Technical VP!**", color = discord.Colour.red())
         await channel.send(embed = embed)
@@ -66,9 +84,20 @@ class SkeletonCMD(commands.Cog):
         await channel.send(embed = embed)
         answer1 = await self.bot.wait_for('message', check=check)
 
-        embed = discord.Embed(title = "Q2: Which of these categories does your project suggestion fit under?", description = "**Options:**\n-> Discord Bot\n-> Database\n-> Webpage\n-> Other...", color = discord.Colour.gold())
-        await channel.send(embed = embed)
-        answer2 = await self.bot.wait_for('message', check=check)
+        embed = discord.Embed(title = "Q2: Which of these categories does your project suggestion fit under?", color = discord.Colour.gold())
+        view = DropdownView(emoji)
+        await channel.send(embed = embed, view = view)
+        await view.wait()
+
+        ViewResponse = str(view.children[0].values)
+        answer2 = self.decodeDict[ViewResponse]
+
+        print(answer2)
+        if answer2 == "Website Team":
+            embed = discord.Embed(title = "Website Team Commissions", description = "Hey there! Website Team Commissions are to be created on **School Simplified's GitHub Page**.\n> You can create one here: https://github.com/HazimAr/School-Simplified/issues/new/choose", color = discord.Colour.red())
+            embed.set_footer(text = "Canceliing Commission Request...")
+            await channel.send(embed= embed)
+            return
 
         embed = discord.Embed(title = "Q3: Which team is this project for?", color = discord.Colour.gold())
         await channel.send(embed = embed)
@@ -86,47 +115,39 @@ class SkeletonCMD(commands.Cog):
         await channel.send(embed = embed)
         answer6 = await self.bot.wait_for('message', check=check)
 
+        buttonView = TempConfirm()
         embed = discord.Embed(title = "Confirm Responses...", description = "Are you ready to submit these responses?" ,color = discord.Colour.gold())
-        message = await channel.send(embed = embed)
+        message = await channel.send(embed = embed, view=buttonView)
+        await buttonView.wait()
 
-        reactions = ['✅', '❌']
-        for emoji in reactions:
-            await message.add_reaction(emoji)
+        if buttonView.value is None:
+            return await channel.send("Timed out, try again later.")
+            
+        elif not buttonView.value:
+            return
 
-        def check2(reaction, user):
-            return user == ctx.author and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌')
-        try:
-            reaction, user = await self.bot.wait_for('reaction_add', timeout=150.0, check=check2)
-            if str(reaction.emoji) == "❌":
-                await channel.send("Canceled Form...")
-                await message.delete()
-                return
+        elif buttonView.value:
+            NPR = discord.Embed(title = "New Project Request", description = f"Project Requested by {ctx.author.mention}", color = discord.Colour.green())
+            NPR.add_field(name = "Q1: What is a descriptive title for your project?", value = answer1.content)
+            NPR.add_field(name = "Q2: Which of these categories does your project suggestion fit under?", value = answer2)
+            NPR.add_field(name = "Q3: Which team is this project for?", value = answer3.content)
+            NPR.add_field(name = "Q4: Please write a brief description of the project.", value = answer4.content)
+            NPR.add_field(name = "Q5: Have you received approval from a manager for this project (or are you a manager yourself)?", value = answer5.content)
+            NPR.add_field(name = "Q6: Anything else?", value = answer6.content)
+
+            PJC = await self.bot.fetch_channel(849722616880300061)
+            try:
+                msg = await PJC.send(embed = NPR)
+            except:
+                await channel.send("Error sending the response, maybe you hit the character limit?")
             else:
-                embed = discord.Embed(title = "New Project Request", description = f"Project Requested by {ctx.author.mention}", color = discord.Colour.green())
-                embed.add_field(name = "Q1: What is a descriptive title for your project?", value = answer1.content)
-                embed.add_field(name = "Q2: Which of these categories does your project suggestion fit under?", value = answer2.content)
-                embed.add_field(name = "Q3: Which team is this project for?", value = answer3.content)
-                embed.add_field(name = "Q4: Please write a brief description of the project.", value = answer4.content)
-                embed.add_field(name = "Q5: Have you received approval from a manager for this project (or are you a manager yourself)?", value = answer5.content)
-                embed.add_field(name = "Q6: Anything else?", value = answer6.content)
+                member = ctx.guild.get_member(ctx.author.id)
+                TicketCH = await createChannel(self, ctx, answer2, member, NPR)
 
-                PJC = await self.bot.fetch_channel(849722616880300061)
-                try:
-                    await PJC.send(embed = embed)
-                except:
-                    await ctx.send("Error sending the response, maybe you hit the character limit?")
-                else:
-                    category = discord.utils.get(ctx.guild.categories, name="Tech Commission Tickets")
-                    await channel.send("Submitted response...")
+                await TicketCH.send("Submitted Report:", embed = NPR)
+                await channel.send(f"**Ticket Created!**\n> Please use {TicketCH.mention} if you wish to follow up on your commission!")
 
-                    member = ctx.guild.get_member(ctx.author.id)
-                    TicketCH = await createChannel(self, ctx, "Developer", member)
 
-                    await TicketCH.send("Submitted Report:", embed = embed)
-                    await channel.send(f"Please use {TicketCH.mention} if you wish to follow up on your commission!")
-
-        except asyncio.TimeoutError:
-            await channel.send("Looks like you didn't react in time, please try again later!")
 
 
     @commands.command()
@@ -142,7 +163,7 @@ class SkeletonCMD(commands.Cog):
         await ctx.send("Sent report!\n", embed = embed)
 
 def setup(bot):
-    bot.add_cog(SkeletonCMD(bot))
+    bot.add_cog(TechProjectCMD(bot))
 
 
 

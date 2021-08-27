@@ -78,7 +78,7 @@ async def HRNameCheck(name, before, after, guild, user ,type):
 
 
 
-class SkeletonCMD(commands.Cog):
+class RoleCheck(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.staffServer = 778406166735880202
@@ -244,4 +244,4 @@ class SkeletonCMD(commands.Cog):
         
 
 def setup(bot):
-    bot.add_cog(SkeletonCMD(bot))
+    bot.add_cog(RoleCheck(bot))

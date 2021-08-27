@@ -38,8 +38,9 @@ class InfoCMD(commands.Cog):
 
     @commands.command(aliases=['find'])
     @commands.has_any_role("Moderator", "Mod", "Senior Mod", "Head Mod")
-    async def info(self, ctx, user: commands.Greedy[discord.User] = []):
+    async def info(self, ctx: commands.Context, user: commands.Greedy[discord.User] = []):
         for user in user:
+            user: discord.User = user
             #name = await User.convert(self, ctx, user)
 
             value = None
@@ -70,13 +71,13 @@ class InfoCMD(commands.Cog):
 
             if banreason == None:
                 embed = discord.Embed(description = f"`ID: {user.id}` | {user.mention} found with the nickname: **{user.display_name}**\u0020", color = discord.Color.green())
-                embed.set_author(name = {user.name}, icon_url = user.avatar_url, url = user.avatar_url)
+                embed.set_author(name = {user.name}, icon_url = user.avatar.url, url = user.avatar.url)
                 embed.add_field(name = "Membership Status", value = f"\u0020{value} `{typeval}`")
 
 
             else:
                 embed = discord.Embed(description = f"`ID: {user.id}` | {user.mention} found with the nickname: {user.display_name}\u0020", color = discord.Color.green())
-                embed.set_author(name = {user.name},icon_url = user.avatar_url, url = user.avatar_url)
+                embed.set_author(name = {user.name},icon_url = user.avatar.url, url = user.avatar.url)
                 embed.add_field(name = "Membership Status", value = f"\u0020{value} `{typeval}`\n{Emoji.space}{Emoji.barrow}**Ban Reason:** {banreason}")
             await msg.edit(embed = embed)
     

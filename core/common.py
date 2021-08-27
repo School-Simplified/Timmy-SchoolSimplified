@@ -109,3 +109,98 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
+
+class LockButton(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.value = None
+
+    @discord.ui.button(label='Lock', style=discord.ButtonStyle.green, custom_id='persistent_view:lock', emoji = "🔒")
+    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.value = True
+
+class TempConfirm(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, emoji = "✅",  custom_id='persistent_view:tempconfirm')
+    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.value = True
+        self.stop()
+
+    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, emoji = "❌")
+    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message('Cancelling', ephemeral=True)
+        self.value = False
+        self.stop()
+
+class Dropdown(discord.ui.Select):
+    def __init__(self, discordEmoji):
+        self.discordEmoji = discordEmoji
+
+        options = [
+            discord.SelectOption(label='Developer Team', description='If you need a Discord Bot or a modification to one, click here!', emoji='🤖'),
+            discord.SelectOption(label='Discord Team', description='If you need help with discord editing—revamping/creating a server, click here!', emoji=self.discordEmoji),
+            discord.SelectOption(label='Website Team', description='If you need changes done to the website, click here!', emoji='👨‍💻'),
+        ]
+
+        super().__init__(placeholder='Select a category that relates to your commission!', min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        self.view.stop()
+
+
+class DropdownView(discord.ui.View):
+    def __init__(self, discordEmoji):
+        super().__init__()
+        self.add_item(Dropdown(discordEmoji))
+
+class ShortDropdown(discord.ui.Select):
+    def __init__(self):
+
+        options = [
+            discord.SelectOption(label='Short', description='This is probably you, be honest.', emoji='♦️'),
+            discord.SelectOption(label='Tall', description='Are you sure buddy?', emoji="🟢"),
+        ]
+
+        super().__init__(placeholder='How tall are you?', min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message("You're short buddy, you ain't tall.", ephemeral =True)
+
+
+class ShortDropdownView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(ShortDropdown())
+
+
+class ShortDropdown(discord.ui.Select):
+    def __init__(self):
+
+        options = [
+            discord.SelectOption(label='Short', description='This is probably you, be honest.', emoji='♦️'),
+            discord.SelectOption(label='Tall', description='Are you sure buddy?', emoji="🟢"),
+        ]
+
+        super().__init__(placeholder='How tall are you?', min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message("You're short buddy, you ain't tall.", ephemeral =True)
+
+
+class ShortDropdownView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(ShortDropdown())
+
+
+
+class HelpView(discord.ui.View):
+    def __init__(self, timmyEmoji):
+        super().__init__()
+        self.timmyEmoji = timmyEmoji
+
+        self.add_item(discord.ui.Button(label='Click Here to Visit the Documentation!', url="https://timmy.schoolsimplified.org", emoji = self.timmyEmoji))

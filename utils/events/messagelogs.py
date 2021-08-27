@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 
-class SkeletonCMD(commands.Cog):
+class MessageLogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channels = [786068971048140820, 808919081469739008, 878792926266810418]
@@ -52,7 +52,7 @@ class SkeletonCMD(commands.Cog):
             await channel.send(embed = embed)
 
 def setup(bot):
-    bot.add_cog(SkeletonCMD(bot))
+    bot.add_cog(MessageLogs(bot))
 
 
 

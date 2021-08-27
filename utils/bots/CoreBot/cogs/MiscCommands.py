@@ -8,14 +8,13 @@ from datetime import timedelta
 import discord
 from core import database
 from core.checks import is_botAdmin, is_botAdmin2
-from core.common import Emoji
+from core.common import Emoji, HelpView
 from discord.ext import commands
 from main import force_restart2
 
-
-class SkeletonCMD(commands.Cog):
+class MiscCMD(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: commands.Bot = bot
         self.interaction = []
 
         self.YolkRole = "Discord Editor"
@@ -143,14 +142,15 @@ class SkeletonCMD(commands.Cog):
 
     @commands.command()
     async def help(self, ctx):
+        emoji = discord.utils.get(self.bot.emojis, id = 880875405962264667)
+
         embed = discord.Embed(title="Help Command",
                             color=discord.Colour.gold())
-        embed.add_field(name="[BETA] Documentation Page",
-                        value="[https://timmy.schoolsimplified.org](https://timmy.schoolsimplified.org \"Masa if you see "
-                            "this, ur short\")")
+        embed.add_field(name="Documentation Page",
+                        value="Click the button below to visit the documentation!")
         embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
         embed.set_thumbnail(url="https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533")
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, view = HelpView(emoji))
 
 
     @commands.command()
@@ -251,7 +251,7 @@ class SkeletonCMD(commands.Cog):
         
 
 def setup(bot):
-    bot.add_cog(SkeletonCMD(bot))
+    bot.add_cog(MiscCMD(bot))
 
 
 

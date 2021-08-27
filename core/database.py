@@ -308,6 +308,9 @@ class CheckInformation(BaseModel):
 
     `elseSituation`: BooleanField()
     Other situations will be defaulted to/as ...
+
+    `PersistantChange`: BooleanField()
+    If the discord bot has added its persistant buttons/views.
     '''
     id = AutoField()
 
@@ -318,6 +321,8 @@ class CheckInformation(BaseModel):
     ruleBypass = BooleanField()
     publicCategories = BooleanField()
     elseSituation = BooleanField()
+    PersistantChange = BooleanField()
+    
 
 class Blacklist(BaseModel):
     '''

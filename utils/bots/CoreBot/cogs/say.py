@@ -5,7 +5,7 @@ from discord.ext import commands
 from gtts import gTTS
 
 
-class SkeletonCMD(commands.Cog):
+class SayCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -57,7 +57,7 @@ class SkeletonCMD(commands.Cog):
             await ctx.send(f"TypeError exception:\n`{e}`")
 
 def setup(bot):
-    bot.add_cog(SkeletonCMD(bot))
+    bot.add_cog(SayCMD(bot))
 
 
 

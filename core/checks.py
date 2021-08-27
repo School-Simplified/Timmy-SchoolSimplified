@@ -12,8 +12,6 @@ from discord.ext import commands
 from core import database
 
 
-
-
 def predicate_LV1(ctx):
     adminIDs = []
 
