@@ -98,6 +98,11 @@ class TechProjectCMD(commands.Cog):
             embed.set_footer(text = "Canceliing Commission Request...")
             await channel.send(embed= embed)
             return
+        elif answer2 == "Developer Team":
+            embed = discord.Embed(title = "Developer Commissions", description = "Developer Commissions are temporally shut down until further notice, unfortunately there won't be any exceptions to this rule and if you'd like more details, DM Space. ", color = discord.Colour.red())
+            embed.set_footer(text = "Canceliing Commission Request...")
+            await channel.send(embed= embed)
+            return
 
         embed = discord.Embed(title = "Q3: Which team is this project for?", color = discord.Colour.gold())
         await channel.send(embed = embed)
