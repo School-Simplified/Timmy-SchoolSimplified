@@ -5,3 +5,5 @@
 Help Page: https://timmy.schoolsimplified.org
 
 Discord Server: http://discord.gg/school
+
+Uptime Webpage: https://school-simplified.github.io/Timmy-StatusPage/
