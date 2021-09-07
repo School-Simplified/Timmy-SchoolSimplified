@@ -22,7 +22,7 @@ from tqdm import tqdm
 
 from core import database
 from core.common import Emoji, LockButton, bcolors, getGuildList
-from core.WebServer import keep_alive
+from core.WebServer import run
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
 
@@ -87,7 +87,7 @@ query.save()
 database.db.close()
 
 
-keep_alive()
+run()
 
 def get_extensions():
     extensions = []
