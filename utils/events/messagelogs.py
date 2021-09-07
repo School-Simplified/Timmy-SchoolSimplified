@@ -20,7 +20,7 @@ class MessageLogs(commands.Cog):
 
             member = message.guild.get_member(message.author.id)
 
-            embed.set_author(name = message.author.name, icon_url = member.avatar_url)
+            embed.set_author(name = message.author.name, icon_url = member.avatar.url)
 
             embed.add_field(name= "Message", value= message.content, inline=True)
 
@@ -40,7 +40,7 @@ class MessageLogs(commands.Cog):
 
             member = before.guild.get_member(before.author.id)
 
-            embed.set_author(name = before.author.name, icon_url = member.avatar_url)
+            embed.set_author(name = before.author.name, icon_url = member.avatar.url)
             embed.add_field(name="Before" ,value= before.content)
             embed.add_field(name= "After" ,value= after.content,inline=False)
 

@@ -39,6 +39,12 @@ class VerificationStaff(commands.Cog):
 
     @commands.Cog.listener("on_interaction")
     async def StaffVerification(self, interaction: discord.Interaction):
+        InteractionResponse = interaction.data
+        print(InteractionResponse)
+
+        if interaction.message == None:
+            return
+            
         if interaction.guild_id == self.staffServer and interaction.message.id == 880814251420303410:
             print(interaction.user.id)
 

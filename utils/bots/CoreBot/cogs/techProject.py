@@ -36,7 +36,7 @@ async def createChannel(self, ctx: commands.Context, type: str, member: discord.
         await channel.set_permissions(role, send_messages = True, read_messages = True, reason="Ticket Perms")
 
     controlTicket = discord.Embed(title = "Control Panel", description = "To end this ticket, click the lock button!", color = discord.Colour.gold())
-    PermLockInstance = LockButton()
+    PermLockInstance = LockButton(self.bot)
     await channel.send(member.mention)
     await channel.send(embed = controlTicket, view = PermLockInstance)
 
@@ -95,11 +95,6 @@ class TechProjectCMD(commands.Cog):
         print(answer2)
         if answer2 == "Website Team":
             embed = discord.Embed(title = "Website Team Commissions", description = "Hey there! Website Team Commissions are to be created on **School Simplified's GitHub Page**.\n> You can create one here: https://github.com/HazimAr/School-Simplified/issues/new/choose", color = discord.Colour.red())
-            embed.set_footer(text = "Canceliing Commission Request...")
-            await channel.send(embed= embed)
-            return
-        elif answer2 == "Developer Team":
-            embed = discord.Embed(title = "Developer Commissions", description = "Developer Commissions are temporally shut down until further notice, unfortunately there won't be any exceptions to this rule and if you'd like more details, DM Space. ", color = discord.Colour.red())
             embed.set_footer(text = "Canceliing Commission Request...")
             await channel.send(embed= embed)
             return
