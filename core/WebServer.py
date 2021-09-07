@@ -18,8 +18,10 @@ def main():
 
 def run():
     try:
-        app.run(host="spaceturtle.tech", port = 5050, ssl_context='adhoc', threaded=True)
+        app.run(host="spaceturtle.tech", port = 5050, ssl_context='adhoc')
     except OSError:
-        app.run(host = "0.0.0.0", port = 8080, ssl_context='adhoc', threaded=True)
+        app.run(host = "0.0.0.0", port = 8080, ssl_context='adhoc')
 
-
+def keep_alive():
+    server = Thread(target=run)
+    server.start()
