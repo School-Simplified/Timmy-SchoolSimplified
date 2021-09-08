@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -11,36 +12,53 @@ from pathlib import Path
 import chat_exporter
 import discord
 import requests
+from discord.app import Option
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 from tqdm import tqdm
 
 from core import database
-from core.common import Emoji, LockButton, bcolors
+from core.common import Emoji, LockButton, bcolors, getGuildList
+from core.WebServer import run
+from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
 
 load_dotenv()
 
-# Applying towards intents
-intents = discord.Intents.all()
+logger = logging.getLogger('discord')
+logger.setLevel(logging.WARNING)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
-# Defining bot
-activity=discord.Activity(type=discord.ActivityType.watching, name="+help | timmy.schoolsimplified.org")
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or('+'), intents=intents, case_insensitive=True, activity = activity)
+bot = commands.Bot(
+    command_prefix=commands.when_mentioned_or('+'), 
+    intents=discord.Intents.all(), 
+    case_insensitive=True, 
+    activity = discord.Activity(type=discord.ActivityType.watching, name="+help | timmy.schoolsimplified.org")
+)
 bot.remove_command('help')
 
-use_sentry(
-    bot,  # Traceback tracking, DO NOT MODIFY THIS
-    dsn=os.getenv('DSN_SENTRY'),
-    traces_sample_rate=1.0
-)
+if os.getenv('DSN_SENTRY') != None:
+    sentry_logging = LoggingIntegration(
+        level=logging.INFO,        # Capture info and above as breadcrumbs
+        event_level=logging.ERROR  # Send errors as events
+    )
+
+    use_sentry(
+        bot,  # Traceback tracking, DO NOT MODIFY THIS
+        dsn=os.getenv('DSN_SENTRY'),
+        traces_sample_rate=1.0,
+        integrations=[FlaskIntegration(), sentry_logging]
+    )
 
 publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
 TechGuild = 805593783684562965
 TracebackChannel = 851949397533392936
-
 
 
 #Start Check
@@ -54,6 +72,9 @@ if not CIQ.exists():
     database.CheckInformation.create(MasterMaintenance = False, guildNone = False, externalGuild = True, ModRoleBypass = True, ruleBypass = True, publicCategory = True, elseSituation = True, PersistantChange = False)
     print("Created CheckInformation Entry.")
 
+if len(database.Administrators) == 0:
+    database.Administrators.create(discordID = 13, TierLevel = 4)
+    print("Added you as a bot administrator")
 
 database.db.connect(reuse_if_open=True)
 q :database.Uptime =  database.Uptime.select().where(database.Uptime.id == 1).get()
@@ -66,8 +87,11 @@ query.save()
 database.db.close()
 
 
-def get_extensions():  # Gets extension list dynamically
-    extensions = []    
+run()
+
+def get_extensions():
+    extensions = []
+    extensions.append('jishaku')
     for file in Path("utils").glob("**/*.py"):
         if "!" in file.name or "DEV" in file.name:
             continue
@@ -100,22 +124,6 @@ async def force_restart(ctx):
         await msg.edit(embed = embed)
         sys.exit(0)
 
-def get_branch():
-    p = subprocess.run("git rev-parse --abbrev-ref HEAD",  shell=True, text=True, capture_output=True, check=True)
-    output = p.stdout
-
-    Branch = None
-    MSG = None
-
-    if output == "main":
-        Branch = "Stable"
-        MSG = "Running Stable Version"
-    
-    else:
-        Branch = "UnStable"
-        MSG = f"{bcolors.FAIL}WARNING: This Version is UnStable!{bcolors.ENDC}"
-    
-    return Branch, MSG
 
 async def force_restart2(ctx):  #Forces REPL to apply changes to everything
     try:
@@ -125,7 +133,53 @@ async def force_restart2(ctx):  #Forces REPL to apply changes to everything
     finally:
         sys.exit(0)
 
+@bot.slash_command(description = "Play a game of TicTacToe with someone!", guild_ids=getGuildList(bot))
+async def tictactoe(ctx: discord.InteractionContext, user: Option(discord.Member, "Enter an opponent you want")):
+    if user == None:
+        return await ctx.send("lonely :(, sorry but you need a person to play against!")
+    elif user == bot.user:
+        return await ctx.send("i'm good.")
+    elif user == ctx.author:
+        return await ctx.send("lonely :(, sorry but you need an actual person to play against, not yourself!")
 
+    if ctx.channel.id == 763121180173271040:
+        return await ctx.send(f"{ctx.author.mention}\nMove to <#783319554322989067> to play Tic Tac Toe!", ephemeral=True)
+        
+
+    await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, user))
+
+
+
+@bot.user_command(name = "Are they short?", guild_ids=getGuildList(bot))  
+async def short(ctx, member: discord.Member):  
+    if member.id == 736765405728735232 or member.id == 518581570152693771 or member.id == 544724467709116457:
+        await ctx.respond(f"{member.mention} is short!")
+    else:
+        await ctx.respond(f"{member.mention} is tall!")
+
+
+@bot.slash_command(description = "Check's if a user is short!", guild_ids=getGuildList(bot))  
+async def short_detector(ctx, member: Option(discord.Member, "Enter a user you want to check!")):  
+    if member.id == 736765405728735232 or member.id == 518581570152693771 or member.id == 544724467709116457:
+        await ctx.respond(f"{member.mention} is short!")
+    else:
+        await ctx.respond(f"{member.mention} is tall!")
+
+
+@bot.user_command(name = "Play TicTacToe with them!", guild_ids=getGuildList(bot))  
+async def tictactoeCTX(ctx, member: discord.Member):  
+    if member == None:
+        return await ctx.send("lonely :(, sorry but you need a person to play against!")
+    elif member == bot.user:
+        return await ctx.send("i'm good.")
+    elif member == ctx.author:
+        return await ctx.send("lonely :(, sorry but you need an actual person to play against, not yourself!")
+
+    if ctx.channel.id == 763121180173271040:
+        return await ctx.send(f"{ctx.author.mention}\nMove to <#783319554322989067> to play Tic Tac Toe!", ephemeral=True)
+        
+
+    await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, member))
 
 
 @bot.event
@@ -134,7 +188,7 @@ async def on_ready():
     query: database.CheckInformation = database.CheckInformation.select().where(database.CheckInformation.id == 1).get()
     
     if not query.PersistantChange:
-        bot.add_view(LockButton())
+        bot.add_view(LockButton(bot))
         bot.add_view(VerifyButton())
         query.PersistantChange = True
         query.save()
@@ -256,6 +310,10 @@ async def on_command_error(ctx, error: Exception):
     elif isinstance(error, (commands.CommandNotFound, commands.errors.CommandNotFound)):
         cmd = ctx.invoked_with
         cmds = [cmd.name for cmd in bot.commands]
+
+        #embed = discord.Embed(title = "Slash Commands", description = "<:slash:881421972607758346> Please use slash commands! Simply hit `/` in your chat bar and type out a command you want to execute.\n**Demo:** https://gyazo.com/eda5bb58c17d2e50d6e52efc314cdee2", color = discord.Color.blue())
+        #return await ctx.send(embed = embed)
+        #await ctx.send("Woah! Timmy no longer supports commands with the `+` prefix. ")
         matches = get_close_matches(cmd, cmds)
 
         if len(matches) > 0:
@@ -300,10 +358,10 @@ async def on_command_error(ctx, error: Exception):
         h, m = divmod(m, 60)
 
         msg = "This command cannot be used again for {} minutes and {} seconds" \
-            .format(round(h), round(m), round(s))
+            .format(round(m), round(s))
 
         embed = discord.Embed(title = "Command On Cooldown", description = msg, color = discord.Color.red())
-        await ctx.send(embed = embed)
+        return await ctx.send(embed = embed)
         
 
 
@@ -356,7 +414,5 @@ async def on_command_error(ctx, error: Exception):
             error_file.unlink()
 
     raise error
-
-#bot.add_listener(on_command_error)
 
 bot.run(os.getenv('TOKEN'))

@@ -1,4 +1,5 @@
 import asyncio
+import os
 import random
 import subprocess
 import sys
@@ -8,9 +9,14 @@ from datetime import timedelta
 import discord
 from core import database
 from core.checks import is_botAdmin, is_botAdmin2
-from core.common import Emoji, HelpView
+from core.common import ClubPingDropdownView, Emoji, HelpView, NitroConfirmFake
 from discord.ext import commands
+from dotenv import load_dotenv
 from main import force_restart2
+from sentry_sdk import Hub
+import psutil
+
+load_dotenv()
 
 class MiscCMD(commands.Cog):
     def __init__(self, bot):
@@ -21,6 +27,21 @@ class MiscCMD(commands.Cog):
         self.YolkID = 359029243415494656
 
         self.myID = 852251896130699325
+        self.client = Hub.current.client
+
+        self.whitelistedRoles = [883169286665936996, 883170141771272294, 883170072355561483, 883162279904960562, 883564455219306526, 883564487813234738, 883162511560560720, 883169000866070539, 883170166161149983]
+
+        self.decodeDict = {
+            "['Simplified Coding Club']": 883169286665936996,
+            "['Simplified Debate Club']": 883170141771272294,
+            "['Simplified Music Club']": 883170072355561483,
+            "['Simplified Cooking Club']": 883162279904960562,
+            "['Simplified Chess Club']": 883564455219306526,
+            "['Simplified GameDev Club']": 883564487813234738,
+            "['Simplified Book Club']": 883162511560560720,
+            "['Simplified Advocacy Club']": 883169000866070539,
+            "['Simplified Speech Club']": 883170166161149983
+        }
 
 
     @commands.group(aliases=['egg'])
@@ -132,9 +153,12 @@ class MiscCMD(commands.Cog):
             output = "ERROR"
 
         pingembed = discord.Embed(title="Pong! ⌛", color=discord.Colour.gold(), description="Current Discord API Latency")
-        pingembed.add_field(name="Current Ping:", value=f'{round(self.bot.latency * 1000)}ms')
-        pingembed.add_field(name="Uptime", value = text, inline = False)
-        pingembed.add_field(name="GitHub Commit Version", value = f"`{output}`", inline = False)
+        pingembed.set_author(name = "Timmy", url = "https://i.gyazo.com/5cffb6cd45e5e1ee9b1d015bccbdf9e6.png", icon_url = "https://i.gyazo.com/a0b221679db0f980504e64535885a5fd.png")
+        pingembed.add_field(name="Ping & Uptime:", value=f'```diff\n+ Ping: {round(self.bot.latency * 1000)}ms\n+ Uptime: {text}\n```')
+
+        pingembed.add_field(name="System Resource Usage", value = f"```diff\n- CPU Usage: {psutil.cpu_percent()}%\n- Memory Usage: {psutil.virtual_memory().percent}%\n```", inline = False)
+        pingembed.set_footer(text = f"GitHub Commit Version: {output}", icon_url = ctx.author.avatar.url)
+    
         await ctx.send(embed=pingembed)
 
         database.db.close()
@@ -151,6 +175,14 @@ class MiscCMD(commands.Cog):
         embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
         embed.set_thumbnail(url="https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533")
         await ctx.send(embed=embed, view = HelpView(emoji))
+
+    @commands.command()
+    async def nitro(self, ctx: commands.Context):
+        await ctx.message.delete()
+
+        embed = discord.Embed(title = "A WILD GIFT APPEARS!", description = "**Nitro:**\nExpires in 48 hours.", color = 0x2F3136)
+        embed.set_thumbnail(url = "https://i.imgur.com/w9aiD6F.png")
+        await ctx.send(embed = embed, view = NitroConfirmFake())
 
 
     @commands.command()
@@ -182,6 +214,9 @@ class MiscCMD(commands.Cog):
                 NE = database.AdminLogging.create(discordID=ctx.author.id, action="KILL")
                 NE.save()
                 database.db.close()
+
+                if self.client is not None:
+                    self.client.close(timeout=2.0)
 
                 embed = discord.Embed(title = "Initiating System Exit...", description = "Goodbye!", color=discord.Colour.dark_orange())
                 message = await ctx.send(embed = embed)
@@ -247,8 +282,81 @@ class MiscCMD(commands.Cog):
         await ctx.send(f"{userObj.mention}, you guessed it!\nWhat do you want my status to be?")
 
 
+    @commands.command()
+    @commands.has_role(883160826180173895)
+    async def role(self, 
+        ctx: commands.Context, 
+        users: commands.Greedy[discord.Member], 
+        roles: commands.Greedy[discord.Role]
+    ):
+        """Role Command
+        Gives an authorized role to every user provided.
 
+        Requires: 
+            Club President Role to be present on the user.
+
+        Args:
+            ctx (commands.Context): Context
+            users (commands.Greedy[discord.User]): List of Users
+            roles (commands.Greedy[discord.Role]): List of Roles
+        """
+        embed = discord.Embed(
+            title = "Starting Mass Role Function",
+            description = "Please wait until I finish the role operation, you'll see this message update when I am finished!", 
+            color = discord.Color.gold()
+        )
+
+        msg = await ctx.send(embed = embed)
+
+        for role in roles:
+            if role.id not in self.whitelistedRoles:
+                await ctx.send(f"Role: `{role}` is not whitelisted for this command, removing `{role}`.")
+
+                roles = [value for value in roles if value != role]
+                break
+
+        for user in users:
+            for role in roles:
+                await user.add_roles(role, reason = f"Mass Role Operation requested by {ctx.author.name}.")
+                
+        embed = discord.Embed(
+            title = "Mass Role Operation Complete", 
+            description = f"I have given `{str(len(users))}` users `{str(len(roles))}` roles.", 
+            color = discord.Color.green()
+        )
+
+        UserList = []
+        RoleList = []
         
+        for user in users:
+            UserList.append(user.mention)
+        for role in roles:
+            RoleList.append(role.mention)
+        
+        UserList = ", ".join(UserList)
+        RoleList = ", ".join(RoleList)
+
+        embed.add_field(
+            name = "Detailed Results", 
+            value = f"{Emoji.person}: {UserList}\n\n{Emoji.activity}: {RoleList}\n\n**Status:**  {Emoji.confirm}"
+        )
+        embed.set_footer(text = "Completed Operation")
+
+        await msg.edit(embed = embed)
+
+    @commands.command()
+    @commands.cooldown(1, 300, commands.BucketType.role)
+    async def clubping(self, ctx: commands.Context, *, message = ""):
+        view = ClubPingDropdownView()
+        msg = await ctx.send("Select a role you want to ping!", view = view)
+        await view.wait()
+        await msg.delete()
+
+        ViewResponse = str(view.children[0].values)
+        RoleID = self.decodeDict[ViewResponse]
+        await ctx.send(f"<@&{RoleID}>\n{message}")
+
+
 
 def setup(bot):
     bot.add_cog(MiscCMD(bot))

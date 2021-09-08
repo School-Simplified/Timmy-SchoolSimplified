@@ -1,10 +1,25 @@
 import asyncio
+import io
 import json
 from pathlib import Path
-from typing import Tuple
+from typing import List, Tuple
 
+import chat_exporter
 import discord
+from discord.ext import commands
 
+
+async def rawExport(self, channel, response, user: discord.User):
+    transcript = await chat_exporter.export(channel, None, "EST")
+
+    if transcript is None:
+        return
+
+    embed = discord.Embed(title = "Channel Transcript", description = f"**Channel:** {channel.name}\n**User Invoked:** {user.name}*\nTranscript Attached Below*", color = discord.Colour.green())
+    transcript_file = discord.File(io.BytesIO(transcript.encode()),filename=f"transcript-{channel.name}.html")
+
+    await response.send(embed = embed)
+    await response.send(file=transcript_file)
 
 async def paginate_embed(bot: discord.Client, ctx, embed: discord.Embed, population_func, end: int, begin: int = 1, page=1):
     emotes = ["◀️", "▶️"]
@@ -80,6 +95,8 @@ class Emoji:
     minusgear = "<:minusgear:862875088217702421>"
     invalidchannel = "<:invalidchannel:862875088361619477>"
     barrow = "<:barrow:862572842985193502>"
+    person = "<:person:883771751127990333>"
+    activity = "<:note:883771751190908989>"
 
 
 rulesDict = {
@@ -110,15 +127,41 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+class TechnicalCommissionConfirm(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__()
+        self.value = None
+        self.bot = bot
+
+    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, emoji = "✅",  custom_id='persistent_view:tempconfirm')
+    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+        TranscriptLOG = self.bot.get_channel(872915565600182282)
+        ch = await self.bot.fetch_channel(interaction.channel_id)
+        
+        await rawExport(self, ch, TranscriptLOG, interaction.user)
+        await ch.delete()
+
+    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, emoji = "❌")
+    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.message.delete()
+        await interaction.response.send_message("ok, not removing this channel.", ephemeral=True)
+        self.value = False
+        self.stop()
+
 
 class LockButton(discord.ui.View):
-    def __init__(self):
+    def __init__(self, bot):
         super().__init__(timeout=None)
         self.value = None
+        self.bot = bot
 
     @discord.ui.button(label='Lock', style=discord.ButtonStyle.green, custom_id='persistent_view:lock', emoji = "🔒")
     async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.value = True
+        ch = await self.bot.fetch_channel(interaction.channel_id)
+        TempConfirmInstance = TechnicalCommissionConfirm(self.bot)
+
+        msg = await ch.send("Are you sure you want to close this ticket?", view = TempConfirmInstance)
 
 class TempConfirm(discord.ui.View):
     def __init__(self):
@@ -135,6 +178,24 @@ class TempConfirm(discord.ui.View):
         await interaction.response.send_message('Cancelling', ephemeral=True)
         self.value = False
         self.stop()
+
+
+
+
+
+class NitroConfirmFake(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label='Claim', style=discord.ButtonStyle.green, custom_id='persistent_view:nitrofake')
+    async def claim(self, button: discord.ui.Button, interaction: discord.Interaction):
+        try:
+            await interaction.response.send_message('https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4', ephemeral=True)
+        except discord.errors.InteractionResponded:
+            await interaction.followup.send('https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4', ephemeral=True)
+        self.value = True
+
 
 class Dropdown(discord.ui.Select):
     def __init__(self, discordEmoji):
@@ -177,6 +238,40 @@ class ShortDropdownView(discord.ui.View):
         self.add_item(ShortDropdown())
 
 
+class ClubPingDropdown(discord.ui.Select):
+    def __init__(self):
+
+        options = [
+            discord.SelectOption(label='Simplified Coding Club', description='', emoji='💻'),
+            discord.SelectOption(label='Simplified Debate Club', description='', emoji='💭'),
+            discord.SelectOption(label='Simplified Music Club', description='', emoji='🎵'),
+            discord.SelectOption(label='Simplified Cooking Club', description='', emoji='🍱'),
+            discord.SelectOption(label='Simplified Chess Club', description='', emoji='🏅'),
+            discord.SelectOption(label='Simplified GameDev Club', description='', emoji='📟'),
+            discord.SelectOption(label='Simplified Book Club', description='', emoji='📚'),
+            discord.SelectOption(label='Simplified Advocacy Club', description='', emoji='📰'),
+            discord.SelectOption(label='Simplified Speech Club', description='', emoji='🎤')
+        ]
+
+        super().__init__(placeholder='Select a club!', min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        self.view.stop()
+
+
+class ClubPingDropdownView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(ClubPingDropdown())
+
+
+
+
+
+
+
+
+
 class ShortDropdown(discord.ui.Select):
     def __init__(self):
 
@@ -204,3 +299,44 @@ class HelpView(discord.ui.View):
         self.timmyEmoji = timmyEmoji
 
         self.add_item(discord.ui.Button(label='Click Here to Visit the Documentation!', url="https://timmy.schoolsimplified.org", emoji = self.timmyEmoji))
+
+
+class TicketLockButton(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.value = None
+        self.bot = bot
+
+    @discord.ui.button(label='Lock', style=discord.ButtonStyle.green, custom_id='persistent_view:lock', emoji = "🔒")
+    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.value = True
+        ch = await self.bot.fetch_channel(interaction.channel_id)
+        TempConfirmInstance = TicketTempConfirm(self.bot)
+
+        msg = await ch.send("Are you sure you want to close this ticket?", view = TempConfirmInstance)
+
+class TicketTempConfirm(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, emoji = "✅",  custom_id='persistent_view:tempconfirm')
+    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.value = True
+        self.stop()
+
+    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, emoji = "❌")
+    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message('Cancelling', ephemeral=True)
+        self.value = False
+        self.stop()
+
+
+def getGuildList(bot: commands.Bot, exemptServer: List[int] = None) -> list:
+    guildList = []
+    for guild in bot.guilds:
+        if guild.id in exemptServer:
+            continue
+        guildList.append(guild.id)
+
+    return guildList
