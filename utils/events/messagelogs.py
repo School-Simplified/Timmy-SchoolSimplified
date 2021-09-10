@@ -15,6 +15,8 @@ class MessageLogs(commands.Cog):
         if message.author.bot:
             return
 
+        print(int(message.channel.id) in self.channels)
+
         if int(message.channel.id) in self.channels:
             embed=discord.Embed(title = "Deleted Message Log", description = f"**{message.author.mention}** sent this in **{message.channel.mention}**", color= discord.Color.red())
 
@@ -35,6 +37,9 @@ class MessageLogs(commands.Cog):
     async def on_message_edit(self, before, after):
         if before.author.bot:
             return
+
+        print(int(before.channel.id) in self.channels)
+
         if int(before.channel.id) in self.channels:
             embed : discord.Embed = discord.Embed(title=f"Editted Message Log", description = f"**{before.author.mention}** sent this in **{before.channel.mention}**", color=discord.Color.gold())
 
