@@ -8,10 +8,10 @@ from discord.ext import commands
 class MessageLogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channels = [786068971048140820, 808919081469739008, 878792926266810418]
+        self.channels = [878792926266810418, 786068971048140820, 808919081469739008]
 
     @commands.Cog.listener()
-    async def on_message_delete(self, message):
+    async def on_message_delete(self, message: discord.Message):
         if message.author.bot:
             return
 
