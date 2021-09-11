@@ -151,14 +151,12 @@ class SelectMenuHandler(ui.Select):
                  max_values: int = 1,
                  min_values: int = 1,
                  disabled: bool = False,
-                 persistent: bool = True,
                  select_user: typing.Union[discord.Member, discord.User, None] = None,
                  ):
         self.options_ = options
         self.custom_id_ = custom_id
         self.select_user = select_user
         self.disabled_ = disabled
-        self.persistent_ = persistent
         self.placeholder_ = place_holder
         self.max_values_ = max_values
         self.min_values_ = min_values
@@ -171,8 +169,7 @@ class SelectMenuHandler(ui.Select):
         if self.select_user is None or interaction.user == self.select_user:
             self.view.value = self.values[0]
             
-            if not self.persistent_:
-                self.view.stop()
+            self.view.stop()
 
 class ButtonHandler(ui.Button):
     """Adds a Button to a specific message and returns it's value when pressed.
@@ -196,7 +193,6 @@ class ButtonHandler(ui.Button):
                  emoji: typing.Union[str, None] = None,
                  url: typing.Union[str, None] = None,
                  disabled: bool = False,
-                 persistent: typing.Union[float, None] = None,
                  button_user: typing.Union[discord.Member, discord.User, None] = None
                  ):
         self.label_ = label
@@ -206,9 +202,8 @@ class ButtonHandler(ui.Button):
         self.url_ = url
         self.disabled_ = disabled
         self.button_user = button_user
-        self.persistent_ = persistent
         super().__init__(label=self.label_, custom_id=self.custom_id_, style=self.style_, emoji=self.emoji_,
-                         url=self.url_, disabled=self.disabled_, timeout = self.timeout)
+                         url=self.url_, disabled=self.disabled_)
         if self.custom_id_:
             super().__init__(custom_id=self.custom_id_)
 
@@ -219,8 +214,7 @@ class ButtonHandler(ui.Button):
             else:
                 self.view.value = self.custom_id
 
-            if not self.persistent_:
-                self.view.stop()
+            self.view.stop()
 
 
 def getGuildList(bot: commands.Bot, exemptServer: List[int] = None) -> list:
