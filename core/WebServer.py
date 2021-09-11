@@ -1,4 +1,3 @@
-import platform
 from threading import Thread
 
 import flask
