@@ -1,13 +1,21 @@
+from pathlib import Path
 import discord
 from core import database
 from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4
 from core.common import Emoji
 from discord.ext import commands
 from dotenv import load_dotenv
-from main import get_extensions
 
 load_dotenv()
 
+def get_extensions():
+    extensions = []
+    extensions.append('jishaku')
+    for file in Path("utils").glob("**/*.py"):
+        if "!" in file.name or "DEV" in file.name:
+            continue
+        extensions.append(str(file).replace("/", ".").replace(".py", ""))
+    return extensions
 
 class CoreBotConfig(commands.Cog):
     def __init__(self, bot):

@@ -1,3 +1,6 @@
+import socketserver
+import socket
+
 from threading import Thread
 
 import flask
@@ -16,6 +19,7 @@ def main():
 
 
 def run():
+    #socketserver.TCPServer.allow_reuse_address = True
     try:
         app.run(host="spaceturtle.tech", port = 5050, ssl_context='adhoc')
     except OSError:

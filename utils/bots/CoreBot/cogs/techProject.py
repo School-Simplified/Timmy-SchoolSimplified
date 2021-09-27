@@ -1,7 +1,7 @@
 import discord
 from core.checks import is_botAdmin3
 from discord.ext import commands
-from core.common import TempConfirm, DropdownView, LockButton
+from core.common import SelectMenuHandler, TempConfirm, LockButton
 
 
 async def createChannel(self, ctx: commands.Context, type: str, member: discord.Member, discordEmbed: discord.Embed):
@@ -29,7 +29,7 @@ async def createChannel(self, ctx: commands.Context, type: str, member: discord.
 
     num = len(category.channels)
     channel: discord.TextChannel = await ctx.guild.create_text_channel(f'{Title}-{num}', category = category)
-    await channel.set_permissions(ctx.guild.default_role, send_messages = False, read_messages = False, reason="Ticket Perms")
+    await channel.set_permissions(ctx.guild.default_role, read_messages = False, reason="Ticket Perms")
 
     for role in RolePerms:
         await channel.set_permissions(role, send_messages = True, read_messages = True,reason="Ticket Perms")
@@ -54,6 +54,7 @@ class TechProjectCMD(commands.Cog):
             "['Website Team']": "Website Team"
         }
 
+        
     @commands.command()
     async def techembedc(self, ctx):
         embed = discord.Embed(title = "Technical Team Commissions", color = discord.Color.green())
@@ -85,7 +86,17 @@ class TechProjectCMD(commands.Cog):
         answer1 = await self.bot.wait_for('message', check=check)
 
         embed = discord.Embed(title = "Q2: Which of these categories does your project suggestion fit under?", color = discord.Colour.gold())
-        view = DropdownView(emoji)
+        
+        options = [
+            discord.SelectOption(label='Developer Team', description='If you need a Discord Bot or a modification to one, click here!', emoji='🤖'),
+            discord.SelectOption(label='Discord Team', description='If you need help with discord editing—revamping/creating a server, click here!', emoji=emoji),
+            discord.SelectOption(label='Website Team', description='If you need changes done to the website, click here!', emoji='👨‍💻'),
+        ]
+
+        view = discord.ui.View()
+        view.add_item(SelectMenuHandler(options, place_holder = "Select a category that relates to your commission!"))
+
+
         await channel.send(embed = embed, view = view)
         await view.wait()
 

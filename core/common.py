@@ -12,12 +12,13 @@ from discord import Button, ui, ButtonStyle, SelectOption
 
 
 async def rawExport(self, channel, response, user: discord.User):
-    transcript = await chat_exporter.export(channel, None, "EST")
+    transcript = await chat_exporter.export(channel, None)
 
     if transcript is None:
         return
 
     embed = discord.Embed(title = "Channel Transcript", description = f"**Channel:** {channel.name}\n**User Invoked:** {user.name}*\nTranscript Attached Below*", color = discord.Colour.green())
+    #embed.set
     transcript_file = discord.File(io.BytesIO(transcript.encode()),filename=f"transcript-{channel.name}.html")
 
     await response.send(embed = embed)
@@ -105,7 +106,7 @@ rulesDict = {
     1: f"All Terms of Service and Community Guidelines apply. && {Emoji.barrow} https://discord.com/terms\n{Emoji.barrow} https://discord.com/guidelines",
     2: f"Keep chats and conversations mainly in English. && {Emoji.barrow} Full-blown conversations in a different language that disrupt the environment are not allowed.\n{Emoji.barrow} Disrupting an existing conversation in English in voice chat is not allowed.",
     3: f"Keep chats and conversations relevant. && {Emoji.barrow} Keep discussions about politics or anything else in <#773366189648642069>.\n{Emoji.barrow} Ask homework questions in the homework channels or tickets.",
-    4: f"No content that does not belong in a school server. && {Emoji.barrow} No inappropriate avatars, statuses, about me, usernames, or nicknames.\n{Emoji.barrow} No sharing of content that glorifies or promotes suicide or self-harm.\n{Emoji.barrow} No trolling, raiding, epileptic, disturbing, suggestive, or offensive behavior.\n{Emoji.barrow} No sexist, racist, homophobic, transphobic, xenophobic, islamophobic, pedophilic, creepy behavior, etc.",
+    4: f"No content that does not belong in a school server. && {Emoji.barrow} No inappropriate user profiles, avatars, banners, statuses, about me, usernames, or nicknames.\n{Emoji.barrow} No sharing of content that glorifies or promotes suicide or self-harm.\n{Emoji.barrow} No trolling, raiding, epileptic, disturbing, suggestive, or offensive behavior.\n{Emoji.barrow} No sexist, racist, homophobic, transphobic, xenophobic, islamophobic, pedophilic, creepy behavior, etc.",
     5: f"No advertising or self-promotion (unless given explicit permission). && {Emoji.barrow} Self-advertising a website, group, or anything else through DMs, VC or in the server is not allowed.\n{Emoji.barrow} Explicitly asking users to look at advertisements in status/About Me is not allowed.",
     6: f"No toxic behavior or harassment. && {Emoji.barrow} No discriminatory jokes or language towards an individual or group due to race, ethnicity, nationality, sex, gender, sexual orientation, religious affiliation, or disabilities.\n{Emoji.barrow} Disrespect of members is not allowed, especially if it is continuous, repetitive, or severe.\n{Emoji.barrow} Encouraging toxicity, harassment, bullying, and anything of the sort is prohibited.",
     7: f"No illegal or explicit material. && {Emoji.barrow} Discussing or sharing illegal content is prohibited. This includes, but is not limited to: copyrighted content, pirated content, illegal activities, crimes, IPGrabbers, phishing links.\n{Emoji.barrow} Any form of NSFW, NSFL, or explicit content (pornographic, overtly sexual, overly gory) is prohibited.",
@@ -115,7 +116,7 @@ rulesDict = {
     11: f"No spamming in any form. && {Emoji.barrow} Spamming links, images, messages, roles, emojis, emotes, emote reactions, or anything else is not allowed.",
     12: f"No impersonation in any form. && {Emoji.barrow} Changing your username or avatar to something similar as any staff or members with the intent to mimic them and create confusion is prohibited. ",
     13: f"No disruptive behavior in voice chat. && {Emoji.barrow} No continuous hopping between voice chats.\n{Emoji.barrow} No starting and closing streams in short intervals.\n{Emoji.barrow} No loud, annoying, or high-pitched noises.\n{Emoji.barrow} No voice changers if asked to stop.",
-    14: f"No evading user blocks, punishments, or bans by using alternate accounts. && {Emoji.barrow} Sending unwanted, repeated friend requests or messages to contact someone who has blocked you is prohibited.\n{Emoji.barrow} Creating alternate accounts to evade a punishment or ban, harass or impersonate someone, or participate in a raid are all strictly prohibited.\n{Emoji.barrow} To discuss punishments or warnings, create a support ticket or talk to a moderator in DMs.",
+    14: f"No evading user blocks, punishments, or bans by using alternate accounts. && {Emoji.barrow} Sending unwanted, repeated friend requests or messages to contact someone who has blocked you is prohibited.\n{Emoji.barrow} Creating alternate accounts to evade a punishment or ban, harass or impersonate someone, or participate in a raid are all strictly prohibited.\n{Emoji.barrow} Suspicions of being an alternate account are cause for a ban with no prior warning.\n{Emoji.barrow} To discuss punishments or warnings, create a support ticket or talk to a moderator in DMs.",
 }
 
 class bcolors:
@@ -245,3 +246,103 @@ def getGuildList(bot: commands.Bot, exemptServer: List[int] = None) -> list:
         guildList.append(guild.id)
 
     return guildList
+
+class TechnicalCommissionConfirm(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__()
+        self.value = None
+        self.bot = bot
+
+    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, emoji = "✅",  custom_id='persistent_view:tempconfirm')
+    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+        TranscriptLOG = self.bot.get_channel(872915565600182282)
+        ch = await self.bot.fetch_channel(interaction.channel_id)
+        
+        await rawExport(self, ch, TranscriptLOG, interaction.user)
+        await ch.delete()
+
+    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, emoji = "❌")
+    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.message.delete()
+        await interaction.response.send_message("ok, not removing this channel.", ephemeral=True)
+        self.value = False
+        self.stop()
+
+
+class LockButton(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.value = None
+        self.bot = bot
+
+    @discord.ui.button(label='Lock', style=discord.ButtonStyle.green, custom_id='persistent_view:lock', emoji = "🔒")
+    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.value = True
+        ch = await self.bot.fetch_channel(interaction.channel_id)
+        TempConfirmInstance = TechnicalCommissionConfirm(self.bot)
+
+        msg = await ch.send("Are you sure you want to close this ticket?", view = TempConfirmInstance)
+
+class TempConfirm(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, emoji = "✅",  custom_id='persistent_view:tempconfirm')
+    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.value = True
+        self.stop()
+
+    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, emoji = "❌")
+    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message('Cancelling', ephemeral=True)
+        self.value = False
+        self.stop()
+
+
+
+
+
+class NitroConfirmFake(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label='Claim', style=discord.ButtonStyle.green, custom_id='persistent_view:nitrofake')
+    async def claim(self, button: discord.ui.Button, interaction: discord.Interaction):
+        try:
+            await interaction.response.send_message('https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4', ephemeral=True)
+        except discord.errors.InteractionResponded:
+            await interaction.followup.send('https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4', ephemeral=True)
+        self.value = True
+
+
+class TicketLockButton(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.value = None
+        self.bot = bot
+
+    @discord.ui.button(label='Lock', style=discord.ButtonStyle.green, custom_id='persistent_view:lock', emoji = "🔒")
+    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.value = True
+        ch = await self.bot.fetch_channel(interaction.channel_id)
+        TempConfirmInstance = TicketTempConfirm(self.bot)
+
+        msg = await ch.send("Are you sure you want to close this ticket?", view = TempConfirmInstance)
+
+class TicketTempConfirm(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, emoji = "✅",  custom_id='persistent_view:tempconfirm')
+    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.value = True
+        self.stop()
+
+    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, emoji = "❌")
+    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message('Cancelling', ephemeral=True)
+        self.value = False
+        self.stop()

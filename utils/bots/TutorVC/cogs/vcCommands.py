@@ -75,8 +75,8 @@ class TutorVCCMD(commands.Cog):
         self.TMOD = "Mod Trainee"
         self.MOD = "Moderator"
         self.SMOD = "Senior Mod"
-        self.CO = "CO"
-        self.VP = "VP"
+        self.CO = "Corporate Officer"
+        self.VP = "Vice President"
 
         self.MAT = "Marketing Team"
         self.TT = "Technical Team"
@@ -316,53 +316,54 @@ class TutorVCCMD(commands.Cog):
 
     @commands.command()
     @is_botAdmin
-    async def forceend(self, ctx, channels = commands.Greedy[discord.VoiceChannel]):
+    async def forceend(self, ctx, channel):
         database.db.connect(reuse_if_open=True)
-        for channel in channels:
-            team = discord.utils.get(ctx.guild.roles, name= self.AT)
-            member = ctx.guild.get_member(ctx.author.id)
+        channel = await self.bot.fetch_channel(channel)
+        print(channel)
+        team = discord.utils.get(ctx.guild.roles, name= self.AT)
+        member = ctx.guild.get_member(ctx.author.id)
 
-            if channel.id in self.presetChannels:
-                embed = discord.Embed(title = f"{Emoji.invalidchannel} UnAuthorized Channel Deletion", description = "You are not allowed to delete these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
-                return await ctx.send(embed = embed)
+        if channel.id in self.presetChannels:
+            embed = discord.Embed(title = f"{Emoji.invalidchannel} UnAuthorized Channel Deletion", description = "You are not allowed to delete these channels!\n\n**Error Detection:**\n**1)** Detected Static Channels", color = discord.Colour.dark_red())
+            return await ctx.send(embed = embed)
 
-            if channel.category_id == self.categoryID:
-                query = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == channel.id)
+        if channel.category_id == self.categoryID:
+            query = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == channel.id)
 
-                if query.exists():
-                    q: database.VCChannelInfo = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == channel.id).get()
-                    VCDatetime = pytz.timezone("America/New_York").localize(q.datetimeObj)
+            if query.exists():
+                q: database.VCChannelInfo = database.VCChannelInfo.select().where(database.VCChannelInfo.ChannelID == channel.id).get()
+                VCDatetime = pytz.timezone("America/New_York").localize(q.datetimeObj)
 
-                    day, now = showTotalMinutes(VCDatetime)
+                day, now = showTotalMinutes(VCDatetime)
 
 
-                    for VCMember in channel.members:
-                        if VCMember.id == q.authorID:
-                            tag: database.IgnoreThis = database.IgnoreThis.create(channelID = channel.id, authorID = VCMember.id)
-                            tag.save()
-                            print(f"Added: {VCMember.id}")
-                        
+                for VCMember in channel.members:
+                    if VCMember.id == q.authorID:
+                        tag: database.IgnoreThis = database.IgnoreThis.create(channelID = channel.id, authorID = VCMember.id)
+                        tag.save()
+                        print(f"Added: {VCMember.id}")
                     
-                    await channel.delete()
-                    q.delete_instance()
-                    embed = discord.Embed(title = f"{Emoji.archive} Force Ended Session", description = "Session has been forcefully removed.", color = discord.Colour.blue())
-                    embed.add_field(name = "Time Spent", value = f"<@{q.authorID}> you have spent a total of {Emoji.calender} `{day} minutes` in voice channel, **{q.name}**.")
-                    embed.set_footer(text = "WARNING: Time displayed may not be accurate.")
-                    await ctx.send(embed = embed)
-
-                    
-
-                else:
-                    await channel.delete()
-                    embed = discord.Embed(title = f"{Emoji.warn} Partial Completion", description = "The database indicates there is no owner or data related to this voice channel but I have still deleted the channel!", color = discord.Colour.gold())
-                        
-                    await ctx.send(embed = embed)
-                    print(query.authorID)
-                    
-            else:
-                embed = discord.Embed(title = f"{Emoji.warn} Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a valid voice channel!", color = discord.Colour.red())
-                        
+                
+                await channel.delete()
+                q.delete_instance()
+                embed = discord.Embed(title = f"{Emoji.archive} Force Ended Session", description = "Session has been forcefully removed.", color = discord.Colour.blue())
+                embed.add_field(name = "Time Spent", value = f"<@{q.authorID}> you have spent a total of {Emoji.calender} `{day} minutes` in voice channel, **{q.name}**.")
+                embed.set_footer(text = "WARNING: Time displayed may not be accurate.")
                 await ctx.send(embed = embed)
+
+                
+
+            else:
+                await channel.delete()
+                embed = discord.Embed(title = f"{Emoji.warn} Partial Completion", description = "The database indicates there is no owner or data related to this voice channel but I have still deleted the channel!", color = discord.Colour.gold())
+                    
+                await ctx.send(embed = embed)
+                print(query.authorID)
+                
+        else:
+            embed = discord.Embed(title = f"{Emoji.warn} Unknown Channel", description = "You are not the owner of this voice channel nor is this a valid channel. Please execute the command under a valid voice channel!", color = discord.Colour.red())
+                    
+            await ctx.send(embed = embed)
 
         database.db.close()
 
@@ -411,6 +412,7 @@ class TutorVCCMD(commands.Cog):
                     await member.voice.channel.set_permissions(SMOD, connect = True)
                     await member.voice.channel.set_permissions(ST, connect = True)
                     await member.voice.channel.set_permissions(VP, connect = True, manage_channels = True, manage_permissions = True)
+                    await member.voice.channel.set_permissions(CO, connect = True, manage_channels = True, manage_permissions = True)
                     
 
                     embed = discord.Embed(title = f"{Emoji.lock} Locked Voice Channel", description = "Your voice channel has been locked and now only authorized users can join it!\n\n**NOTE:** Moderators and other Administrators will always be allowed into your voice channels!", color = discord.Colour.green())

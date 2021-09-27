@@ -1,9 +1,12 @@
 import os
 from datetime import datetime
 
+import deprecation
 from dotenv import load_dotenv
 from flask import Flask
 from peewee import *
+
+__version__ = "2.2.0"
 
 load_dotenv()
 
@@ -99,6 +102,9 @@ class IgnoreThis(BaseModel):
     channelID = TextField()
     authorID = TextField()
 
+@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
+                        current_version=__version__,
+                        details="Please switch to a different table, or create one if necessary.")
 class HelperTally(BaseModel):
     '''
     DEPRECATED
@@ -139,7 +145,9 @@ class HelperTally(BaseModel):
     USHistory = IntegerField(default = 0)
     WorldHistory = IntegerField(default = 0)
 
-
+@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
+                        current_version=__version__,
+                        details="Please switch to a different table, or create one if necessary.")
 class QuestionTimestamp(BaseModel):
     '''
     DEPRECATED
@@ -150,7 +158,9 @@ class QuestionTimestamp(BaseModel):
     subject = TextField()
     question = TextField()
 
-
+@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
+                        current_version=__version__,
+                        details="Please switch to a different table, or create one if necessary.")
 class Response(BaseModel):
     '''
     DEPRECATED
@@ -167,6 +177,9 @@ class Response(BaseModel):
     Tech = TextField(default="NONE")
     BreakApproval = TextField(default="NONE")
 
+@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
+                        current_version=__version__,
+                        details="Please switch to a different table, or create one if necessary.")
 class ExtraResponse(BaseModel):
     '''
     ExtraResponse Records for StaffInformation Tickets
@@ -180,6 +193,9 @@ class ExtraResponse(BaseModel):
     field4= TextField(default="NONE")
     field4= TextField(default="NONE")
 
+@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
+                        current_version=__version__,
+                        details="Please switch to a different table, or create one if necessary.")
 class EmailsVersion2(BaseModel):
     '''
     DEPRECATED
@@ -189,6 +205,9 @@ class EmailsVersion2(BaseModel):
     supervisorID = TextField()
     supervisorEmail = TextField()
 
+@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
+                        current_version=__version__,
+                        details="Please switch to a different table, or create one if necessary.")
 class ChannelInfo(BaseModel):
     '''
     DEPRECATED
@@ -223,7 +242,30 @@ class Tag(BaseModel):
     embed_title = TextField()
     text = TextField()
     imageURL = TextField(default=None)
-    
+
+class PunishmentTag(BaseModel):
+    """
+    #Tag
+    Stores our tags accessed by the tag command.
+
+    `id`: AutoField()
+    Database Entry
+
+    `tag_name`: TextField()
+    Name of the tag
+
+    `text`: TextField()
+    Embed Description
+
+    `imageURL`: TextField()
+    URL of the image
+    """
+
+    id = AutoField()
+    tag_name = TextField(unique=True)
+    embed_title = TextField()
+    text = TextField()
+    imageURL = TextField(default=None)
 
 class Administrators(BaseModel):
     '''
@@ -459,6 +501,24 @@ class Uptime(BaseModel):
     id = AutoField()
     UpStart = TextField()
 
+class TicketInfo(BaseModel):
+    """
+    #TicketInfo
+
+    `id`: AutoField()
+    Database Entry
+
+    `ChannelID`: BigIntegerField()
+    Channel ID of the Ticket.
+
+    `authorID`: BigIntegerField()
+    Author ID of the Ticket Owner.
+    """
+
+    id = AutoField()
+    ChannelID = BigIntegerField()
+    authorID = BigIntegerField()
+
 app = Flask(__name__)
 
 @app.before_request
@@ -496,7 +556,9 @@ tables = {
     "ToDO": ToDo,
     "WhitelistedPrefix": WhitelistedPrefix,
     "TutorBot_Sessions": TutorBot_Sessions,
-    "Uptime": Uptime
+    "Uptime": Uptime,
+    "TicketInfo": TicketInfo,
+    "PunishmentTag": PunishmentTag
 }
 
 iter_table(tables)

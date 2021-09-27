@@ -7,17 +7,25 @@ import time
 from datetime import timedelta
 
 import discord
+import psutil
 from core import database
 from core.checks import is_botAdmin, is_botAdmin2
-from core.common import ClubPingDropdownView, Emoji, HelpView, NitroConfirmFake
+from core.common import (ButtonHandler, Emoji, NitroConfirmFake,
+                         SelectMenuHandler)
 from discord.ext import commands
 from dotenv import load_dotenv
-from main import force_restart2
 from sentry_sdk import Hub
-import psutil
 
 load_dotenv()
 
+async def force_restart2(ctx):  #Forces REPL to apply changes to everything
+    try:
+        subprocess.run("python main.py", shell=True, text=True, capture_output=True, check=True)
+    except Exception as e:
+        await ctx.send(f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}")
+    finally:
+        sys.exit(0)
+        
 class MiscCMD(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
@@ -42,6 +50,18 @@ class MiscCMD(commands.Cog):
             "['Simplified Advocacy Club']": 883169000866070539,
             "['Simplified Speech Club']": 883170166161149983
         }
+
+        self.options = [
+            discord.SelectOption(label='Simplified Coding Club', description='', emoji='💻'),
+            discord.SelectOption(label='Simplified Debate Club', description='', emoji='💭'),
+            discord.SelectOption(label='Simplified Music Club', description='', emoji='🎵'),
+            discord.SelectOption(label='Simplified Cooking Club', description='', emoji='🍱'),
+            discord.SelectOption(label='Simplified Chess Club', description='', emoji='🏅'),
+            discord.SelectOption(label='Simplified GameDev Club', description='', emoji='📟'),
+            discord.SelectOption(label='Simplified Book Club', description='', emoji='📚'),
+            discord.SelectOption(label='Simplified Advocacy Club', description='', emoji='📰'),
+            discord.SelectOption(label='Simplified Speech Club', description='', emoji='🎤')
+        ]
 
 
     @commands.group(aliases=['egg'])
@@ -166,7 +186,10 @@ class MiscCMD(commands.Cog):
 
     @commands.command()
     async def help(self, ctx):
+        view = discord.ui.View()
         emoji = discord.utils.get(self.bot.emojis, id = 880875405962264667)
+        view.add_item(ButtonHandler(style=discord.ButtonStyle.green, url="https://timmy.schoolsimplified.org", disabled=False,
+                                    label="Click Here to Visit the Documentation!", emoji=emoji))
 
         embed = discord.Embed(title="Help Command",
                             color=discord.Colour.gold())
@@ -174,7 +197,7 @@ class MiscCMD(commands.Cog):
                         value="Click the button below to visit the documentation!")
         embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
         embed.set_thumbnail(url="https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533")
-        await ctx.send(embed=embed, view = HelpView(emoji))
+        await ctx.send(embed=embed, view = view)
 
     @commands.command()
     async def nitro(self, ctx: commands.Context):
@@ -347,7 +370,9 @@ class MiscCMD(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 300, commands.BucketType.role)
     async def clubping(self, ctx: commands.Context, *, message = ""):
-        view = ClubPingDropdownView()
+        view = discord.ui.View()
+        view.add_item(SelectMenuHandler(self.options, place_holder = "Select a club to ping!", select_user= ctx.author))
+
         msg = await ctx.send("Select a role you want to ping!", view = view)
         await view.wait()
         await msg.delete()

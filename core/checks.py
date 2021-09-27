@@ -8,6 +8,7 @@ If you wish to use the @is_botAdmin check, DM Space.".
 Otherwise, use the same format to make your own check. 
 '''
 
+import typing
 from discord.ext import commands
 from core import database
 
