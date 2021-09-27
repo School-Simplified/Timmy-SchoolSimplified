@@ -327,13 +327,18 @@ async def on_command_error(ctx, error: Exception):
             return await ctx.send(f'Command "{cmd}" not found, use the help command to know what commands are available')
 
     elif isinstance(error, (commands.MissingRequiredArgument, commands.TooManyArguments)):
+        signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
+
         if ctx.command.name == "schedule":
             em = discord.Embed(title = "Missing/Extra Required Arguments Passed In!", description = "Looks like you messed up an argument somewhere here!\n\n**Check the following:**\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)", color = 0xf5160a)
             em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
             em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
             return await ctx.send(embed = em)
         else:
-            em = discord.Embed(title = "Missing/Extra Required Arguments Passed In!", description = "You have missed one or several arguments in this command", color = 0xf5160a)
+            em = discord.Embed(title = "Missing/Extra Required Arguments Passed In!",
+                               description = "You have missed one or several arguments in this command"
+                                             "\n\nUsage:"
+                                             f"\n`{signature}`", color = 0xf5160a)
             em.set_thumbnail(url = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png")
             em.set_footer(text = "Consult the Help Command if you are having trouble or call over a Bot Manager!")
             return await ctx.send(embed = em)
