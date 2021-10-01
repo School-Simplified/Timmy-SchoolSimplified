@@ -17,6 +17,7 @@ MasterSubjectOptions = [
     discord.SelectOption(label='Other Helpers', description='If you need help with anything else, click here!', emoji='🧐'),
 ]
 
+
 #MasterSubjectView = discord.ui.View()
 #MasterSubjectView.add_item(SelectMenuHandler(MasterSubjectOptions, "persistent_view:ticketdrop", "Select a subject you need help with!", 1,1, interaction_message = "Check your DM's!", ephemeral = True))
 
