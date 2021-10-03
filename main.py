@@ -138,7 +138,7 @@ async def force_restart(ctx):
 
 
 
-@bot.slash_command(description = "Play a game of TicTacToe with someone!", guild_ids=getGuildList(bot, exemptServer=[876651621826834473]))
+@bot.slash_command(description = "Play a game of TicTacToe with someone!", guild_ids=getGuildList(bot))
 async def tictactoe(ctx: discord.InteractionContext, user: Option(discord.Member, "Enter an opponent you want")):
     if user == None:
         return await ctx.send("lonely :(, sorry but you need a person to play against!")
@@ -155,7 +155,7 @@ async def tictactoe(ctx: discord.InteractionContext, user: Option(discord.Member
 
 
 
-@bot.user_command(name = "Are they short?", guild_ids=getGuildList(bot, exemptServer=[876651621826834473]))  
+@bot.user_command(name = "Are they short?", guild_ids=getGuildList(bot))  
 async def short(ctx, member: discord.Member):  
     if member.id == 736765405728735232 or member.id == 518581570152693771 or member.id == 544724467709116457:
         await ctx.respond(f"{member.mention} is short!")
@@ -163,7 +163,7 @@ async def short(ctx, member: discord.Member):
         await ctx.respond(f"{member.mention} is tall!")
 
 
-@bot.slash_command(description = "Check's if a user is short!", guild_ids=getGuildList(bot, exemptServer=[876651621826834473]))  
+@bot.slash_command(description = "Check's if a user is short!", guild_ids=getGuildList(bot))  
 async def short_detector(ctx, member: Option(discord.Member, "Enter a user you want to check!")):  
     if member.id == 736765405728735232 or member.id == 518581570152693771 or member.id == 544724467709116457:
         await ctx.respond(f"{member.mention} is short!")
@@ -171,7 +171,7 @@ async def short_detector(ctx, member: Option(discord.Member, "Enter a user you w
         await ctx.respond(f"{member.mention} is tall!")
 
 
-@bot.user_command(name = "Play TicTacToe with them!", guild_ids=getGuildList(bot, exemptServer=[876651621826834473]))  
+@bot.user_command(name = "Play TicTacToe with them!", guild_ids=getGuildList(bot))  
 async def tictactoeCTX(ctx, member: discord.Member):  
     if member == None:
         return await ctx.send("lonely :(, sorry but you need a person to play against!")

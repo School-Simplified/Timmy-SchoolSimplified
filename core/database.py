@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 
-import deprecation
 from dotenv import load_dotenv
 from flask import Flask
 from peewee import *
@@ -102,9 +101,6 @@ class IgnoreThis(BaseModel):
     channelID = TextField()
     authorID = TextField()
 
-@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
-                        current_version=__version__,
-                        details="Please switch to a different table, or create one if necessary.")
 class HelperTally(BaseModel):
     '''
     DEPRECATED
@@ -145,9 +141,6 @@ class HelperTally(BaseModel):
     USHistory = IntegerField(default = 0)
     WorldHistory = IntegerField(default = 0)
 
-@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
-                        current_version=__version__,
-                        details="Please switch to a different table, or create one if necessary.")
 class QuestionTimestamp(BaseModel):
     '''
     DEPRECATED
@@ -158,9 +151,6 @@ class QuestionTimestamp(BaseModel):
     subject = TextField()
     question = TextField()
 
-@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
-                        current_version=__version__,
-                        details="Please switch to a different table, or create one if necessary.")
 class Response(BaseModel):
     '''
     DEPRECATED
@@ -177,9 +167,6 @@ class Response(BaseModel):
     Tech = TextField(default="NONE")
     BreakApproval = TextField(default="NONE")
 
-@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
-                        current_version=__version__,
-                        details="Please switch to a different table, or create one if necessary.")
 class ExtraResponse(BaseModel):
     '''
     ExtraResponse Records for StaffInformation Tickets
@@ -193,9 +180,6 @@ class ExtraResponse(BaseModel):
     field4= TextField(default="NONE")
     field4= TextField(default="NONE")
 
-@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
-                        current_version=__version__,
-                        details="Please switch to a different table, or create one if necessary.")
 class EmailsVersion2(BaseModel):
     '''
     DEPRECATED
@@ -205,9 +189,6 @@ class EmailsVersion2(BaseModel):
     supervisorID = TextField()
     supervisorEmail = TextField()
 
-@deprecation.fail_if_not_removed(deprecated_in="2.1.0", removed_in="2.3.0",
-                        current_version=__version__,
-                        details="Please switch to a different table, or create one if necessary.")
 class ChannelInfo(BaseModel):
     '''
     DEPRECATED
