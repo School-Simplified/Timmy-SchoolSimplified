@@ -8,7 +8,6 @@ class SuggestionCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def suggest(self, ctx, suggestion):
@@ -17,8 +16,6 @@ class SuggestionCMD(commands.Cog):
         embed.set_footer("Double check this suggestion || MAKE SURE THIS SUGGESTION IS RELATED TO THE BOT, NOT THE DISCORD SERVER!")
 
         message = await ctx.send(embed = embed)
-
-
         reactions = ['✅', '❌']
         for emoji in reactions:
             await message.add_reaction(emoji)
@@ -58,16 +55,5 @@ class SuggestionCMD(commands.Cog):
             raise error
 
 
-
-
-
-
-
-        
-
 def setup(bot):
     bot.add_cog(SuggestionCMD(bot))
-
-
-
-    
