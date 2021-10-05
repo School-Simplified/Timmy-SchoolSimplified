@@ -37,10 +37,9 @@ class VerificationStaff(commands.Cog):
         #Staff Pink
         #Staff Blue
         self.staffServer = {
-            778406166735880202: 878774300335833158, 
             891521033700540457: 894241199433580614
         }
-        self.StaffServerIDs = [778406166735880202, 891521033700540457]
+        self.StaffServerIDs = [891521033700540457]
         self.VerificationIDs = [878681438462050356, 894240578651443232]
         self.ServerIDs = [805593783684562965, 801974357395636254, 799855854182596618, 815753072742891532]
 

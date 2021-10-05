@@ -48,10 +48,11 @@ class TutorVCUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.channel_id = 843637802293788692
-        self.categoryID = 776988961087422515
-        self.staticChannels = [784556875487248394, 784556893799448626]
-        self.presetChannels = [843637802293788692, 784556875487248394, 784556893799448626]
+        self.channel_id = {763119924385939498: 843637802293788692, 891521033700540457: 895041227123228703}
+
+        #self.categoryID = 776988961087422515
+        self.staticChannels = [784556875487248394, 784556893799448626, 895041070956675082]
+        self.presetChannels = [843637802293788692, 784556875487248394, 784556893799448626, 895041227123228703, 895041070956675082]
 
         self.TutorLogID = 873326994220265482
 
@@ -70,25 +71,31 @@ class TutorVCUpdate(commands.Cog):
 
         self.TutorRole = "Tutor"
 
+        self.categoryIDs = [776988961087422515, 895041016057446411]
+        self.CcategoryIDs = {763119924385939498: 776988961087422515, 891521033700540457: 895041016057446411}
+        self.LobbyStartIDs = {763119924385939498: 843637802293788692, 891521033700540457 :895041227123228703}
+
+
+
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         database.db.connect(reuse_if_open=True)
-        lobbyStart = await self.bot.fetch_channel(784556875487248394)
+        lobbyStart = await self.bot.fetch_channel(self.LobbyStartIDs[member.guild.id])
 
-        if before.channel != None and (after.channel == None or after.channel.category_id != 776988961087422515 or after.channel.id in self.staticChannels) and not member.bot:
+        if before.channel != None and (after.channel == None or after.channel.category_id not in self.categoryIDs or after.channel.id in self.staticChannels) and not member.bot:
             
-            acadChannel = await self.bot.fetch_channel(self.channel_id)
-            query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id))
-            ignoreQuery = database.IgnoreThis.select().where((database.IgnoreThis.authorID == member.id) & (database.IgnoreThis.channelID == before.channel.id))
+            acadChannel = await self.bot.fetch_channel(self.channel_id[member.guild.id])
+            query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id) & (database.VCChannelInfo.GuildID == before.channel.guild.id))
+            ignoreQuery = database.IgnoreThis.select().where((database.IgnoreThis.authorID == member.id) & (database.IgnoreThis.channelID == before.channel.id) & (database.IgnoreThis.GuildID == before.channel.guild.id))
             
             if ignoreQuery.exists():
-                iq: database.IgnoreThis = database.IgnoreThis.select().where((database.IgnoreThis.authorID == member.id) & (database.IgnoreThis.channelID == before.channel.id)).get()
+                iq: database.IgnoreThis = database.IgnoreThis.select().where((database.IgnoreThis.authorID == member.id) & (database.IgnoreThis.channelID == before.channel.id) & (database.IgnoreThis.GuildID == before.channel.guild.id)).get()
                 iq.delete_instance()
                 return print("Ignore Channel")
 
 
-            if query.exists() and before.channel.category.id == self.categoryID:
-                query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id)).get()
+            if query.exists() and before.channel.category.id in self.categoryIDs:
+                query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id) & (database.VCChannelInfo.GuildID == before.channel.guild.id)).get()
                 try:
                     tutorChannel = await self.bot.fetch_channel(int(query.ChannelID))
                 except:
@@ -115,14 +122,17 @@ class TutorVCUpdate(commands.Cog):
                         return print("returned")
 
                     else:
-                        query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id))
+                        query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id) & (database.VCChannelInfo.GuildID == before.channel.guild.id))
                         if query.exists():
-                            query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id)).get()
+                            query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == before.channel.id) & (database.VCChannelInfo.GuildID == before.channel.guild.id)).get()
                             VCDatetime = pytz.timezone("America/New_York").localize(query.datetimeObj)
 
                             day, now = showTotalMinutes(VCDatetime)
-                            daySTR = VCDatetime.strftime("%H:%M %p EST")
-                            nowSTR = now.strftime("%H:%M %p EST")
+                            #daySTR = VCDatetime.strftime("%H:%M %p EST")
+                            #nowSTR = now.strftime("%H:%M %p EST")
+
+                            daySTR = int(VCDatetime.timestamp())
+                            nowSTR = int(now.timestamp())
                             
                             query.delete_instance() 
 
@@ -146,7 +156,7 @@ class TutorVCUpdate(commands.Cog):
                                     HOURCH = await self.bot.fetch_channel(self.TutorLogID)
 
                                     hourlog = discord.Embed(title = "Hour Log", description = f"{tutor.mention}'s Tutor Log", color = discord.Colour.blue())
-                                    hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student:** {student.mention}\n**Time Started:** {daySTR}\n**Time Ended:** {nowSTR}\n\n**Total Time:** {day}")
+                                    hourlog.add_field(name = "Information", value = f"**Tutor:** {tutor.mention}\n**Student:** {student.mention}\n**Time Started:** <t:{daySTR}>t>\n**Time Ended:** <t:{nowSTR}:t>\n\n**Total Time:** {day}")
                                     hourlog.set_footer(text = f"Session ID: {tutorSession.SessionID}")
                                     await HOURCH.send(embed = embed)
 
@@ -165,14 +175,14 @@ class TutorVCUpdate(commands.Cog):
 
 
 
-        if after.channel != None and after.channel == lobbyStart and not member.bot:
-            acadChannel = await self.bot.fetch_channel(self.channel_id)
+        if after.channel != None and after.channel.id in self.presetChannels and not member.bot:
+            acadChannel = await self.bot.fetch_channel(self.LobbyStartIDs[member.guild.id])
             SB = discord.utils.get(member.guild.roles, name = self.SB)
 
             legend = discord.utils.get(member.guild.roles, name = self.Legend)
 
-            MT = discord.utils.get(member.guild.roles, name= self.MOD)
-            MAT = discord.utils.get(member.guild.roles, name= self.MAT)
+            MT = discord.utils.get(member.guild.roles, name=self.MOD)
+            MAT = discord.utils.get(member.guild.roles, name=self.MAT)
             TT = discord.utils.get(member.guild.roles, name=self.TT)
             AT = discord.utils.get(member.guild.roles, name=self.AT)
             VP = discord.utils.get(member.guild.roles, name=self.VP)
@@ -180,7 +190,7 @@ class TutorVCUpdate(commands.Cog):
             TutorRole = discord.utils.get(member.guild.roles, name=self.TutorRole)
 
             #if team in member.roles:
-            category = discord.utils.get(member.guild.categories, id = self.categoryID)
+            category = discord.utils.get(member.guild.categories, id = self.CcategoryIDs[after.channel.guild.id])
 
             if len(category.voice_channels) >= 25:
                 embed = discord.Embed(title = f"{Emoji.deny} Max Channel Allowance", description = "I'm sorry! This category has reached its full capacity at **15** voice channels!\n\n**Please wait until a private voice session ends before creating a new voice channel!**", color = discord.Colour.red())
@@ -188,9 +198,9 @@ class TutorVCUpdate(commands.Cog):
                 return await acadChannel.send(content = member.mention, embed = embed)
 
 
-            query = database.VCChannelInfo.select().where(database.VCChannelInfo.authorID == member.id)
+            query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.GuildID == after.channel.guild.id))
             if query.exists():
-                moveToChannel = database.VCChannelInfo.select().where(database.VCChannelInfo.authorID == member.id).get()
+                moveToChannel = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.GuildID == after.channel.guild.id)).get()
                 embed = discord.Embed(title = f"{Emoji.deny} Maximum Channel Ownership Allowance", description = "I'm sorry! You already have an active voice channel and thus you can't create anymore channels.\n\n**If you would like to remove the channel without waiting the 2 minutes, use `+end`!**", color = discord.Colour.red())
                 
                 try:
@@ -222,7 +232,7 @@ class TutorVCUpdate(commands.Cog):
 
                 channel = await category.create_voice_channel(f"{member.display_name}'s Channel", user_limit = 2)
                 await channel.set_permissions(member.guild.default_role, stream = True)
-                tag: database.VCChannelInfo = database.VCChannelInfo.create(ChannelID = channel.id, name = f"{member.display_name}'s Channel", authorID = member.id, used = True, datetimeObj = datetime.now(EST), lockStatus = "0")
+                tag: database.VCChannelInfo = database.VCChannelInfo.create(ChannelID = channel.id, name = f"{member.display_name}'s Channel", authorID = member.id, used = True, datetimeObj = datetime.now(EST), lockStatus = "0", GuildID = member.guild.id,)
                 tag.save()
 
                 '''
@@ -244,10 +254,10 @@ class TutorVCUpdate(commands.Cog):
 
                 except Exception as e:
                     print(f"Left VC before setup.\n{e}")
-                    query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == channel.id))
+                    query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == channel.id) & (database.VCChannelInfo.GuildID == after.channel.guild.id))
                     
                     if query.exists():
-                        query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == channel.id)).get()
+                        query = database.VCChannelInfo.select().where((database.VCChannelInfo.authorID == member.id) & (database.VCChannelInfo.ChannelID == channel.id) & (database.VCChannelInfo.GuildID == after.channel.guild.id)).get()
                         query.delete_instance()
                         
                         try:

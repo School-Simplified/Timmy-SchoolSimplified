@@ -26,10 +26,11 @@ class TutorMain(commands.Cog):
                 ListTen = []
                 i = 0
                 for entry in query:
+                    ts = int(entry.Date.timestamp())
                     studentUser = await self.bot.fetch_user(entry.StudentID)
-                    date = entry.Date.strftime("%m/%d/%Y")
-                    amORpm = entry.Date.strftime("%p")
-                    ListTen.append(f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {date} {entry.Time} {amORpm} -> {studentUser.name}")
+                    #date = entry.Date.strftime("%m/%d/%Y")
+                    #amORpm = entry.Date.strftime("%p")
+                    ListTen.append(f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{ts}:f> -> {studentUser.name}")
 
                 embed.add_field(name = "List:", value = "\n".join(ListTen), inline = False)
             embed.set_thumbnail(url = "https://media.discordapp.net/attachments/875233489727922177/877378910214586368/tutoring.png?width=411&height=532")

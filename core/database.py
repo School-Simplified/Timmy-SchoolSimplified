@@ -68,6 +68,9 @@ class VCChannelInfo(BaseModel):
     `lockStatus` = bool(TextField())
     Signifies if the voice channel is locked or not.
 
+    `GuildID` = BigIntegerField()
+    Guild ID of the Voice Channel.
+
     `TutorBotSessionID` = TextField(default=None)
     Signifies if the voice channel is linked to a TutorSession, if so this attribute contains its ID. 
     '''
@@ -79,6 +82,7 @@ class VCChannelInfo(BaseModel):
     datetimeObj = DateTimeField()
     used = BooleanField()
     lockStatus = TextField()
+    GuildID = BigIntegerField()
 
     TutorBotSessionID = TextField(default=None)
 
@@ -95,11 +99,15 @@ class IgnoreThis(BaseModel):
 
     `authorID`: TextField()
     Owner of the voice channel being deleted.
+
+    `GuildID` = BigIntegerField()
+    Guild ID of the Voice Channel.
     '''
 
     id = AutoField()
     channelID = TextField()
     authorID = TextField()
+    GuildID = BigIntegerField()
 
 class HelperTally(BaseModel):
     '''

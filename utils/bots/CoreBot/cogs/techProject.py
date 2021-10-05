@@ -89,7 +89,7 @@ class TechProjectCMD(commands.Cog):
         
         options = [
             discord.SelectOption(label='Developer Team', description='If you need a Discord Bot or a modification to one, click here!', emoji='🤖'),
-            discord.SelectOption(label='Discord Team', description='If you need help with discord editing—revamping/creating a server, click here!', emoji=emoji),
+            #discord.SelectOption(label='Discord Team', description='If you need help with discord editing—revamping/creating a server, click here!', emoji=emoji),
             discord.SelectOption(label='Website Team', description='If you need changes done to the website, click here!', emoji='👨‍💻'),
         ]
 

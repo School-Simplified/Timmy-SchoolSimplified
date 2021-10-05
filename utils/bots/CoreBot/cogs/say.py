@@ -1,13 +1,20 @@
+import os
+
 import discord
 from core import database
 from core.checks import is_botAdmin
 from discord.ext import commands
+from google.cloud import texttospeech
 from gtts import gTTS
+from oauth2client.service_account import ServiceAccountCredentials
 
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'creds.json'
+#creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json")
 
 class SayCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        #self.TTSClient = texttospeech.TextToSpeechClient(credentials = creds)
 
     @commands.command()
     @is_botAdmin
@@ -38,20 +45,29 @@ class SayCMD(commands.Cog):
             return
 
         # Lets prepare our text, and then save the audio file
-        tts = gTTS(text=text, lang="en")
-        tts.save("text.mp3")
+        TTSClient = texttospeech.TextToSpeechClient()
+
+        synthesis_input = texttospeech.SynthesisInput(text=text)
+        voice = texttospeech.VoiceSelectionParams(
+            language_code="en-US", ssml_gender=texttospeech.SsmlVoiceGender.MALE
+        )
+        audio_config = texttospeech.AudioConfig(
+            audio_encoding=texttospeech.AudioEncoding.MP3
+        )
+        response = TTSClient.synthesize_speech(
+            input=synthesis_input, voice=voice, audio_config=audio_config
+        )
+        with open("text.mp3", "wb") as out:
+            out.write(response.audio_content)
 
         try:
-            # Lets play that mp3 file in the voice channel
             vc.play(discord.FFmpegPCMAudio('text.mp3'), after=lambda e: print(f"Finished playing: {e}"))
 
-            # Lets set the volume to 1
             vc.source = discord.PCMVolumeTransformer(vc.source)
             vc.source.volume = 1
 
-        # Handle the exceptions that can occur
         except discord.ClientException as e:
-            await ctx.send(f"A client exception occured:\n`{e}`")
+            await ctx.send(f"A client exception occurred:\n`{e}`")
 
         except TypeError as e:
             await ctx.send(f"TypeError exception:\n`{e}`")
