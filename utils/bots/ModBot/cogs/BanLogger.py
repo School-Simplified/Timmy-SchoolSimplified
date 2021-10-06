@@ -10,12 +10,12 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
 
-creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
-
-client = gspread.authorize(creds)
-
-sheet = client.open("SchoolSimplifiedBans").sheet1
-
+try:
+    creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+    client = gspread.authorize(creds)
+    sheet = client.open("SchoolSimplifiedBans").sheet1
+except Exception as e:
+    print(f"ERROR: Could not authorize GSpreads: {e}")
 
 def next_available_row(worksheet):
     str_list = list(filter(None, worksheet.col_values(1)))

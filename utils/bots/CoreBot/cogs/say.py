@@ -9,12 +9,10 @@ from gtts import gTTS
 from oauth2client.service_account import ServiceAccountCredentials
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'creds.json'
-#creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json")
 
 class SayCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        #self.TTSClient = texttospeech.TextToSpeechClient(credentials = creds)
 
     @commands.command()
     @is_botAdmin

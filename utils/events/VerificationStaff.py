@@ -8,7 +8,7 @@ def getEqualRank(query):
     if query not in config:
         return None
     else:
-        return config[query]
+        return list(config[query])
 
 
 async def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Member):
@@ -97,26 +97,28 @@ class VerificationStaff(commands.Cog):
                         check = getEqualRank(role.name)
 
                         if check != None:
-                            markdownRole = f"`{check}` -> *{server.name}*"
+                            checkSTR = ", ".join(check)
+                            markdownRole = f"`{checkSTR}` -> *{server.name}*"
                             markdownGuild = f"`{server.name}`"
 
                             if markdownRole not in VerifiedRoles:
-                                VerifiedRoles.append(f"`{check}` -> *{server.name}*")
+                                VerifiedRoles.append(f"`{checkSTR}` -> *{server.name}*")
                             if markdownGuild not in VerifiedGuilds:
                                 VerifiedGuilds.append(f"`{server.name}`")
 
-                            if check in [role.name for role in staffServer.roles]:
-                                print(role.id)
-                                jsonROLE = discord.utils.get(staffServer.roles, name = check)
+                            for elem in check:
+                                if elem in [role.name for role in staffServer.roles]:
+                                    print(role.id)
+                                    jsonROLE = discord.utils.get(staffServer.roles, name = check)
 
-                                print(jsonROLE, server, ServerMember)
-                                
-                                await StaffServerMember.add_roles(jsonROLE, reason = "Verification RoleSync")
+                                    print(jsonROLE, server, ServerMember)
+                                    
+                                    await StaffServerMember.add_roles(jsonROLE, reason = "Verification RoleSync")
 
         
             totalguilds = "\n".join(VerifiedGuilds)
             totalroles = "\n".join(VerifiedRoles)
-            if len(totalroles) > 0:
+            if len(VerifiedRoles) > 0:
                 embed = discord.Embed(title = "Verification Details", description = f"**Username:** {StaffServerMember.mention}\n**ID:** `{StaffServerMember.id}`", color = discord.Color.red())
                 embed.set_author(name = StaffServerMember.display_name, url = StaffServerMember.avatar.url, icon_url = StaffServerMember.avatar.url)
                 embed.add_field(name = "Guild's Found:", value = totalguilds)
