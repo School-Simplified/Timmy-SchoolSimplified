@@ -83,20 +83,20 @@ def prompt_config2(msg, key):
 
 class ID:
     # Channels
-    mkt_commands = 887788534843461681                       # 799855856295608345
-    mkt_commissionTranscripts = 891778853503111228          # 820843692385632287
+    mkt_commands = 799855856295608345
+    mkt_commissionTranscripts = 820843692385632287
 
     # Categories
-    mkt_designCategory = 889170366646345728                     # 820873176208375838
-    mkt_mediaCateogory = 889170503242248222                     # 882031123541143632
-    mkt_discordCategory = 889170561723404308                    # 888668259220615198
+    mkt_designCategory = 820873176208375838
+    mkt_mediaCateogory = 882031123541143632
+    mkt_discordCategory = 888668259220615198
 
     # Roles
-    mkt_secretService = 889596313291878411                      # 859914502539837452
-    mkt_executiveAssistant = 889596825722552320                 # 885903340310003722
-    mkt_Director = 889597133626408990                           # 799884886507913226
-    mkt_Manager = 889597391869714533                            # 800578036881424405
-    mkt_AssistantManager = 889597567187435551                   # 800578559877972079
+    mkt_secretService = 859914502539837452
+    mkt_executiveAssistant = 885903340310003722
+    mkt_Director = 799884886507913226
+    mkt_Manager = 800578036881424405
+    mkt_AssistantManager = 800578559877972079
 
 
 class Emoji:
