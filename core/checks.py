@@ -11,6 +11,7 @@ Otherwise, use the same format to make your own check.
 import typing
 from discord.ext import commands
 from core import database
+from core.common import ID
 
 
 def predicate_LV1(ctx):
@@ -60,3 +61,11 @@ def predicate_LV4(ctx):
     return ctx.author.id in adminIDs
 
 is_botAdmin4 = commands.check(predicate_LV4)
+
+
+def mktCommissionAdd(ctx):
+    rolesID = [ID.mkt_secretService, ID.mkt_executiveAssistant, ID.mkt_Director, ID.mkt_Manager, ID.mkt_AssistantManager]
+
+    return any(role.id in rolesID for role in ctx.author.roles)
+
+is_mktCommissionAuthorized = commands.check(mktCommissionAdd)
