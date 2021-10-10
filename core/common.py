@@ -3,13 +3,15 @@ import io
 import json
 from pathlib import Path
 import typing
-from typing import List, Tuple
+from typing import List, Tuple, Callable, Any, Awaitable
 
 import chat_exporter
 import discord
 from discord.ext import commands
 from discord import Button, ui, ButtonStyle, SelectOption
 
+# global variables
+coroutineType = Callable[[Any, Any], Awaitable[Any]]
 
 async def rawExport(self, channel, response, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
