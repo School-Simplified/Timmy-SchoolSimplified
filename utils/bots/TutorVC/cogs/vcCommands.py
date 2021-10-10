@@ -100,6 +100,7 @@ class TutorVCCMD(commands.Cog):
 
         self.TutorRole = "Tutor"
         self.TutorLogID = 873326994220265482
+        self.LobbyStartIDs = {763119924385939498: 843637802293788692, 891521033700540457 :895041227123228703}
 
         
 
@@ -440,7 +441,7 @@ class TutorVCCMD(commands.Cog):
                     except:
                         embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = "This isn't a valid voice channel! Please use the command on an actual voice channel thats under the correct category!", color = discord.Colour.red())
                     else:
-                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to use this command!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
@@ -538,7 +539,7 @@ class TutorVCCMD(commands.Cog):
                     except:
                         embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = "This isn't a valid voice channel! Please use the command on an actual voice channel thats under the correct category!", color = discord.Colour.red())
                     else:
-                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to unlock it!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
 
@@ -622,7 +623,7 @@ class TutorVCCMD(commands.Cog):
                     except:
                         embed = discord.Embed(title = f"{Emoji.invalidchannel} Ownership Check Failed", description = "This isn't a valid channel! Please use the command on an actual private voice channel!", color = discord.Colour.red())
                     else:
-                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to use this command!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
@@ -696,7 +697,7 @@ class TutorVCCMD(commands.Cog):
                     except:
                         embed = discord.Embed(title = f"{Emoji.invalidchannel} Ownership Check Failed", description = "This isn't a voice channel! Please use the command on an actual private channel!", color = discord.Colour.red())
                     else:
-                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to use this command!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
@@ -736,7 +737,7 @@ class TutorVCCMD(commands.Cog):
                     except:
                         embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = "This isn't a valid voice channel! Please use the command on an actual voice channel thats under the correct category!", color = discord.Colour.red())
                     else:
-                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to end it!", color = discord.Colour.red())
+                        embed = discord.Embed(title = f"{Emoji.deny} Ownership Check Failed", description = f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, to disconnect them!", color = discord.Colour.red())
                     finally:
                         await ctx.send(embed = embed)
             else:
@@ -744,6 +745,13 @@ class TutorVCCMD(commands.Cog):
                         
                 await ctx.send(embed = embed)
 
+    @commands.command(aliases =["start"])
+    async def startVC(self, ctx):
+        embed = discord.Embed(title = "Private Channels", description = "First off, there is **no** command to start a private channel.", color = discord.Color.green())
+        embed.add_field(name = "Creating a Private Channel", value = f"The **only** way to create a voice channel is through joining <#{self.LobbyStartIDs[ctx.guild.id]}>. There is **no command**, so please don't spam `+start` or whatever comes up in your head. ")
+        embed.add_field(name = "Permissions", value = "The voice channel owner is the only person who can run any of the modifier commands. (Rename, Permit, Disconnect, etc) \n**No**, there is no way of adding extra users to manage the voice channel. Anyone who tries will just get an error saying they'd have to redirect the command back to the original owner.",inline = False)
+        embed.set_footer(text = "Feel free to ping Space if you have any questions.")
+        await ctx.send(embed = embed)
 
 def setup(bot):
     bot.add_cog(TutorVCCMD(bot))

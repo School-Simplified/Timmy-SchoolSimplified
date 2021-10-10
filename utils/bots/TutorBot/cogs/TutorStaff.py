@@ -66,6 +66,8 @@ class TutorBotStaffCMD(commands.Cog):
     @commands.command()
     @commands.has_role("Tutor")
     async def schedule(self, ctx, date, time, ampm:str, student: discord.User, subject, repeats: bool = False):
+        if ctx.guild.id != 763119924385939498:
+            await ctx.send("Woah! Looks like you aren't using the new slash command! In the future, this command will be removed so please use the slash command instead!\nYou can do this by clicking `/` in the chat bar and selecting the `schedule` command from Timmy. ")
         embed = discord.Embed(title = "Schedule Confirmed", description = "Created session.", color = discord.Color.green())
         now = datetime.now()
         now :datetime = now.astimezone(self.est)
