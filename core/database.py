@@ -3,6 +3,7 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 from flask import Flask
+from grapheme import length
 from peewee import *
 
 __version__ = "2.2.0"
@@ -14,8 +15,23 @@ Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
 '''
 
-db = MySQLDatabase(os.getenv("DatabaseName"), user=os.getenv("Username"), password=os.getenv("Password"),host= os.getenv("IP"), port = int(os.getenv("PORT")))
-#db = SqliteDatabase("data.db")
+if bool(os.getenv("SSL_TRUE")):
+    db = MySQLDatabase(os.getenv("DatabaseName"), 
+        user=os.getenv("Username"), 
+        password=os.getenv("Password"),
+        host=os.getenv("IP"), 
+        port = int(os.getenv("PORT")), 
+        ssl = {'key': os.getenv("SSL_PATH")}
+    )
+else:
+    db = MySQLDatabase(
+        os.getenv("DatabaseName"), 
+        user=os.getenv("Username"), 
+        password=os.getenv("Password"),
+        host= os.getenv("IP"), 
+        port = int(os.getenv("PORT"))
+    )
+    #db = SqliteDatabase("data.db")
 
 def iter_table(model_dict):
     """Iterates through a dictionary of tables, confirming they exist and creating them if necessary."""
@@ -109,128 +125,6 @@ class IgnoreThis(BaseModel):
     authorID = TextField()
     GuildID = BigIntegerField()
 
-class HelperTally(BaseModel):
-    '''
-    DEPRECATED
-    '''
-    id = AutoField()
-    userID = TextField()
-    CS = IntegerField(default = 0)
-    English = IntegerField(default = 0)
-    Language = IntegerField(default = 0)
-    Math = IntegerField(default = 0)
-    Science = IntegerField(default = 0)
-    SocialStudies = IntegerField(default = 0)
-    Algebra = IntegerField(default = 0)
-    Geometry = IntegerField(default = 0)
-    Precalc = IntegerField(default = 0)
-    Calc = IntegerField(default = 0)
-    Statistics = IntegerField(default = 0)
-    EnglishLang = IntegerField(default = 0)
-    EnglishLit = IntegerField(default = 0)
-    Research = IntegerField(default = 0)
-    Seminar = IntegerField(default = 0)
-    Bio = IntegerField(default = 0)
-    Chem = IntegerField(default = 0)
-    Physics = IntegerField(default = 0)
-    ASL = IntegerField(default = 0)
-    Chinese = IntegerField(default = 0)
-    French = IntegerField(default = 0)
-    German = IntegerField(default = 0)
-    Italian = IntegerField(default = 0)
-    Latin = IntegerField(default = 0)
-    Korean = IntegerField(default = 0)
-    Russian = IntegerField(default = 0)
-    Spanish = IntegerField(default = 0)
-    Econ = IntegerField(default = 0)
-    Euro = IntegerField(default = 0)
-    Psych = IntegerField(default = 0)
-    USGov = IntegerField(default = 0)
-    USHistory = IntegerField(default = 0)
-    WorldHistory = IntegerField(default = 0)
-
-class QuestionTimestamp(BaseModel):
-    '''
-    DEPRECATED
-    '''
-    id = PrimaryKeyField()
-    userID = TextField()
-    date = TextField()
-    subject = TextField()
-    question = TextField()
-
-class Response(BaseModel):
-    '''
-    DEPRECATED
-    '''
-
-    id = AutoField()
-    CommunityService = TextField(default="NONE")
-    Recommendation = TextField(default="NONE")
-    AcademicHour = TextField(default="NONE")
-    Design = TextField(default="NONE")
-    PR = TextField(default="NONE")
-    Marketing = TextField(default="NONE")
-    Analytics = TextField(default="NONE")
-    Tech = TextField(default="NONE")
-    BreakApproval = TextField(default="NONE")
-
-class ExtraResponse(BaseModel):
-    '''
-    ExtraResponse Records for StaffInformation Tickets
-    DEPRECATED
-    '''
-    id = AutoField()
-    topic = TextField()
-    field1 = TextField()
-    field2 = TextField(default="NONE")
-    field3 = TextField(default="NONE")
-    field4= TextField(default="NONE")
-    field4= TextField(default="NONE")
-
-class EmailsVersion2(BaseModel):
-    '''
-    DEPRECATED
-    '''
-
-    id = AutoField()
-    supervisorID = TextField()
-    supervisorEmail = TextField()
-
-class ChannelInfo(BaseModel):
-    '''
-    DEPRECATED
-    '''
-
-    id = AutoField()
-    ChannelID = TextField()
-    topic = TextField()
-    authorID = TextField()
-    status = TextField()
-
-class Tag(BaseModel):
-    """
-    #Tag
-    Stores our tags accessed by the tag command.
-
-    `id`: AutoField()
-    Database Entry
-
-    `tag_name`: TextField()
-    Name of the tag
-
-    `text`: TextField()
-    Embed Description
-
-    `imageURL`: TextField()
-    URL of the image
-    """
-
-    id = AutoField()
-    tag_name = TextField(unique=True)
-    embed_title = TextField()
-    text = TextField()
-    imageURL = TextField(default=None)
 
 class PunishmentTag(BaseModel):
     """
@@ -531,13 +425,6 @@ def _db_close(exc):
 tables = {
     "VoiceChannelInfo" : VCChannelInfo, 
     "IgnoreThis": IgnoreThis, 
-    "helpertally": HelperTally, 
-    "questiontimestamp": QuestionTimestamp, 
-    "tag": Tag, 
-    "ChannelInfo" : ChannelInfo, 
-    "Response": Response, 
-    "ExtraResponse": ExtraResponse, 
-    "EmailsVersion2": EmailsVersion2,
     "Administrators": Administrators, 
     "AdminLogging": AdminLogging, 
     "CheckInformation": CheckInformation, 
