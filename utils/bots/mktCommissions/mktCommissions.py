@@ -165,8 +165,8 @@ class mktCommissions(commands.Cog):
             )
             await msg.edit(embed=embedTimeout, view=viewDisabled)
 
-    @commands.command()
-    async def request(self, ctx: commands.Context):
+    @commands.command(aliases=["mkt-request"])
+    async def mktrequest(self, ctx: commands.Context):
         """
         To submit a Marketing Commission.
         """
