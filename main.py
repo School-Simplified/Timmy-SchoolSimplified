@@ -400,7 +400,6 @@ async def on_command_error(ctx, error: Exception):
         return
 
     elif isinstance(error, commands.BadArgument):
-        print(ctx.command.name)
         signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
         if ctx.command.name == "schedule":
             em = discord.Embed(title = "Bad Argument!", description = f"Looks like you messed up an argument somewhere here!\n\n**Check the following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)", color = 0xf5160a)

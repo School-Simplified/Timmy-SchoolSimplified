@@ -3,13 +3,15 @@ import io
 import json
 from pathlib import Path
 import typing
-from typing import List, Tuple
+from typing import List, Tuple, Callable, Any, Awaitable
 
 import chat_exporter
 import discord
 from discord.ext import commands
 from discord import Button, ui, ButtonStyle, SelectOption
 
+# global variables
+coroutineType = Callable[[Any, Any], Awaitable[Any]]
 
 async def rawExport(self, channel, response, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
@@ -81,7 +83,31 @@ def prompt_config2(msg, key):
         json.dump(config, f, indent=4)
 
 
+class MKT_ID:
+    """
+    IDs of the SS Marketing Department Server.
+    """
+    # Channels
+    mkt_commands = 799855856295608345
+    mkt_commissionTranscripts = 820843692385632287
+
+    # Categories
+    mkt_designCategory = 820873176208375838
+    mkt_mediaCateogory = 882031123541143632
+    mkt_discordCategory = 888668259220615198
+
+    # Roles
+    mkt_secretService = 859914502539837452
+    mkt_executiveAssistant = 885903340310003722
+    mkt_Director = 799884886507913226
+    mkt_Manager = 800578036881424405
+    mkt_AssistantManager = 800578559877972079
+
+
 class Emoji:
+    """
+    Emojis to use for the bot.
+    """
     space = '<:space:834967357632806932>'
     confirm = "<:confirm:860926261966667806>"
     deny = "<:deny:860926229335375892>"
@@ -100,6 +126,26 @@ class Emoji:
     barrow = "<:barrow:862572842985193502>"
     person = "<:person:883771751127990333>"
     activity = "<:note:883771751190908989>"
+
+
+class hexColors:
+    """
+    Hex colors for the bot.
+    """
+    yellow = 0xf5dd42
+    green_general = 0x2ecc70
+    green_confirm = 0x37e32b
+    red_cancel = 0xe02f2f
+    red_error = 0xf5160a
+
+
+class Others:
+    """
+    Other things to use for the bot.
+    """
+    error_png = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png"
+
+    space_character = "　"
 
 
 rulesDict = {
@@ -132,7 +178,13 @@ class bcolors:
 
 
 class SelectMenuHandler(ui.Select):
-    """Adds a SelectMenu to a specific message and returns it's value when option selected."""
+    """Adds a SelectMenu to a specific message and returns it's value when option selected.
+
+    Usage:
+        To do something after the callback function is invoked (the button is pressed), you have to pass a
+        coroutine to the class. IMPORTANT: The coroutine has to take two arguments (discord.Interaction, discord.View)
+        to work.
+    """
 
     def __init__(self,
                  options: typing.List[SelectOption],
@@ -142,31 +194,35 @@ class SelectMenuHandler(ui.Select):
                  min_values: int = 1,
                  disabled: bool = False,
                  select_user: typing.Union[discord.Member, discord.User, None] = None,
+                 roles: List[discord.Role] = None,
                  interaction_message: typing.Union[str, None] = None,
-                 ephemeral: bool = True
+                 ephemeral: bool = True,
+                 coroutine: coroutineType = None
                  ):
         """
         Parameters:
-            options (typing.List[SelectOption]): List of discord.SelectOption
-            custom_id (typing.Union[str, None], optional): Custom ID of the view. Default to None.
-            place_holder (typing.Union[str, None], optional): Place Holder string for the view. Default to None.
-            max_values (int, optional): Maximum values that are selectable. Default to 1.
-            min_values (int, optional): Minimum values that are selectable. Default to 1.
-            disabled (bool): Whenever the button is disabled or not. Default to False.
-            select_user (typing.Union[discord.Member, discord.User, None], optional): The user that can perform this action, leave blank for everyone. Defaults to None.
-            interaction_message (typing.Union[str, None], optional): The response message when pressing on a selection. Default to None.
-            ephemeral (bool): Whenever the response message should only be visible for the 'select_user' or not. Default to True.
+            options: List of discord.SelectOption
+            custom_id: Custom ID of the view. Default to None.
+            place_holder: Place Holder string for the view. Default to None.
+            max_values Maximum values that are selectable. Default to 1.
+            min_values: Minimum values that are selectable. Default to 1.
+            disabled: Whenever the button is disabled or not. Default to False.
+            select_user: The user that can perform this action, leave blank for everyone. Defaults to None.
+            interaction_message: The response message when pressing on a selection. Default to None.
+            ephemeral: Whenever the response message should only be visible for the select_user or not. Default to True.
         """
 
         self.options_ = options
         self.custom_id_ = custom_id
         self.select_user = select_user
+        self.roles = roles
         self.disabled_ = disabled
         self.placeholder_ = place_holder
         self.max_values_ = max_values
         self.min_values_ = min_values
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
+        self.coroutine = coroutine
 
         if self.custom_id_:
             super().__init__(options=self.options_, placeholder=self.placeholder_, custom_id=self.custom_id_,
@@ -176,17 +232,32 @@ class SelectMenuHandler(ui.Select):
                              disabled=self.disabled_, max_values=self.max_values_, min_values=self.min_values_)
 
     async def callback(self, interaction: discord.Interaction):
-        if self.select_user is None or interaction.user == self.select_user:
+        if self.select_user in [None, interaction.user] or any(role in interaction.user.roles for role in self.roles):
+            if self.custom_id_ is None:
+                self.view.value = self.values[0]
+            else:
+                self.view.value = self.custom_id_
+
             if self.interaction_message_:
                 await interaction.response.send_message(content=self.interaction_message_, ephemeral=self.ephemeral_)
 
-            self.view.value = self.values[0]
-            self.view.stop()
+            if self.coroutine is not None:
+                await self.coroutine(interaction, self.view)
+            else:
+                self.view.stop()
+        else:
+            await interaction.response.send_message(content="You're not allowed to interact with that!", ephemeral=True)
 
 
 class ButtonHandler(ui.Button):
-    """Adds a Button to a specific message and returns it's value when pressed."""
+    """
+    Adds a Button to a specific message and returns it's value when pressed.
 
+    Usage:
+        To do something after the callback function is invoked (the button is pressed), you have to pass a
+        coroutine to the class. IMPORTANT: The coroutine has to take two arguments (discord.Interaction, discord.View)
+        to work.
+    """
     def __init__(self,
                  style: ButtonStyle,
                  label: str,
@@ -195,18 +266,24 @@ class ButtonHandler(ui.Button):
                  url: typing.Union[str, None] = None,
                  disabled: bool = False,
                  button_user: typing.Union[discord.Member, discord.User, None] = None,
+                 roles: List[discord.Role] = None,
                  interaction_message: typing.Union[str, None] = None,
-                 ephemeral: bool = True
-                 ):
+                 ephemeral: bool = True,
+                 coroutine: coroutineType = None
+                ):
         """
         Parameters:
-            style (ButtonStyle): Label for the button
-            label (typing.Union[str, None], optional): Custom ID that represents this button. Default to None.
-            custom_id (typing.Union[str, None], optional): Style for this button. Default to None.
-            emoji (typing.Union[str, None], optional): An emoji for this button. Default to None.
-            url (typing.Union[str, None], optional): A URL for this button. Default to None.
-            disabled (bool, optional): Whenever the button should be disabled or not. Default to False.
-            button_user (typing.Union[discord.Member, discord.User, None], optional): The user that can perform this action, leave blank for everyone. Defaults to None.
+            style: Label for the button
+            label: Custom ID that represents this button. Default to None.
+            custom_id: Style for this button. Default to None.
+            emoji: An emoji for this button. Default to None.
+            url: A URL for this button. Default to None.
+            disabled: Whenever the button should be disabled or not. Default to False.
+            button_user: The user that can perform this action, leave blank for everyone. Defaults to None.
+            roles: The roles which the user needs to be able to click the button.
+            interaction_message: The response message when pressing on a selection. Default to None.
+            ephemeral: Whenever the response message should only be visible for the select_user or not. Default to True.
+            coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed.  Default to None.
         """
         self.style_ = style
         self.label_ = label
@@ -215,8 +292,10 @@ class ButtonHandler(ui.Button):
         self.url_ = url
         self.disabled_ = disabled
         self.button_user = button_user
+        self.roles = roles
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
+        self.coroutine = coroutine
 
         if self.custom_id_:
             super().__init__(style=self.style_, label=self.label_, custom_id=self.custom_id_, emoji=self.emoji_,
@@ -226,17 +305,21 @@ class ButtonHandler(ui.Button):
                              url=self.url_, disabled=self.disabled_)
 
     async def callback(self, interaction: discord.Interaction):
-        if self.button_user is None or self.button_user == interaction.user:
+        if self.button_user in [None, interaction.user] or any(role in interaction.user.roles for role in self.roles):
             if self.custom_id_ is None:
                 self.view.value = None
             else:
-                self.view.value = self.custom_id
+                self.view.value = self.custom_id_
 
             if self.interaction_message_:
                 await interaction.response.send_message(content=self.interaction_message_, ephemeral=self.ephemeral_)
 
-            self.view.stop()
-
+            if self.coroutine is not None:
+                await self.coroutine(interaction, self.view)
+            else:
+                self.view.stop()
+        else:
+            await interaction.response.send_message(content="You're not allowed to interact with that!", ephemeral=True)
 
 def getGuildList(bot: commands.Bot, exemptServer: List[int] = None) -> list:
     guildList = []
