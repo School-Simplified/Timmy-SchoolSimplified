@@ -13,6 +13,9 @@ from core.checks import is_mktCommissionAuthorized
 
 
 async def lockButton(interaction: discord.Interaction, view: discord.ui.View):
+    """
+    Continuing code after lock button.
+    """
     viewCheck = discord.ui.View()
     viewCheck.add_item(ButtonHandler(style=ButtonStyle.green, label="Confirm", custom_id="Confirm",
                                      emoji=Emoji.confirm, button_user=interaction.user))
@@ -154,14 +157,14 @@ class mktCommissions(commands.Cog):
                 embedCancel = discord.Embed(
                     color=hexColors.red_cancel,
                     title="Check",
-                    description=f"Setup canceled."
+                    description="Setup canceled."
                 )
                 await msg.edit(embed=embedCancel, view=viewDisabled)
         else:
             embedTimeout = discord.Embed(
                 color=hexColors.red_cancel,
                 title="Check",
-                description=f"Setup canceled due to timeout."
+                description="Setup canceled due to timeout."
             )
             await msg.edit(embed=embedTimeout, view=viewDisabled)
 
@@ -201,7 +204,7 @@ class mktCommissions(commands.Cog):
             )
             try:
                 await ctx.author.send(embed=embedDisclaimer)
-            except:
+            except discord.Forbidden:
                 await ctx.send(f"{ctx.author.mention} You have to enable your DMs in order to request a commission.")
                 return
 
@@ -242,7 +245,7 @@ class mktCommissions(commands.Cog):
             )
             try:
                 msgQuestion_1 = await ctx.author.send(content="_ _", embed=embedQuestion_1, view=viewQuestion_1)
-            except:
+            except discord.Forbidden:
                 return
 
             timeout = await viewQuestion_1.wait()
@@ -255,7 +258,7 @@ class mktCommissions(commands.Cog):
                 )
                 try:
                     await ctx.author.send(embed=embedQuestion_2)
-                except:
+                except discord.Forbidden:
                     return
 
                 def checkRequest(check_message: discord.Message):
@@ -273,7 +276,7 @@ class mktCommissions(commands.Cog):
                         )
                         try:
                             await ctx.author.send(embed=embedTimeout)
-                        except:
+                        except discord.Forbidden:
                             return
 
                         await msgQuestion_1.edit(embed=embedQuestion_1, view=viewDisabled)
@@ -327,7 +330,7 @@ class mktCommissions(commands.Cog):
                         count += 1
                         try:
                             await ctx.author.send(embed=embedNextQuestion)
-                        except:
+                        except discord.Forbidden:
                             return
 
                 embedCheck = discord.Embed(
@@ -344,7 +347,7 @@ class mktCommissions(commands.Cog):
                                                  interaction_message="Canceled", ephemeral=True, custom_id="Cancel"))
                 try:
                     await ctx.author.send(content="_ _", embed=embedCheck, view=viewCheck)
-                except:
+                except discord.Forbidden:
                     return
 
                 timeout = await viewCheck.wait()
@@ -363,7 +366,7 @@ class mktCommissions(commands.Cog):
                             content="**Ticket Created!**"
                                     f"\n> Please use {commissionChannel.mention} if you wish to follow up on your commission!"
                         )
-                    except:
+                    except discord.Forbidden:
                         pass
 
                     mkt_secretService = ctx.guild.get_role(MKT_ID.mkt_secretService)
@@ -419,15 +422,18 @@ class mktCommissions(commands.Cog):
                 )
                 try:
                     await ctx.author.send(embed=embedTimeout)
-                except:
+                except discord.Forbidden:
                     return
+
                 await msgQuestion_1.edit(embed=embedQuestion_1, view=viewDisabled)
 
 
     @commands.command(aliases=["mkt-add"])
     @is_mktCommissionAuthorized
     async def mktadd(self, ctx: commands.Context, member: discord.Member):
-
+        """
+        To add a user to a commission channel, who hasn't access to it.
+        """
         if not ctx.channel.category or ctx.channel.category.id not in [MKT_ID.mkt_designCategory, MKT_ID.mkt_mediaCateogory, MKT_ID.mkt_discordCategory]:
 
             embedError = discord.Embed(

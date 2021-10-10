@@ -85,7 +85,7 @@ def prompt_config2(msg, key):
 
 class MKT_ID:
     """
-        IDs of the SS Marketing Department Server.
+    IDs of the SS Marketing Department Server.
     """
     # Channels
     mkt_commands = 799855856295608345
