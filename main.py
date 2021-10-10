@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+import random
+import string
 import subprocess
 import sys
 import time
@@ -11,6 +13,7 @@ from pathlib import Path
 
 import chat_exporter
 import discord
+import pytz
 import requests
 from discord.app import Option
 from discord.ext import commands
@@ -55,6 +58,12 @@ bot = Timmy(
 )
 bot.remove_command('help')
 
+class Me:
+    Timmy = Timmy
+    publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
+    TechGuild = 805593783684562965
+    TracebackChannel = 851949397533392936
+
 if os.getenv('DSN_SENTRY') != None:
     sentry_logging = LoggingIntegration(
         level=logging.INFO,        # Capture info and above as breadcrumbs
@@ -67,10 +76,6 @@ if os.getenv('DSN_SENTRY') != None:
         traces_sample_rate=1.0,
         integrations=[FlaskIntegration(), sentry_logging]
     )
-
-publicCH = [763121170324783146, 800163651805773824, 774847738239385650, 805299289604620328, 796909060707319838, 787841402381139979, 830992617491529758, 763857608964046899, 808020719530410014]
-TechGuild = 805593783684562965
-TracebackChannel = 851949397533392936
 
 
 #Start Check
@@ -98,7 +103,6 @@ query.PersistantChange = False
 query.save()
 database.db.close()
 
-
 keep_alive()
 
 def get_extensions():
@@ -115,6 +119,15 @@ def get_extensions():
         extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
     return extensions
 
+async def id_generator(size=3, chars=string.ascii_uppercase):
+    while True:
+        ID = ''.join(random.choice(chars) for _ in range(size))
+        query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == ID)
+
+        if query.exists():
+            continue
+        else:
+            return ID
 
 async def force_restart(ctx):
     p = subprocess.run("git status -uno",  shell=True, text=True, capture_output=True, check=True)
@@ -143,7 +156,7 @@ async def force_restart(ctx):
 
 
 
-@bot.slash_command(description = "Play a game of TicTacToe with someone!", guild_ids=getGuildList(bot))
+@bot.slash_command(description = "Play a game of TicTacToe with someone!")
 async def tictactoe(ctx: discord.InteractionContext, user: Option(discord.Member, "Enter an opponent you want")):
     if user == None:
         return await ctx.send("lonely :(, sorry but you need a person to play against!")
@@ -159,8 +172,7 @@ async def tictactoe(ctx: discord.InteractionContext, user: Option(discord.Member
     await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, user))
 
 
-
-@bot.user_command(name = "Are they short?", guild_ids=getGuildList(bot))  
+@bot.user_command(name = "Are they short?")  
 async def short(ctx, member: discord.Member):  
     if member.id == 736765405728735232 or member.id == 518581570152693771 or member.id == 544724467709116457:
         await ctx.respond(f"{member.mention} is short!")
@@ -168,7 +180,7 @@ async def short(ctx, member: discord.Member):
         await ctx.respond(f"{member.mention} is tall!")
 
 
-@bot.slash_command(description = "Check's if a user is short!", guild_ids=getGuildList(bot))  
+@bot.slash_command(description = "Check's if a user is short!")  
 async def short_detector(ctx, member: Option(discord.Member, "Enter a user you want to check!")):  
     if member.id == 736765405728735232 or member.id == 518581570152693771 or member.id == 544724467709116457:
         await ctx.respond(f"{member.mention} is short!")
@@ -176,7 +188,7 @@ async def short_detector(ctx, member: Option(discord.Member, "Enter a user you w
         await ctx.respond(f"{member.mention} is tall!")
 
 
-@bot.user_command(name = "Play TicTacToe with them!", guild_ids=getGuildList(bot))  
+@bot.user_command(name = "Play TicTacToe with them!")  
 async def tictactoeCTX(ctx, member: discord.Member):  
     if member == None:
         return await ctx.send("lonely :(, sorry but you need a person to play against!")
@@ -191,6 +203,42 @@ async def tictactoeCTX(ctx, member: discord.Member):
 
     await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, member))
 
+#async def schedule(self, ctx, date, time, ampm:str, student: discord.User, subject, repeats: bool = False):
+
+
+@bot.slash_command(name = "schedule", description = "Create a Tutor Session", guild_ids=[763119924385939498, 860897711334621194])
+async def scheduleSession(
+    ctx, 
+    date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),
+    time: Option(str, "Enter a time in HH:MM format. EX: 3:00"),
+    ampm: Option(str, "AM or PM", choices=['AM', 'PM']),
+    student: Option(discord.Member, "Enter the student you'll be tutoring for this session."),
+    subject: Option(str, "Tutoring Subject"),
+    repeats: Option(bool, "Does your Tutoring Session repeat?")
+):
+    embed = discord.Embed(title = "Schedule Confirmed", description = "Created session.", color = discord.Color.green())
+    now = datetime.now()
+    now :datetime = now.astimezone(pytz.timezone('US/Eastern'))
+    year = now.strftime("%Y")
+
+    datetimeSession = datetime.strptime(f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p")
+    datetimeSession = pytz.timezone("America/New_York").localize(datetimeSession)
+
+    if datetimeSession >= now:
+        SessionID = await id_generator()
+
+        daterev = datetimeSession.strftime("%m/%d")
+
+        embed.add_field(name = "Values", value = f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{daterev}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`")
+        embed.set_footer(text = f"Subject: {subject}")
+        query = database.TutorBot_Sessions.create(SessionID = SessionID, Date = datetimeSession, Time = time, StudentID = student.id, TutorID = ctx.author.id, Repeat = repeats, Subject = subject, ReminderSet = False)
+        query.save()
+        await ctx.send(embed = embed)
+    else:
+        embed = discord.Embed(title = "Failed to Generate Session", description = f"Unfortunately this session appears to be in the past and Timmy does not support expired sessions.", color = discord.Color.red())
+        await ctx.send(embed = embed)
+
+
 
 @bot.event
 async def on_ready():
@@ -204,7 +252,13 @@ async def on_ready():
         query.save()
         
 
-    print(f"{bcolors.WARNING}TIMMY OS{bcolors.ENDC}")
+    print("""
+    ╭━━┳╮
+    ╰╮╭╋╋━━┳━━┳┳╮
+    ╱┃┃┃┃┃┃┃┃┃┃┃┃
+    ╱╰╯╰┻┻┻┻┻┻╋╮┃
+    ╱╱╱╱╱╱╱╱╱╱╰━╯
+    """)
     print(f"Logged in as: {bot.user.name}")
     print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
     print(f"{bcolors.WARNING}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
@@ -280,7 +334,7 @@ async def mainModeCheck(ctx: commands.Context):
         return CheckDB.ruleBypass
 
     #Public Category Check
-    elif ctx.channel.category_id in publicCH:
+    elif ctx.channel.category_id in Me.publicCH:
         return CheckDB.publicCategories
 
     #Else...
@@ -409,8 +463,8 @@ async def on_command_error(ctx, error: Exception):
                 embed.set_footer(text = f"Error: {str(error)}")
                 await ctx.send(embed = embed)
 
-            guild = bot.get_guild(TechGuild)
-            channel = guild.get_channel(TracebackChannel)
+            guild = bot.get_guild(Me.TechGuild)
+            channel = guild.get_channel(Me.TracebackChannel)
 
             embed2 = discord.Embed(title = "Traceback Detected!", description = f"**Information**\n**Server:** {ctx.message.guild.name}\n**User:** {ctx.message.author.mention}\n**Command:** {ctx.command.name}", color= 0xfc3d03)
             embed2.add_field(name = "Gist URL", value = f"[Uploaded Traceback to GIST](https://gist.github.com/{ID})")

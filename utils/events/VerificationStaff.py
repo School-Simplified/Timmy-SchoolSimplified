@@ -64,7 +64,6 @@ class VerificationStaff(commands.Cog):
                 StaffServerMember : discord.Member = await staffServer.fetch_member(interaction.user.id)
                 print(StaffServerMember)
 
-
             if StaffServerMember == None:
                 try:
                     await interaction.response.send_message('<:sadturtl:879197443600834600> An error occurred while trying to verify your status, please contact a staff member! (Error Code: TM-NOMEMBERFOUND)', ephemeral=True)
@@ -95,6 +94,7 @@ class VerificationStaff(commands.Cog):
 
                     for role in roleNames:
                         check = getEqualRank(role.name)
+                        print(f"CHECK: {check}")
 
                         if check != None:
                             checkSTR = ", ".join(check)
@@ -108,10 +108,14 @@ class VerificationStaff(commands.Cog):
 
                             for elem in check:
                                 if elem in [role.name for role in staffServer.roles]:
-                                    print(role.id)
-                                    jsonROLE = discord.utils.get(staffServer.roles, name = check)
-
-                                    print(jsonROLE, server, ServerMember)
+                                    jsonROLE = discord.utils.get(staffServer.roles, name = elem)
+                                    print(f"ELEM: {elem}")
+                                    print(f"ID: {role.id}")
+                                    print(f"RoleName: {role.guild.name}")
+                                    print(f"JSONROLE: {jsonROLE}")
+                                    print(f"SubServer: {server}")
+                                    print(f"Member: {ServerMember}")
+                                    #print(jsonROLE, server, ServerMember)
                                     
                                     await StaffServerMember.add_roles(jsonROLE, reason = "Verification RoleSync")
 
@@ -125,7 +129,7 @@ class VerificationStaff(commands.Cog):
                 embed.add_field(name = "Role's Applied:", value = totalroles, inline = False)
                 await logchannel.send(embed = embed)
 
-                VerifiedRole :discord.Role = discord.utils.get(staffServer.roles, name = "Staff")
+                VerifiedRole :discord.Role = discord.utils.get(staffServer.roles, name = "Member")
                 await StaffServerMember.add_roles(VerifiedRole, reason = "[Verification RoleSync] Passed Verification")
                 
                 try:
@@ -142,8 +146,8 @@ class VerificationStaff(commands.Cog):
                 embed.add_field(name = "Role's Applied:", value = "None Found, they don't appear to hold a position in any sub-server!", inline = False)
                 await logchannel.send(embed = embed)
 
-                VerifiedRole :discord.Role = discord.utils.get(staffServer.roles, name = "Staff")
-                await StaffServerMember.add_roles(VerifiedRole, reason = "[Verification RoleSync] Passed Verification")
+                #VerifiedRole :discord.Role = discord.utils.get(staffServer.roles, name = "Member")
+                #await StaffServerMember.add_roles(VerifiedRole, reason = "[Verification RoleSync] Passed Verification")
                 
                 try:
                     await interaction.response.send_message("I didn't seem to find any roles to give you, please try requesting them in <#878679747255750696>!", ephemeral=True)
