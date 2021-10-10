@@ -84,6 +84,9 @@ def prompt_config2(msg, key):
 
 
 class MKT_ID:
+    """
+        IDs of the SS Marketing Department Server.
+    """
     # Channels
     mkt_commands = 799855856295608345
     mkt_commissionTranscripts = 820843692385632287
@@ -102,6 +105,9 @@ class MKT_ID:
 
 
 class Emoji:
+    """
+    Emojis to use for the bot.
+    """
     space = '<:space:834967357632806932>'
     confirm = "<:confirm:860926261966667806>"
     deny = "<:deny:860926229335375892>"
@@ -123,6 +129,9 @@ class Emoji:
 
 
 class hexColors:
+    """
+    Hex colors for the bot.
+    """
     yellow = 0xf5dd42
     green_general = 0x2ecc70
     green_confirm = 0x37e32b
@@ -131,6 +140,9 @@ class hexColors:
 
 
 class Others:
+    """
+    Other things to use for the bot.
+    """
     error_png = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png"
 
     space_character = "　"
