@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from discord import ButtonStyle
 
-from core.common import Emoji, hexColors, ButtonHandler, SelectMenuHandler, ID, Others
+from core.common import Emoji, hexColors, ButtonHandler, SelectMenuHandler, MKT_ID, Others
 from core.checks import is_mktCommissionAuthorized
 
 
@@ -56,25 +56,25 @@ async def createCommissionChannel(
     random_ID = "".join(random.choices(string.ascii_letters + string.digits, k=4))
 
     if category_str == "Design Commission":
-        category = bot.get_channel(ID.mkt_designCategory)
+        category = bot.get_channel(MKT_ID.mkt_designCategory)
         channelName = f"mktDesign-{random_ID}"
         teamMember = "Design Team Member"
 
     elif category_str == "Media Commission":
-        category = bot.get_channel(ID.mkt_mediaCateogory)
+        category = bot.get_channel(MKT_ID.mkt_mediaCateogory)
         channelName = f"mktMedia-{random_ID}"
         teamMember = "Media Team Member"
 
     elif category_str == "Discord Commission":
-        category = bot.get_channel(ID.mkt_discordCategory)
+        category = bot.get_channel(MKT_ID.mkt_discordCategory)
         channelName = f"mktDiscord-{random_ID}"
         teamMember = "Discord Editor"
 
-    mkt_secretService = ctx.guild.get_role(ID.mkt_secretService)
-    mkt_executiveAssistant = ctx.guild.get_role(ID.mkt_executiveAssistant)
-    mkt_Director = ctx.guild.get_role(ID.mkt_Director)
-    mkt_Manager = ctx.guild.get_role(ID.mkt_Manager)
-    mkt_AssistantManager = ctx.guild.get_role(ID.mkt_executiveAssistant)
+    mkt_secretService = ctx.guild.get_role(MKT_ID.mkt_secretService)
+    mkt_executiveAssistant = ctx.guild.get_role(MKT_ID.mkt_executiveAssistant)
+    mkt_Director = ctx.guild.get_role(MKT_ID.mkt_Director)
+    mkt_Manager = ctx.guild.get_role(MKT_ID.mkt_Manager)
+    mkt_AssistantManager = ctx.guild.get_role(MKT_ID.mkt_executiveAssistant)
 
     perms = {
         ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
@@ -143,7 +143,7 @@ class mktCommissions(commands.Cog):
                     title="Marketing Team Commissions",
                     description="**Creating a Commission Ticket**"
                                 "\nIf you'd like to start a Marketing Commission, please fill out the form by running "
-                                f"`+request` in <#{ID.mkt_commands}> and then follow the bot's instructions!"
+                                f"`+request` in <#{MKT_ID.mkt_commands}> and then follow the bot's instructions!"
                 )
                 embedSetup.set_author(name="Need to make a Marketing Commission? Read on!",
                                       icon_url="https://images-ext-2.discordapp.net/external/1P5y2JKHlIhS6fQuMiYOu7zB1Y8El-T9Bh7JJIMqSks/%3Fsize%3D1024/https/cdn.discordapp.com/icons/778406166735880202/ab248ec34ef53e5f5f209f191204a9a2.png")
@@ -170,7 +170,7 @@ class mktCommissions(commands.Cog):
         """
         To submit a Marketing Commission.
         """
-        if ctx.channel.id == ID.mkt_commands:
+        if ctx.channel.id == MKT_ID.mkt_commands:
 
             # Local variables
             category = None
@@ -356,7 +356,7 @@ class mktCommissions(commands.Cog):
                 if continueBool:
                     commissionChannel, teamMember = await createCommissionChannel(ctx=ctx, bot=self.bot,
                                                                                   category_str=category)
-                    transcriptChannel = self.bot.get_channel(ID.mkt_commissionTranscripts)
+                    transcriptChannel = self.bot.get_channel(MKT_ID.mkt_commissionTranscripts)
 
                     try:
                         await ctx.author.send(
@@ -366,11 +366,11 @@ class mktCommissions(commands.Cog):
                     except:
                         pass
 
-                    mkt_secretService = ctx.guild.get_role(ID.mkt_secretService)
-                    mkt_executiveAssistant = ctx.guild.get_role(ID.mkt_executiveAssistant)
-                    mkt_Director = ctx.guild.get_role(ID.mkt_Director)
-                    mkt_Manager = ctx.guild.get_role(ID.mkt_Manager)
-                    mkt_AssistantManager = ctx.guild.get_role(ID.mkt_executiveAssistant)
+                    mkt_secretService = ctx.guild.get_role(MKT_ID.mkt_secretService)
+                    mkt_executiveAssistant = ctx.guild.get_role(MKT_ID.mkt_executiveAssistant)
+                    mkt_Director = ctx.guild.get_role(MKT_ID.mkt_Director)
+                    mkt_Manager = ctx.guild.get_role(MKT_ID.mkt_Manager)
+                    mkt_AssistantManager = ctx.guild.get_role(MKT_ID.mkt_executiveAssistant)
 
                     lockRoles = [mkt_secretService, mkt_executiveAssistant, mkt_Director, mkt_Manager,
                                  mkt_AssistantManager]
@@ -428,7 +428,7 @@ class mktCommissions(commands.Cog):
     @is_mktCommissionAuthorized
     async def mktadd(self, ctx: commands.Context, member: discord.Member):
 
-        if not ctx.channel.category or ctx.channel.category.id not in [ID.mkt_designCategory, ID.mkt_mediaCateogory, ID.mkt_discordCategory]:
+        if not ctx.channel.category or ctx.channel.category.id not in [MKT_ID.mkt_designCategory, MKT_ID.mkt_mediaCateogory, MKT_ID.mkt_discordCategory]:
 
             embedError = discord.Embed(
                 title="Not allowed!",

@@ -83,7 +83,7 @@ def prompt_config2(msg, key):
         json.dump(config, f, indent=4)
 
 
-class ID:
+class MKT_ID:
     # Channels
     mkt_commands = 799855856295608345
     mkt_commissionTranscripts = 820843692385632287
