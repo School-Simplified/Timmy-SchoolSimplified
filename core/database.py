@@ -4,6 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask
 from grapheme import length
+import peewee
 from peewee import *
 
 __version__ = "2.2.0"
@@ -16,22 +17,28 @@ If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove
 '''
 
 if bool(os.getenv("SSL_TRUE")):
-    db = MySQLDatabase(os.getenv("DatabaseName"), 
-        user=os.getenv("Username"), 
-        password=os.getenv("Password"),
-        host=os.getenv("IP"), 
-        port = int(os.getenv("PORT")), 
-        ssl = {'key': os.getenv("SSL_PATH")}
-    )
+    try:
+        db = MySQLDatabase(os.getenv("DatabaseName"), 
+            user=os.getenv("Username"), 
+            password=os.getenv("Password"),
+            host=os.getenv("IP"), 
+            port = int(os.getenv("PORT")), 
+            ssl = {'key': os.getenv("SSL_PATH")}
+        )
+    except peewee.OperationalError:
+        db = SqliteDatabase("data.db")
+
 else:
-    db = MySQLDatabase(
-        os.getenv("DatabaseName"), 
-        user=os.getenv("Username"), 
-        password=os.getenv("Password"),
-        host= os.getenv("IP"), 
-        port = int(os.getenv("PORT"))
-    )
-    #db = SqliteDatabase("data.db")
+    try:
+        db = MySQLDatabase(
+            os.getenv("DatabaseName"), 
+            user=os.getenv("Username"), 
+            password=os.getenv("Password"),
+            host= os.getenv("IP"), 
+            port = int(os.getenv("PORT"))
+        )
+    except peewee.OperationalError:
+        db = SqliteDatabase("data.db")
 
 def iter_table(model_dict):
     """Iterates through a dictionary of tables, confirming they exist and creating them if necessary."""
