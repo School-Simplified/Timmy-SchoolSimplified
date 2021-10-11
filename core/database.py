@@ -15,11 +15,15 @@ load_dotenv()
 Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
 '''
+
 if not bool(os.getenv("USEREAL")):
+    print("This")
     db = SqliteDatabase("data.db")
 
 if bool(os.getenv("SSL_TRUE")) and bool(os.getenv("USEREAL")):
+    print("This2")
     try:
+        print("This2a")
         db = MySQLDatabase(os.getenv("DatabaseName"), 
             user=os.getenv("Username"), 
             password=os.getenv("Password"),
@@ -28,10 +32,13 @@ if bool(os.getenv("SSL_TRUE")) and bool(os.getenv("USEREAL")):
             ssl = {'key': os.getenv("SSL_PATH")}
         )
     except:
+        print("This2b")
         db = SqliteDatabase("data.db")
 
 elif not bool(os.getenv("SSL_TRUE")) and bool(os.getenv("USEREAL")):
+    print("This3")
     try:
+        print("This3a")
         db = MySQLDatabase(
             os.getenv("DatabaseName"), 
             user=os.getenv("Username"), 
@@ -40,6 +47,7 @@ elif not bool(os.getenv("SSL_TRUE")) and bool(os.getenv("USEREAL")):
             port = int(os.getenv("PORT"))
         )
     except:
+        print("This3b")
         db = SqliteDatabase("data.db")
 
 def iter_table(model_dict):
