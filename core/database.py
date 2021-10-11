@@ -15,8 +15,10 @@ load_dotenv()
 Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
 '''
+if not bool(os.getenv("USEREAL")):
+    db = SqliteDatabase("data.db")
 
-if bool(os.getenv("SSL_TRUE")):
+if bool(os.getenv("SSL_TRUE")) and bool(os.getenv("USEREAL")):
     try:
         db = MySQLDatabase(os.getenv("DatabaseName"), 
             user=os.getenv("Username"), 
@@ -28,7 +30,7 @@ if bool(os.getenv("SSL_TRUE")):
     except:
         db = SqliteDatabase("data.db")
 
-else:
+elif not bool(os.getenv("SSL_TRUE")) and bool(os.getenv("USEREAL")):
     try:
         db = MySQLDatabase(
             os.getenv("DatabaseName"), 
