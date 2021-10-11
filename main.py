@@ -86,7 +86,7 @@ if not UpQ.exists():
     print("Created Uptime Entry.")
 
 if not CIQ.exists():
-    database.CheckInformation.create(MasterMaintenance = False, guildNone = False, externalGuild = True, ModRoleBypass = True, ruleBypass = True, publicCategory = True, elseSituation = True, PersistantChange = False)
+    database.CheckInformation.create(MasterMaintenance = False, guildNone = False, externalGuild = True, ModRoleBypass = True, ruleBypass = True, publicCategories = True, elseSituation = True, PersistantChange = False)
     print("Created CheckInformation Entry.")
 
 if len(database.Administrators) == 0:
