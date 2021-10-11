@@ -25,7 +25,7 @@ if bool(os.getenv("SSL_TRUE")):
             port = int(os.getenv("PORT")), 
             ssl = {'key': os.getenv("SSL_PATH")}
         )
-    except peewee.OperationalError:
+    except:
         db = SqliteDatabase("data.db")
 
 else:
@@ -37,7 +37,7 @@ else:
             host= os.getenv("IP"), 
             port = int(os.getenv("PORT"))
         )
-    except peewee.OperationalError:
+    except:
         db = SqliteDatabase("data.db")
 
 def iter_table(model_dict):
