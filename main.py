@@ -246,7 +246,12 @@ async def on_ready():
         bot.add_view(VerifyButton())
         query.PersistantChange = True
         query.save()
-        
+
+    if not os.getenv("USEREAL"):
+        IP = os.getenv("IP")
+        databaseField = f"{bcolors.OKGREEN}Selected Database: External ({IP}){bcolors.ENDC}"
+    else:
+        databaseField = f"{bcolors.FAIL}Selected Database: localhost{bcolors.ENDC}\n{bcolors.WARNING}WARNING: You are not connected to an external database, it is recommended that you use a server as SQLite solutions may lead to data corruption!{bcolors.ENDC}"
 
     print("""
     ╭━━┳╮
@@ -257,8 +262,9 @@ async def on_ready():
     """)
     print(f"Logged in as: {bot.user.name}")
     print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
-    print(f"{bcolors.WARNING}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
-    print(f"{bcolors.WARNING}Current Time: {now}{bcolors.ENDC}")
+    print(f"{bcolors.OKCYAN}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
+    print(f"{bcolors.OKCYAN}Current Time: {now}{bcolors.ENDC}\n")
+    print(databaseField)
 
     chat_exporter.init_exporter(bot)
 
