@@ -17,11 +17,11 @@ If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove
 '''
 print(bool(os.getenv("USEREAL")))
 
-if not bool(os.getenv("USEREAL")):
+if bool(os.getenv("USEREAL")):
     print("This")
     db = SqliteDatabase("data.db")
 
-if bool(os.getenv("SSL_TRUE")) and bool(os.getenv("USEREAL")):
+if bool(os.getenv("SSL_TRUE")) and not bool(os.getenv("USEREAL")):
     print("This2")
     try:
         print("This2a")
@@ -36,7 +36,7 @@ if bool(os.getenv("SSL_TRUE")) and bool(os.getenv("USEREAL")):
         print("This2b")
         db = SqliteDatabase("data.db")
 
-elif not bool(os.getenv("SSL_TRUE")) and bool(os.getenv("USEREAL")):
+elif not bool(os.getenv("SSL_TRUE")) and not bool(os.getenv("USEREAL")):
     print("This3")
     try:
         print("This3a")
