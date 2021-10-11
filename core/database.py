@@ -15,6 +15,7 @@ load_dotenv()
 Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
 '''
+print(bool(os.getenv("USEREAL")))
 
 if not bool(os.getenv("USEREAL")):
     print("This")
