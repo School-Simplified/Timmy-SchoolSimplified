@@ -51,7 +51,7 @@ class Timmy(commands.Bot):
         return await super().is_owner(user)
 
 bot = Timmy(
-    command_prefix=commands.when_mentioned_or('+'), 
+    command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")), 
     intents=discord.Intents.all(), 
     case_insensitive=True, 
     activity = discord.Activity(type=discord.ActivityType.watching, name="+help | timmy.schoolsimplified.org")
@@ -90,7 +90,7 @@ if not CIQ.exists():
     print("Created CheckInformation Entry.")
 
 if len(database.Administrators) == 0:
-    database.Administrators.create(discordID = 13, TierLevel = 4)
+    database.Administrators.create(discordID = int(os.getenv("OWNERID")), TierLevel = 4)
     print("Added you as a bot administrator")
 
 database.db.connect(reuse_if_open=True)
@@ -196,10 +196,6 @@ async def tictactoeCTX(ctx, member: discord.Member):
         return await ctx.send("i'm good.")
     elif member == ctx.author:
         return await ctx.send("lonely :(, sorry but you need an actual person to play against, not yourself!")
-
-    if ctx.channel.id == 763121180173271040:
-        return await ctx.send(f"{ctx.author.mention}\nMove to <#783319554322989067> to play Tic Tac Toe!", ephemeral=True)
-        
 
     await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, member))
 
