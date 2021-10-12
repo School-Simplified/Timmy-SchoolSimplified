@@ -272,7 +272,7 @@ class mktCommissions(commands.Cog):
                         embedTimeout = discord.Embed(
                             color=hexColors.red_cancel,
                             title="Timeout",
-                            description="Request canceld due to timeout."
+                            description="Request canceled due to timeout."
                         )
                         try:
                             await ctx.author.send(embed=embedTimeout)
