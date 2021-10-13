@@ -1,9 +1,12 @@
 import asyncio
+import io
 import random
 import string
+import chat_exporter
 import discord
 from discord.ext import commands
 from discord import ButtonStyle
+from main import bot
 
 from core.common import Emoji, hexColors, ButtonHandler, SelectMenuHandler, MKT_ID, Others
 from core.checks import is_mktCommissionAuthorized
@@ -32,7 +35,33 @@ async def lockButton(interaction: discord.Interaction, view: discord.ui.View):
 
     if not timeout:
         if viewCheck.value == "Confirm":
+
+            channel = interaction.message.channel
+            transcript = await chat_exporter.export(channel)
+
+            if transcript is None:
+                transcript_file = None
+            else:
+                transcript_file = discord.File(io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html")
+
             await interaction.channel.delete()
+            ch_commissionTranscript = bot.get_channel(MKT_ID.ch_commissionTranscripts)
+
+            temp_message = await ch_commissionTranscript.send(file=transcript_file)
+            attachment_url = temp_message.attachments[0].url
+            await temp_message.delete()
+
+            embedTranscript = discord.Embed(
+                color=hexColors.yellow,
+                title="Closed Project Request"
+            )
+            embedTranscript.add_field(name="Project requested by", value=f"{view.children[0].button_user}")
+            embedTranscript.add_field(name="Commission channel", value=f"#{interaction.channel.name}")
+            embedTranscript.add_field(name="Commission category", value=f"{interaction.channel.category.name}")
+            embedTranscript.add_field(name="Commission closed by", value=f"{interaction.user}")
+            embedTranscript.add_field(name="Transcript", value=f"[Transcript]({attachment_url})")
+            await ch_commissionTranscript.send(embed=embedTranscript)
+
 
         elif viewCheck.value == "Cancel":
             viewCheckDisabled = discord.ui.View()
@@ -59,36 +88,50 @@ async def createCommissionChannel(
     random_ID = "".join(random.choices(string.ascii_letters + string.digits, k=4))
 
     if category_str == "Design Commission":
-        category = bot.get_channel(MKT_ID.mkt_designCategory)
+        category = bot.get_channel(MKT_ID.cat_design)
         channelName = f"mktDesign-{random_ID}"
         teamMember = "Design Team Member"
 
+        r_designManager = ctx.guild.get_role(MKT_ID.r_designManager)
+        r_designTeam = ctx.guild.get_role(MKT_ID.r_designTeam)
+
+        perms = {
+            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            ctx.author: discord.PermissionOverwrite(read_messages=True),
+            ctx.guild.me: discord.PermissionOverwrite(read_messages=True),
+            r_designManager: discord.PermissionOverwrite(read_messages=True),
+            r_designTeam: discord.PermissionOverwrite(read_messages=True)
+        }
+
     elif category_str == "Media Commission":
-        category = bot.get_channel(MKT_ID.mkt_mediaCateogory)
+        category = bot.get_channel(MKT_ID.cat_media)
         channelName = f"mktMedia-{random_ID}"
         teamMember = "Media Team Member"
 
+        r_contentCreatorManager = ctx.guild.get_role(MKT_ID.r_contentCreatorManager)
+
+        perms = {
+            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            ctx.author: discord.PermissionOverwrite(read_messages=True),
+            ctx.guild.me: discord.PermissionOverwrite(read_messages=True),
+            r_contentCreatorManager: discord.PermissionOverwrite(read_messages=True)
+        }
+
     elif category_str == "Discord Commission":
-        category = bot.get_channel(MKT_ID.mkt_discordCategory)
+        category = bot.get_channel(MKT_ID.cat_discord)
         channelName = f"mktDiscord-{random_ID}"
         teamMember = "Discord Editor"
 
-    mkt_secretService = ctx.guild.get_role(MKT_ID.mkt_secretService)
-    mkt_executiveAssistant = ctx.guild.get_role(MKT_ID.mkt_executiveAssistant)
-    mkt_Director = ctx.guild.get_role(MKT_ID.mkt_Director)
-    mkt_Manager = ctx.guild.get_role(MKT_ID.mkt_Manager)
-    mkt_AssistantManager = ctx.guild.get_role(MKT_ID.mkt_executiveAssistant)
+        r_discordManager = ctx.guild.get_role(MKT_ID.r_discordManager)
+        r_discordTeam = ctx.guild.get_role(MKT_ID.r_discordTeam)
 
-    perms = {
-        ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
-        ctx.author: discord.PermissionOverwrite(read_messages=True),
-        ctx.guild.me: discord.PermissionOverwrite(read_messages=True),
-        mkt_secretService: discord.PermissionOverwrite(read_messages=True),
-        mkt_executiveAssistant: discord.PermissionOverwrite(read_messages=True),
-        mkt_Director: discord.PermissionOverwrite(read_messages=True),
-        mkt_Manager: discord.PermissionOverwrite(read_messages=True),
-        mkt_AssistantManager: discord.PermissionOverwrite(read_messages=True)
-    }
+        perms = {
+            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            ctx.author: discord.PermissionOverwrite(read_messages=True),
+            ctx.guild.me: discord.PermissionOverwrite(read_messages=True),
+            r_discordManager: discord.PermissionOverwrite(read_messages=True),
+            r_discordTeam: discord.PermissionOverwrite(read_messages=True)
+        }
 
     commissionChannel = await category.create_text_channel(name=channelName, overwrites=perms)
     return commissionChannel, teamMember
@@ -102,78 +145,12 @@ class mktCommissions(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(aliases=["mkt-setup"])
-    async def mktsetup(self, ctx, channel: discord.TextChannel):
-        """
-        Sends the Marketing Commissions message into a specific channel.
-
-        Parameters:
-            channel: The specific channel in which the message should be sent in.
-        """
-
-        embedCheck = discord.Embed(
-            color=hexColors.yellow,
-            title="Check",
-            description=f"Are you sure you want to send the commission setup into {channel.mention}?",
-        )
-        viewMain = discord.ui.View()
-        viewMain.add_item(ButtonHandler(style=discord.ButtonStyle.green, label="Confirm", custom_id="Confirm",
-                                        button_user=ctx.author, emoji=Emoji.confirm))
-        viewMain.add_item(ButtonHandler(style=discord.ButtonStyle.red, label="Cancel", custom_id="Cancel",
-                                        button_user=ctx.author, emoji=Emoji.deny))
-
-        viewDisabled = discord.ui.View()
-        viewDisabled.add_item(ButtonHandler(style=discord.ButtonStyle.green, label="Confirm", custom_id="Confirm",
-                                            button_user=ctx.author, disabled=True, emoji=Emoji.confirm))
-        viewDisabled.add_item(ButtonHandler(style=discord.ButtonStyle.red, label="Cancel", custom_id="Cancel",
-                                            button_user=ctx.author, disabled=True, emoji=Emoji.deny))
-
-        msg = await ctx.send(content="_ _", embed=embedCheck, view=viewMain)
-
-        timeout = await viewMain.wait()
-        if not timeout:
-
-            if viewMain.value == "Confirm":
-                embedConfirm = discord.Embed(
-                    color=hexColors.green_confirm,
-                    title="Check",
-                    description=f"Setup have been send into {channel.mention} successfully."
-                )
-                await msg.edit(embed=embedConfirm, view=viewDisabled)
-
-                embedSetup = discord.Embed(
-                    color=hexColors.green_general,
-                    title="Marketing Team Commissions",
-                    description="**Creating a Commission Ticket**"
-                                "\nIf you'd like to start a Marketing Commission, please fill out the form by running "
-                                f"`+request` in <#{MKT_ID.mkt_commands}> and then follow the bot's instructions!"
-                )
-                embedSetup.set_author(name="Need to make a Marketing Commission? Read on!",
-                                      icon_url="https://images-ext-2.discordapp.net/external/1P5y2JKHlIhS6fQuMiYOu7zB1Y8El-T9Bh7JJIMqSks/%3Fsize%3D1024/https/cdn.discordapp.com/icons/778406166735880202/ab248ec34ef53e5f5f209f191204a9a2.png")
-                embedSetup.set_footer(text="If you have any questions, feel free to DM a Marketing Manager!")
-                await channel.send(embed=embedSetup)
-
-            elif viewMain.value == "Cancel":
-                embedCancel = discord.Embed(
-                    color=hexColors.red_cancel,
-                    title="Check",
-                    description="Setup canceled."
-                )
-                await msg.edit(embed=embedCancel, view=viewDisabled)
-        else:
-            embedTimeout = discord.Embed(
-                color=hexColors.red_cancel,
-                title="Check",
-                description="Setup canceled due to timeout."
-            )
-            await msg.edit(embed=embedTimeout, view=viewDisabled)
-
     @commands.command(aliases=["mkt-request"])
     async def mktrequest(self, ctx: commands.Context):
         """
         To submit a Marketing Commission.
         """
-        if ctx.channel.id == MKT_ID.mkt_commands:
+        if ctx.channel.id == MKT_ID.ch_commands:
 
             # Local variables
             category = None
@@ -359,7 +336,7 @@ class mktCommissions(commands.Cog):
                 if continueBool:
                     commissionChannel, teamMember = await createCommissionChannel(ctx=ctx, bot=self.bot,
                                                                                   category_str=category)
-                    transcriptChannel = self.bot.get_channel(MKT_ID.mkt_commissionTranscripts)
+                    transcriptChannel = self.bot.get_channel(MKT_ID.ch_commissionTranscripts)
 
                     try:
                         await ctx.author.send(
@@ -369,14 +346,14 @@ class mktCommissions(commands.Cog):
                     except discord.Forbidden:
                         pass
 
-                    mkt_secretService = ctx.guild.get_role(MKT_ID.mkt_secretService)
-                    mkt_executiveAssistant = ctx.guild.get_role(MKT_ID.mkt_executiveAssistant)
-                    mkt_Director = ctx.guild.get_role(MKT_ID.mkt_Director)
-                    mkt_Manager = ctx.guild.get_role(MKT_ID.mkt_Manager)
-                    mkt_AssistantManager = ctx.guild.get_role(MKT_ID.mkt_executiveAssistant)
+                    r_designManager = ctx.guild.get_role(MKT_ID.r_designManager)
+                    r_designTeam = ctx.guild.get_role(MKT_ID.r_designTeam)
+                    r_discordManager = ctx.guild.get_role(MKT_ID.r_discordManager)
+                    r_discordTeam = ctx.guild.get_role(MKT_ID.r_discordTeam)
+                    r_mediaContentManager = ctx.guild.get_role(MKT_ID.r_contentCreatorManager)
 
-                    lockRoles = [mkt_secretService, mkt_executiveAssistant, mkt_Director, mkt_Manager,
-                                 mkt_AssistantManager]
+                    lockRoles = [r_designManager, r_designTeam, r_discordManager, r_discordTeam,
+                                 r_mediaContentManager]
 
                     viewControlPanel = discord.ui.View(timeout=None)
                     viewControlPanel.add_item(
@@ -413,18 +390,16 @@ class mktCommissions(commands.Cog):
                     await commissionChannel.send("Submitted Report:", embed=embedRequest)
                     await transcriptChannel.send(embed=embedRequest)
 
-
             else:
                 embedTimeout = discord.Embed(
                     color=hexColors.red_cancel,
                     title="Timeout",
-                    description="Request canceld due to timeout."
+                    description="Request canceled due to timeout."
                 )
                 try:
                     await ctx.author.send(embed=embedTimeout)
                 except discord.Forbidden:
                     return
-
                 await msgQuestion_1.edit(embed=embedQuestion_1, view=viewDisabled)
 
 
@@ -434,7 +409,7 @@ class mktCommissions(commands.Cog):
         """
         To add a user to a commission channel, who hasn't access to it.
         """
-        if not ctx.channel.category or ctx.channel.category.id not in [MKT_ID.mkt_designCategory, MKT_ID.mkt_mediaCateogory, MKT_ID.mkt_discordCategory]:
+        if not ctx.channel.category or ctx.channel.category.id not in [MKT_ID.cat_design, MKT_ID.cat_media, MKT_ID.cat_discord]:
 
             embedError = discord.Embed(
                 title="Not allowed!",
