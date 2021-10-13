@@ -85,23 +85,23 @@ def prompt_config2(msg, key):
 
 class MKT_ID:
     """
-    IDs of the SS Marketing Department Server. (Original IDs in comments)
+    IDs of the SS Marketing Department Server.
     """
     # Channels
-    ch_commands = 887788534843461681                        # 799855856295608345
-    ch_commissionTranscripts = 891778853503111228           # 820843692385632287
+    ch_commands = 799855856295608345
+    ch_commissionTranscripts = 820843692385632287
 
     # Categories
-    cat_design = 889170366646345728                      # 820873176208375838
-    cat_media = 889170503242248222                      # 882031123541143632
-    cat_discord = 889170561723404308                     # 888668259220615198
+    cat_design = 820873176208375838
+    cat_media = 882031123541143632
+    cat_discord = 888668259220615198
 
     # Roles
-    r_discordManager = 897549418100842557                       # 890778255655841833
-    r_discordTeam = 897549453593042944                          # 805276710404489227
-    r_designManager = 897549509620535306                        # 882755765910261760
-    r_designTeam = 897549541300125757                           # 864161064526020628
-    r_contentCreatorManager = 897549599424774155                # 864165192148189224
+    r_discordManager = 890778255655841833
+    r_discordTeam = 805276710404489227
+    r_designManager = 882755765910261760
+    r_designTeam = 864161064526020628
+    r_contentCreatorManager = 864165192148189224
 
 
 class Emoji:
