@@ -64,7 +64,7 @@ is_botAdmin4 = commands.check(predicate_LV4)
 
 
 def mktCommissionAdd(ctx):
-    rolesID = [MKT_ID.mkt_secretService, MKT_ID.mkt_executiveAssistant, MKT_ID.mkt_Director, MKT_ID.mkt_Manager, MKT_ID.mkt_AssistantManager]
+    rolesID = [MKT_ID.r_designManager, MKT_ID.r_designTeam, MKT_ID.r_discordManager, MKT_ID.r_discordTeam, MKT_ID.r_contentCreatorManager]
 
     return any(role.id in rolesID for role in ctx.author.roles)
 

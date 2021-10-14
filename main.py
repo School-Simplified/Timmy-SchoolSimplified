@@ -51,7 +51,7 @@ class Timmy(commands.Bot):
         return await super().is_owner(user)
 
 bot = Timmy(
-    command_prefix=commands.when_mentioned_or('+'), 
+    command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")), 
     intents=discord.Intents.all(), 
     case_insensitive=True, 
     activity = discord.Activity(type=discord.ActivityType.watching, name="+help | timmy.schoolsimplified.org")
@@ -86,11 +86,11 @@ if not UpQ.exists():
     print("Created Uptime Entry.")
 
 if not CIQ.exists():
-    database.CheckInformation.create(MasterMaintenance = False, guildNone = False, externalGuild = True, ModRoleBypass = True, ruleBypass = True, publicCategory = True, elseSituation = True, PersistantChange = False)
+    database.CheckInformation.create(MasterMaintenance = False, guildNone = False, externalGuild = True, ModRoleBypass = True, ruleBypass = True, publicCategories = True, elseSituation = True, PersistantChange = False)
     print("Created CheckInformation Entry.")
 
 if len(database.Administrators) == 0:
-    database.Administrators.create(discordID = 13, TierLevel = 4)
+    database.Administrators.create(discordID = int(os.getenv("OWNERID")), TierLevel = 4)
     print("Added you as a bot administrator")
 
 database.db.connect(reuse_if_open=True)
@@ -197,10 +197,6 @@ async def tictactoeCTX(ctx, member: discord.Member):
     elif member == ctx.author:
         return await ctx.send("lonely :(, sorry but you need an actual person to play against, not yourself!")
 
-    if ctx.channel.id == 763121180173271040:
-        return await ctx.send(f"{ctx.author.mention}\nMove to <#783319554322989067> to play Tic Tac Toe!", ephemeral=True)
-        
-
     await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, member))
 
 #async def schedule(self, ctx, date, time, ampm:str, student: discord.User, subject, repeats: bool = False):
@@ -250,7 +246,12 @@ async def on_ready():
         bot.add_view(VerifyButton())
         query.PersistantChange = True
         query.save()
-        
+
+    if not os.getenv("USEREAL"):
+        IP = os.getenv("IP")
+        databaseField = f"{bcolors.OKGREEN}Selected Database: External ({IP}){bcolors.ENDC}"
+    else:
+        databaseField = f"{bcolors.FAIL}Selected Database: localhost{bcolors.ENDC}\n{bcolors.WARNING}WARNING: You are not connected to an external database, it is recommended that you use a server as SQLite solutions may lead to data corruption!{bcolors.ENDC}"
 
     print("""
     ╭━━┳╮
@@ -261,8 +262,9 @@ async def on_ready():
     """)
     print(f"Logged in as: {bot.user.name}")
     print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
-    print(f"{bcolors.WARNING}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
-    print(f"{bcolors.WARNING}Current Time: {now}{bcolors.ENDC}")
+    print(f"{bcolors.OKCYAN}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
+    print(f"{bcolors.OKCYAN}Current Time: {now}{bcolors.ENDC}\n")
+    print(databaseField)
 
     chat_exporter.init_exporter(bot)
 

@@ -88,20 +88,20 @@ class MKT_ID:
     IDs of the SS Marketing Department Server.
     """
     # Channels
-    mkt_commands = 799855856295608345
-    mkt_commissionTranscripts = 820843692385632287
+    ch_commands = 799855856295608345
+    ch_commissionTranscripts = 820843692385632287
 
     # Categories
-    mkt_designCategory = 820873176208375838
-    mkt_mediaCateogory = 882031123541143632
-    mkt_discordCategory = 888668259220615198
+    cat_design = 820873176208375838
+    cat_media = 882031123541143632
+    cat_discord = 888668259220615198
 
     # Roles
-    mkt_secretService = 859914502539837452
-    mkt_executiveAssistant = 885903340310003722
-    mkt_Director = 799884886507913226
-    mkt_Manager = 800578036881424405
-    mkt_AssistantManager = 800578559877972079
+    r_discordManager = 890778255655841833
+    r_discordTeam = 805276710404489227
+    r_designManager = 882755765910261760
+    r_designTeam = 864161064526020628
+    r_contentCreatorManager = 864165192148189224
 
 
 class Emoji:

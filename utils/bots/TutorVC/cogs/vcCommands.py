@@ -101,6 +101,7 @@ class TutorVCCMD(commands.Cog):
         self.TutorRole = "Tutor"
         self.TutorLogID = 873326994220265482
         self.LobbyStartIDs = {763119924385939498: 843637802293788692, 891521033700540457 :895041227123228703}
+        self.StartVCIDs = {763119924385939498: 784556875487248394, 891521033700540457: 891521033700540457}
 
         
 
@@ -748,7 +749,7 @@ class TutorVCCMD(commands.Cog):
     @commands.command(aliases =["start"])
     async def startVC(self, ctx):
         embed = discord.Embed(title = "Private Channels", description = "First off, there is **no** command to start a private channel.", color = discord.Color.green())
-        embed.add_field(name = "Creating a Private Channel", value = f"The **only** way to create a voice channel is through joining <#{self.LobbyStartIDs[ctx.guild.id]}>. There is **no command**, so please don't spam `+start` or whatever comes up in your head. ")
+        embed.add_field(name = "Creating a Private Channel", value = f"The **only** way to create a voice channel is through **you** joining <#{self.StartVCIDs[ctx.guild.id]}>. There is **no command**, so please don't spam `+start` or whatever comes up in your head. ")
         embed.add_field(name = "Permissions", value = "The voice channel owner is the only person who can run any of the modifier commands. (Rename, Permit, Disconnect, etc) \n**No**, there is no way of adding extra users to manage the voice channel. Anyone who tries will just get an error saying they'd have to redirect the command back to the original owner.",inline = False)
         embed.add_field(name = "Rank Requirements", value = "In order to create a private voice channel, you need to be level 10 or above. Unfortunately, if you are not above level 10 you won't be able to join the Start Private VC channel and create one.", inline = False)
         embed.set_footer(text = "Feel free to ping Space if you have any questions.")

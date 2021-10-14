@@ -4,6 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask
 from grapheme import length
+import peewee
 from peewee import *
 
 __version__ = "2.2.0"
@@ -15,23 +16,32 @@ Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
 '''
 
-if bool(os.getenv("SSL_TRUE")):
-    db = MySQLDatabase(os.getenv("DatabaseName"), 
-        user=os.getenv("Username"), 
-        password=os.getenv("Password"),
-        host=os.getenv("IP"), 
-        port = int(os.getenv("PORT")), 
-        ssl = {'key': os.getenv("SSL_PATH")}
-    )
-else:
-    db = MySQLDatabase(
-        os.getenv("DatabaseName"), 
-        user=os.getenv("Username"), 
-        password=os.getenv("Password"),
-        host= os.getenv("IP"), 
-        port = int(os.getenv("PORT"))
-    )
-    #db = SqliteDatabase("data.db")
+if bool(os.getenv("USEREAL")):
+    db = SqliteDatabase("data.db")
+
+if bool(os.getenv("SSL_TRUE")) and not bool(os.getenv("USEREAL")):
+    try:
+        db = MySQLDatabase(os.getenv("DatabaseName"), 
+            user=os.getenv("Username"), 
+            password=os.getenv("Password"),
+            host=os.getenv("IP"), 
+            port = int(os.getenv("PORT")), 
+            ssl = {'key': os.getenv("SSL_PATH")}
+        )
+    except:
+        db = SqliteDatabase("data.db")
+
+elif not bool(os.getenv("SSL_TRUE")) and not bool(os.getenv("USEREAL")):
+    try:
+        db = MySQLDatabase(
+            os.getenv("DatabaseName"), 
+            user=os.getenv("Username"), 
+            password=os.getenv("Password"),
+            host= os.getenv("IP"), 
+            port = int(os.getenv("PORT"))
+        )
+    except:
+        db = SqliteDatabase("data.db")
 
 def iter_table(model_dict):
     """Iterates through a dictionary of tables, confirming they exist and creating them if necessary."""
