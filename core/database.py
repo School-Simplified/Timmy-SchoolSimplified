@@ -15,8 +15,6 @@ load_dotenv()
 Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
 '''
-print("DB")
-print(os.getenv("IP"))
 
 if os.getenv("IP") is None:
     db = SqliteDatabase("data.db")

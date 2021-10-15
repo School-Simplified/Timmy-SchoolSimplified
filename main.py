@@ -196,8 +196,6 @@ async def tictactoeCTX(ctx, member: discord.Member):
 
     await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, member))
 
-#async def schedule(self, ctx, date, time, ampm:str, student: discord.User, subject, repeats: bool = False):
-
 
 @bot.slash_command(name = "schedule", description = "Create a Tutor Session", guild_ids=[763119924385939498, 860897711334621194])
 async def scheduleSession(
@@ -257,7 +255,7 @@ async def on_ready():
     ╱╰╯╰┻┻┻┻┻┻╋╮┃
     ╱╱╱╱╱╱╱╱╱╱╰━╯
     """)
-    print(f"Logged in as: {bot.user.name}")
+    print(f"Logged in as: {bot.user.name} ({bot.user.id})")
     print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
     print(f"{bcolors.OKCYAN}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}")
     print(f"{bcolors.OKCYAN}Current Time: {now}{bcolors.ENDC}\n")
@@ -277,7 +275,6 @@ for ext in get_extensions():
         raise commands.ExtensionNotFound(ext)
 
 
-
 @bot.check
 async def mainModeCheck(ctx: commands.Context):
     MT = discord.utils.get(ctx.guild.roles, name= "Moderator")
@@ -290,9 +287,6 @@ async def mainModeCheck(ctx: commands.Context):
     blacklistedUsers = []
     for p in database.Blacklist:
         blacklistedUsers.append(p.discordID)
-
-    print(blacklistedUsers)
-
 
     adminIDs = []
     query = database.Administrators.select().where(database.Administrators.TierLevel == 4)
