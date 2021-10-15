@@ -15,11 +15,13 @@ load_dotenv()
 Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
 '''
+print("DB")
+print(os.getenv("IP"))
 
-if bool(os.getenv("USEREAL")):
+if os.getenv("IP") is None:
     db = SqliteDatabase("data.db")
 
-if bool(os.getenv("SSL_TRUE")) and not bool(os.getenv("USEREAL")):
+if bool(os.getenv("SSL_TRUE")) and os.getenv("IP") is not None:
     try:
         db = MySQLDatabase(os.getenv("DatabaseName"), 
             user=os.getenv("Username"), 
@@ -28,10 +30,11 @@ if bool(os.getenv("SSL_TRUE")) and not bool(os.getenv("USEREAL")):
             port = int(os.getenv("PORT")), 
             ssl = {'key': os.getenv("SSL_PATH")}
         )
-    except:
+    except Exception as e:
+        print(e)
         db = SqliteDatabase("data.db")
 
-elif not bool(os.getenv("SSL_TRUE")) and not bool(os.getenv("USEREAL")):
+elif not bool(os.getenv("SSL_TRUE")) and os.getenv("IP") is not None:
     try:
         db = MySQLDatabase(
             os.getenv("DatabaseName"), 
@@ -40,7 +43,8 @@ elif not bool(os.getenv("SSL_TRUE")) and not bool(os.getenv("USEREAL")):
             host= os.getenv("IP"), 
             port = int(os.getenv("PORT"))
         )
-    except:
+    except Exception as e:
+        print(e)
         db = SqliteDatabase("data.db")
 
 def iter_table(model_dict):
