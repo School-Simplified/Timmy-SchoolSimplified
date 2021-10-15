@@ -22,7 +22,7 @@ class CoreBotConfig(commands.Cog):
         self.bot = bot
 
     @commands.group(aliases=['f'])
-    async def filter(self, ctx):
+    async def filter(self):
         pass
 
     @filter.command()
