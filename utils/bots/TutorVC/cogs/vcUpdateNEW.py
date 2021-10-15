@@ -80,8 +80,11 @@ class TutorVCUpdate(commands.Cog):
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         database.db.connect(reuse_if_open=True)
-        lobbyStart = await self.bot.fetch_channel(self.LobbyStartIDs[member.guild.id])
-
+        try:
+            lobbyStart = await self.bot.fetch_channel(self.LobbyStartIDs[member.guild.id])
+        except KeyError:
+            return
+            
         if before.channel != None and (after.channel == None or after.channel.category_id not in self.categoryIDs or after.channel.id in self.staticChannels) and not member.bot:
             
             acadChannel = await self.bot.fetch_channel(self.channel_id[member.guild.id])
