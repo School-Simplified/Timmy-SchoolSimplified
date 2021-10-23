@@ -3,7 +3,6 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 from flask import Flask
-from grapheme import length
 import peewee
 from peewee import *
 
@@ -159,6 +158,30 @@ class PunishmentTag(BaseModel):
     id = AutoField()
     tag_name = TextField(unique=True)
     embed_title = TextField()
+    text = TextField()
+    imageURL = TextField(default=None)
+
+class CTag(BaseModel):
+    """
+    #CTag
+    Stores our tags accessed by the tag command.
+
+    `id`: AutoField()
+    Database Entry
+
+    `tagname`: TextField()
+    Name of the tag
+
+    `text`: TextField()
+    Embed Description
+
+    `imageURL`: TextField()
+    URL of the image
+    """
+
+    id = AutoField()
+    tagname = TextField(unique=True)
+    embedtitle = TextField()
     text = TextField()
     imageURL = TextField(default=None)
 
@@ -446,7 +469,8 @@ tables = {
     "TutorBot_Sessions": TutorBot_Sessions,
     "Uptime": Uptime,
     "TicketInfo": TicketInfo,
-    "PunishmentTag": PunishmentTag
+    "PunishmentTag": PunishmentTag,
+    "CTag:": CTag
 }
 
 iter_table(tables)

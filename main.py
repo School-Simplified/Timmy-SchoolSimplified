@@ -24,6 +24,7 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 from tqdm import tqdm
 
 from core import database
+from core.common import id_generator, get_extensions
 from core.common import Emoji, LockButton, bcolors, getGuildList
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
@@ -102,59 +103,12 @@ query.PersistantChange = False
 query.save()
 database.db.close()
 
-def get_extensions():
-    extensions = []
-    extensions.append('jishaku')
-    if sys.platform == 'win32' or sys.platform == 'cygwin':
-        dirpath = "\\"
-    else:
-        dirpath = "/"
 
-    for file in Path("utils").glob("**/*.py"):
-        if "!" in file.name or "DEV" in file.name:
-            continue
-        extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
-    return extensions
-
-async def id_generator(size=3, chars=string.ascii_uppercase):
-    while True:
-        ID = ''.join(random.choice(chars) for _ in range(size))
-        query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == ID)
-
-        if query.exists():
-            continue
-        else:
-            return ID
-
-async def force_restart(ctx):
-    p = subprocess.run("git status -uno",  shell=True, text=True, capture_output=True, check=True)
-
-    embed = discord.Embed(title = "Restarting...", description = "Doing GIT Operation (1/3)", color = discord.Color.green())
-    embed.add_field(name = "Checking GIT (1/3)", value = f"**Git Output:**\n```shell\n{p.stdout}\n```")
-
-    msg = await ctx.send(embed = embed)
-    try:
-        result = subprocess.run("cd && cd Timmy-SchoolSimplified && nohup python3 main.py &", shell=True, text=True, capture_output=True,
-                                check=True)
-
-        embed.add_field(name = "Started Environment and Additional Process (2/3)", value = "Executed `source` and `nohup`.", inline = False)
-        await msg.edit(embed = embed)
-
-    except Exception as e:
-        embed = discord.Embed(title = "Operation Failed", description = e, color = discord.Color.red())
-        embed.set_footer(text = "Main bot process will be terminated.")
-
-        await ctx.send(embed = embed)
-
-    else:
-        embed.add_field(name = "Killing Old Bot Process (3/3)", value = "Executing `sys.exit(0)` now...", inline = False)
-        await msg.edit(embed = embed)
-        sys.exit(0)
 
 
 
 @bot.slash_command(description = "Play a game of TicTacToe with someone!")
-async def tictactoe(ctx: discord.InteractionContext, user: Option(discord.Member, "Enter an opponent you want")):
+async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you want")):
     if user == None:
         return await ctx.send("lonely :(, sorry but you need a person to play against!")
     elif user == bot.user:

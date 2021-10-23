@@ -1,14 +1,20 @@
 import asyncio
 import io
 import json
-from pathlib import Path
+import random
+import string
+import subprocess
+import sys
 import typing
-from typing import List, Tuple, Callable, Any, Awaitable
+from pathlib import Path
+from typing import Any, Awaitable, Callable, List, Tuple
 
 import chat_exporter
 import discord
+from discord import Button, ButtonStyle, SelectOption, ui
 from discord.ext import commands
-from discord import Button, ui, ButtonStyle, SelectOption
+
+from core import database
 
 # global variables
 coroutineType = Callable[[Any, Any], Awaitable[Any]]
@@ -429,3 +435,53 @@ class TicketTempConfirm(discord.ui.View):
         await interaction.response.send_message('Cancelling', ephemeral=True)
         self.value = False
         self.stop()
+
+
+def get_extensions():
+    extensions = []
+    extensions.append('jishaku')
+    if sys.platform == 'win32' or sys.platform == 'cygwin':
+        dirpath = "\\"
+    else:
+        dirpath = "/"
+
+    for file in Path("utils").glob("**/*.py"):
+        if "!" in file.name or "DEV" in file.name:
+            continue
+        extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
+    return extensions
+
+async def id_generator(size=3, chars=string.ascii_uppercase):
+    while True:
+        ID = ''.join(random.choice(chars) for _ in range(size))
+        query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == ID)
+
+        if query.exists():
+            continue
+        else:
+            return ID
+
+async def force_restart(ctx):
+    p = subprocess.run("git status -uno",  shell=True, text=True, capture_output=True, check=True)
+
+    embed = discord.Embed(title = "Restarting...", description = "Doing GIT Operation (1/3)", color = discord.Color.green())
+    embed.add_field(name = "Checking GIT (1/3)", value = f"**Git Output:**\n```shell\n{p.stdout}\n```")
+
+    msg = await ctx.send(embed = embed)
+    try:
+        result = subprocess.run("cd && cd Timmy-SchoolSimplified && nohup python3 main.py &", shell=True, text=True, capture_output=True,
+                                check=True)
+
+        embed.add_field(name = "Started Environment and Additional Process (2/3)", value = "Executed `source` and `nohup`.", inline = False)
+        await msg.edit(embed = embed)
+
+    except Exception as e:
+        embed = discord.Embed(title = "Operation Failed", description = e, color = discord.Color.red())
+        embed.set_footer(text = "Main bot process will be terminated.")
+
+        await ctx.send(embed = embed)
+
+    else:
+        embed.add_field(name = "Killing Old Bot Process (3/3)", value = "Executing `sys.exit(0)` now...", inline = False)
+        await msg.edit(embed = embed)
+        sys.exit(0)
