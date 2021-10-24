@@ -6,71 +6,9 @@ import chat_exporter
 import discord
 from discord.ext import commands
 from discord import ButtonStyle
-from main import bot
 
 from core.common import Emoji, hexColors, ButtonHandler, SelectMenuHandler, MKT_ID, Others
 from core.checks import is_mktCommissionAuthorized
-
-
-# end imports
-
-
-async def lockButton(interaction: discord.Interaction, view: discord.ui.View):
-    """
-    Continuing code after lock button.
-    """
-    viewCheck = discord.ui.View()
-    viewCheck.add_item(ButtonHandler(style=ButtonStyle.green, label="Confirm", custom_id="Confirm",
-                                     emoji=Emoji.confirm, button_user=interaction.user))
-    viewCheck.add_item(ButtonHandler(style=ButtonStyle.red, label="Cancel", custom_id="Cancel",
-                                     emoji=Emoji.confirm, button_user=interaction.user,
-                                     interaction_message="Canceled", ephemeral=True))
-    embedCheck = discord.Embed(
-        title="Check",
-        description="Are you sure you want to close this commission?"
-    )
-    await interaction.response.send_message(embed=embedCheck, view=viewCheck, ephemeral=True)
-
-    timeout = await viewCheck.wait()
-
-    if not timeout:
-        if viewCheck.value == "Confirm":
-
-            channel = interaction.message.channel
-            transcript = await chat_exporter.export(channel)
-
-            if transcript is None:
-                transcript_file = None
-            else:
-                transcript_file = discord.File(io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html")
-
-            await interaction.channel.delete()
-            ch_commissionTranscript = bot.get_channel(MKT_ID.ch_commissionTranscripts)
-
-            temp_message = await ch_commissionTranscript.send(file=transcript_file)
-            attachment_url = temp_message.attachments[0].url
-            await temp_message.delete()
-
-            embedTranscript = discord.Embed(
-                color=hexColors.yellow,
-                title="Closed Project Request"
-            )
-            embedTranscript.add_field(name="Project requested by", value=f"{view.children[0].button_user}")
-            embedTranscript.add_field(name="Commission channel", value=f"#{interaction.channel.name}")
-            embedTranscript.add_field(name="Commission category", value=f"{interaction.channel.category.name}")
-            embedTranscript.add_field(name="Commission closed by", value=f"{interaction.user}")
-            embedTranscript.add_field(name="Transcript", value=f"[Transcript]({attachment_url})")
-            await ch_commissionTranscript.send(embed=embedTranscript)
-
-
-        elif viewCheck.value == "Cancel":
-            viewCheckDisabled = discord.ui.View()
-            viewCheckDisabled.add_item(ButtonHandler(style=ButtonStyle.green, label="Confirm", emoji=Emoji.confirm,
-                                                     disabled=True))
-            viewCheckDisabled.add_item(ButtonHandler(style=ButtonStyle.red, label="Cancel", emoji=Emoji.confirm,
-                                                     disabled=True))
-
-            await interaction.edit_original_message(embed=embedCheck, view=viewCheckDisabled)
 
 
 async def createCommissionChannel(
@@ -144,6 +82,66 @@ class mktCommissions(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+
+
+    async def lockButton(self, interaction: discord.Interaction, view: discord.ui.View):
+        """
+        Continuing code after lock button.
+        """
+        viewCheck = discord.ui.View()
+        viewCheck.add_item(ButtonHandler(style=ButtonStyle.green, label="Confirm", custom_id="Confirm",
+                                         emoji=Emoji.confirm, button_user=interaction.user))
+        viewCheck.add_item(ButtonHandler(style=ButtonStyle.red, label="Cancel", custom_id="Cancel",
+                                         emoji=Emoji.confirm, button_user=interaction.user,
+                                         interaction_message="Canceled", ephemeral=True))
+        embedCheck = discord.Embed(
+            title="Check",
+            description="Are you sure you want to close this commission?"
+        )
+        await interaction.response.send_message(embed=embedCheck, view=viewCheck, ephemeral=True)
+
+        timeout = await viewCheck.wait()
+
+        if not timeout:
+            if viewCheck.value == "Confirm":
+
+                channel = interaction.message.channel
+                transcript = await chat_exporter.export(channel)
+
+                if transcript is None:
+                    transcript_file = None
+                else:
+                    transcript_file = discord.File(io.BytesIO(transcript.encode()),
+                                                   filename=f"transcript-{channel.name}.html")
+
+                await interaction.channel.delete()
+                ch_commissionTranscript = self.bot.get_channel(MKT_ID.ch_commissionTranscripts)
+
+                temp_message = await ch_commissionTranscript.send(file=transcript_file)
+                attachment_url = temp_message.attachments[0].url
+                await temp_message.delete()
+
+                embedTranscript = discord.Embed(
+                    color=hexColors.yellow,
+                    title="Closed Project Request"
+                )
+                embedTranscript.add_field(name="Project requested by", value=f"{view.children[0].button_user}")
+                embedTranscript.add_field(name="Commission channel", value=f"#{interaction.channel.name}")
+                embedTranscript.add_field(name="Commission category", value=f"{interaction.channel.category.name}")
+                embedTranscript.add_field(name="Commission closed by", value=f"{interaction.user}")
+                embedTranscript.add_field(name="Transcript", value=f"[Transcript]({attachment_url})")
+                await ch_commissionTranscript.send(embed=embedTranscript)
+
+
+            elif viewCheck.value == "Cancel":
+                viewCheckDisabled = discord.ui.View()
+                viewCheckDisabled.add_item(ButtonHandler(style=ButtonStyle.green, label="Confirm", emoji=Emoji.confirm,
+                                                         disabled=True))
+                viewCheckDisabled.add_item(ButtonHandler(style=ButtonStyle.red, label="Cancel", emoji=Emoji.confirm,
+                                                         disabled=True))
+
+                await interaction.edit_original_message(embed=embedCheck, view=viewCheckDisabled)
+
 
     @commands.command(aliases=["mkt-request"])
     async def mktrequest(self, ctx: commands.Context):
@@ -359,7 +357,7 @@ class mktCommissions(commands.Cog):
                     viewControlPanel.add_item(
                         ButtonHandler(style=discord.ButtonStyle.green, label="Lock", custom_id="Lock",
                                       emoji="🔒", button_user=ctx.author, roles=lockRoles,
-                                      coroutine=lockButton))
+                                      coroutine=self.lockButton))
                     embedControlPanel = discord.Embed(
                         color=hexColors.yellow,
                         title="Control Panel",
