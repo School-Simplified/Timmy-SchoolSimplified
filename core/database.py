@@ -180,7 +180,7 @@ class CTag(BaseModel):
     """
 
     id = AutoField()
-    tagname = TextField(unique=True)
+    tagname = TextField()
     embedtitle = TextField()
     text = TextField()
     imageURL = TextField(default=None)
