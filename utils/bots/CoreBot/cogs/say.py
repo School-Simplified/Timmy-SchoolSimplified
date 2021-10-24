@@ -14,6 +14,7 @@ class SayCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+
     @commands.command()
     @is_botAdmin
     async def say(self, ctx, *, message):
@@ -23,12 +24,10 @@ class SayCMD(commands.Cog):
         await ctx.message.delete()
         await ctx.send(message)
 
+
     @commands.command()
     @is_botAdmin
     async def sayvc(self, ctx, *, text=None):
-        NE = database.AdminLogging.create(discordID = ctx.author.id, action = "SAYVC", content = text)
-        NE.save()
-        
         await ctx.message.delete()
 
         if not text:
@@ -41,6 +40,9 @@ class SayCMD(commands.Cog):
             # We are not currently in a voice channel
             await ctx.send("I need to be in a voice channel to do this, please use the connect command.")
             return
+
+        NE = database.AdminLogging.create(discordID = ctx.author.id, action = "SAYVC", content = text)
+        NE.save()
 
         # Lets prepare our text, and then save the audio file
         TTSClient = texttospeech.TextToSpeechClient()
@@ -69,6 +71,7 @@ class SayCMD(commands.Cog):
 
         except TypeError as e:
             await ctx.send(f"TypeError exception:\n`{e}`")
+
 
 def setup(bot):
     bot.add_cog(SayCMD(bot))

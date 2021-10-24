@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import discord
 import pytz
 from core import database
+from core.common import TUT_ID
 from discord.ext import commands, tasks
 
 class TutorBotLoop(commands.Cog):
@@ -21,20 +22,26 @@ class TutorBotLoop(commands.Cog):
             TutorSession = pytz.timezone("America/New_York").localize(entry.Date)
             val = int((TutorSession - now).total_seconds())
 
-            if val <= 120 and val >= 1:
+            if 120 >= val >= 1:
                 print(entry.TutorID, entry.StudentID)
                 tutor = self.bot.get_user(entry.TutorID)
                 student = self.bot.get_user(entry.StudentID)
 
-                if tutor == None:
+                if tutor is None:
                     tutor = await self.bot.fetch_user(entry.TutorID)
-                if student == None:
+                if student is None:
                     student = await self.bot.fetch_user(entry.StudentID)
 
                 print(tutor, student)
-                botch = self.bot.get_channel(862480236965003275)
-                embed = discord.Embed(title = "ALERT: You have a Tutor Session Soon!", description = "Please make sure you both communicate and set up a private voice channel!", color = discord.Color.green())
-                embed.add_field(name = "Tutor Session Details", value = f"**Tutor:** {tutor.name}\n**Student:** {student.name}\n**Session ID:** {entry.SessionID}\n**Time:** {entry.Time}")
+                botch = self.bot.get_channel(TUT_ID.ch_botCommands)
+                embed = discord.Embed(title = "ALERT: You have a Tutor Session Soon!",
+                                      description = "Please make sure you both communicate and set up a private voice channel!",
+                                      color = discord.Color.green())
+                embed.add_field(name = "Tutor Session Details",
+                                value = f"**Tutor:** {tutor.name}"
+                                        f"\n**Student:** {student.name}"
+                                        f"\n**Session ID:** {entry.SessionID}"
+                                        f"\n**Time:** {entry.Time}")
                 
                 try:
                     await tutor.send(embed = embed)
@@ -71,7 +78,6 @@ class TutorBotLoop(commands.Cog):
 
                 query.Date = nextweek
                 query.save()
-
 
 
     @tutorsession.before_loop
