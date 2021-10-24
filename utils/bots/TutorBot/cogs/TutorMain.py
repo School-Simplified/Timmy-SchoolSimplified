@@ -1,6 +1,7 @@
 import discord
 from core import database
 from discord.ext import commands
+from core.common import Others
 
 
 class TutorMain(commands.Cog):
@@ -13,7 +14,7 @@ class TutorMain(commands.Cog):
 
     @commands.command()
     async def view(self, ctx, id = None):
-        if id == None:
+        if id is None:
             query : database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.TutorID == ctx.author.id)
 
             embed = discord.Embed(title = "Scheduled Tutor Sessions", color = discord.Color.dark_blue())
@@ -21,19 +22,17 @@ class TutorMain(commands.Cog):
 
             if query.count() == 0:
                 embed.add_field(name = "List:", value = "You have no tutor sessions yet!", inline = False)
-                
+
             else:
                 ListTen = []
                 i = 0
                 for entry in query:
                     ts = int(entry.Date.timestamp())
                     studentUser = await self.bot.fetch_user(entry.StudentID)
-                    #date = entry.Date.strftime("%m/%d/%Y")
-                    #amORpm = entry.Date.strftime("%p")
                     ListTen.append(f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{ts}:f> -> {studentUser.name}")
 
                 embed.add_field(name = "List:", value = "\n".join(ListTen), inline = False)
-            embed.set_thumbnail(url = "https://media.discordapp.net/attachments/875233489727922177/877378910214586368/tutoring.png?width=411&height=532")
+            embed.set_thumbnail(url = Others.timmyTeacher_png)
             await ctx.send(embed = embed)
 
         else:
@@ -47,21 +46,20 @@ class TutorMain(commands.Cog):
                 amORpm = entry.Date.strftime("%p")
 
                 embed = discord.Embed(title = "Tutor Session Query", description =f"Here are the query results for {id}")
-                embed.add_field(name = "Values", value = f"**Session ID:** `{entry.SessionID}`\n**Student:** `{studentUser.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{date}`\n**Time:** `{entry.Time}`\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}")
+                embed.add_field(name = "Values", value = f"**Session ID:** `{entry.SessionID}`"
+                                                         f"\n**Student:** `{studentUser.name}`"
+                                                         f"\n**Tutor:** `{ctx.author.name}`"
+                                                         f"\n**Date:** `{date}`"
+                                                         f"\n**Time:** `{entry.Time}`"
+                                                         f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}")
                 embed.set_footer(text = f"Subject: {entry.Subject}")
                 await ctx.send(embed = embed)
             else:
-                embed = discord.Embed(title = "Invalid Session", description = "This session does not exist, please check the ID you've provided!", color = discord.Color.red())
+                embed = discord.Embed(title = "Invalid Session",
+                                      description = "This session does not exist, please check the ID you've provided!",
+                                      color = discord.Color.red())
                 await ctx.send(embed = embed)
 
-    #@commands.command()
-    #async def get(self, ctx, id):
-
-    #@commands.command()
-    #async def reqtutor(self, ctx, date, time, timezone, id, repeats):
-
-    #@commands.command()
-    #async def reqinterview(self, ctx):
 
 def setup(bot):
     bot.add_cog(TutorMain(bot))

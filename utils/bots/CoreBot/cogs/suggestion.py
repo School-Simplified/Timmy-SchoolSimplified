@@ -2,6 +2,7 @@ import asyncio
 
 import discord
 from discord.ext import commands
+from core.common import TECH_ID
 
 
 class SuggestionCMD(commands.Cog):
@@ -11,7 +12,11 @@ class SuggestionCMD(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def suggest(self, ctx, suggestion):
-        embed = discord.Embed(title = "Confirmation", description = "Are you sure you want to submit this suggestion? Creating irrelevant suggestions will warrant a blacklist and you will be subject to a warning/mute.", color = discord.Colour.cyan())
+        embed = discord.Embed(title = "Confirmation",
+                              description = "Are you sure you want to submit this suggestion? Creating irrelevant "
+                                            "suggestions will warrant a blacklist and you will be subject to a "
+                                            "warning/mute.",
+                              color = discord.Colour.cyan())
         embed.add_field(name = "Suggestion Collected", value = suggestion)
         embed.set_footer("Double check this suggestion || MAKE SURE THIS SUGGESTION IS RELATED TO THE BOT, NOT THE DISCORD SERVER!")
 
@@ -31,10 +36,12 @@ class SuggestionCMD(commands.Cog):
                 return
             else:
                 await message.delete()
-                guild = await self.bot.fetch_guild(805593783684562965)
-                channel = await guild.fetch_channel(851949397533392936)
+                guild = await self.bot.fetch_guild(TECH_ID.g_tech)
+                channel = await guild.fetch_channel(TECH_ID.ch_tracebacks)
 
-                embed = discord.Embed(title = "New Suggestion!", description = f"User: {ctx.author.mention}\nChannel: {ctx.channel.mention}", color = discord.Colour.cyan())
+                embed = discord.Embed(title = "New Suggestion!",
+                                      description = f"User: {ctx.author.mention}\nChannel: {ctx.channel.mention}",
+                                      color = discord.Colour.cyan())
                 embed.add_field(name = "Suggestion", value = suggestion)
 
                 await channel.send(embed = embed)

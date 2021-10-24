@@ -25,8 +25,11 @@ async def rawExport(self, channel, response, user: discord.User):
     if transcript is None:
         return
 
-    embed = discord.Embed(title = "Channel Transcript", description = f"**Channel:** {channel.name}\n**User Invoked:** {user.name}*\nTranscript Attached Below*", color = discord.Colour.green())
-    #embed.set
+    embed = discord.Embed(title = "Channel Transcript",
+                          description = f"**Channel:** {channel.name}"
+                                        f"\n**User Invoked:** {user.name}*"
+                                        f"\nTranscript Attached Below*",
+                          color = discord.Colour.green())
     transcript_file = discord.File(io.BytesIO(transcript.encode()),filename=f"transcript-{channel.name}.html")
 
     await response.send(embed = embed)
@@ -74,7 +77,6 @@ def load_config(name) -> Tuple[dict, Path]:
         config = json.load(f)
     return config, config_file
 
-
 def prompt_config(msg, key):
     config, config_file = load_config()
     if key not in config:
@@ -89,25 +91,231 @@ def prompt_config2(msg, key):
         json.dump(config, f, indent=4)
 
 
+class MAIN_ID:
+    """
+    IDs of the SS Main server.
+    NOTE: If you want to add IDs, please use the format as below.
+
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_main = 763119924385939498
+
+    # *** Channels ***
+    ch_commands = 763409002913595412
+    ch_seniorMods = 878792926266810418
+    ch_moderators = 786068971048140820
+    ch_mutedChat = 808919081469739008
+    ch_modLogs = 863177000372666398
+    ch_tutoring = 865716647083507733
+    ch_transcriptLogs = 767434763337728030
+    ch_actionLogs = 767206398060396574
+    ch_modCommands = 786057630383865858
+    ch_controlPanel = 843637802293788692
+    ch_startPrivateVC = 784556875487248394
+
+    # *** Categories ***
+    cat_casual = 763121170324783146
+    cat_community = 800163651805773824
+    cat_lounge = 774847738239385650
+    cat_events = 805299289604620328
+    cat_voice = 763857608964046899
+    cat_scienceTicket = 800479815471333406
+    cat_fineArtsTicket = 833210452758364210
+    cat_mathTicket = 800472371973980181
+    cat_socialStudiesTicket = 800481237608824882
+    cat_englishTicket = 800475854353596469
+    cat_essayTicket = 854945037875806220
+    cat_languageTicket = 800477414361792562
+    cat_otherTicket = 825917349558747166
+    cat_privateVC = 776988961087422515
+
+    # *** Roles ***
+    r_codingClub = 883169286665936996
+    r_debateClub = 883170141771272294
+    r_musicClub = 883170072355561483
+    r_cookingClub = 883162279904960562
+    r_chessClub = 883564455219306526
+    r_bookClub = 883162511560560720
+    r_advocacyClub = 883169000866070539
+    r_speechClub = 883170166161149983
+    r_clubPresident = 883160826180173895
+
+    # *** Messages ***
+    # Tutoring
+    msg_math = 866904767568543744
+    msg_science = 866904901174427678
+    msg_english = 866905061182930944
+    msg_language = 866905971519389787
+    msg_art = 866906016602652743
+    msg_socialStudies = 866905205094481951
+    msg_computerScience = 867550791635566623
+
+
+class STAFF_ID:
+    """
+    IDs of the SS Staff Community server.
+    NOTE: If you want to add IDs, please use the format as below.
+
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_staff = 891521033700540457
+
+    # *** Channels ***
+    ch_verificationLogs = 894241199433580614
+    ch_verification = 894240578651443232
+    ch_console = 895041227123228703
+    ch_startPrivateVC = 895041070956675082
+
+    # *** Categories ***
+    cat_privateVC = 895041016057446411
+
+
+class DIGITAL_ID:
+    """
+    IDs of the SS Staff Community server.
+    NOTE: If you want to add IDs, please use the format as below.
+
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_digital = 778406166735880202
+
+    # *** Channels ***
+    ch_verification = 878681438462050356
+    ch_waitingRoom = 878679747255750696
+
+
+class TECH_ID:
+    """
+    IDs of the SS Technical & Information Department server.
+    NOTE: If you want to add IDs, please use the format as below.
+
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_tech = 805593783684562965
+
+    # *** Channels ***
+    ch_tracebacks = 851949397533392936
+    ch_commissionLogs = 849722616880300061
+    ch_ticketLog = 872915565600182282
+
+    # *** Categories ***
+    cat_developerComms = 873261268495106119
+
+
 class MKT_ID:
     """
-    IDs of the SS Marketing Department Server.
+    IDs of the SS Marketing Department server.
+    NOTE: If you want to add IDs, please use the format as below.
+
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
     """
-    # Channels
+
+    # *** Guilds ***
+    g_mkt = 799855854182596618
+
+    # *** Channels ***
     ch_commands = 799855856295608345
     ch_commissionTranscripts = 820843692385632287
 
-    # Categories
+    # *** Categories ***
     cat_design = 820873176208375838
     cat_media = 882031123541143632
     cat_discord = 888668259220615198
 
-    # Roles
+    # *** Roles ***
     r_discordManager = 890778255655841833
     r_discordTeam = 805276710404489227
     r_designManager = 882755765910261760
     r_designTeam = 864161064526020628
     r_contentCreatorManager = 864165192148189224
+
+
+class TUT_ID:
+    """
+    IDs of the SS Tutoring Division server.
+    NOTE: If you want to add IDs, please use the format as below.
+
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_tut = 860897711334621194
+
+    # *** Channels ***
+    ch_botCommands = 862480236965003275
+    ch_hourLogs = 873326994220265482
+
+
+class ACAD_ID:
+    """
+    IDs of the SS Academics Department server.
+    NOTE: If you want to add IDs, please use the format as below.
+
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_acad = 801974357395636254
+
+
+class HR_ID:
+    """
+    IDs of the SS HR Department server.
+    NOTE: If you want to add IDs, please use the format as below.
+
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_hr = 815753072742891532
 
 
 class Emoji:
@@ -117,6 +325,7 @@ class Emoji:
     space = '<:space:834967357632806932>'
     confirm = "<:confirm:860926261966667806>"
     deny = "<:deny:860926229335375892>"
+    question = "<:question:861794223027519518>"
     warn = "<:warn:860926255443345409>"
     lock = "<:lock:860926195087835137>"
     unlock = "<:unlock:860926246937427989>"
@@ -132,24 +341,54 @@ class Emoji:
     barrow = "<:barrow:862572842985193502>"
     person = "<:person:883771751127990333>"
     activity = "<:note:883771751190908989>"
+    check = '<:success:834967474101420032>'
+    cancel = '<:cancel:834967460075012106>'
+    arrow = '<:rightDoubleArrow:834967375735422996>'
+    mute = '<:mute:834967579264155658>'
+    ban = '<:ban:834967435642929162>'
+    reason = '<:activity:834968852558249999>'
+    profile = '<:profile:835213199070593035>'
+    creation = '<:creation:835213216299745291>'
+    date = '<:thewickthing:835213229294223400>'
+    discordLogo = "<:discord:812757175465934899>"
+    discordLoad = "<a:Discord:866408537503694869>"
 
+    timmyBook = "<:timmy_book:880875405962264667>"
 
 class hexColors:
     """
     Hex colors for the bot.
     """
+
+    # *** Standard Colors ***
     yellow = 0xf5dd42
-    green_general = 0x2ecc70
+    orange = 0xfcba03
+    blurple = 0x6c7dfe
+    light_purple = 0xd6b4e8
+    dark_gray = 0x2F3136
+
+    yellow_ticketBan = 0xeffa16
+    green_general = 0x3af250
     green_confirm = 0x37e32b
     red_cancel = 0xe02f2f
     red_error = 0xf5160a
+    orange_error = 0xfc3d03
 
 
 class Others:
     """
-    Other things to use for the bot.
+    Other things to use for the bot. (Images, characters, etc.)
     """
+    ssLogo_png = "https://media.discordapp.net/attachments/864060582294585354/878682781352362054/ss_current.png"
     error_png = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png"
+    nitro_png = "https://i.imgur.com/w9aiD6F.png"
+
+    # *** Timmy Images ***
+    timmyDog_png = "https://cdn.discordapp.com/attachments/875233489727922177/876610305852051456/unknown.png"
+    timmyLaptop_png = "https://i.gyazo.com/5cffb6cd45e5e1ee9b1d015bccbdf9e6.png"
+    timmyHappy_png = "https://i.gyazo.com/a0b221679db0f980504e64535885a5fd.png"
+    timmyBook_png = "https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533"
+    timmyTeacher_png = "https://media.discordapp.net/attachments/875233489727922177/877378910214586368/tutoring.png?width=411&height=532"
 
     space_character = "　"
 
@@ -170,6 +409,7 @@ rulesDict = {
     13: f"No disruptive behavior in voice chat. && {Emoji.barrow} No continuous hopping between voice chats.\n{Emoji.barrow} No starting and closing streams in short intervals.\n{Emoji.barrow} No loud, annoying, or high-pitched noises.\n{Emoji.barrow} No voice changers if asked to stop.",
     14: f"No evading user blocks, punishments, or bans by using alternate accounts. && {Emoji.barrow} Sending unwanted, repeated friend requests or messages to contact someone who has blocked you is prohibited.\n{Emoji.barrow} Creating alternate accounts to evade a punishment or ban, harass or impersonate someone, or participate in a raid are all strictly prohibited.\n{Emoji.barrow} Suspicions of being an alternate account are cause for a ban with no prior warning.\n{Emoji.barrow} To discuss punishments or warnings, create a support ticket or talk to a moderator in DMs.",
 }
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -336,6 +576,7 @@ def getGuildList(bot: commands.Bot, exemptServer: List[int] = None) -> list:
 
     return guildList
 
+
 class TechnicalCommissionConfirm(discord.ui.View):
     def __init__(self, bot):
         super().__init__()
@@ -344,7 +585,7 @@ class TechnicalCommissionConfirm(discord.ui.View):
 
     @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, emoji = "✅",  custom_id='persistent_view:tempconfirm')
     async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
-        TranscriptLOG = self.bot.get_channel(872915565600182282)
+        TranscriptLOG = self.bot.get_channel(TECH_ID.ch_ticketLog)
         ch = await self.bot.fetch_channel(interaction.channel_id)
         
         await rawExport(self, ch, TranscriptLOG, interaction.user)
@@ -372,6 +613,7 @@ class LockButton(discord.ui.View):
 
         msg = await ch.send("Are you sure you want to close this ticket?", view = TempConfirmInstance)
 
+
 class TempConfirm(discord.ui.View):
     def __init__(self):
         super().__init__()
@@ -387,9 +629,6 @@ class TempConfirm(discord.ui.View):
         await interaction.response.send_message('Cancelling', ephemeral=True)
         self.value = False
         self.stop()
-
-
-
 
 
 class NitroConfirmFake(discord.ui.View):
@@ -419,6 +658,7 @@ class TicketLockButton(discord.ui.View):
         TempConfirmInstance = TicketTempConfirm(self.bot)
 
         msg = await ch.send("Are you sure you want to close this ticket?", view = TempConfirmInstance)
+
 
 class TicketTempConfirm(discord.ui.View):
     def __init__(self):
@@ -451,6 +691,7 @@ def get_extensions():
         extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
     return extensions
 
+
 async def id_generator(size=3, chars=string.ascii_uppercase):
     while True:
         ID = ''.join(random.choice(chars) for _ in range(size))
@@ -460,6 +701,7 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
             continue
         else:
             return ID
+
 
 async def force_restart(ctx):
     p = subprocess.run("git status -uno",  shell=True, text=True, capture_output=True, check=True)

@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 import discord
 import pytz
 from core import database
+from core.common import MAIN_ID
 from discord.ext import commands
 
 
@@ -18,6 +19,7 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
         else:
             return ID
 
+
 class TutorBotStaffCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -29,7 +31,6 @@ class TutorBotStaffCMD(commands.Cog):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == id)
         if query.exists():
             query = query.get()
-
 
             old = query.Date
             new = timedelta(days=7)
@@ -43,7 +44,9 @@ class TutorBotStaffCMD(commands.Cog):
             await ctx.send(f"Re-scheduled Session to `{nw}`")
 
         else:
-            embed = discord.Embed(title = "Invalid Session", description = "This session does not exist, please check the ID you've provided!", color = discord.Color.red())
+            embed = discord.Embed(title = "Invalid Session",
+                                  description = "This session does not exist, please check the ID you've provided!",
+                                  color = discord.Color.red())
             await ctx.send(embed = embed)
 
 
@@ -56,18 +59,23 @@ class TutorBotStaffCMD(commands.Cog):
             query.delete_instance()
             
             embed = discord.Embed(title= "Removed Session", description = "Deleted Session Successfully", color = discord.Color.red())
-            embed.add_field(name = "Session Removed:", value = f"**Session ID:** `{query.SessionID}`\n**Student ID:** `{query.StudentID}`")
+            embed.add_field(name = "Session Removed:", value = f"**Session ID:** `{query.SessionID}`"
+                                                               f"\n**Student ID:** `{query.StudentID}`")
             await ctx.send(embed = embed)
 
         else:
-            embed = discord.Embed(title = "Invalid Session", description = "This session does not exist, please check the ID you've provided!", color = discord.Color.red())
+            embed = discord.Embed(title = "Invalid Session", description = "This session does not exist, please check the ID you've provided!",
+                                  color = discord.Color.red())
             await ctx.send(embed = embed)
+
 
     @commands.command()
     @commands.has_role("Tutor")
     async def schedule(self, ctx, date, time, ampm:str, student: discord.User, subject, repeats: bool = False):
-        if ctx.guild.id != 763119924385939498:
-            await ctx.send("Woah! Looks like you aren't using the new slash command! In the future, this command will be removed so please use the slash command instead!\nYou can do this by clicking `/` in the chat bar and selecting the `schedule` command from Timmy. ")
+        if ctx.guild.id != MAIN_ID.g_main:
+            await ctx.send("Woah! Looks like you aren't using the new slash command! In the future, "
+                           "this command will be removed so please use the slash command instead!"
+                           "\nYou can do this by clicking `/` in the chat bar and selecting the `schedule` command from Timmy. ")
         embed = discord.Embed(title = "Schedule Confirmed", description = "Created session.", color = discord.Color.green())
         now = datetime.now()
         now :datetime = now.astimezone(self.est)
@@ -81,15 +89,26 @@ class TutorBotStaffCMD(commands.Cog):
 
             daterev = datetimeSession.strftime("%m/%d")
 
-            embed.add_field(name = "Values", value = f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{daterev}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`")
+            embed.add_field(name = "Values", value = f"**Session ID:** `{SessionID}`"
+                                                     f"\n**Student:** `{student.name}`"
+                                                     f"\n**Tutor:** `{ctx.author.name}`"
+                                                     f"\n**Date:** `{daterev}`"
+                                                     f"\n**Time:** `{time}`"
+                                                     f"\n**Repeat?:** `{repeats}`")
             embed.set_footer(text = f"Subject: {subject}")
-            query = database.TutorBot_Sessions.create(SessionID = SessionID, Date = datetimeSession, Time = time, StudentID = student.id, TutorID = ctx.author.id, Repeat = repeats, Subject = subject, ReminderSet = False)
+            query = database.TutorBot_Sessions.create(SessionID = SessionID, Date = datetimeSession,
+                                                      Time = time, StudentID = student.id, TutorID = ctx.author.id,
+                                                      Repeat = repeats, Subject = subject, ReminderSet = False)
             query.save()
             await ctx.send(embed = embed)
         else:
-            embed = discord.Embed(title = "Failed to Generate Session", description = f"Unfortunately this session appears to be in the past and Timmy does not support expired sessions.", color = discord.Color.red())
+            embed = discord.Embed(title = "Failed to Generate Session",
+                                  description = f"Unfortunately this session appears to be in the past and Timmy does "
+                                                f"not support expired sessions.",
+                                  color = discord.Color.red())
             await ctx.send(embed = embed)
-            
+
+
     @commands.command()
     @commands.has_role("Tutor")
     async def clear(self, ctx):
@@ -100,7 +119,9 @@ class TutorBotStaffCMD(commands.Cog):
         else:
             for session in query:
                 session.delete_instance()
-            await ctx.send(f"All sessions have been deleted!\nDeleted {var} sessions.")
+            await ctx.send(f"All sessions have been deleted!"
+                           f"\nDeleted {var} sessions.")
+
 
 def setup(bot):
     bot.add_cog(TutorBotStaffCMD(bot))

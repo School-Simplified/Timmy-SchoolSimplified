@@ -2,11 +2,12 @@ from pathlib import Path
 import discord
 from core import database
 from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4
-from core.common import Emoji
+from core.common import Emoji, hexColors
 from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
+
 
 def get_extensions():
     extensions = []
@@ -16,6 +17,7 @@ def get_extensions():
             continue
         extensions.append(str(file).replace("/", ".").replace(".py", ""))
     return extensions
+
 
 class CoreBotConfig(commands.Cog):
     def __init__(self, bot):
@@ -39,7 +41,6 @@ class CoreBotConfig(commands.Cog):
             6: "CheckDB.publicCategories",
             7: "CheckDB.elseSituation"
         }
-
 
         if num == 1:
             CheckDB.MasterMaintenance = val
@@ -65,9 +66,7 @@ class CoreBotConfig(commands.Cog):
         else:
             return await ctx.send(f"Not a valid option\n```py\n{databaseValues}\n```")
 
-            
         await ctx.send(f"Field: {databaseValues[num]} has been set to {str(val)}")
-
 
 
     @filter.command()
@@ -75,10 +74,14 @@ class CoreBotConfig(commands.Cog):
         CheckDB : database.CheckInformation =  database.CheckInformation.select().where(database.CheckInformation.id == 1).get()
 
         embed = discord.Embed(title = "Command Filters", description = "Bot Filters that the bot is subjected towards.", color = discord.Colour.gold())
-        embed.add_field(name = "Checks", value = f"1) `Maintenance Mode`\n{Emoji.barrow} {CheckDB.MasterMaintenance}\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB.guildNone}\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB.externalGuild}\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB.ModRoleBypass}\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB.ruleBypass}\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB.publicCategories}\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB.elseSituation}")
+        embed.add_field(name = "Checks", value = f"1) `Maintenance Mode`\n{Emoji.barrow} {CheckDB.MasterMaintenance}"
+                                                 f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB.guildNone}"
+                                                 f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB.externalGuild}"
+                                                 f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB.ModRoleBypass}"
+                                                 f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB.ruleBypass}"
+                                                 f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB.publicCategories}"
+                                                 f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB.elseSituation}")
         await ctx.send(embed = embed)
-
-
 
 
     @commands.group(aliases=['pre'])
@@ -99,7 +102,6 @@ class CoreBotConfig(commands.Cog):
         await ctx.send(f"Field: {WhitelistedPrefix.prefix} has been added!")
 
 
-
     @prefix.command()
     async def list(self, ctx):
         
@@ -108,7 +110,7 @@ class CoreBotConfig(commands.Cog):
 
         for entry in PrefixDB:
             
-            if entry.status == True:
+            if entry.status is True:
                 statusFilter = "ACTIVE"
             else:
                 statusFilter = "DISABLED"
@@ -116,9 +118,11 @@ class CoreBotConfig(commands.Cog):
             response.append(f"Prefix `{entry.prefix}`:\n{Emoji.barrow} {statusFilter}")
 
 
-        embed = discord.Embed(title = "Whitelisted Prefix's", description = "Bot Prefix's that are whitelisted in staff commands.", color = discord.Colour.gold())
+        embed = discord.Embed(title = "Whitelisted Prefix's", description = "Bot Prefix's that are whitelisted in staff commands.",
+                              color = discord.Colour.gold())
         embed.add_field(name = "Prefix List", value = "\n\n".join(response))
         await ctx.send(embed = embed)
+
 
     @commands.group(aliases=['cog'])
     @is_botAdmin2
@@ -134,11 +138,13 @@ class CoreBotConfig(commands.Cog):
         if ext in get_extensions():
             self.bot.unload_extension(ext)
             embed = discord.Embed(
-                title="Cogs - Unload", description=f"Unloaded cog: {ext}", color=0xd6b4e8)
+                title="Cogs - Unload", description=f"Unloaded cog: {ext}",
+                color=hexColors.light_purple)
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
-                title="Cogs Reloaded", description=f"Cog '{ext}' not found", color=0xd6b4e8)
+                title="Cogs Reloaded", description=f"Cog '{ext}' not found",
+                color=hexColors.light_purple)
             await ctx.send(embed=embed)
 
 
@@ -150,11 +156,14 @@ class CoreBotConfig(commands.Cog):
         if ext in get_extensions():
             self.bot.load_extension(ext)
             embed = discord.Embed(title="Cogs - Load",
-                                description=f"Loaded cog: {ext}", color=0xd6b4e8)
+                                  description=f"Loaded cog: {ext}",
+                                  color=hexColors.light_purple)
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
-                title="Cogs - Load", description=f"Cog '{ext}' not found.", color=0xd6b4e8)
+                title="Cogs - Load",
+                description=f"Cog '{ext}' not found.",
+                color=hexColors.light_purple)
             await ctx.send(embed=embed)
 
 
@@ -163,7 +172,9 @@ class CoreBotConfig(commands.Cog):
     async def reload(self, ctx, ext):
         if ext == "all":
             embed = discord.Embed(
-                title="Cogs - Reload", description="Reloaded all cogs", color=0xd6b4e8)
+                title="Cogs - Reload",
+                description="Reloaded all cogs",
+                color=hexColors.light_purple)
             for extension in get_extensions():
                 self.bot.reload_extension(extension)
             await ctx.send(embed=embed)
@@ -175,12 +186,14 @@ class CoreBotConfig(commands.Cog):
         if ext in get_extensions():
             self.bot.reload_extension(ext)
             embed = discord.Embed(
-                title="Cogs - Reload", description=f"Reloaded cog: {ext}", color=0xd6b4e8)
+                title="Cogs - Reload", description=f"Reloaded cog: {ext}",
+                color=hexColors.light_purple)
             await ctx.send(embed=embed)
 
         else:
             embed = discord.Embed(
-                title="Cogs - Reload", description=f"Cog '{ext}' not found.", color=0xd6b4e8)
+                title="Cogs - Reload", description=f"Cog '{ext}' not found.",
+                color=hexColors.light_purple)
             await ctx.send(embed=embed)
 
 
@@ -188,7 +201,8 @@ class CoreBotConfig(commands.Cog):
     @is_botAdmin2
     async def view(self, ctx):
         msg = " ".join(get_extensions())
-        embed = discord.Embed(title="Cogs - View", description=msg, color=0xd6b4e8)
+        embed = discord.Embed(title="Cogs - View", description=msg,
+                              color=hexColors.light_purple)
         await ctx.send(embed=embed)
 
     @commands.group()
@@ -235,7 +249,11 @@ class CoreBotConfig(commands.Cog):
         embed = discord.Embed(title="Bot Administrators", description="Whitelisted Users that have Increased Authorization",
                             color=discord.Color.green())
         embed.add_field(name="Whitelisted Users",
-                        value=f"Format:\n**Username** -> **ID**\n\n**Permit 4:** *Owners*\n{adminLEVEL4}\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}")
+                        value=f"Format:\n**Username** -> **ID**"
+                              f"\n\n**Permit 4:** *Owners*\n{adminLEVEL4}"
+                              f"\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}"
+                              f"\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}"
+                              f"\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}")
         embed.set_footer(text="Only Owners/Permit 4's can modify Bot Administrators. | Permit 4 is the HIGHEST Authorization Level")
 
         await ctx.send(embed=embed)

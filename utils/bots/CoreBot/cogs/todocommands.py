@@ -8,10 +8,6 @@ class TodoCMD(commands.Cog):
         self.bot = bot
         self.interaction = []
 
-        self.YolkRole = "Discord Editor"
-        self.YolkID = 359029243415494656
-
-
     @commands.group()
     async def todo(self, ctx):
         pass

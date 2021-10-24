@@ -2,7 +2,11 @@ import discord
 from core.common import *
 from discord.ext import commands
 
-messageDict = {"Math": 866904767568543744, "Science": 866904901174427678, "English": 866905061182930944, "Language": 866905971519389787, "Art": 866906016602652743, "Social Studies": 866905205094481951, "Computer Science": 867550791635566623}
+from core.common import MAIN_ID, TUT_ID, DIGITAL_ID
+
+messageDict = {"Math": MAIN_ID.msg_math, "Science": MAIN_ID.msg_science, "English": MAIN_ID.msg_english,
+               "Language": MAIN_ID.msg_language, "Art": MAIN_ID.msg_art, "Social Studies": MAIN_ID.msg_socialStudies,
+               "Computer Science": MAIN_ID.msg_computerScience}
 
 config, _ = load_config("equelRoles")
 
@@ -38,9 +42,10 @@ def getHRRole(query):
     else:
         return configH[query]
 
+
 async def roleNameCheck(name, before, after, guild, user ,type):
     check = getEquelRank(name)
-    if check != None:
+    if check is not None:
         if name in [role.name for role in before.roles] or name in [role.name for role in after.roles]:
             helper = discord.utils.get(guild.roles, name=check)
 
@@ -59,7 +64,7 @@ async def roleNameCheck(name, before, after, guild, user ,type):
 
 async def HRNameCheck(name, before, after, guild, user ,type):
     check = getHRRole(name)
-    if check != None:
+    if check is not None:
         if name in [role.name for role in before.roles] or name in [role.name for role in after.roles]:
             roleName = discord.utils.get(guild.roles, name=check)
 
@@ -76,24 +81,32 @@ async def HRNameCheck(name, before, after, guild, user ,type):
         print("Not in JSON")
 
 
-
-
 class RoleCheck(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.staffServer = 778406166735880202
-        self.mainServer = 763119924385939498
-        self.ValidRoles = ['Pre-Algebra Tutor','Algebra 1 Tutor','Geometry Tutor','Algebra 2/Trigonometry Tutor','Pre-Calculus Tutor','AP Calculus AB Tutor','AP Calculus BC Tutor','AP Statistics Tutor','Multi-variable Calculus Tutor',    'Biology Tutor','Chemistry Tutor','Physics Tutor','Earth Science Tutor','AP Biology Tutor','AP Chemistry Tutor','AP Physics 1 Tutor','AP Physics 2 Tutor','AP Physics C: Mechanics Tutor','AP Environmental Science Tutor',    'English Tutor','AP Literature Tutor','AP Language Tutor',    'AP Chinese Tutor','AP Spanish Tutor','AP French Tutor','AP German Tutor','AP Japanese Tutor','AP Latin Tutor','American Sign Language Tutor',    'AP 2D Art & Design Tutor','AP 3D Art & Design Tutor','AP Art History Tutor','AP Drawing Tutor','AP Capstone Tutor','AP Research Tutor','AP Seminar Tutor','World History Tutor','AP World History Tutor','US History Tutor','AP US History Tutor','AP European History Tutor','US Government Tutor']
+        self.staffServer = 778406166735880202   # TODO: SS Digital or SS Staff Community?
+        self.mainServer = MAIN_ID.g_main
+        self.ValidRoles = ['Pre-Algebra Tutor', 'Algebra 1 Tutor', 'Geometry Tutor', 'Algebra 2/Trigonometry Tutor',
+                           'Pre-Calculus Tutor', 'AP Calculus AB Tutor', 'AP Calculus BC Tutor', 'AP Statistics Tutor',
+                           'Multi-variable Calculus Tutor', 'Biology Tutor', 'Chemistry Tutor', 'Physics Tutor',
+                           'Earth Science Tutor', 'AP Biology Tutor', 'AP Chemistry Tutor', 'AP Physics 1 Tutor',
+                           'AP Physics 2 Tutor', 'AP Physics C: Mechanics Tutor', 'AP Environmental Science Tutor',
+                           'English Tutor', 'AP Literature Tutor', 'AP Language Tutor', 'AP Chinese Tutor',
+                           'AP Spanish Tutor', 'AP French Tutor', 'AP German Tutor', 'AP Japanese Tutor',
+                           'AP Latin Tutor', 'American Sign Language Tutor', 'AP 2D Art & Design Tutor',
+                           'AP 3D Art & Design Tutor', 'AP Art History Tutor', 'AP Drawing Tutor', 'AP Capstone Tutor',
+                           'AP Research Tutor', 'AP Seminar Tutor', 'World History Tutor', 'AP World History Tutor',
+                           'US History Tutor', 'AP US History Tutor', 'AP European History Tutor', 'US Government Tutor']
 
         self.testRoles = ["Math", "Science", "Biology"]
 
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        mainServer = self.bot.get_guild(763119924385939498)
+        mainServer = self.bot.get_guild(MAIN_ID.g_main)
         user = mainServer.get_member(before.id)
 
-        if mainServer == None:
+        if mainServer is None:
             return
 
         if before.guild.id != self.staffServer:
@@ -101,7 +114,7 @@ class RoleCheck(commands.Cog):
             
         if len(before.roles) < len(after.roles):
             #New Role
-            if before.guild.id == 778406166735880202:
+            if before.guild.id == DIGITAL_ID.g_digital:
 
                 list_difference = []
                 for item in after.roles:
@@ -111,10 +124,9 @@ class RoleCheck(commands.Cog):
                 item = list_difference[0]
 
                 await HRNameCheck(item.name, before, after, mainServer, user, "+")
-
             
         elif len(before.roles) > len(after.roles):
-            if before.guild.id == 778406166735880202:
+            if before.guild.id == DIGITAL_ID.g_digital:
 
                 list_difference = []
                 for item in before.roles:
@@ -127,8 +139,8 @@ class RoleCheck(commands.Cog):
 
     @commands.Cog.listener('on_member_update')
     async def roleSyncAcad(self, before, after):
-        if before.guild.id == 860897711334621194:
-            channel = await self.bot.fetch_channel(865716647083507733)
+        if before.guild.id == TUT_ID.g_tut:
+            channel = await self.bot.fetch_channel(MAIN_ID.ch_tutoring)
 
             #New Role
             if len(before.roles) < len(after.roles):
@@ -151,7 +163,8 @@ class RoleCheck(commands.Cog):
                     msg = await channel.fetch_message(ID) 
                     embedORG : discord.Embed = msg.embeds[0]
 
-                    embedNEW = discord.Embed(title = embedORG.title, description = "** **", color = 0x6c7dfe)
+                    embedNEW = discord.Embed(title = embedORG.title, description = "** **",
+                                             color = hexColors.blurple)
                     embedNEW.set_footer(text = "Any tutor that does not have AP in the title is a tutor for a normal College Prep/Honors class.")  
                     
                     
@@ -163,15 +176,12 @@ class RoleCheck(commands.Cog):
 
                     await msg.edit(embed = embedNEW)
 
-
-
             #Old Role
             elif len(before.roles) > len(after.roles):
                 oldRole = (set(before.roles) - set(after.roles))
 
                 for role in oldRole:
                     if role.name in configA:
-                        #role = discord.utils.get(before.guild.roles, name=oldRole)
                         if role is None:
                             raise BaseException(f"Invalid Data/Role {oldRole.name}")
 
@@ -181,13 +191,13 @@ class RoleCheck(commands.Cog):
                                 fieldValue.append(member.mention)
 
                         listOfMembers = ", ".join(fieldValue)
-                        if listOfMembers == None or listOfMembers == "" or listOfMembers == " ":
+                        if listOfMembers is None or listOfMembers == "" or listOfMembers == " ":
                             listOfMembers = "** **"
 
                         ID, subject = getAcadRole(role.name)
                         print(ID, subject)
                         print(listOfMembers)
-                        if ID == None:
+                        if ID is None:
                             return print(oldRole, role.name, role)
 
 
@@ -195,7 +205,8 @@ class RoleCheck(commands.Cog):
 
                         embedORG : discord.Embed = msg.embeds[0]
 
-                        embedNEW = discord.Embed(title = embedORG.title, description = "** **", color = 0x6c7dfe)
+                        embedNEW = discord.Embed(title = embedORG.title, description = "** **",
+                                                 color = hexColors.blurple)
                         embedNEW.set_footer(text = "Any tutor that does not have AP in the title is a tutor for a normal College Prep/Honors class.")  
                         
                         for field in embedORG.fields:
@@ -207,11 +218,9 @@ class RoleCheck(commands.Cog):
                         await msg.edit(embed = embedNEW)
 
 
-
-
     @commands.Cog.listener('on_member_update')
     async def serverbooster(self, before, after):
-        if before.guild.id == 763119924385939498:
+        if before.guild.id == MAIN_ID.g_main:
             if len(before.roles) < len(after.roles):
                 altServerBooster = discord.utils.get(before.guild.roles, name = "VIP")
                 serverbooster = before.guild.premium_subscriber_role
@@ -226,8 +235,6 @@ class RoleCheck(commands.Cog):
                 if newRole.id == level35.id:
                     await before.add_roles(DJ)
 
-
-
             elif len(before.roles) > len(after.roles):
                 altServerBooster = discord.utils.get(before.guild.roles, name = "VIP")
                 serverbooster = before.guild.premium_subscriber_role
@@ -239,9 +246,6 @@ class RoleCheck(commands.Cog):
                 for role in oldRole:
                     if role.id == serverbooster.id:
                         await before.remove_roles(altServerBooster)
-
-
-        
 
 def setup(bot):
     bot.add_cog(RoleCheck(bot))
