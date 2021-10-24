@@ -95,8 +95,10 @@ if not CIQ.exists():
     print("Created CheckInformation Entry.")
 
 if len(database.Administrators) == 0:
-    database.Administrators.create(discordID=int(bot.owner_id), TierLevel=4)
-    print("Added you as a bot administrator")
+    for person in bot.owner.ids:
+        database.Administrators.create(discordID=person, TierLevel=4)
+        print("Created Administrator Entry.")
+
 
 database.db.connect(reuse_if_open=True)
 q: database.Uptime = database.Uptime.select().where(database.Uptime.id == 1).get()
