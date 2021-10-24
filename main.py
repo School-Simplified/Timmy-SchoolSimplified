@@ -95,7 +95,7 @@ if not CIQ.exists():
     print("Created CheckInformation Entry.")
 
 if len(database.Administrators) == 0:
-    for person in bot.owner.ids:
+    for person in bot.owner_ids:
         database.Administrators.create(discordID=person, TierLevel=4)
         print("Created Administrator Entry.")
 
