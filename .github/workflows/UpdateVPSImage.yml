@@ -1,0 +1,24 @@
+name: SSH & Update VPS Image
+on:
+  workflow_run:
+    workflows: ["Timmy Docker Build"]
+    branches: [ main ]
+    types:
+      - completed
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Docker CMD
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          docker stop spaceturtle0/ss-timmy && docker rm spaceturtle0/ss-timmy
+          docker pull spaceturtle0/ss-timmy
+          docker start spaceturtle0/ss-timmy:latest
