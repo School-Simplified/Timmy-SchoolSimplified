@@ -260,6 +260,18 @@ class mktCommissions(commands.Cog):
 
                     else:
                         if count == 0:
+                            if len(message.content) > 900:
+                                embedTooLong = discord.Embed(
+                                    color=hexColors.red_error,
+                                    title="Message too long",
+                                    description=f"Please make sure that your message is no longer than 900 characters."
+                                )
+                                try:
+                                    await ctx.author.send(embed=embedTooLong)
+                                except:
+                                    return
+                                continue
+
                             goal = message.content
 
                             embedNextQuestion = discord.Embed(
@@ -268,6 +280,18 @@ class mktCommissions(commands.Cog):
                             )
 
                         elif count == 1:
+                            if len(message.content) > 900:
+                                embedTooLong = discord.Embed(
+                                    color=hexColors.red_error,
+                                    title="Message too long",
+                                    description=f"Please make sure that your message is no longer than 900 characters."
+                                )
+                                try:
+                                    await ctx.author.send(embed=embedTooLong)
+                                except:
+                                    return
+                                continue
+
                             information = message.content
 
                             embedNextQuestion = discord.Embed(
@@ -276,6 +300,18 @@ class mktCommissions(commands.Cog):
                             )
 
                         elif count == 2:
+                            if len(message.content) > 900:
+                                embedTooLong = discord.Embed(
+                                    color=hexColors.red_error,
+                                    title="Message too long",
+                                    description=f"Please make sure that your message is no longer than 900 characters."
+                                )
+                                try:
+                                    await ctx.author.send(embed=embedTooLong)
+                                except:
+                                    return
+                                continue
+
                             dates = message.content
 
                             embedNextQuestion = discord.Embed(
@@ -284,6 +320,18 @@ class mktCommissions(commands.Cog):
                             )
 
                         elif count == 3:
+                            if len(message.content) > 900:
+                                embedTooLong = discord.Embed(
+                                    color=hexColors.red_error,
+                                    title="Message too long",
+                                    description=f"Please make sure that your message is no longer than 900 characters."
+                                )
+                                try:
+                                    await ctx.author.send(embed=embedTooLong)
+                                except:
+                                    return
+                                continue
+
                             approver = message.content
 
                             embedNextQuestion = discord.Embed(
@@ -292,6 +340,18 @@ class mktCommissions(commands.Cog):
                             )
 
                         elif count == 4:
+                            if len(message.content) > 900:
+                                embedTooLong = discord.Embed(
+                                    color=hexColors.red_error,
+                                    title="Message too long",
+                                    description=f"Please make sure that your message is no longer than 900 characters."
+                                )
+                                try:
+                                    await ctx.author.send(embed=embedTooLong)
+                                except:
+                                    return
+                                continue
+
                             finalDesicion = message.content
 
                             embedNextQuestion = discord.Embed(
@@ -300,6 +360,18 @@ class mktCommissions(commands.Cog):
                             )
 
                         elif count == 5:
+                            if len(message.content) > 900:
+                                embedTooLong = discord.Embed(
+                                    color=hexColors.red_error,
+                                    title="Message too long",
+                                    description=f"Please make sure that your message is no longer than 900 characters."
+                                )
+                                try:
+                                    await ctx.author.send(embed=embedTooLong)
+                                except:
+                                    return
+                                continue
+
                             anything_else = message.content
                             break
 
