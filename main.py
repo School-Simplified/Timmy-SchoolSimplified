@@ -116,12 +116,12 @@ database.db.close()
 async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you want")):
     if ctx.channel.id != MAIN_ID.ch_commands:
         return await ctx.send(f"{ctx.author.mention}\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!",
-                              ephemeral=True)
+                                ephemeral=True)
     if user is None:
         return await ctx.send("lonely :(, sorry but you need a person to play against!")
-    elif targetuser == bot.user:
+    elif user == bot.user:
         return await ctx.send("i'm good.")
-    elif targetuser == ctx.author:
+    elif user == ctx.author:
         return await ctx.send("lonely :(, sorry but you need an actual person to play against, not yourself!")
 
     await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, user))
@@ -229,10 +229,10 @@ async def on_ready():
 for ext in get_extensions():
     try:
         bot.load_extension(ext)
-    except (commands.errors.ExtensionAlreadyLoaded, commands.ExtensionAlreadyLoaded):
+    except discord.ExtensionAlreadyLoaded:
         bot.unload_extension(ext)
         bot.load_extension(ext)
-    except commands.ExtensionNotFound:
+    except discord.ExtensionNotFound:
         raise commands.ExtensionNotFound(ext)
 
 
