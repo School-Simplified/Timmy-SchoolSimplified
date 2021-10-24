@@ -28,15 +28,16 @@ from core.common import id_generator, get_extensions
 from core.common import Emoji, LockButton, bcolors, getGuildList
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
+from logtail import LogtailHandler
 
+LogTail = LogtailHandler(source_token=os.getenv("LOGTAIL"))
 load_dotenv()
 
 logger = logging.getLogger('discord')
-logger.setLevel(logging.WARNING)
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+logger.addHandler(LogTail)
 
+logger.warning("Started Timmy")
 class Timmy(commands.Bot):
     async def is_owner(self, user: discord.User):
         adminIDs = []

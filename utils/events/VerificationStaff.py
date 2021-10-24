@@ -142,7 +142,7 @@ class VerificationStaff(commands.Cog):
             else:
                 embed = discord.Embed(title = "Verification Details", description = f"**Username:** {StaffServerMember.mention}\n**ID:** `{StaffServerMember.id}`", color = discord.Color.red())
                 embed.set_author(name = StaffServerMember.display_name, url = StaffServerMember.avatar.url, icon_url = StaffServerMember.avatar.url)
-                embed.add_field(name = "Guild's Found:", value = totalguilds)
+                embed.add_field(name = "Guild's Found:", value = f"No Guilds...")
                 embed.add_field(name = "Role's Applied:", value = "None Found, they don't appear to hold a position in any sub-server!", inline = False)
                 await logchannel.send(embed = embed)
 
