@@ -105,9 +105,6 @@ query.save()
 database.db.close()
 
 
-
-
-
 @bot.slash_command(description = "Play a game of TicTacToe with someone!")
 async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you want")):
     if user == None:

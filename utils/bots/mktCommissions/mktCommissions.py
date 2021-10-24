@@ -5,7 +5,7 @@ import string
 
 import chat_exporter
 import discord
-from core.checks import is_mktCommissionAuthorized, is_botAdmin1
+from core.checks import is_mktCommissionAuthorized, is_botAdmin
 from core.common import (MKT_ID, ButtonHandler, Emoji, Others,
                          SelectMenuHandler, hexColors)
 from discord import ButtonStyle
@@ -434,8 +434,8 @@ class mktCommissions(commands.Cog):
             )
             await ctx.send(embed=embedSuccess)
 
-    @commands.commands()
-    @is_botAdmin1
+    @commands.command()
+    @is_botAdmin
     async def savetranscript(self, ctx: commands.Context, logChannel: discord.TextChannel = None):
         if logChannel == None:
             logChannel = ctx.channel

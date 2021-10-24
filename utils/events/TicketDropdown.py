@@ -294,7 +294,7 @@ class DropdownTickets(commands.Cog):
     async def sendCHTKTView(self, ctx):
         MasterSubjectView = discord.ui.View()
         MasterSubjectView.add_item(SelectMenuHandler(MasterSubjectOptions, "persistent_view:ticketdrop", "masa short", 1,1, interaction_message = "Check your DM's!", ephemeral = True))
-        await ctx.send("bruh", view=MasterSubjectView)
+        await ctx.send("hello", view=MasterSubjectView)
 
 def setup(bot):
     bot.add_cog(DropdownTickets(bot))
