@@ -15,7 +15,7 @@ import chat_exporter
 import discord
 import pytz
 import requests
-from discord.app import Option
+from discord.commands import Option
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
