@@ -2,13 +2,14 @@ import asyncio
 import io
 import random
 import string
+
 import chat_exporter
 import discord
-from discord.ext import commands
+from core.checks import is_mktCommissionAuthorized, is_botAdmin
+from core.common import Emoji, hexColors, ButtonHandler, SelectMenuHandler, MKT_ID, Others
 from discord import ButtonStyle
 
-from core.common import Emoji, hexColors, ButtonHandler, SelectMenuHandler, MKT_ID, Others
-from core.checks import is_mktCommissionAuthorized
+from discord.ext import commands
 
 
 async def createCommissionChannel(
@@ -247,7 +248,7 @@ class mktCommissions(commands.Cog):
                         embedTimeout = discord.Embed(
                             color=hexColors.red_cancel,
                             title="Timeout",
-                            description="Request canceld due to timeout."
+                            description="Request canceled due to timeout."
                         )
                         try:
                             await ctx.author.send(embed=embedTimeout)
@@ -432,6 +433,20 @@ class mktCommissions(commands.Cog):
             )
             await ctx.send(embed=embedSuccess)
 
+    @commands.command()
+    @is_botAdmin
+    async def savetranscript(self, ctx: commands.Context, logChannel: discord.TextChannel = None):
+        if logChannel == None:
+            logChannel = ctx.channel
+        channel = ctx.channel
+        transcript = await chat_exporter.export(channel)
+
+        if transcript is None:
+            transcript_file = None
+        else:
+            transcript_file = discord.File(io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html")
+
+        await logChannel.send(file = transcript_file)
 
 def setup(bot):
     bot.add_cog(mktCommissions(bot))
