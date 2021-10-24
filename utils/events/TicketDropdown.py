@@ -155,7 +155,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
 class DropdownTickets(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.mainserver = 763119924385939498
+        self.mainserver = 805593783684562965
         self.ServerIDs = [805593783684562965, 801974357395636254, 799855854182596618, 815753072742891532]
 
 
@@ -175,7 +175,7 @@ class DropdownTickets(commands.Cog):
         except KeyError:
             return
 
-        if interaction.guild_id == self.mainserver and interaction.message.id == 111 and InteractionResponse['custom_id'] == 'persistent_view:ticketdrop':
+        if interaction.guild_id == self.mainserver and interaction.message.id == 901649671657762866 and InteractionResponse['custom_id'] == 'persistent_view:ticketdrop':
             channel = await self.bot.fetch_channel(interaction.channel_id)
             guild = await self.bot.fetch_guild(interaction.guild_id)
             author = interaction.user
@@ -184,8 +184,9 @@ class DropdownTickets(commands.Cog):
             def check(m):
                 return m.content is not None and m.channel == DMChannel and m.author.id is author.id
 
-            ViewResponse = str(InteractionResponse.children[0].values)
-            TypeSubject, CategoryID, OptList = decodeDict(ViewResponse)
+            ViewResponse = str(InteractionResponse["values"])
+            print(ViewResponse)
+            TypeSubject, CategoryID, OptList = decodeDict(self, ViewResponse)
             c = discord.utils.get(guild.category_channels, id = CategoryID)
 
             if not TypeSubject == OptList:
@@ -289,7 +290,11 @@ class DropdownTickets(commands.Cog):
             await channel.send(f"Transcript Created!\n> {msg.jump_url}")
 
 
-
+    @commands.command()
+    async def sendCHTKTView(self, ctx):
+        MasterSubjectView = discord.ui.View()
+        MasterSubjectView.add_item(SelectMenuHandler(MasterSubjectOptions, "persistent_view:ticketdrop", "masa short", 1,1, interaction_message = "Check your DM's!", ephemeral = True))
+        await ctx.send("bruh", view=MasterSubjectView)
 
 def setup(bot):
     bot.add_cog(DropdownTickets(bot))

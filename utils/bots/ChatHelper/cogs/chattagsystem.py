@@ -59,7 +59,7 @@ class CTag(commands.Cog):
         finally:
             database.db.close()
 
-    @commands.command(aliases=['delp', 'dp'])
+    @commands.command(aliases=['delc', 'cp'])
     @commands.has_any_role('Secret Service', 'Head Moderator', 'Senior Mod', 'Moderator')
     async def deletec(self, ctx, name):
         """Delete a tag"""
