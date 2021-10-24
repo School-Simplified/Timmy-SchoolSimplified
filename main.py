@@ -29,6 +29,7 @@ from core.common import Emoji, LockButton, bcolors, getGuildList
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
 from logtail import LogtailHandler
+from discord import Member
 
 LogTail = LogtailHandler(source_token=os.getenv("LOGTAIL"))
 load_dotenv()
@@ -106,19 +107,19 @@ database.db.close()
 
 
 @bot.slash_command(description = "Play a game of TicTacToe with someone!")
-async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you want")):
-    if user == None:
+async def tictactoe(ctx, targetuser: Option(Member, "Enter an opponent you want")):
+    if targetuser == None:
         return await ctx.send("lonely :(, sorry but you need a person to play against!")
-    elif user == bot.user:
+    elif targetuser == bot.user:
         return await ctx.send("i'm good.")
-    elif user == ctx.author:
+    elif targetuser == ctx.author:
         return await ctx.send("lonely :(, sorry but you need an actual person to play against, not yourself!")
 
     if ctx.channel.id == 763121180173271040:
         return await ctx.send(f"{ctx.author.mention}\nMove to <#783319554322989067> to play Tic Tac Toe!", ephemeral=True)
         
 
-    await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, user))
+    await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, targetuser))
 
 
 @bot.user_command(name = "Are they short?")  
