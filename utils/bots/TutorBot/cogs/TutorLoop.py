@@ -17,7 +17,6 @@ class TutorBotLoop(commands.Cog):
     @tasks.loop(seconds=60.0)
     async def tutorsession(self): 
         now = datetime.now(self.est)
-
         for entry in database.TutorBot_Sessions: 
             TutorSession = pytz.timezone("America/New_York").localize(entry.Date)
             val = int((TutorSession - now).total_seconds())
@@ -33,8 +32,6 @@ class TutorBotLoop(commands.Cog):
                     student = await self.bot.fetch_user(entry.StudentID)
 
                 print(tutor, student)
-
-                print("t")
                 botch = self.bot.get_channel(862480236965003275)
                 embed = discord.Embed(title = "ALERT: You have a Tutor Session Soon!", description = "Please make sure you both communicate and set up a private voice channel!", color = discord.Color.green())
                 embed.add_field(name = "Tutor Session Details", value = f"**Tutor:** {tutor.name}\n**Student:** {student.name}\n**Session ID:** {entry.SessionID}\n**Time:** {entry.Time}")

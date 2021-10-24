@@ -381,6 +381,12 @@ class MiscCMD(commands.Cog):
         RoleID = self.decodeDict[ViewResponse]
         await ctx.send(f"<@&{RoleID}>\n{message}")
 
+    @commands.command()
+    @is_botAdmin
+    async def purgemasa(self, ctx, num: int = 10):
+        user = await self.bot.fetch_user(736765405728735232)
+        await ctx.channel.purge(check=lambda m: m.author == user, limit = num)
+
 
 
 def setup(bot):
