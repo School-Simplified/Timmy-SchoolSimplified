@@ -1,4 +1,6 @@
 import asyncio
+import json
+import os
 import re
 from datetime import datetime
 from random import randint
@@ -13,7 +15,8 @@ scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/au
          "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
 
 try:
-    creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+    sa_creds = json.loads(os.getenv("GSPREADSJSON"))
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, scope)
     client = gspread.authorize(creds)
     sheet = client.open("SchoolSimplifiedBans").sheet1
 except Exception as e:
