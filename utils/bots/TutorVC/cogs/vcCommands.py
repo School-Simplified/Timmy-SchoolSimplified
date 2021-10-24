@@ -57,8 +57,8 @@ class TutorVCCMD(commands.Cog):
         self.staticChannels = [MAIN_ID.ch_startPrivateVC]
         self.presetChannels = [MAIN_ID.ch_controlPanel, MAIN_ID.ch_startPrivateVC]
 
-        self.ownerID = 409152798609899530       # SpaceTurtle
-        self.botID = bot.user.id
+        self.ownerID = 409152798609899530 
+        #self.botID = bot.user.id
 
         self.AT = "Academics Team"
         self.SB = "Simplified Booster"
@@ -442,7 +442,7 @@ class TutorVCCMD(commands.Cog):
         database.db.connect(reuse_if_open=True)
         member = ctx.guild.get_member(ctx.author.id)
 
-        BOT = ctx.guild.get_member(self.botID)
+        BOT = ctx.guild.get_member(self.bot.user.id)
         OWNER = ctx.guild.get_member(self.ownerID)
         TMOD = discord.utils.get(ctx.guild.roles, name= self.TMOD)
         MOD = discord.utils.get(ctx.guild.roles, name= self.MOD)

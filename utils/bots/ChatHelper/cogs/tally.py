@@ -30,7 +30,6 @@ add_opt = [
 class TallyCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.myID = bot.user.id
     
     @commands.command(aliases=["tb"])
     async def ticketban(self, ctx, member : discord.Member, *, reason = None):
@@ -45,7 +44,7 @@ class TallyCMD(commands.Cog):
             await ctx.send(embed = embed)
             return
 
-        if member.id == self.myID:
+        if member.id == self.bot.user.id:
             embed = discord.Embed(title = "Unable to TicketBan this User", description = "Why are you trying to ticketban me?",
                                   color = hexColors.red_error)
             return await ctx.send(embed = embed)
