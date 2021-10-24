@@ -29,7 +29,7 @@ def convert_time_to_seconds(time):
 def showFutureTime(time):
     now = datetime.now(EST)
     output = convert_time_to_seconds(time)
-    if output == None:
+    if output is None:
         return None
 
     add = timedelta(seconds = int(output))
@@ -698,7 +698,7 @@ class TutorVCCMD(commands.Cog):
 
                     else:
                         if typeAction == "+" or typeAction.lower() == "add":
-                            if user == None:
+                            if user is None:
                                 return await ctx.send(f"{Emoji.deny} Invalid User Provided...")
                             await member.voice.channel.set_permissions(user, connect = True, view_channel = True)
                             embed = discord.Embed(title = f"{Emoji.addgear} Permit Setup",
@@ -707,7 +707,7 @@ class TutorVCCMD(commands.Cog):
                             return await ctx.send(embed = embed)
 
                         elif typeAction == "-" or typeAction.lower() == "remove":
-                            if user == None:
+                            if user is None:
                                 return await ctx.send(f"{Emoji.deny} Invalid User Provided...")
 
                             if user.id == int(query.authorID):

@@ -181,7 +181,7 @@ class TechProjectCMD(commands.Cog):
                                                  f"\n-> Project: {projectname}"
                                                  f"\n-> Project Assignee: {ctx.author.mention}")
         embed.set_footer(text = "DM's are not monitored, DM your Project Requester for more information.")
-        if notes != None:
+        if notes is not None:
             embed.add_field(name = "Notes", value = notes)
 
         await user.send(embed = embed)

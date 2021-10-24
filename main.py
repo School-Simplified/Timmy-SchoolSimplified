@@ -68,7 +68,7 @@ class Me:
     TracebackChannel = TECH_ID.ch_tracebacks
 
 
-if os.getenv('DSN_SENTRY') != None:
+if os.getenv('DSN_SENTRY') is not None:
     sentry_logging = LoggingIntegration(
         level=logging.INFO,  # Capture info and above as breadcrumbs
         event_level=logging.ERROR  # Send errors as events
@@ -114,7 +114,7 @@ async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you wan
         return await ctx.send(f"{ctx.author.mention}\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!",
                               ephemeral=True)
 
-    if user == None:
+    if user is None:
         return await ctx.send("lonely :(, sorry but you need a person to play against!")
     elif user == bot.user:
         return await ctx.send("i'm good.")
@@ -142,7 +142,7 @@ async def short_detector(ctx, member: Option(discord.Member, "Enter a user you w
 
 @bot.user_command(name="Play TicTacToe with them!")
 async def tictactoeCTX(ctx, member: discord.Member):
-    if member == None:
+    if member is None:
         return await ctx.send("lonely :(, sorry but you need a person to play against!")
     elif member == bot.user:
         return await ctx.send("i'm good.")
@@ -272,7 +272,7 @@ async def mainModeCheck(ctx: commands.Context):
         return False
 
     # DM Check
-    elif ctx.guild == None:
+    elif ctx.guild is None:
         return CheckDB.guildNone
 
     # External Server Check
@@ -306,7 +306,7 @@ async def on_command_error(ctx, error: Exception):
         exception_msg += line
 
     error = getattr(error, 'original', error)
-    if ctx.command != None:
+    if ctx.command is not None:
         if ctx.command.name == "rule":
             return "No Rule..."
 

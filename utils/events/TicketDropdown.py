@@ -157,7 +157,7 @@ class DropdownTickets(commands.Cog):
     async def TicketDropdown(self, interaction: discord.Interaction):
         InteractionResponse = interaction.data
 
-        if interaction.message == None:
+        if interaction.message is None:
             return
 
         try:

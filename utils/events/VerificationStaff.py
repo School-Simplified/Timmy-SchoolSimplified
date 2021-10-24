@@ -14,7 +14,7 @@ def getEqualRank(query):
 async def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Member):
     check = getEqualRank(name)
 
-    if check != None:
+    if check is not None:
         if check in [role.name for role in guild.roles]:
             helper: discord.Role = discord.utils.get(guild.roles, name=check)
             print(check, guild, helper)
@@ -46,7 +46,7 @@ class VerificationStaff(commands.Cog):
         InteractionResponse = interaction.data
         print(InteractionResponse)
 
-        if interaction.message == None:
+        if interaction.message is None:
             return
             
         if interaction.guild_id in self.StaffServerIDs and interaction.channel.id in self.VerificationIDs:
@@ -57,12 +57,12 @@ class VerificationStaff(commands.Cog):
             StaffServerMember : discord.Member = staffServer.get_member(interaction.user.id)
 
             print(StaffServerMember)
-            if StaffServerMember == None:
+            if StaffServerMember is None:
                 print("h")
                 StaffServerMember : discord.Member = await staffServer.fetch_member(interaction.user.id)
                 print(StaffServerMember)
 
-            if StaffServerMember == None:
+            if StaffServerMember is None:
                 try:
                     await interaction.response.send_message('<:sadturtl:879197443600834600> An error occurred while trying to verify your status, please contact a staff member! (Error Code: TM-NOMEMBERFOUND)',
                                                             ephemeral=True)
@@ -98,7 +98,7 @@ class VerificationStaff(commands.Cog):
                         check = getEqualRank(role.name)
                         print(f"CHECK: {check}")
 
-                        if check != None:
+                        if check is not None:
                             checkSTR = ", ".join(check)
                             markdownRole = f"`{checkSTR}` -> *{server.name}*"
                             markdownGuild = f"`{server.name}`"

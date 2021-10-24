@@ -137,7 +137,7 @@ class TicTacToeBot(commands.Cog):
             return await ctx.send(f"{ctx.author.mention}"
                                   f"\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!")
 
-        if user == None:
+        if user is None:
             return await ctx.send("lonely :(, sorry but you need a person to play against!")
         elif user == self.bot.user:
             return await ctx.send("i'm good")

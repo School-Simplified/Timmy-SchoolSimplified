@@ -45,7 +45,7 @@ def getHRRole(query):
 
 async def roleNameCheck(name, before, after, guild, user ,type):
     check = getEquelRank(name)
-    if check != None:
+    if check is not None:
         if name in [role.name for role in before.roles] or name in [role.name for role in after.roles]:
             helper = discord.utils.get(guild.roles, name=check)
 
@@ -64,7 +64,7 @@ async def roleNameCheck(name, before, after, guild, user ,type):
 
 async def HRNameCheck(name, before, after, guild, user ,type):
     check = getHRRole(name)
-    if check != None:
+    if check is not None:
         if name in [role.name for role in before.roles] or name in [role.name for role in after.roles]:
             roleName = discord.utils.get(guild.roles, name=check)
 
@@ -106,7 +106,7 @@ class RoleCheck(commands.Cog):
         mainServer = self.bot.get_guild(MAIN_ID.g_main)
         user = mainServer.get_member(before.id)
 
-        if mainServer == None:
+        if mainServer is None:
             return
 
         if before.guild.id != self.staffServer:
@@ -182,7 +182,6 @@ class RoleCheck(commands.Cog):
 
                 for role in oldRole:
                     if role.name in configA:
-                        #role = discord.utils.get(before.guild.roles, name=oldRole)
                         if role is None:
                             raise BaseException(f"Invalid Data/Role {oldRole.name}")
 
@@ -192,13 +191,13 @@ class RoleCheck(commands.Cog):
                                 fieldValue.append(member.mention)
 
                         listOfMembers = ", ".join(fieldValue)
-                        if listOfMembers == None or listOfMembers == "" or listOfMembers == " ":
+                        if listOfMembers is None or listOfMembers == "" or listOfMembers == " ":
                             listOfMembers = "** **"
 
                         ID, subject = getAcadRole(role.name)
                         print(ID, subject)
                         print(listOfMembers)
-                        if ID == None:
+                        if ID is None:
                             return print(oldRole, role.name, role)
 
 

@@ -95,7 +95,7 @@ class MiscCMD(commands.Cog):
 
         if NoCount not in member.roles:
             try:
-                if reason == None:
+                if reason is None:
                     await ctx.send("Please specify a reason for this Count Ban!")
                     return
 
@@ -113,7 +113,7 @@ class MiscCMD(commands.Cog):
 
         else:
             try:
-                if reason == None:
+                if reason is None:
                     reason = "No Reason Given"
 
                 UpdateReason = f"Count UnBan requested by {ctx.author.display_name} | Reason: {reason}"

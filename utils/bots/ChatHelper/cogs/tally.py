@@ -58,7 +58,7 @@ class TallyCMD(commands.Cog):
 
         if ticketBan not in member.roles:
             try:
-                if reason == None:
+                if reason is None:
                     await ctx.send("Please specify a reason for this ticket ban!")
                     return
 
@@ -76,7 +76,7 @@ class TallyCMD(commands.Cog):
 
         else:
             try:
-                if reason == None:
+                if reason is None:
                     reason = "No Reason Given"
 
                 UpdateReason = f"Ticket UnBan requested by {ctx.message.author.display_name} | Reason: {reason}"
@@ -158,7 +158,7 @@ class TallyCMD(commands.Cog):
                 listOfChannel.append(channel.mention)
 
             listStuff = ', '.join(listOfChannel)
-            if plsDoNotShowChannels == True:
+            if plsDoNotShowChannels is True:
                 listStuff = "\n**Too much stuff to display!**\n*Searched in all channels.*"
 
             embed = discord.Embed(title = "Fetching Search Query", description = "Here are your results!",

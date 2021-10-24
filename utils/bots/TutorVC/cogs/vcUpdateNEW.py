@@ -27,7 +27,7 @@ def convert_time_to_seconds(time):
 def showFutureTime(time):
     now = datetime.now(EST)
     output = convert_time_to_seconds(time)
-    if output == None:
+    if output is None:
         return None
 
     add = timedelta(seconds = int(output))

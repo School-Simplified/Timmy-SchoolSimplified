@@ -110,7 +110,7 @@ class CoreBotConfig(commands.Cog):
 
         for entry in PrefixDB:
             
-            if entry.status == True:
+            if entry.status is True:
                 statusFilter = "ACTIVE"
             else:
                 statusFilter = "DISABLED"
