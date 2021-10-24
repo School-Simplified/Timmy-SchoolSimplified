@@ -17,11 +17,6 @@ MasterSubjectOptions = [
     discord.SelectOption(label='Other Helpers', description='If you need help with anything else, click here!', emoji='🧐'),
 ]
 
-
-#MasterSubjectView = discord.ui.View()
-#MasterSubjectView.add_item(SelectMenuHandler(MasterSubjectOptions, "persistent_view:ticketdrop", "Select a subject you need help with!", 1,1, interaction_message = "Check your DM's!", ephemeral = True))
-
-
 async def rawExport(self, channel: discord.TextChannel, response: discord.TextChannel, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
     query = database.TicketInfo.select().where(database.TicketInfo.ChannelID == channel.id).get()
@@ -126,21 +121,21 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['English Helpers']": EnglishOptions,
         "['Essay Helpers']": EssayOptions,
         "['Language Helpers']": LanguageOptions,
-        "['Computer Science Helpers']": 800479815471333406,
-        "['Fine Art Helpers']": 833210452758364210,
+        "['Computer Science Helpers']": MAIN_ID.cat_scienceTicket,
+        "['Fine Art Helpers']": MAIN_ID.cat_fineArtsTicket,
         "['Other Helpers']": OtherOptions
     }
 
     decodeID = {
-        "['Math Helpers']": 800472371973980181,
-        "['Science Helpers']": 800479815471333406,
-        "['Social Studies Helpers']": 800481237608824882,
-        "['English Helpers']": 800475854353596469,
-        "['Essay Helpers']": 854945037875806220,
-        "['Language Helpers']": 800477414361792562,
-        "['Computer Science Helpers']": 800479815471333406,
-        "['Fine Art Helpers']": 833210452758364210,
-        "['Other Helpers']": 825917349558747166
+        "['Math Helpers']": MAIN_ID.cat_mathTicket,
+        "['Science Helpers']": MAIN_ID.cat_scienceTicket,
+        "['Social Studies Helpers']": MAIN_ID.cat_socialStudiesTicket,
+        "['English Helpers']": MAIN_ID.cat_englishTicket,
+        "['Essay Helpers']": MAIN_ID.cat_essayTicket,
+        "['Language Helpers']": MAIN_ID.cat_languageTicket,
+        "['Computer Science Helpers']": MAIN_ID.cat_scienceTicket,
+        "['Fine Art Helpers']": MAIN_ID.cat_fineArtsTicket,
+        "['Other Helpers']": MAIN_ID.cat_otherTicket
     }
     name = decodeName[value]
     CategoryID = decodeID[value]
@@ -155,20 +150,15 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
 class DropdownTickets(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.mainserver = 763119924385939498
-        self.ServerIDs = [805593783684562965, 801974357395636254, 799855854182596618, 815753072742891532]
-
-
+        self.mainserver = MAIN_ID.g_main
+        self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
 
     @commands.Cog.listener("on_interaction")
     async def TicketDropdown(self, interaction: discord.Interaction):
         InteractionResponse = interaction.data
-        print(InteractionResponse)
-        
 
         if interaction.message == None:
             return
-        
 
         try:
             val = InteractionResponse['custom_id']
@@ -206,7 +196,8 @@ class DropdownTickets(commands.Cog):
             await DMChannel.send(embed = embed)
             answer1 = await self.bot.wait_for('message', check=check)
 
-            embed = discord.Embed(title = "2) Send Assignment Title", description = "**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.", color = discord.Color.blue())
+            embed = discord.Embed(title = "2) Send Assignment Title", description = "**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.",
+                                  color = discord.Color.blue())
             await DMChannel.send(embed = embed)
             answer2 = await self.bot.wait_for('message', check=check)
             attachmentlist = []
@@ -215,7 +206,6 @@ class DropdownTickets(commands.Cog):
                     attachmentlist.append(URL.url)
             else:
                 attachmentlist.append(answer2.content)
-
 
             num = len(c.channels)
             channel: discord.TextChannel = await guild.create_text_channel(f'{selection_str}-{num}', category = c)
@@ -233,7 +223,8 @@ class DropdownTickets(commands.Cog):
                 label="Lock", emoji="🔒", custom_id="ch_lock"))
             await channel.send(interaction.user.mention, embed = controlTicket, view = LockControlButton)
 
-            AttachmentEmbed = discord.Embed(title = "Ticket Information", description = f"**Question:** {answer1}\n**Attachment URL:** (Assignment Title) {str(attachmentlist)}", color=discord.Color.blue())
+            AttachmentEmbed = discord.Embed(title = "Ticket Information", description = f"**Question:** {answer1}\n**Attachment URL:** (Assignment Title) {str(attachmentlist)}",
+                                            color=discord.Color.blue())
             AttachmentEmbed.set_image(url = attachmentlist[0])
             await channel.send(embed = AttachmentEmbed)
 
@@ -282,13 +273,11 @@ class DropdownTickets(commands.Cog):
 
         elif InteractionResponse['custom_id'] == 'ch_lock_T':
             channel = await self.bot.fetch_channel(interaction.channel_id)
-            ResponseLogChannel = await self.bot.fetch_channel(767434763337728030)
+            ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
             author = interaction.user
 
             msg: discord.Message = await rawExport(self, channel, ResponseLogChannel, author)
             await channel.send(f"Transcript Created!\n> {msg.jump_url}")
-
-
 
 
 def setup(bot):

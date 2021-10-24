@@ -3,12 +3,12 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
-
+from core.common import MAIN_ID
 
 class MessageLogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channels = [878792926266810418, 786068971048140820, 808919081469739008]
+        self.channels = [MAIN_ID.ch_seniorMods, MAIN_ID.ch_moderators, MAIN_ID.ch_mutedChat]
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
@@ -30,7 +30,7 @@ class MessageLogs(commands.Cog):
 
             embed.set_footer(text = f"Author: {message.author.id} | Message ID: {message.id} • Today at {val}")
 
-            channel = self.bot.get_channel(863177000372666398)
+            channel = self.bot.get_channel(MAIN_ID.ch_modLogs)
             await channel.send(embed = embed)
         
     @commands.Cog.listener()
@@ -53,7 +53,7 @@ class MessageLogs(commands.Cog):
 
             embed.set_footer(text = f"Author: {before.author.id} | Message ID: {before.id} • Today at {val}")
 
-            channel = self.bot.get_channel(863177000372666398)
+            channel = self.bot.get_channel(MAIN_ID.ch_modLogs)
             await channel.send(embed = embed)
 
 def setup(bot):

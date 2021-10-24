@@ -4,6 +4,8 @@ import discord
 from core import database
 from core.common import rulesDict
 from discord.ext import commands
+from core.common import MAIN_ID
+
 
 MESSAGEC = "Go chit chat somewhere else, this is for commands only."
 MESSAGEMASA = "Hey you ||~~short~~|| *I mean* tall mf, go chit chat somewhere you twat."
@@ -12,12 +14,11 @@ class CommandsOnly(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.masa_id = 736765405728735232
-        self.channelID = 786057630383865858
         self.rules = rulesDict
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.channel.id == 786057630383865858 and not message.author.bot:
+        if message.channel.id == MAIN_ID.ch_modCommands and not message.author.bot:
             prefix = []
             for p in database.WhitelistedPrefix:
                 prefix.append(p.prefix)
@@ -34,7 +35,6 @@ class CommandsOnly(commands.Cog):
                         title="Commands ONLY", description=MESSAGEC, color=discord.Colour.red())
 
                 await message.channel.send(message.author.mention, embed=embed, delete_after=5.0)
-                    
 
 
     @commands.command()
@@ -51,11 +51,11 @@ class CommandsOnly(commands.Cog):
                 RuleNumber = str(num)
                 RuleTitle, RuleDesc = self.rules[int(num)].split(" && ")
 
-                embed = discord.Embed(title = f"Rule {RuleNumber}: {RuleTitle}", description = RuleDesc, color = discord.Colour.green())
+                embed = discord.Embed(title = f"Rule {RuleNumber}: {RuleTitle}", description = RuleDesc,
+                                      color = discord.Colour.green())
                 embed.set_footer(text = "Have a question? Feel free to DM a Moderator!")
                 await ctx.send(embed = embed)
 
-    
 
 def setup(bot):
     bot.add_cog(CommandsOnly(bot))

@@ -1,12 +1,13 @@
 from typing import List
 from discord.ext import commands
 import discord
+from core.common import MAIN_ID
 
 
 class TicTacToeButton(discord.ui.Button['TicTacToe']):
+
     def __init__(self, x: int, y: int, xUser: discord.User, yUser: discord.User):
         super().__init__(style=discord.ButtonStyle.secondary, label='\u200b', row=y)
-        #\u200b
         self.x = x
         self.xUser = xUser
 
@@ -19,7 +20,6 @@ class TicTacToeButton(discord.ui.Button['TicTacToe']):
         state = view.board[self.y][self.x]
         if state in (view.X, view.O):
             return
-
         if view.current_player == view.X and self.xUser.id == interaction.user.id:
             self.style = discord.ButtonStyle.danger
             self.label = 'X'
@@ -35,8 +35,15 @@ class TicTacToeButton(discord.ui.Button['TicTacToe']):
             view.board[self.y][self.x] = view.O
             view.current_player = view.X
             content = f"It is now {self.xUser.mention}'s turn"
+
+        elif not interaction.user.id == view.current_player and interaction.user in [self.yUser, self.xUser]:
+            return await interaction.response.send_message(f"{interaction.user.mention} It's not your turn!",
+                                                           ephemeral=True)
         else:
-            return await interaction.response.send_message(f"{interaction.user.mention} Woah! You can't join this game as you weren't invited, if you'd like to play you can start a session by doing `+ttc @UserYouWannaPlayAgainst`!", ephemeral=True)
+            return await interaction.response.send_message(f"{interaction.user.mention} Woah! You can't join this game "
+                                                           f"as you weren't invited, if you'd like to play you can start "
+                                                           f"a session by doing `+ttc @UserYouWannaPlayAgainst`!",
+                                                           ephemeral=True)
 
         winner = view.check_board_winner()
         if winner is not None:
@@ -74,7 +81,6 @@ class TicTacToe(discord.ui.View):
         ]
         self.XPlayer = XPlayer
         self.OPlayer = OPlayer
-        
 
         # Our board is made up of 3 by 3 TicTacToeButtons
         # The TicTacToeButton maintains the callbacks and helps steer
@@ -124,8 +130,13 @@ class TicTacToeBot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['ttc'])
+    @commands.command(aliases=['ttc', 'tictactoe'])
     async def tic(self, ctx: commands.Context, user: discord.User = None):
+        if not ctx.channel.id == MAIN_ID.ch_commands:
+            await ctx.message.delete()
+            return await ctx.send(f"{ctx.author.mention}"
+                                  f"\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!")
+
         if user == None:
             return await ctx.send("lonely :(, sorry but you need a person to play against!")
         elif user == self.bot.user:
@@ -133,11 +144,8 @@ class TicTacToeBot(commands.Cog):
         elif user == ctx.author:
             return await ctx.send("lonely :(, sorry but you need an actual person to play against, not yourself!")
 
-        if ctx.channel.id == 763121180173271040:
-            await ctx.message.delete()
-            return await ctx.send(f"{ctx.author.mention}\nMove to <#783319554322989067> to play Tic Tac Toe!")
-
         await ctx.send(f'Tic Tac Toe: {ctx.author.mention} goes first', view=TicTacToe(ctx.author, user))
+
 
 def setup(bot):
     bot.add_cog(TicTacToeBot(bot))

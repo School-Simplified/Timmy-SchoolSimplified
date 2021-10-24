@@ -26,7 +26,8 @@ class BlacklistCMD(commands.Cog):
         q.save()
 
         embed = discord.Embed(title="Successfully Blacklisted User!",
-            description=f"{user.mention} has been added to the blacklist.",color=discord.Color.gold())
+                              description=f"{user.mention} has been added to the blacklist.",
+                              color=discord.Color.gold())
         await ctx.send(embed=embed)
 
     database.db.close()
@@ -44,13 +45,15 @@ class BlacklistCMD(commands.Cog):
             query.delete_instance()
 
             embed = discord.Embed(title="Successfully Removed User!",
-                                description=f"{user.mention} has been removed from the blacklist!", color=discord.Color.green())
+                                 description=f"{user.mention} has been removed from the blacklist!",
+                                  color=discord.Color.green())
             await ctx.send(embed=embed)
 
 
         else:
-            embed = discord.Embed(title="Invalid User!", description="Invalid Provided: (No Record Found)",
-                                color=discord.Color.red())
+            embed = discord.Embed(title="Invalid User!",
+                                  description="Invalid Provided: (No Record Found)",
+                                  color=discord.Color.red())
             await ctx.send(embed=embed)
 
         database.db.close()
@@ -67,9 +70,10 @@ class BlacklistCMD(commands.Cog):
 
         blacklistList = "\n".join(emptylist)
 
-        embed = discord.Embed(title="Current Blacklist", description = blacklistList, color = discord.Color.red())
+        embed = discord.Embed(title="Current Blacklist",
+                              description = blacklistList,
+                              color = discord.Color.red())
         await ctx.send(embed = embed)
-
 
 
 def setup(bot):
