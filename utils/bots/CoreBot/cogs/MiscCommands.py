@@ -31,7 +31,6 @@ class MiscCMD(commands.Cog):
         self.bot: commands.Bot = bot
         self.interaction = []
 
-        self.myID = bot.user.id
         self.client = Hub.current.client
 
         self.whitelistedRoles = [MAIN_ID.r_codingClub, MAIN_ID.r_debateClub, MAIN_ID.r_musicClub, MAIN_ID.r_cookingClub,
@@ -83,7 +82,7 @@ class MiscCMD(commands.Cog):
     async def countban(self, ctx, member: discord.Member, *, reason = None):
         NoCount = discord.utils.get(ctx.guild.roles, name = "NoCounting")
 
-        if member.id == self.myID:
+        if member.id == self.bot.id:
             embed = discord.Embed(title = "Unable to CountBan this User", description = "Why are you trying to CountBan me?",
                                   color = hexColors.red_error)
             return await ctx.send(embed = embed)

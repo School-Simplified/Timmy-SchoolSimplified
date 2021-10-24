@@ -58,8 +58,8 @@ class TutorVCCMD(commands.Cog):
         self.presetChannels = [MAIN_ID.ch_controlPanel, MAIN_ID.ch_startPrivateVC]
 
         self.ownerID = 409152798609899530 
-        self.botID = bot.user.id
-        
+        #self.botID = bot.user.id
+
         self.AT = "Academics Team"
         self.SB = "Simplified Booster"
         self.Legend = "Legend"
