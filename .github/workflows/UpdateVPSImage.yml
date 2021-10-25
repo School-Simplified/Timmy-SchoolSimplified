@@ -19,6 +19,7 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-          docker stop ss-timmy && docker rm ss-timmy
+          docker stop timmy && docker rm timmy
           docker pull spaceturtle0/ss-timmy:latest
-          nohup docker run --env-file=Timmy-SchoolSimplified/.env  spaceturtle0/ss-timmy &
+          docker tag spaceturtle0/ss-timmy timmy
+          nohup docker run --env-file=Timmy-SchoolSimplified/.env timmy &
