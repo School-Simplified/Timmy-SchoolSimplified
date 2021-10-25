@@ -1,14 +1,17 @@
 name: SSH & Update VPS Image
 on:
-  push:
+  workflow_run:
+    workflows: ["Timmy Docker Build"]
     branches: [ main ]
+    types:
+      - completed
 
 jobs:
-  dockerpush:
-    name: Push to Docker Hub
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy Docker Image
+    - name: Run Docker CMD
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -19,22 +22,3 @@ jobs:
           docker stop spaceturtle0/ss-timmy && docker rm spaceturtle0/ss-timmy
           docker pull spaceturtle0/ss-timmy:latest
           docker run --env-file=Timmy-SchoolSimplified/.env  spaceturtle0/ss-timmy &
-
-
-  rundocker:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout code
-        uses: actions/checkout@v2
-      - name: install buildx
-        id: buildx
-        uses: crazy-max/ghaction-docker-buildx@v1
-        with:
-          version: latest
-      - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      - name: Build & Push Image
-        run: |
-          docker buildx build --push \
-            --tag spaceturtle0/ss-timmy:latest \
-            --platform linux/amd64,linux/arm64 .
