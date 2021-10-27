@@ -373,6 +373,7 @@ class hexColors:
     red_cancel = 0xe02f2f
     red_error = 0xf5160a
     orange_error = 0xfc3d03
+    mod_blurple = 0x4dbeff
 
 
 class Others:

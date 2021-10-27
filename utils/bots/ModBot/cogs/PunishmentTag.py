@@ -2,6 +2,7 @@ import math
 
 import discord
 from core import common, database
+from core.common import hexColors
 from discord.ext import commands
 
 
@@ -27,7 +28,7 @@ class PunishmentTag(commands.Cog):
             except ValueError:
                 tag: database.PunishmentTag = database.PunishmentTag.select().where(
                     database.PunishmentTag.tag_name == tag_name).get()
-            embed = discord.Embed(title=tag.embed_title, description=tag.text)
+            embed = discord.Embed(title=tag.embed_title, description=tag.text, color=hexColors.mod_blurple)
             await ctx.send(embed=embed)
         except database.DoesNotExist:
             await ctx.send("Tag not found, please try again.")
