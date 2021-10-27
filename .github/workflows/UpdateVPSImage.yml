@@ -1,0 +1,25 @@
+name: SSH & Deploy Image
+on:
+  workflow_run:
+    workflows: ["Timmy Docker Build"]
+    branches: [ main ]
+    types:
+      - completed
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Docker CMD
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          docker rm $(docker stop $(docker ps -a -q --filter ancestor=timmy --format="{{.ID}}"))
+          docker pull spaceturtle0/ss-timmy:latest
+          docker tag spaceturtle0/ss-timmy timmy
+          nohup docker run -d --env-file=Timmy-SchoolSimplified/.env timmy &
