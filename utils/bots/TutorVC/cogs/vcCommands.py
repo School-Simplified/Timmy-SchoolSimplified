@@ -824,7 +824,7 @@ class TutorVCCMD(commands.Cog):
                         if voiceLIMIT < 0:
                             return await ctx.send(f"{Emoji.warn} Sorry, you can't set your voice channel to something below `-1`!")
 
-                        if not any(role in ctx.auhtor.roles for role in roleList):
+                        if not any(role in ctx.author.roles for role in roleList):
                             if voiceLIMIT > 4 and ctx.guild.id == MAIN_ID.g_main:
                                 return await ctx.send(f"{Emoji.warn} You can't increase the voice limit to something bigger then 4 members!")
 
