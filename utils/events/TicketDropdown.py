@@ -5,44 +5,97 @@ import typing
 import chat_exporter
 import discord
 from core import database
-from core.common import (ACAD_ID, HR_ID, MAIN_ID, MKT_ID, TECH_ID,
-                         ButtonHandler, SelectMenuHandler)
+from core.common import (
+    ACAD_ID,
+    HR_ID,
+    MAIN_ID,
+    MKT_ID,
+    TECH_ID,
+    ButtonHandler,
+    SelectMenuHandler,
+)
 from discord.ext import commands
 
 MasterSubjectOptions = [
-    discord.SelectOption(label='Math Helpers', description='If you need help with Math, click here!', emoji='✖️'),
-    discord.SelectOption(label='Science Helpers', description='If you need help with Science, click here!', emoji='🧪'),
-    discord.SelectOption(label='Social Studies Helpers',
-                         description='If you need help with Social Studies, click here!', emoji='📙'),
-    discord.SelectOption(label='English Helpers', description='If you need help with English, click here!', emoji='📖'),
-    discord.SelectOption(label='Essay Helpers', description='If you need help with an Essay, click here!', emoji='✍️'),
-    discord.SelectOption(label='Language Helpers', description='If you need help with a Language, click here!',
-                         emoji='🗣'),
-    discord.SelectOption(label='Computer Science Helpers',
-                         description='If you need help with Computer Science, click here!', emoji='💻'),
-    discord.SelectOption(label='Fine Art Helpers', description='If you need help with Fine Arts, click here!',
-                         emoji='🎨'),
-    discord.SelectOption(label='Other Helpers', description='If you need help with anything else, click here!',
-                         emoji='🧐'),
+    discord.SelectOption(
+        label="Math Helpers",
+        description="If you need help with Math, click here!",
+        emoji="✖️",
+    ),
+    discord.SelectOption(
+        label="Science Helpers",
+        description="If you need help with Science, click here!",
+        emoji="🧪",
+    ),
+    discord.SelectOption(
+        label="Social Studies Helpers",
+        description="If you need help with Social Studies, click here!",
+        emoji="📙",
+    ),
+    discord.SelectOption(
+        label="English Helpers",
+        description="If you need help with English, click here!",
+        emoji="📖",
+    ),
+    discord.SelectOption(
+        label="Essay Helpers",
+        description="If you need help with an Essay, click here!",
+        emoji="✍️",
+    ),
+    discord.SelectOption(
+        label="Language Helpers",
+        description="If you need help with a Language, click here!",
+        emoji="🗣",
+    ),
+    discord.SelectOption(
+        label="Computer Science Helpers",
+        description="If you need help with Computer Science, click here!",
+        emoji="💻",
+    ),
+    discord.SelectOption(
+        label="Fine Art Helpers",
+        description="If you need help with Fine Arts, click here!",
+        emoji="🎨",
+    ),
+    discord.SelectOption(
+        label="Other Helpers",
+        description="If you need help with anything else, click here!",
+        emoji="🧐",
+    ),
 ]
 
 
-async def TicketExport(self, channel: discord.TextChannel, response: discord.TextChannel, user: discord.User):
+async def TicketExport(
+    self,
+    channel: discord.TextChannel,
+    response: discord.TextChannel,
+    user: discord.User,
+):
     transcript = await chat_exporter.export(channel, None)
-    query = database.TicketInfo.select().where(database.TicketInfo.ChannelID == channel.id).get()
+    query = (
+        database.TicketInfo.select()
+        .where(database.TicketInfo.ChannelID == channel.id)
+        .get()
+    )
     TicketOwner = await self.bot.fetch_user(query.authorID)
 
     if transcript is None:
         return
 
     embed = discord.Embed(title="Channel Transcript", color=discord.Colour.green())
-    embed.set_author(name=f"{user.name}#{user.discriminator}", url=user.avatar.url, icon_url=user.avatar.url)
+    embed.set_author(
+        name=f"{user.name}#{user.discriminator}",
+        url=user.avatar.url,
+        icon_url=user.avatar.url,
+    )
     embed.add_field(name="Transcript Owner", value=TicketOwner.mention)
     embed.add_field(name="Ticket Name", value=channel.name, inline=False)
     embed.add_field(name="Category", value=channel.category.name)
     embed.set_footer(text="Transcript Attached Below")
 
-    transcript_file = discord.File(io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html")
+    transcript_file = discord.File(
+        io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html"
+    )
 
     msg = await response.send(embed=embed)
     await response.send(file=transcript_file)
@@ -56,61 +109,61 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         value (str): Dict output
 
     Returns:
-        typing.Union[str, int]: Raw output of the Dict and Pair value. 
+        typing.Union[str, int]: Raw output of the Dict and Pair value.
     """
 
     EssayOptions = [
-        discord.SelectOption(label='Essay Reviser'),
-        discord.SelectOption(label='Other')
+        discord.SelectOption(label="Essay Reviser"),
+        discord.SelectOption(label="Other"),
     ]
 
     EnglishOptions = [
-        discord.SelectOption(label='English Language'),
-        discord.SelectOption(label='English Literature'),
-        discord.SelectOption(label='Other')
+        discord.SelectOption(label="English Language"),
+        discord.SelectOption(label="English Literature"),
+        discord.SelectOption(label="Other"),
     ]
 
     MathOptions = [
-        discord.SelectOption(label='Algebra'),
-        discord.SelectOption(label='Geometry'),
-        discord.SelectOption(label='Precalculous'),
-        discord.SelectOption(label='Calculous'),
-        discord.SelectOption(label='Statistics'),
-        discord.SelectOption(label='Other')
+        discord.SelectOption(label="Algebra"),
+        discord.SelectOption(label="Geometry"),
+        discord.SelectOption(label="Precalculous"),
+        discord.SelectOption(label="Calculous"),
+        discord.SelectOption(label="Statistics"),
+        discord.SelectOption(label="Other"),
     ]
 
     ScienceOptions = [
-        discord.SelectOption(label='Biology'),
-        discord.SelectOption(label='Chemistry'),
-        discord.SelectOption(label='Biology'),
-        discord.SelectOption(label='Physics'),
-        discord.SelectOption(label='Psych'),
-        discord.SelectOption(label='Other')
+        discord.SelectOption(label="Biology"),
+        discord.SelectOption(label="Chemistry"),
+        discord.SelectOption(label="Biology"),
+        discord.SelectOption(label="Physics"),
+        discord.SelectOption(label="Psych"),
+        discord.SelectOption(label="Other"),
     ]
 
     SocialStudiesOptions = [
-        discord.SelectOption(label='World History'),
-        discord.SelectOption(label='US History'),
-        discord.SelectOption(label='US Gov'),
-        discord.SelectOption(label='Euro'),
-        discord.SelectOption(label='Human Geo'),
-        discord.SelectOption(label='Economy Helper'),
-        discord.SelectOption(label='Other')
+        discord.SelectOption(label="World History"),
+        discord.SelectOption(label="US History"),
+        discord.SelectOption(label="US Gov"),
+        discord.SelectOption(label="Euro"),
+        discord.SelectOption(label="Human Geo"),
+        discord.SelectOption(label="Economy Helper"),
+        discord.SelectOption(label="Other"),
     ]
 
     LanguageOptions = [
-        discord.SelectOption(label='French'),
-        discord.SelectOption(label='Chinese'),
-        discord.SelectOption(label='Korean'),
-        discord.SelectOption(label='Spanish'),
-        discord.SelectOption(label='Other')
+        discord.SelectOption(label="French"),
+        discord.SelectOption(label="Chinese"),
+        discord.SelectOption(label="Korean"),
+        discord.SelectOption(label="Spanish"),
+        discord.SelectOption(label="Other"),
     ]
 
     OtherOptions = [
-        discord.SelectOption(label='Computer Science'),
-        discord.SelectOption(label='Fine Arts'),
-        discord.SelectOption(label='Research'),
-        discord.SelectOption(label='SAT/ACT')
+        discord.SelectOption(label="Computer Science"),
+        discord.SelectOption(label="Fine Arts"),
+        discord.SelectOption(label="Research"),
+        discord.SelectOption(label="SAT/ACT"),
     ]
 
     decodeName = {
@@ -122,7 +175,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['Language Helpers']": "Language Helpers",
         "['Computer Science Helpers']": "Computer Science Helpers",
         "['Fine Art Helpers']": "Fine Art Helpers",
-        "['Other Helpers']": "Other Helpers"
+        "['Other Helpers']": "Other Helpers",
     }
 
     decodeOptList = {
@@ -134,7 +187,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['Language Helpers']": LanguageOptions,
         "['Computer Science Helpers']": MAIN_ID.cat_scienceTicket,
         "['Fine Art Helpers']": MAIN_ID.cat_fineArtsTicket,
-        "['Other Helpers']": OtherOptions
+        "['Other Helpers']": OtherOptions,
     }
 
     decodeID = {
@@ -146,7 +199,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['Language Helpers']": MAIN_ID.cat_languageTicket,
         "['Computer Science Helpers']": MAIN_ID.cat_scienceTicket,
         "['Fine Art Helpers']": MAIN_ID.cat_fineArtsTicket,
-        "['Other Helpers']": MAIN_ID.cat_otherTicket
+        "['Other Helpers']": MAIN_ID.cat_otherTicket,
     }
     name = decodeName[value]
     CategoryID = decodeID[value]
@@ -172,20 +225,27 @@ class DropdownTickets(commands.Cog):
             return
 
         try:
-            val = InteractionResponse['custom_id']
+            val = InteractionResponse["custom_id"]
         except KeyError:
             return
 
-        if interaction.guild_id == self.mainserver and interaction.message.id == 903439577300213800 and \
-                InteractionResponse['custom_id'] == 'persistent_view:ticketdrop':
+        if (
+            interaction.guild_id == self.mainserver
+            and interaction.message.id == 903439577300213800
+            and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
+        ):
             channel = await self.bot.fetch_channel(interaction.channel_id)
-            #guild = await self.bot.fetch_guild(interaction.guild_id)
+            # guild = await self.bot.fetch_guild(interaction.guild_id)
             guild = interaction.message.guild
             author = interaction.user
             DMChannel = await author.create_dm()
 
             def check(m):
-                return m.content is not None and m.channel == DMChannel and m.author.id is author.id
+                return (
+                    m.content is not None
+                    and m.channel == DMChannel
+                    and m.author.id is author.id
+                )
 
             ViewResponse = str(InteractionResponse["values"])
             print(ViewResponse)
@@ -197,9 +257,16 @@ class DropdownTickets(commands.Cog):
             if not TypeSubject == OptList:
                 MiscOptList = discord.ui.View()
                 MiscOptList.add_item(
-                    SelectMenuHandler(OptList, place_holder="Select a more specific subject!", select_user=author))
+                    SelectMenuHandler(
+                        OptList,
+                        place_holder="Select a more specific subject!",
+                        select_user=author,
+                    )
+                )
 
-                embed = discord.Embed(title="1) Ticket Info", color=discord.Color.gold())
+                embed = discord.Embed(
+                    title="1) Ticket Info", color=discord.Color.gold()
+                )
                 try:
                     await DMChannel.send(embed=embed, view=MiscOptList)
                 except Exception as e:
@@ -214,120 +281,217 @@ class DropdownTickets(commands.Cog):
 
             embed = discord.Embed(title="2) Send Question", color=discord.Color.blue())
             await DMChannel.send(embed=embed)
-            answer1 = await self.bot.wait_for('message', check=check)
+            answer1 = await self.bot.wait_for("message", check=check)
 
-            embed = discord.Embed(title="3) Send Assignment Title",
-                                  description="**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.",
-                                  color=discord.Color.blue())
+            embed = discord.Embed(
+                title="3) Send Assignment Title",
+                description="**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.",
+                color=discord.Color.blue(),
+            )
+
             await DMChannel.send(embed=embed)
-            answer2 = await self.bot.wait_for('message', check=check)
+            answer2: discord.Message = await self.bot.wait_for("message", check=check)
+
             attachmentlist = []
             if answer2.attachments:
                 for URL in answer2.attachments:
                     attachmentlist.append(URL.url)
             else:
-                attachmentlist.append(answer2.content)
+                if "http://" in answer2.content:
+                    attachmentlist.append(answer2.content)
+                else:
+                    return await DMChannel.send("No attachments found.")
 
+            LDC = await DMChannel.send("Please wait, creating your ticket...")
             num = len(c.channels)
-            channel: discord.TextChannel = await guild.create_text_channel(f'{selection_str}-{num}', category=c)
-            await channel.set_permissions(guild.default_role, read_messages=False, reason="Ticket Perms")
+            channel: discord.TextChannel = await guild.create_text_channel(
+                f"{selection_str}-{num}", category=c
+            )
+            await channel.set_permissions(
+                guild.default_role, read_messages=False, reason="Ticket Perms"
+            )
+            query = database.TicketInfo.create(ChannelID=channel.id, authorID=author.id)
+            query.save()
 
-            roles = ['Board Member', 'Senior Executive', 'Executive', 'Head Moderator', 'Moderator', 'Academic Manager', 'Lead Helper',
-                    'Chat Helper', 'Bot: TeXit']
+            roles = [
+                "Board Member",
+                "Senior Executive",
+                "Executive",
+                "Head Moderator",
+                "Moderator",
+                "Academic Manager",
+                "Lead Helper",
+                "Chat Helper",
+                "Bot: TeXit",
+            ]
             for role in roles:
                 print(role)
                 RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
-                await channel.set_permissions(RoleOBJ, read_messages=True, send_messages=True, reason="Ticket Perms")
-            await channel.set_permissions(interaction.message.author, read_messages=True, send_messages=True,
-                                        reason="Ticket Perms (User)")
+                await channel.set_permissions(
+                    RoleOBJ,
+                    read_messages=True,
+                    send_messages=True,
+                    reason="Ticket Perms",
+                )
+            await channel.set_permissions(
+                interaction.message.author,
+                read_messages=True,
+                send_messages=True,
+                reason="Ticket Perms (User)",
+            )
 
-            controlTicket = discord.Embed(title="Control Panel",
-                                        description="To end this ticket, click the lock button!",
-                                        color=discord.Colour.gold())
+            controlTicket = discord.Embed(
+                title="Control Panel",
+                description="To end this ticket, click the lock button!",
+                color=discord.Colour.gold(),
+            )
             LockControlButton = discord.ui.View()
-            LockControlButton.add_item(ButtonHandler(style=discord.ButtonStyle.green, url=None, disabled=False,
-                                                    label="Lock", emoji="🔒", custom_id="ch_lock"))
-            await channel.send(interaction.user.mention, embed=controlTicket, view=LockControlButton)
+            LockControlButton.add_item(
+                ButtonHandler(
+                    style=discord.ButtonStyle.green,
+                    url=None,
+                    disabled=False,
+                    label="Lock",
+                    emoji="🔒",
+                    custom_id="ch_lock",
+                )
+            )
+            await channel.send(
+                interaction.user.mention, embed=controlTicket, view=LockControlButton
+            )
 
-            AttachmentEmbed = discord.Embed(title="Ticket Information",
-                                            description=f"**Question:** {answer1.content}\n\n**Attachment URL:**\n{str(attachmentlist)}",
-                                            color=discord.Color.blue())
+            AttachmentEmbed = discord.Embed(
+                title="Ticket Information",
+                description=f"**Question:** {answer1.content}\n\n**Attachment URL:**\n{str(attachmentlist)}",
+                color=discord.Color.blue(),
+            )
             AttachmentEmbed.set_image(url=attachmentlist[0])
             await channel.send(embed=AttachmentEmbed)
 
-            query = database.TicketInfo.create(ChannelID=channel.id, authorID=author.id)
-            query.save()
-            await DMChannel.send(f"Ticket Created!\nYou can view it here: {channel.mention}")
+            await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
 
-        elif val == 'ch_lock':
-            print("hello")
+        elif val == "ch_lock":
             channel = interaction.message.channel
             guild = interaction.message.guild
             author = interaction.user
 
-            query = database.TicketInfo.select().where(database.TicketInfo.ChannelID == interaction.channel_id).get()
+            query = (
+                database.TicketInfo.select()
+                .where(database.TicketInfo.ChannelID == interaction.channel_id)
+                .get()
+            )
 
-            embed = discord.Embed(title="Confirm?", description="Click an appropriate button.",
-                                  color=discord.Colour.red())
+            embed = discord.Embed(
+                title="Confirm?",
+                description="Click an appropriate button.",
+                color=discord.Colour.red(),
+            )
             ButtonViews = discord.ui.View()
             ButtonViews.add_item(
-                ButtonHandler(style=discord.ButtonStyle.green, label="Confirm", custom_id="ch_lock_CONFIRM", emoji="✅",
-                              button_user=author))
+                ButtonHandler(
+                    style=discord.ButtonStyle.green,
+                    label="Confirm",
+                    custom_id="ch_lock_CONFIRM",
+                    emoji="✅",
+                    button_user=author,
+                )
+            )
             ButtonViews.add_item(
-                ButtonHandler(style=discord.ButtonStyle.red, label="Cancel", custom_id="ch_lock_CANCEL", emoji="❌",
-                              button_user=author))
+                ButtonHandler(
+                    style=discord.ButtonStyle.red,
+                    label="Cancel",
+                    custom_id="ch_lock_CANCEL",
+                    emoji="❌",
+                    button_user=author,
+                )
+            )
             await channel.send(embed=embed, view=ButtonViews)
 
-        elif InteractionResponse['custom_id'] == 'ch_lock_CONFIRM':
+        elif InteractionResponse["custom_id"] == "ch_lock_CONFIRM":
             channel = interaction.message.channel
             guild = interaction.message.guild
             author = interaction.user
-            query = database.TicketInfo.select().where(database.TicketInfo.ChannelID == interaction.channel_id).get()
+            query = (
+                database.TicketInfo.select()
+                .where(database.TicketInfo.ChannelID == interaction.channel_id)
+                .get()
+            )
 
             TicketOwner = await guild.fetch_member(query.authorID)
-            await channel.set_permissions(TicketOwner, read_messages=False, reason="Ticket Perms Close (User)")
+            await channel.set_permissions(
+                TicketOwner, read_messages=False, reason="Ticket Perms Close (User)"
+            )
 
             await interaction.message.delete()
-            embed = discord.Embed(title="Support Staff Commands", description="Click an appropriate button.",
-                                    color=discord.Colour.red())
+            embed = discord.Embed(
+                title="Support Staff Commands",
+                description="Click an appropriate button.",
+                color=discord.Colour.red(),
+            )
             ButtonViews2 = discord.ui.View()
 
-            ButtonViews2.add_item(ButtonHandler(style=discord.ButtonStyle.green, label="Close & Delete Ticket",
-                                                custom_id="ch_lock_C&D", emoji="🔒"))
-            ButtonViews2.add_item(ButtonHandler(style=discord.ButtonStyle.blurple, label="Create Transcript",
-                                                custom_id="ch_lock_T", emoji="📝"))
             ButtonViews2.add_item(
-                ButtonHandler(style=discord.ButtonStyle.red, label="Cancel", custom_id="ch_lock_C", emoji="❌"))
+                ButtonHandler(
+                    style=discord.ButtonStyle.green,
+                    label="Close & Delete Ticket",
+                    custom_id="ch_lock_C&D",
+                    emoji="🔒",
+                )
+            )
+            ButtonViews2.add_item(
+                ButtonHandler(
+                    style=discord.ButtonStyle.blurple,
+                    label="Create Transcript",
+                    custom_id="ch_lock_T",
+                    emoji="📝",
+                )
+            )
+            ButtonViews2.add_item(
+                ButtonHandler(
+                    style=discord.ButtonStyle.red,
+                    label="Cancel",
+                    custom_id="ch_lock_C",
+                    emoji="❌",
+                )
+            )
 
             await channel.send(embed=embed, view=ButtonViews2)
 
-        elif InteractionResponse['custom_id'] == 'ch_lock_CANCEL':
+        elif InteractionResponse["custom_id"] == "ch_lock_CANCEL":
             channel = interaction.message.channel
             author = interaction.user
-            await channel.send(f"{author.mention} Alright, canceling request.", delete_after=5.0)
+            await channel.send(
+                f"{author.mention} Alright, canceling request.", delete_after=5.0
+            )
             await interaction.message.delete()
 
-        elif InteractionResponse['custom_id'] == 'ch_lock_C':
+        elif InteractionResponse["custom_id"] == "ch_lock_C":
             channel = await self.bot.fetch_channel(interaction.channel_id)
             author = interaction.user
 
-            await channel.send(f"{author.mention} Alright, canceling request.", delete_after=5.0)
+            await channel.send(
+                f"{author.mention} Alright, canceling request.", delete_after=5.0
+            )
             await interaction.message.delete()
 
-        elif InteractionResponse['custom_id'] == 'ch_lock_T':
+        elif InteractionResponse["custom_id"] == "ch_lock_T":
             channel = await self.bot.fetch_channel(interaction.channel_id)
             ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
             author = interaction.user
 
-            msg: discord.Message = await TicketExport(self, channel, ResponseLogChannel, author)
+            msg: discord.Message = await TicketExport(
+                self, channel, ResponseLogChannel, author
+            )
             await channel.send(f"Transcript Created!\n> {msg.jump_url}")
 
-        elif InteractionResponse['custom_id'] == 'ch_lock_C&D':
+        elif InteractionResponse["custom_id"] == "ch_lock_C&D":
             channel = await self.bot.fetch_channel(interaction.channel_id)
             author = interaction.user
             ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
 
-            msg: discord.Message = await TicketExport(self, channel, ResponseLogChannel, author)
+            msg: discord.Message = await TicketExport(
+                self, channel, ResponseLogChannel, author
+            )
             await channel.send(f"Transcript Created!\n> {msg.jump_url}")
             await asyncio.sleep(5)
             await channel.send(f"{author.mention} Alright, closing ticket.")
@@ -337,8 +501,16 @@ class DropdownTickets(commands.Cog):
     async def sendCHTKTView(self, ctx):
         MasterSubjectView = discord.ui.View()
         MasterSubjectView.add_item(
-            SelectMenuHandler(MasterSubjectOptions, "persistent_view:ticketdrop", "masa short", 1, 1,
-                              interaction_message="Check your DM's!", ephemeral=True))
+            SelectMenuHandler(
+                MasterSubjectOptions,
+                "persistent_view:ticketdrop",
+                "masa short",
+                1,
+                1,
+                interaction_message="Check your DM's!",
+                ephemeral=True,
+            )
+        )
         await ctx.send("hello", view=MasterSubjectView)
 
 

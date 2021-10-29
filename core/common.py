@@ -19,23 +19,37 @@ from core import database
 # global variables
 coroutineType = Callable[[Any, Any], Awaitable[Any]]
 
+
 async def rawExport(self, channel, response, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
 
     if transcript is None:
         return
 
-    embed = discord.Embed(title = "Channel Transcript",
-                          description = f"**Channel:** {channel.name}"
-                                        f"\n**User Invoked:** {user.name}*"
-                                        f"\nTranscript Attached Below*",
-                          color = discord.Colour.green())
-    transcript_file = discord.File(io.BytesIO(transcript.encode()),filename=f"transcript-{channel.name}.html")
+    embed = discord.Embed(
+        title="Channel Transcript",
+        description=f"**Channel:** {channel.name}"
+        f"\n**User Invoked:** {user.name}*"
+        f"\nTranscript Attached Below*",
+        color=discord.Colour.green(),
+    )
+    transcript_file = discord.File(
+        io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html"
+    )
 
-    msg: discord.Message = await response.send(embed = embed, file=transcript_file)
+    msg: discord.Message = await response.send(embed=embed, file=transcript_file)
     return msg
 
-async def paginate_embed(bot: discord.Client, ctx, embed: discord.Embed, population_func, end: int, begin: int = 1, page=1):
+
+async def paginate_embed(
+    bot: discord.Client,
+    ctx,
+    embed: discord.Embed,
+    population_func,
+    end: int,
+    begin: int = 1,
+    page=1,
+):
     emotes = ["◀️", "▶️"]
 
     def check_reaction(reaction, user):
@@ -51,7 +65,9 @@ async def paginate_embed(bot: discord.Client, ctx, embed: discord.Embed, populat
     await message.add_reaction(emotes[1])
     while True:
         try:
-            reaction, user = await bot.wait_for("reaction_add", timeout=60, check=check_reaction)
+            reaction, user = await bot.wait_for(
+                "reaction_add", timeout=60, check=check_reaction
+            )
             if user == bot.user:
                 continue
             if str(reaction.emoji) == emotes[1] and page < end:
@@ -68,8 +84,9 @@ async def paginate_embed(bot: discord.Client, ctx, embed: discord.Embed, populat
             await message.clear_reactions()
             break
 
+
 def load_config(name) -> Tuple[dict, Path]:
-    config_file = Path(f"utils/bots/RoleSync/{name}.json") 
+    config_file = Path(f"utils/bots/RoleSync/{name}.json")
     config_file.touch(exist_ok=True)
     if config_file.read_text() == "":
         config_file.write_text("{}")
@@ -77,12 +94,14 @@ def load_config(name) -> Tuple[dict, Path]:
         config = json.load(f)
     return config, config_file
 
+
 def prompt_config(msg, key):
     config, config_file = load_config()
     if key not in config:
         config[key] = input(msg)
         with config_file.open("w+") as f:
             json.dump(config, f, indent=4)
+
 
 def prompt_config2(msg, key):
     config, config_file = load_config()
@@ -322,7 +341,8 @@ class Emoji:
     """
     Emojis to use for the bot.
     """
-    space = '<:space:834967357632806932>'
+
+    space = "<:space:834967357632806932>"
     confirm = "<:confirm:860926261966667806>"
     deny = "<:deny:860926229335375892>"
     question = "<:question:861794223027519518>"
@@ -341,19 +361,20 @@ class Emoji:
     barrow = "<:barrow:862572842985193502>"
     person = "<:person:883771751127990333>"
     activity = "<:note:883771751190908989>"
-    check = '<:success:834967474101420032>'
-    cancel = '<:cancel:834967460075012106>'
-    arrow = '<:rightDoubleArrow:834967375735422996>'
-    mute = '<:mute:834967579264155658>'
-    ban = '<:ban:834967435642929162>'
-    reason = '<:activity:834968852558249999>'
-    profile = '<:profile:835213199070593035>'
-    creation = '<:creation:835213216299745291>'
-    date = '<:thewickthing:835213229294223400>'
+    check = "<:success:834967474101420032>"
+    cancel = "<:cancel:834967460075012106>"
+    arrow = "<:rightDoubleArrow:834967375735422996>"
+    mute = "<:mute:834967579264155658>"
+    ban = "<:ban:834967435642929162>"
+    reason = "<:activity:834968852558249999>"
+    profile = "<:profile:835213199070593035>"
+    creation = "<:creation:835213216299745291>"
+    date = "<:thewickthing:835213229294223400>"
     discordLogo = "<:discord:812757175465934899>"
     discordLoad = "<a:Discord:866408537503694869>"
 
     timmyBook = "<:timmy_book:880875405962264667>"
+
 
 class hexColors:
     """
@@ -361,25 +382,26 @@ class hexColors:
     """
 
     # *** Standard Colors ***
-    yellow = 0xf5dd42
-    orange = 0xfcba03
-    blurple = 0x6c7dfe
-    light_purple = 0xd6b4e8
+    yellow = 0xF5DD42
+    orange = 0xFCBA03
+    blurple = 0x6C7DFE
+    light_purple = 0xD6B4E8
     dark_gray = 0x2F3136
 
-    yellow_ticketBan = 0xeffa16
-    green_general = 0x3af250
-    green_confirm = 0x37e32b
-    red_cancel = 0xe02f2f
-    red_error = 0xf5160a
-    orange_error = 0xfc3d03
-    mod_blurple = 0x4dbeff
+    yellow_ticketBan = 0xEFFA16
+    green_general = 0x3AF250
+    green_confirm = 0x37E32B
+    red_cancel = 0xE02F2F
+    red_error = 0xF5160A
+    orange_error = 0xFC3D03
+    mod_blurple = 0x4DBEFF
 
 
 class Others:
     """
     Other things to use for the bot. (Images, characters, etc.)
     """
+
     ssLogo_png = "https://media.discordapp.net/attachments/864060582294585354/878682781352362054/ss_current.png"
     error_png = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png"
     nitro_png = "https://i.imgur.com/w9aiD6F.png"
@@ -413,15 +435,15 @@ rulesDict = {
 
 
 class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
 
 class SelectMenuHandler(ui.Select):
@@ -433,19 +455,20 @@ class SelectMenuHandler(ui.Select):
         to work.
     """
 
-    def __init__(self,
-                 options: typing.List[SelectOption],
-                 custom_id: typing.Union[str, None] = None,
-                 place_holder: typing.Union[str, None] = None,
-                 max_values: int = 1,
-                 min_values: int = 1,
-                 disabled: bool = False,
-                 select_user: typing.Union[discord.Member, discord.User, None] = None,
-                 roles: List[discord.Role] = None,
-                 interaction_message: typing.Union[str, None] = None,
-                 ephemeral: bool = True,
-                 coroutine: coroutineType = None
-                 ):
+    def __init__(
+        self,
+        options: typing.List[SelectOption],
+        custom_id: typing.Union[str, None] = None,
+        place_holder: typing.Union[str, None] = None,
+        max_values: int = 1,
+        min_values: int = 1,
+        disabled: bool = False,
+        select_user: typing.Union[discord.Member, discord.User, None] = None,
+        roles: List[discord.Role] = None,
+        interaction_message: typing.Union[str, None] = None,
+        ephemeral: bool = True,
+        coroutine: coroutineType = None,
+    ):
         """
         Parameters:
             options: List of discord.SelectOption
@@ -472,28 +495,45 @@ class SelectMenuHandler(ui.Select):
         self.coroutine = coroutine
 
         if self.custom_id_:
-            super().__init__(options=self.options_, placeholder=self.placeholder_, custom_id=self.custom_id_,
-                             disabled=self.disabled_, max_values=self.max_values_, min_values=self.min_values_)
+            super().__init__(
+                options=self.options_,
+                placeholder=self.placeholder_,
+                custom_id=self.custom_id_,
+                disabled=self.disabled_,
+                max_values=self.max_values_,
+                min_values=self.min_values_,
+            )
         else:
-            super().__init__(options=self.options_, placeholder=self.placeholder_,
-                             disabled=self.disabled_, max_values=self.max_values_, min_values=self.min_values_)
+            super().__init__(
+                options=self.options_,
+                placeholder=self.placeholder_,
+                disabled=self.disabled_,
+                max_values=self.max_values_,
+                min_values=self.min_values_,
+            )
 
     async def callback(self, interaction: discord.Interaction):
-        if self.select_user in [None, interaction.user] or any(role in interaction.user.roles for role in self.roles):
+        if self.select_user in [None, interaction.user] or any(
+            role in interaction.user.roles for role in self.roles
+        ):
             if self.custom_id_ is None:
                 self.view.value = self.values[0]
             else:
                 self.view.value = self.custom_id_
 
             if self.interaction_message_:
-                await interaction.response.send_message(content=self.interaction_message_, ephemeral=self.ephemeral_)
+                await interaction.response.send_message(
+                    content=self.interaction_message_, ephemeral=self.ephemeral_
+                )
 
             if self.coroutine is not None:
                 await self.coroutine(interaction, self.view)
             else:
                 self.view.stop()
         else:
-            await interaction.response.send_message(content="You're not allowed to interact with that!", ephemeral=True)
+            await interaction.response.send_message(
+                content="You're not allowed to interact with that!", ephemeral=True
+            )
 
 
 class ButtonHandler(ui.Button):
@@ -505,19 +545,21 @@ class ButtonHandler(ui.Button):
         coroutine to the class. IMPORTANT: The coroutine has to take two arguments (discord.Interaction, discord.View)
         to work.
     """
-    def __init__(self,
-                 style: ButtonStyle,
-                 label: str,
-                 custom_id: typing.Union[str, None] = None,
-                 emoji: typing.Union[str, None] = None,
-                 url: typing.Union[str, None] = None,
-                 disabled: bool = False,
-                 button_user: typing.Union[discord.Member, discord.User, None] = None,
-                 roles: List[discord.Role] = None,
-                 interaction_message: typing.Union[str, None] = None,
-                 ephemeral: bool = True,
-                 coroutine: coroutineType = None
-                ):
+
+    def __init__(
+        self,
+        style: ButtonStyle,
+        label: str,
+        custom_id: typing.Union[str, None] = None,
+        emoji: typing.Union[str, None] = None,
+        url: typing.Union[str, None] = None,
+        disabled: bool = False,
+        button_user: typing.Union[discord.Member, discord.User, None] = None,
+        roles: List[discord.Role] = None,
+        interaction_message: typing.Union[str, None] = None,
+        ephemeral: bool = True,
+        coroutine: coroutineType = None,
+    ):
         """
         Parameters:
             style: Label for the button
@@ -545,28 +587,46 @@ class ButtonHandler(ui.Button):
         self.coroutine = coroutine
 
         if self.custom_id_:
-            super().__init__(style=self.style_, label=self.label_, custom_id=self.custom_id_, emoji=self.emoji_,
-                             url=self.url_, disabled=self.disabled_)
+            super().__init__(
+                style=self.style_,
+                label=self.label_,
+                custom_id=self.custom_id_,
+                emoji=self.emoji_,
+                url=self.url_,
+                disabled=self.disabled_,
+            )
         else:
-            super().__init__(style=self.style_, label=self.label_, emoji=self.emoji_,
-                             url=self.url_, disabled=self.disabled_)
+            super().__init__(
+                style=self.style_,
+                label=self.label_,
+                emoji=self.emoji_,
+                url=self.url_,
+                disabled=self.disabled_,
+            )
 
     async def callback(self, interaction: discord.Interaction):
-        if self.button_user in [None, interaction.user] or any(role in interaction.user.roles for role in self.roles):
+        if self.button_user in [None, interaction.user] or any(
+            role in interaction.user.roles for role in self.roles
+        ):
             if self.custom_id_ is None:
                 self.view.value = None
             else:
                 self.view.value = self.custom_id_
 
             if self.interaction_message_:
-                await interaction.response.send_message(content=self.interaction_message_, ephemeral=self.ephemeral_)
+                await interaction.response.send_message(
+                    content=self.interaction_message_, ephemeral=self.ephemeral_
+                )
 
             if self.coroutine is not None:
                 await self.coroutine(interaction, self.view)
             else:
                 self.view.stop()
         else:
-            await interaction.response.send_message(content="You're not allowed to interact with that!", ephemeral=True)
+            await interaction.response.send_message(
+                content="You're not allowed to interact with that!", ephemeral=True
+            )
+
 
 def getGuildList(bot: commands.Bot, exemptServer: List[int] = None) -> list:
     guildList = []
@@ -584,18 +644,27 @@ class TechnicalCommissionConfirm(discord.ui.View):
         self.value = None
         self.bot = bot
 
-    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, emoji = "✅",  custom_id='persistent_view:tempconfirm')
-    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+    @discord.ui.button(
+        label="Confirm",
+        style=discord.ButtonStyle.green,
+        emoji="✅",
+        custom_id="persistent_view:tempconfirm",
+    )
+    async def confirm(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ):
         TranscriptLOG = self.bot.get_channel(TECH_ID.ch_ticketLog)
         ch = await self.bot.fetch_channel(interaction.channel_id)
-        
+
         await rawExport(self, ch, TranscriptLOG, interaction.user)
         await ch.delete()
 
-    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, emoji = "❌")
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
     async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.message.delete()
-        await interaction.response.send_message("ok, not removing this channel.", ephemeral=True)
+        await interaction.response.send_message(
+            "ok, not removing this channel.", ephemeral=True
+        )
         self.value = False
         self.stop()
 
@@ -606,13 +675,20 @@ class LockButton(discord.ui.View):
         self.value = None
         self.bot = bot
 
-    @discord.ui.button(label='Lock', style=discord.ButtonStyle.green, custom_id='persistent_view:lock', emoji = "🔒")
+    @discord.ui.button(
+        label="Lock",
+        style=discord.ButtonStyle.green,
+        custom_id="persistent_view:lock",
+        emoji="🔒",
+    )
     async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.value = True
         ch = await self.bot.fetch_channel(interaction.channel_id)
         TempConfirmInstance = TechnicalCommissionConfirm(self.bot)
 
-        msg = await ch.send("Are you sure you want to close this ticket?", view = TempConfirmInstance)
+        msg = await ch.send(
+            "Are you sure you want to close this ticket?", view=TempConfirmInstance
+        )
 
 
 class TempConfirm(discord.ui.View):
@@ -620,14 +696,21 @@ class TempConfirm(discord.ui.View):
         super().__init__()
         self.value = None
 
-    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, emoji = "✅",  custom_id='persistent_view:tempconfirm')
-    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+    @discord.ui.button(
+        label="Confirm",
+        style=discord.ButtonStyle.green,
+        emoji="✅",
+        custom_id="persistent_view:tempconfirm",
+    )
+    async def confirm(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ):
         self.value = True
         self.stop()
 
-    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, emoji = "❌")
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
     async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
-        await interaction.response.send_message('Cancelling', ephemeral=True)
+        await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
 
@@ -637,12 +720,22 @@ class NitroConfirmFake(discord.ui.View):
         super().__init__()
         self.value = None
 
-    @discord.ui.button(label='Claim', style=discord.ButtonStyle.green, custom_id='persistent_view:nitrofake')
+    @discord.ui.button(
+        label="Claim",
+        style=discord.ButtonStyle.green,
+        custom_id="persistent_view:nitrofake",
+    )
     async def claim(self, button: discord.ui.Button, interaction: discord.Interaction):
         try:
-            await interaction.response.send_message('https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4', ephemeral=True)
+            await interaction.response.send_message(
+                "https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4",
+                ephemeral=True,
+            )
         except discord.errors.InteractionResponded:
-            await interaction.followup.send('https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4', ephemeral=True)
+            await interaction.followup.send(
+                "https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4",
+                ephemeral=True,
+            )
         self.value = True
 
 
@@ -652,13 +745,20 @@ class TicketLockButton(discord.ui.View):
         self.value = None
         self.bot = bot
 
-    @discord.ui.button(label='Lock', style=discord.ButtonStyle.green, custom_id='persistent_view:lock', emoji = "🔒")
+    @discord.ui.button(
+        label="Lock",
+        style=discord.ButtonStyle.green,
+        custom_id="persistent_view:lock",
+        emoji="🔒",
+    )
     async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.value = True
         ch = await self.bot.fetch_channel(interaction.channel_id)
         TempConfirmInstance = TicketTempConfirm(self.bot)
 
-        msg = await ch.send("Are you sure you want to close this ticket?", view = TempConfirmInstance)
+        msg = await ch.send(
+            "Are you sure you want to close this ticket?", view=TempConfirmInstance
+        )
 
 
 class TicketTempConfirm(discord.ui.View):
@@ -666,22 +766,29 @@ class TicketTempConfirm(discord.ui.View):
         super().__init__()
         self.value = None
 
-    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, emoji = "✅",  custom_id='persistent_view:tempconfirm')
-    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+    @discord.ui.button(
+        label="Confirm",
+        style=discord.ButtonStyle.green,
+        emoji="✅",
+        custom_id="persistent_view:tempconfirm",
+    )
+    async def confirm(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ):
         self.value = True
         self.stop()
 
-    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, emoji = "❌")
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
     async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
-        await interaction.response.send_message('Cancelling', ephemeral=True)
+        await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
 
 
 def get_extensions():
     extensions = []
-    extensions.append('jishaku')
-    if sys.platform == 'win32' or sys.platform == 'cygwin':
+    extensions.append("jishaku")
+    if sys.platform == "win32" or sys.platform == "cygwin":
         dirpath = "\\"
     else:
         dirpath = "/"
@@ -695,8 +802,10 @@ def get_extensions():
 
 async def id_generator(size=3, chars=string.ascii_uppercase):
     while True:
-        ID = ''.join(random.choice(chars) for _ in range(size))
-        query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == ID)
+        ID = "".join(random.choice(chars) for _ in range(size))
+        query = database.TutorBot_Sessions.select().where(
+            database.TutorBot_Sessions.SessionID == ID
+        )
 
         if query.exists():
             continue
@@ -705,26 +814,49 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
 
 
 async def force_restart(ctx):
-    p = subprocess.run("git status -uno",  shell=True, text=True, capture_output=True, check=True)
+    p = subprocess.run(
+        "git status -uno", shell=True, text=True, capture_output=True, check=True
+    )
 
-    embed = discord.Embed(title = "Restarting...", description = "Doing GIT Operation (1/3)", color = discord.Color.green())
-    embed.add_field(name = "Checking GIT (1/3)", value = f"**Git Output:**\n```shell\n{p.stdout}\n```")
+    embed = discord.Embed(
+        title="Restarting...",
+        description="Doing GIT Operation (1/3)",
+        color=discord.Color.green(),
+    )
+    embed.add_field(
+        name="Checking GIT (1/3)", value=f"**Git Output:**\n```shell\n{p.stdout}\n```"
+    )
 
-    msg = await ctx.send(embed = embed)
+    msg = await ctx.send(embed=embed)
     try:
-        result = subprocess.run("cd && cd Timmy-SchoolSimplified && nohup python3 main.py &", shell=True, text=True, capture_output=True,
-                                check=True)
+        result = subprocess.run(
+            "cd && cd Timmy-SchoolSimplified && nohup python3 main.py &",
+            shell=True,
+            text=True,
+            capture_output=True,
+            check=True,
+        )
 
-        embed.add_field(name = "Started Environment and Additional Process (2/3)", value = "Executed `source` and `nohup`.", inline = False)
-        await msg.edit(embed = embed)
+        embed.add_field(
+            name="Started Environment and Additional Process (2/3)",
+            value="Executed `source` and `nohup`.",
+            inline=False,
+        )
+        await msg.edit(embed=embed)
 
     except Exception as e:
-        embed = discord.Embed(title = "Operation Failed", description = e, color = discord.Color.red())
-        embed.set_footer(text = "Main bot process will be terminated.")
+        embed = discord.Embed(
+            title="Operation Failed", description=e, color=discord.Color.red()
+        )
+        embed.set_footer(text="Main bot process will be terminated.")
 
-        await ctx.send(embed = embed)
+        await ctx.send(embed=embed)
 
     else:
-        embed.add_field(name = "Killing Old Bot Process (3/3)", value = "Executing `sys.exit(0)` now...", inline = False)
-        await msg.edit(embed = embed)
+        embed.add_field(
+            name="Killing Old Bot Process (3/3)",
+            value="Executing `sys.exit(0)` now...",
+            inline=False,
+        )
+        await msg.edit(embed=embed)
         sys.exit(0)

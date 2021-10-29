@@ -10,22 +10,23 @@ __version__ = "2.2.0"
 
 load_dotenv()
 
-'''
+"""
 Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
-'''
+"""
 
 if os.getenv("IP") is None:
     db = SqliteDatabase("data.db")
 
 if bool(os.getenv("SSL_TRUE")) and os.getenv("IP") is not None:
     try:
-        db = MySQLDatabase(os.getenv("DatabaseName"), 
-            user=os.getenv("Username"), 
+        db = MySQLDatabase(
+            os.getenv("DatabaseName"),
+            user=os.getenv("Username"),
             password=os.getenv("Password"),
-            host=os.getenv("IP"), 
-            port = int(os.getenv("PORT")), 
-            ssl = {'key': os.getenv("SSL_PATH")}
+            host=os.getenv("IP"),
+            port=int(os.getenv("PORT")),
+            ssl={"key": os.getenv("SSL_PATH")},
         )
     except Exception as e:
         print(e)
@@ -34,15 +35,16 @@ if bool(os.getenv("SSL_TRUE")) and os.getenv("IP") is not None:
 elif not bool(os.getenv("SSL_TRUE")) and os.getenv("IP") is not None:
     try:
         db = MySQLDatabase(
-            os.getenv("DatabaseName"), 
-            user=os.getenv("Username"), 
+            os.getenv("DatabaseName"),
+            user=os.getenv("Username"),
             password=os.getenv("Password"),
-            host= os.getenv("IP"), 
-            port = int(os.getenv("PORT"))
+            host=os.getenv("IP"),
+            port=int(os.getenv("PORT")),
         )
     except Exception as e:
         print(e)
         db = SqliteDatabase("data.db")
+
 
 def iter_table(model_dict):
     """Iterates through a dictionary of tables, confirming they exist and creating them if necessary."""
@@ -53,23 +55,23 @@ def iter_table(model_dict):
             db.close()
 
 
-
-'''
+"""
 DATABASE FILES
 
 This file represents every database table and the model they follow. When fetching information from the tables, consult the typehints for possible methods!
 
-'''
+"""
 
 
 class BaseModel(Model):
     """Base Model class used for creating new tables."""
+
     class Meta:
         database = db
 
 
 class VCChannelInfo(BaseModel):
-    '''
+    """
     # VCChannelInfo
     Information pertaining to Private Voice Channels
 
@@ -91,7 +93,7 @@ class VCChannelInfo(BaseModel):
     `used` BooleanField()
     **DEPRECATED**: Signifies if the voice channel is active.
     *When a voice session is archived, the database entry will also be deleted. Using this attribute will no longer work.*
-    
+
     `lockStatus` = bool(TextField())
     Signifies if the voice channel is locked or not.
 
@@ -99,8 +101,8 @@ class VCChannelInfo(BaseModel):
     Guild ID of the Voice Channel.
 
     `TutorBotSessionID` = TextField(default=None)
-    Signifies if the voice channel is linked to a TutorSession, if so this attribute contains its ID. 
-    '''
+    Signifies if the voice channel is linked to a TutorSession, if so this attribute contains its ID.
+    """
 
     id = AutoField()
     ChannelID = TextField()
@@ -113,8 +115,9 @@ class VCChannelInfo(BaseModel):
 
     TutorBotSessionID = TextField(default=None)
 
+
 class IgnoreThis(BaseModel):
-    '''
+    """
     # IgnoreThis
     Information pertaining to the Deletion of Voice Channels
 
@@ -129,7 +132,7 @@ class IgnoreThis(BaseModel):
 
     `GuildID` = BigIntegerField()
     Guild ID of the Voice Channel.
-    '''
+    """
 
     id = AutoField()
     channelID = TextField()
@@ -161,6 +164,7 @@ class PunishmentTag(BaseModel):
     text = TextField()
     imageURL = TextField(default=None)
 
+
 class CTag(BaseModel):
     """
     #CTag
@@ -185,9 +189,10 @@ class CTag(BaseModel):
     text = TextField()
     imageURL = TextField(default=None)
 
+
 class Administrators(BaseModel):
-    '''
-    Administrators: 
+    """
+    Administrators:
     List of users who are whitelisted on the bot.
 
     `id`: AutoField()
@@ -203,16 +208,17 @@ class Administrators(BaseModel):
     >>> 2 - Admin\n
     >>> 3 - Sudo Admin\n
     >>> 4 - Owner
-    '''
+    """
 
     id = AutoField()
-    discordID = BigIntegerField(unique = True)
+    discordID = BigIntegerField(unique=True)
 
     TierLevel = IntegerField(default=1)
 
+
 class AdminLogging(BaseModel):
-    '''
-    # AdminLogging: 
+    """
+    # AdminLogging:
     List of users who are whitelisted on the bot.
 
     `id`: AutoField()
@@ -229,19 +235,20 @@ class AdminLogging(BaseModel):
 
     `datetime`: DateTimeField()
     DateTime Object when the command was executed.
-    '''
+    """
 
     id = AutoField()
     discordID = BigIntegerField()
 
     action = TextField()
-    content = TextField(default = "N/A")
+    content = TextField(default="N/A")
 
-    datetime = DateTimeField(default = datetime.now())
+    datetime = DateTimeField(default=datetime.now())
+
 
 class CheckInformation(BaseModel):
-    '''
-    # CheckInformation: 
+    """
+    # CheckInformation:
     List of users who are whitelisted on the bot.
 
     `id`: AutoField()
@@ -271,7 +278,8 @@ class CheckInformation(BaseModel):
 
     `PersistantChange`: BooleanField()
     If the discord bot has added its persistant buttons/views.
-    '''
+    """
+
     id = AutoField()
 
     MasterMaintenance = BooleanField()
@@ -282,11 +290,11 @@ class CheckInformation(BaseModel):
     publicCategories = BooleanField()
     elseSituation = BooleanField()
     PersistantChange = BooleanField()
-    
+
 
 class Blacklist(BaseModel):
-    '''
-    # Blacklist: 
+    """
+    # Blacklist:
     List of users who are blacklisted on the bot.
 
     `id`: AutoField()
@@ -294,15 +302,16 @@ class Blacklist(BaseModel):
 
     `discordID`: BigIntegerField()
     Discord ID
-    '''
+    """
 
     id = AutoField()
 
-    discordID = BigIntegerField(unique = True)
+    discordID = BigIntegerField(unique=True)
+
 
 class ToDo(BaseModel):
-    '''
-    # ToDo: 
+    """
+    # ToDo:
     ToDo Command (WIP)
 
     `id`: AutoField()
@@ -314,15 +323,16 @@ class ToDo(BaseModel):
     `item`: TextField()
     ToDo Item.
 
-    '''
+    """
 
     id = AutoField()
 
     discordID = BigIntegerField()
     item = TextField()
 
+
 class MotivationalQuotes(BaseModel):
-    '''
+    """
     # MotivationalQuotes
 
     `id`: AutoField()
@@ -337,16 +347,16 @@ class MotivationalQuotes(BaseModel):
     `typeObj`: TextField()
     Signifies what the *item* is. (Returns either Quote or Inspirational Message)
 
-    '''
+    """
 
     id = AutoField()
     discordID = BigIntegerField()
-    item = TextField(unique = True)
+    item = TextField(unique=True)
     typeObj = TextField()
 
 
 class WhitelistedPrefix(BaseModel):
-    '''
+    """
     # WhitelistedPrefix
 
     `id`: AutoField()
@@ -357,7 +367,7 @@ class WhitelistedPrefix(BaseModel):
 
     `status`: BooleanField()
     Either shows if its disabled or enabled.
-    '''
+    """
 
     id = AutoField()
     prefix = TextField()
@@ -365,7 +375,7 @@ class WhitelistedPrefix(BaseModel):
 
 
 class TutorBot_Sessions(BaseModel):
-    '''
+    """
     #TutorBot Sessions
 
     `id`: AutoField()
@@ -394,7 +404,7 @@ class TutorBot_Sessions(BaseModel):
 
     `ReminderSet`: BooleanField()
     Boolean that states if the user and student have been notified.
-    '''
+    """
 
     id = AutoField()
     SessionID = TextField()
@@ -405,9 +415,10 @@ class TutorBot_Sessions(BaseModel):
     TutorID = BigIntegerField()
     Repeat = BooleanField()
     ReminderSet = BooleanField()
-    
+
+
 class Uptime(BaseModel):
-    '''
+    """
     #Uptime
 
     `id`: AutoField()
@@ -415,9 +426,11 @@ class Uptime(BaseModel):
 
     `UpStart`: TextField()
     Time Object of Bot being started.
-    '''
+    """
+
     id = AutoField()
     UpStart = TextField()
+
 
 class TicketInfo(BaseModel):
     """
@@ -437,32 +450,35 @@ class TicketInfo(BaseModel):
     ChannelID = BigIntegerField()
     authorID = BigIntegerField()
 
+
 app = Flask(__name__)
+
 
 @app.before_request
 def _db_connect():
-    '''
+    """
     This hook ensures that a connection is opened to handle any queries
     generated by the request.
-    '''
+    """
     db.connect()
 
 
 @app.teardown_request
 def _db_close(exc):
-    '''
+    """
     This hook ensures that the connection is closed when we've finished
     processing the request.
-    '''
+    """
     if not db.is_closed():
         db.close()
 
+
 tables = {
-    "VoiceChannelInfo" : VCChannelInfo, 
-    "IgnoreThis": IgnoreThis, 
-    "Administrators": Administrators, 
-    "AdminLogging": AdminLogging, 
-    "CheckInformation": CheckInformation, 
+    "VoiceChannelInfo": VCChannelInfo,
+    "IgnoreThis": IgnoreThis,
+    "Administrators": Administrators,
+    "AdminLogging": AdminLogging,
+    "CheckInformation": CheckInformation,
     "Blacklist": Blacklist,
     "ToDO": ToDo,
     "WhitelistedPrefix": WhitelistedPrefix,
@@ -470,7 +486,7 @@ tables = {
     "Uptime": Uptime,
     "TicketInfo": TicketInfo,
     "PunishmentTag": PunishmentTag,
-    "CTag:": CTag
+    "CTag:": CTag,
 }
 
 iter_table(tables)
