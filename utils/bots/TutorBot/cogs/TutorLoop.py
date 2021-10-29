@@ -6,19 +6,20 @@ from core import database
 from core.common import TUT_ID
 from discord.ext import commands, tasks
 
+
 class TutorBotLoop(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.est = pytz.timezone('US/Eastern')
+        self.est = pytz.timezone("US/Eastern")
         self.tutorsession.start()
 
     def cog_unload(self):
         self.tutorsession.cancel()
 
     @tasks.loop(seconds=60.0)
-    async def tutorsession(self): 
+    async def tutorsession(self):
         now = datetime.now(self.est)
-        for entry in database.TutorBot_Sessions: 
+        for entry in database.TutorBot_Sessions:
             TutorSession = pytz.timezone("America/New_York").localize(entry.Date)
             val = int((TutorSession - now).total_seconds())
 
@@ -34,41 +35,60 @@ class TutorBotLoop(commands.Cog):
 
                 print(tutor, student)
                 botch = self.bot.get_channel(TUT_ID.ch_botCommands)
-                embed = discord.Embed(title = "ALERT: You have a Tutor Session Soon!",
-                                      description = "Please make sure you both communicate and set up a private voice channel!",
-                                      color = discord.Color.green())
-                embed.add_field(name = "Tutor Session Details",
-                                value = f"**Tutor:** {tutor.name}"
-                                        f"\n**Student:** {student.name}"
-                                        f"\n**Session ID:** {entry.SessionID}"
-                                        f"\n**Time:** {entry.Time}")
-                
+                embed = discord.Embed(
+                    title="ALERT: You have a Tutor Session Soon!",
+                    description="Please make sure you both communicate and set up a private voice channel!",
+                    color=discord.Color.green(),
+                )
+                embed.add_field(
+                    name="Tutor Session Details",
+                    value=f"**Tutor:** {tutor.name}"
+                    f"\n**Student:** {student.name}"
+                    f"\n**Session ID:** {entry.SessionID}"
+                    f"\n**Time:** {entry.Time}",
+                )
+
                 try:
-                    await tutor.send(embed = embed)
+                    await tutor.send(embed=embed)
                 except:
-                    await botch.send(f"Unable to send a reminder DM to you {tutor.mention}!", embed = embed)
+                    await botch.send(
+                        f"Unable to send a reminder DM to you {tutor.mention}!",
+                        embed=embed,
+                    )
                 try:
-                    await student.send(embed = embed)
+                    await student.send(embed=embed)
                 except:
                     print(f"Unable to Send a Reminder DM to: {student.id}")
-                
-                geten: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.id == entry.id).get()
-                
+
+                geten: database.TutorBot_Sessions = (
+                    database.TutorBot_Sessions.select()
+                    .where(database.TutorBot_Sessions.id == entry.id)
+                    .get()
+                )
+
                 if geten.Repeat:
                     old = geten.Date
                     new = timedelta(days=7)
                     nextweek = old + new
                     geten.Date = nextweek
-                    
+
                 geten.ReminderSet = True
                 geten.save()
 
             elif val < 0 and not entry.Repeat:
-                geten: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.id == entry.id).get()
+                geten: database.TutorBot_Sessions = (
+                    database.TutorBot_Sessions.select()
+                    .where(database.TutorBot_Sessions.id == entry.id)
+                    .get()
+                )
                 geten.delete_instance()
 
             elif val < 0 and entry.Repeat:
-                query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.id == entry.id).get()
+                query: database.TutorBot_Sessions = (
+                    database.TutorBot_Sessions.select()
+                    .where(database.TutorBot_Sessions.id == entry.id)
+                    .get()
+                )
                 print(query.id, val, entry.Repeat)
                 old = query.Date
                 new = timedelta(days=7)
@@ -79,14 +99,11 @@ class TutorBotLoop(commands.Cog):
                 query.Date = nextweek
                 query.save()
 
-
     @tutorsession.before_loop
     async def before_printer(self):
-        print('Starting Tutor Loop')
+        print("Starting Tutor Loop")
         await self.bot.wait_until_ready()
 
 
 def setup(bot):
     bot.add_cog(TutorBotLoop(bot))
-
-

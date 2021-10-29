@@ -13,10 +13,10 @@ class CTag(commands.Cog):
 
     def get_by_index(self, index):
         for i, t in enumerate(database.CTag.select()):
-            if i+1 == index:
+            if i + 1 == index:
                 return t
 
-    @commands.command(aliases=['chathelper'])
+    @commands.command(aliases=["chathelper"])
     async def c(self, ctx, tag_name):
         """Activate a tag"""
         try:
@@ -25,8 +25,11 @@ class CTag(commands.Cog):
                 tag_name = int(tag_name)
                 tag = self.get_by_index(tag_name)
             except ValueError:
-                tag: database.CTag = database.CTag.select().where(
-                    database.CTag.tag_name == tag_name).get()
+                tag: database.CTag = (
+                    database.CTag.select()
+                    .where(database.CTag.tag_name == tag_name)
+                    .get()
+                )
             embed = discord.Embed(title=tag.embed_title, description=tag.text)
             await ctx.send(embed=embed)
         except database.DoesNotExist:
@@ -34,15 +37,18 @@ class CTag(commands.Cog):
         finally:
             database.db.close()
 
-    @commands.command(aliases=['newc'])
-    @commands.has_any_role('Secret Service', 'Head Moderator', 'Senior Mod', 'Moderator')
+    @commands.command(aliases=["newc"])
+    @commands.has_any_role(
+        "Secret Service", "Head Moderator", "Senior Mod", "Moderator"
+    )
     # don't let this recognize tag number, name is a required field for new tags. - Fire
     async def cmod(self, ctx, name, title, *, text):
         """Modify a tag, or create a new one if it doesn't exist."""
         try:
             database.db.connect(reuse_if_open=True)
-            tag: database.CTag = database.CTag.select().where(
-                database.CTag.tag_name == name).get()
+            tag: database.CTag = (
+                database.CTag.select().where(database.CTag.tag_name == name).get()
+            )
             tag.text = text
             tag.embed_title = title
             tag.save()
@@ -51,7 +57,8 @@ class CTag(commands.Cog):
             try:
                 database.db.connect(reuse_if_open=True)
                 tag: database.CTag = database.CTag.create(
-                    tag_name=name, embed_title=title, text=text)
+                    tag_name=name, embed_title=title, text=text
+                )
                 tag.save()
                 await ctx.send(f"Tag {tag.tag_name} has been created successfully.")
             except database.IntegrityError:
@@ -59,8 +66,10 @@ class CTag(commands.Cog):
         finally:
             database.db.close()
 
-    @commands.command(aliases=['delc', 'cp'])
-    @commands.has_any_role('Secret Service', 'Head Moderator', 'Senior Mod', 'Moderator')
+    @commands.command(aliases=["delc", "cp"])
+    @commands.has_any_role(
+        "Secret Service", "Head Moderator", "Senior Mod", "Moderator"
+    )
     async def deletec(self, ctx, name):
         """Delete a tag"""
         try:
@@ -69,8 +78,9 @@ class CTag(commands.Cog):
                 name = int(name)
                 tag = self.get_by_index(name)
             except ValueError:
-                tag: database.CTag = database.CTag.select().where(
-                    database.CTag.tag_name == name).get()
+                tag: database.CTag = (
+                    database.CTag.select().where(database.CTag.tag_name == name).get()
+                )
             tag.delete_instance()
             await ctx.send(f"{tag.tag_name} has been deleted.")
         except database.DoesNotExist:
@@ -78,13 +88,14 @@ class CTag(commands.Cog):
         finally:
             database.db.close()
 
-    @commands.command(aliases=['lc'])
+    @commands.command(aliases=["lc"])
     async def listc(self, ctx, page=1):
         """List all tags in the database"""
+
         def get_end(page_size: int):
             database.db.connect(reuse_if_open=True)
             tags: int = database.CTag.select().count()
-            return math.ceil(tags/10)
+            return math.ceil(tags / 10)
 
         async def populate_embed(embed: discord.Embed, page: int):
             """Used to populate the embed in listtag command"""
@@ -100,7 +111,9 @@ class CTag(commands.Cog):
             return embed
 
         embed = discord.Embed(title="Tag List")
-        embed = await common.paginate_embed(self.bot, ctx, embed, populate_embed, get_end(10), page=page)
+        embed = await common.paginate_embed(
+            self.bot, ctx, embed, populate_embed, get_end(10), page=page
+        )
 
 
 def setup(bot):
