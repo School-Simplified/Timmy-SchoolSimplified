@@ -32,8 +32,8 @@ async def rawExport(self, channel, response, user: discord.User):
                           color = discord.Colour.green())
     transcript_file = discord.File(io.BytesIO(transcript.encode()),filename=f"transcript-{channel.name}.html")
 
-    await response.send(embed = embed)
-    await response.send(file=transcript_file)
+    msg: discord.Message = await response.send(embed = embed, file=transcript_file)
+    return msg
 
 async def paginate_embed(bot: discord.Client, ctx, embed: discord.Embed, population_func, end: int, begin: int = 1, page=1):
     emotes = ["◀️", "▶️"]
