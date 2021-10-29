@@ -15,31 +15,22 @@ import chat_exporter
 import discord
 import pytz
 import requests
+from discord import Member
 from discord.commands import Option
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
+from logtail import LogtailHandler
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 from tqdm import tqdm
 
 from core import database
-from core.common import id_generator, get_extensions
-from core.common import (
-    Emoji,
-    LockButton,
-    bcolors,
-    hexColors,
-    Others,
-    getGuildList,
-    MAIN_ID,
-    TECH_ID,
-    TUT_ID,
-)
+from core.common import (MAIN_ID, TECH_ID, TUT_ID, Emoji, LockButton, Others,
+                         bcolors, get_extensions, getGuildList, hexColors,
+                         id_generator)
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
-from logtail import LogtailHandler
-from discord import Member
 
 LogTail = LogtailHandler(source_token=os.getenv("LOGTAIL"))
 load_dotenv()
