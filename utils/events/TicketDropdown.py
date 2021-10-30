@@ -297,15 +297,19 @@ class DropdownTickets(commands.Cog):
                 for URL in answer2.attachments:
                     attachmentlist.append(URL.url)
             else:
-                if "http://" in answer2.content:
+                if answer2.content.find("https://") != -1:
                     attachmentlist.append(answer2.content)
                 else:
                     return await DMChannel.send("No attachments found.")
+            
+            CounterNum = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1).get()
+            TNUM = CounterNum.counter
+            CounterNum.counter = CounterNum.counter+1
+            CounterNum.save()
 
             LDC = await DMChannel.send("Please wait, creating your ticket...")
-            num = len(c.channels)
             channel: discord.TextChannel = await guild.create_text_channel(
-                f"{selection_str}-{num}", category=c
+                f"{selection_str}-{TNUM}", category=c
             )
             await channel.set_permissions(
                 guild.default_role, read_messages=False, reason="Ticket Perms"
@@ -380,7 +384,6 @@ class DropdownTickets(commands.Cog):
                 .where(database.TicketInfo.ChannelID == interaction.channel_id)
                 .get()
             )
-
             embed = discord.Embed(
                 title="Confirm?",
                 description="Click an appropriate button.",
