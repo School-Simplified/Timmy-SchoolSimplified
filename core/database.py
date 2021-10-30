@@ -450,7 +450,18 @@ class TicketInfo(BaseModel):
     ChannelID = BigIntegerField()
     authorID = BigIntegerField()
 
+class BaseTickerInfo(BaseModel):
+    """
+    #BaseTickerInfo
 
+    `id`: AutoField()
+    Database Entry
+
+    `counter`: BigIntegerField()
+    Counter for the total amount of channels.
+    """
+    id = AutoField()
+    counter = BigIntegerField()
 app = Flask(__name__)
 
 
@@ -487,6 +498,7 @@ tables = {
     "TicketInfo": TicketInfo,
     "PunishmentTag": PunishmentTag,
     "CTag:": CTag,
+    "BaseTickerInfo": BaseTickerInfo
 }
 
 iter_table(tables)
