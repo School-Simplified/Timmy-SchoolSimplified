@@ -374,6 +374,7 @@ class Emoji:
     discordLoad = "<a:Discord:866408537503694869>"
 
     timmyBook = "<:timmy_book:880875405962264667>"
+    loadingGIF = "<a:Loading:904192577094426626>"
 
 
 class hexColors:
@@ -414,6 +415,7 @@ class Others:
     timmyTeacher_png = "https://media.discordapp.net/attachments/875233489727922177/877378910214586368/tutoring.png?width=411&height=532"
 
     space_character = "　"
+    TICKET_INACTIVE_TIME = 1440
 
 
 rulesDict = {
