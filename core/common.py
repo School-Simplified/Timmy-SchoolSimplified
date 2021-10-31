@@ -1,6 +1,7 @@
 import asyncio
 import io
 import json
+import os
 import random
 import string
 import subprocess
@@ -13,7 +14,10 @@ import chat_exporter
 import discord
 from discord import Button, ButtonStyle, SelectOption, ui
 from discord.ext import commands
-
+import logging
+import boto3
+from botocore.exceptions import ClientError
+import os
 from core import database
 
 # global variables
@@ -109,6 +113,37 @@ def prompt_config2(msg, key):
     with config_file.open("w+") as f:
         json.dump(config, f, indent=4)
 
+def S3_upload_file(file_name, bucket, object_name=None):
+    """Upload a file to an S3 bucket
+
+    :param file_name: File to upload
+    :param bucket: Bucket to upload to
+    :param object_name: S3 object name. If not specified then file_name is used
+    :return: True if file was uploaded, else False
+    """
+
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = os.path.basename(file_name)
+
+    # Upload the file
+    s3_client =  boto3.client('s3',
+        aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY'),
+        region_name = 'us-east-2'
+    )
+    try:
+        response = s3_client.upload_file(file_name, bucket, object_name, 
+            ExtraArgs={
+                'Metadata': {'Content-Type': 'text/html'}, 
+                'ACL': 'public-read'
+                }
+        )
+        print(response)
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True
 
 class MAIN_ID:
     """
@@ -416,6 +451,7 @@ class Others:
 
     space_character = "　"
     TICKET_INACTIVE_TIME = 1440
+    CHID_DEFAULT = 904375029989515355
 
 
 rulesDict = {

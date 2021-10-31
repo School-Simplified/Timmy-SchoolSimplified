@@ -95,6 +95,7 @@ if os.getenv("DSN_SENTRY") is not None:
         integrations=[FlaskIntegration(), sentry_logging],
     )
 
+
 # Start Check
 UpQ = database.Uptime.select().where(database.Uptime.id == 1)
 CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)
