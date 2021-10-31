@@ -3,24 +3,20 @@ import io
 import os
 import typing
 from datetime import datetime, timedelta
+from io import BytesIO
 
 import chat_exporter
-import configcatclient
 import discord
 import pytz
 from core import database
 from core.common import (ACAD_ID, HR_ID, MAIN_ID, MKT_ID, TECH_ID,
-                         ButtonHandler, Emoji, Others, SelectMenuHandler)
+                         ButtonHandler, Emoji, Others, S3_upload_file,
+                         SelectMenuHandler)
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
 load_dotenv()
 
-if os.getenv("CONFIGCAT") is not None:
-    configcat_client = configcatclient.create_client(
-        os.getenv("CONFIGCAT"))
-else:
-    configcat_client = None
 MasterSubjectOptions = [
     discord.SelectOption(
         label="Math Helpers",
@@ -98,35 +94,36 @@ async def TicketExport(
     embed.add_field(name="Ticket Name", value=channel.name, inline=False)
     embed.add_field(name="Category", value=channel.category.name)
     embed.set_footer(text="Transcript Attached Below")
+    var = transcript.encode()
+    #print(var)
 
     transcript_file = discord.File(
-        io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html"
+        io.BytesIO(var), filename=f"transcript-{channel.name}.html"
     )
 
+    myIO = BytesIO()
+    myIO.write(var) 
+    with open(f"transcript-{channel.name}.html", "wb") as f:
+        f.write(myIO.getbuffer())
+
+    S3_upload_file(f"transcript-{channel.name}.html", "ch-transcriptlogs")
+    S3_URL = f"https://ch-transcriptlogs.s3.us-east-2.amazonaws.com/transcript-{channel.name}.html"
+    embed.add_field(name="Transcript Link", value=S3_URL)
     if response != None:
         msg = await response.send(embed=embed)
-        await response.send(file=transcript_file)
     if responsesauthor != None:
-        transcript = await chat_exporter.export(channel, None)
-        transcript_file = discord.File(
-            io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html"
-        )
         for UAuthor in responsesauthor:
             try:
-                await UAuthor.send(embed = embed, file=transcript_file)
+                await UAuthor.send(embed = embed)
             except Exception:
                 continue
         if user not in responsesauthor:
-            transcript = await chat_exporter.export(channel, None)
-            transcript_file = discord.File(
-                io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html"
-            )
             try:
-                await user.send(embed = embed, file=transcript_file)
+                await user.send(embed = embed)
             except Exception:
                 pass
         
-    return msg, transcript_file
+    return msg, transcript_file, S3_URL
 
 
 def decodeDict(self, value: str) -> typing.Union[str, int]:
@@ -262,17 +259,12 @@ class DropdownTickets(commands.Cog):
         except KeyError:
             return
 
-        if configcat_client != None:
-            ch_dropdownid = configcat_client.get_value('ch_dropdownid', 0)
-        else: 
-            ch_dropdownid = self.CHID_DEFAULT
         if (
             interaction.guild_id == self.mainserver
-            and interaction.message.id == int(ch_dropdownid)
+            and interaction.message.id == int(self.CHID_DEFAULT)
             and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
         ):
             channel = await self.bot.fetch_channel(interaction.channel_id)
-            # guild = await self.bot.fetch_guild(interaction.guild_id)
             guild = interaction.message.guild
             author = interaction.user
             DMChannel = await author.create_dm()
@@ -528,10 +520,11 @@ class DropdownTickets(commands.Cog):
             ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
             author = interaction.user
 
-            msg: discord.Message = await TicketExport(
+            msg, file, S3_URL = await TicketExport(
                 self, channel, ResponseLogChannel, author
             )
-            await channel.send(f"Transcript Created!\n> {msg.jump_url}")
+            await channel.send(f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}")
+            
 
         elif InteractionResponse["custom_id"] == "ch_lock_C&D":
             channel = await self.bot.fetch_channel(interaction.channel_id)
@@ -550,11 +543,14 @@ class DropdownTickets(commands.Cog):
             for msg in messages:
                 if msg.author not in authorList:
                     authorList.append(msg.author)
-            msg, transcript_file = await TicketExport(
+            msg, transcript_file, url = await TicketExport(
                 self, channel, ResponseLogChannel, TicketOwner, authorList
             )
+            S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
+            print(transcript_file.filename)
+            os.remove(transcript_file.filename)
 
-            await channel.send(f"Transcript Created!\n> {msg.jump_url}")
+            await channel.send(f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}")
             await asyncio.sleep(5)
             await channel.send(f"{author.mention} Alright, closing ticket.")
             await channel.delete()
@@ -585,7 +581,7 @@ class DropdownTickets(commands.Cog):
                     if msg.author not in authorList:
                         authorList.append(msg.author)
 
-                msg, transcript_file = await TicketExport(
+                msg, transcript_file, url = await TicketExport(
                     self, channel, None, TicketOwner, authorList
                 )
 

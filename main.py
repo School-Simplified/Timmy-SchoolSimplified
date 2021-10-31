@@ -12,7 +12,6 @@ from difflib import get_close_matches
 from pathlib import Path
 
 import chat_exporter
-import configcatclient
 import discord
 import pytz
 import requests
