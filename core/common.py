@@ -451,7 +451,7 @@ class Others:
 
     space_character = "　"
     TICKET_INACTIVE_TIME = 1440
-    CHID_DEFAULT = 904375029989515355
+    CHID_DEFAULT = 903439577300213800
 
 
 rulesDict = {
