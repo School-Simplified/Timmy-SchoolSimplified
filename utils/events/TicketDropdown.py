@@ -268,11 +268,7 @@ class DropdownTickets(commands.Cog):
             ch_dropdownid = self.CHID_DEFAULT
         if (
             interaction.guild_id == self.mainserver
-<<<<<<< HEAD
             and interaction.message.id == int(ch_dropdownid)
-=======
-            and interaction.message.id == 904375029989515355
->>>>>>> beta
             and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
         ):
             channel = await self.bot.fetch_channel(interaction.channel_id)
