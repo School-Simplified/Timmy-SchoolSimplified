@@ -93,7 +93,7 @@ async def TicketExport(
     embed.add_field(name="Transcript Owner", value=TicketOwner.mention)
     embed.add_field(name="Ticket Name", value=channel.name, inline=False)
     embed.add_field(name="Category", value=channel.category.name)
-    embed.set_footer(text="Transcript Attached Below")
+    embed.set_footer(text="Transcript Attached Above")
     var = transcript.encode()
     #print(var)
 
@@ -107,7 +107,7 @@ async def TicketExport(
         f.write(myIO.getbuffer())
 
     S3_upload_file(f"transcript-{channel.name}.html", "ch-transcriptlogs")
-    S3_URL = f"https://ch-transcriptlogs.s3.us-east-2.amazonaws.com/transcript-{channel.name}.html"
+    S3_URL = f"[Direct Transcript Link](https://ch-transcriptlogs.s3.us-east-2.amazonaws.com/transcript-{channel.name}.html)"
     embed.add_field(name="Transcript Link", value=S3_URL)
     if response != None:
         msg = await response.send(embed=embed)
