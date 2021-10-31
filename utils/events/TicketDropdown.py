@@ -1,20 +1,15 @@
 import asyncio
 import io
 import typing
+from datetime import datetime, timedelta
 
 import chat_exporter
 import discord
+import pytz
 from core import database
-from core.common import (
-    ACAD_ID,
-    HR_ID,
-    MAIN_ID,
-    MKT_ID,
-    TECH_ID,
-    ButtonHandler,
-    SelectMenuHandler,
-)
-from discord.ext import commands
+from core.common import (ACAD_ID, HR_ID, MAIN_ID, MKT_ID, TECH_ID,
+                         ButtonHandler, Emoji, Others, SelectMenuHandler)
+from discord.ext import commands, tasks
 
 MasterSubjectOptions = [
     discord.SelectOption(
@@ -68,8 +63,9 @@ MasterSubjectOptions = [
 async def TicketExport(
     self,
     channel: discord.TextChannel,
-    response: discord.TextChannel,
-    user: discord.User,
+    response: discord.TextChannel = None,
+    user: discord.User = None,
+    responsesauthor: typing.List[discord.User] = None
 ):
     transcript = await chat_exporter.export(channel, None)
     query = (
@@ -97,9 +93,30 @@ async def TicketExport(
         io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html"
     )
 
-    msg = await response.send(embed=embed)
-    await response.send(file=transcript_file)
-    return msg
+    if response != None:
+        msg = await response.send(embed=embed)
+        await response.send(file=transcript_file)
+    if responsesauthor != None:
+        transcript = await chat_exporter.export(channel, None)
+        transcript_file = discord.File(
+            io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html"
+        )
+        for UAuthor in responsesauthor:
+            try:
+                await UAuthor.send(embed = embed, file=transcript_file)
+            except Exception:
+                continue
+        if user not in responsesauthor:
+            transcript = await chat_exporter.export(channel, None)
+            transcript_file = discord.File(
+                io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html"
+            )
+            try:
+                await user.send(embed = embed, file=transcript_file)
+            except Exception:
+                pass
+        
+    return msg, transcript_file
 
 
 def decodeDict(self, value: str) -> typing.Union[str, int]:
@@ -216,7 +233,12 @@ class DropdownTickets(commands.Cog):
         self.bot = bot
         self.mainserver = MAIN_ID.g_main
         self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
+        self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
+        self.TicketInactive.start()
 
+    def cog_unload(self):
+        self.TicketInactive.cancel()
+    
     @commands.Cog.listener("on_interaction")
     async def TicketDropdown(self, interaction: discord.Interaction):
         InteractionResponse = interaction.data
@@ -301,13 +323,18 @@ class DropdownTickets(commands.Cog):
                     attachmentlist.append(answer2.content)
                 else:
                     return await DMChannel.send("No attachments found.")
-            
-            CounterNum = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1).get()
+
+            print(attachmentlist)
+            CounterNum = (
+                database.BaseTickerInfo.select()
+                .where(database.BaseTickerInfo.id == 1)
+                .get()
+            )
             TNUM = CounterNum.counter
-            CounterNum.counter = CounterNum.counter+1
+            CounterNum.counter = CounterNum.counter + 1
             CounterNum.save()
 
-            LDC = await DMChannel.send("Please wait, creating your ticket...")
+            LDC = await DMChannel.send(f"Please wait, creating your ticket {Emoji.loadingGIF}")
             channel: discord.TextChannel = await guild.create_text_channel(
                 f"{selection_str}-{TNUM}", category=c
             )
@@ -363,14 +390,18 @@ class DropdownTickets(commands.Cog):
             await channel.send(
                 interaction.user.mention, embed=controlTicket, view=LockControlButton
             )
+            attachmentlist = ", ".join(attachmentlist)
 
-            AttachmentEmbed = discord.Embed(
-                title="Ticket Information",
-                description=f"**Question:** {answer1.content}\n\n**Attachment URL:**\n{str(attachmentlist)}",
-                color=discord.Color.blue(),
+            embed = discord.Embed(title="Ticket Information", color=discord.Colour.blue())
+            embed.set_author(
+                name=f"{interaction.user.name}#{interaction.user.discriminator}",
+                url=interaction.user.avatar.url,
+                icon_url=interaction.user.avatar.url,
             )
-            AttachmentEmbed.set_image(url=attachmentlist[0])
-            await channel.send(embed=AttachmentEmbed)
+            embed.add_field(name="Question:", value=answer1.content, inline=False)
+            embed.add_field(name="Attachment URL:", value=attachmentlist)
+            #embed.set_image(url=attachmentlist[0])
+            await channel.send(embed=embed)
 
             await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
 
@@ -491,14 +522,62 @@ class DropdownTickets(commands.Cog):
             channel = await self.bot.fetch_channel(interaction.channel_id)
             author = interaction.user
             ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
-
-            msg: discord.Message = await TicketExport(
-                self, channel, ResponseLogChannel, author
+            query = (
+                database.TicketInfo.select()
+                .where(database.TicketInfo.ChannelID == interaction.channel_id)
+                .get()
             )
+            TicketOwner = await self.bot.fetch_user(query.authorID)
+
+            messages = await channel.history(limit=None).flatten()
+            authorList = []
+
+            for msg in messages:
+                if msg.author not in authorList:
+                    authorList.append(msg.author)
+            msg, transcript_file = await TicketExport(
+                self, channel, ResponseLogChannel, TicketOwner, authorList
+            )
+
             await channel.send(f"Transcript Created!\n> {msg.jump_url}")
             await asyncio.sleep(5)
             await channel.send(f"{author.mention} Alright, closing ticket.")
             await channel.delete()
+            query.delete()
+
+    @tasks.loop(hours=1.0)
+    async def TicketInactive(self):
+        TicketInfoTB = database.TicketInfo
+        for entry in TicketInfoTB:
+            channel: discord.TextChannel = await self.bot.fetch_channel(entry.ChannelID)
+            fetchMessage = await channel.history(limit=1).flatten()
+            query = (
+                database.TicketInfo.select()
+                .where(database.TicketInfo.ChannelID == entry.ChannelID)
+                .get()
+            )
+            TicketOwner = await self.bot.fetch_user(query.authorID)
+            messages = await channel.history(limit=None).flatten()
+            authorList = []
+
+            if fetchMessage[0].created_at < (datetime.now(pytz.timezone("US/Eastern")) - timedelta(
+                minutes=self.TICKET_INACTIVE_TIME
+            )):
+                await channel.send(
+                    f"Ticket has been inactive for {self.TICKET_INACTIVE_TIME} hours.\nTicket has been closed."
+                )
+                for msg in messages:
+                    if msg.author not in authorList:
+                        authorList.append(msg.author)
+
+                msg, transcript_file = await TicketExport(
+                    self, channel, None, TicketOwner, authorList
+                )
+
+
+                await channel.delete()
+                query.delete()
+
 
     @commands.command()
     async def sendCHTKTView(self, ctx):
