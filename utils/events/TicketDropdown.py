@@ -1,16 +1,26 @@
 import asyncio
 import io
+import os
 import typing
 from datetime import datetime, timedelta
 
 import chat_exporter
+import configcatclient
 import discord
 import pytz
 from core import database
 from core.common import (ACAD_ID, HR_ID, MAIN_ID, MKT_ID, TECH_ID,
                          ButtonHandler, Emoji, Others, SelectMenuHandler)
 from discord.ext import commands, tasks
+from dotenv import load_dotenv
 
+load_dotenv()
+
+if os.getenv("CONFIGCAT") is not None:
+    configcat_client = configcatclient.create_client(
+        os.getenv("CONFIGCAT"))
+else:
+    configcat_client = None
 MasterSubjectOptions = [
     discord.SelectOption(
         label="Math Helpers",
@@ -234,6 +244,7 @@ class DropdownTickets(commands.Cog):
         self.mainserver = MAIN_ID.g_main
         self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
+        self.CHID_DEFAULT = Others.CHID_DEFAULT
         self.TicketInactive.start()
 
     def cog_unload(self):
@@ -251,9 +262,13 @@ class DropdownTickets(commands.Cog):
         except KeyError:
             return
 
+        if configcat_client != None:
+            ch_dropdownid = configcat_client.get_value('ch_dropdownid', 0)
+        else: 
+            ch_dropdownid = self.CHID_DEFAULT
         if (
             interaction.guild_id == self.mainserver
-            and interaction.message.id == 903439577300213800
+            and interaction.message.id == int(ch_dropdownid)
             and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
         ):
             channel = await self.bot.fetch_channel(interaction.channel_id)

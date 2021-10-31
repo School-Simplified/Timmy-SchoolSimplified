@@ -12,6 +12,7 @@ from difflib import get_close_matches
 from pathlib import Path
 
 import chat_exporter
+import configcatclient
 import discord
 import pytz
 import requests
@@ -94,6 +95,7 @@ if os.getenv("DSN_SENTRY") is not None:
         traces_sample_rate=1.0,
         integrations=[FlaskIntegration(), sentry_logging],
     )
+
 
 # Start Check
 UpQ = database.Uptime.select().where(database.Uptime.id == 1)
