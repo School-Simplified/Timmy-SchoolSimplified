@@ -135,7 +135,7 @@ def S3_upload_file(file_name, bucket, object_name=None):
     try:
         response = s3_client.upload_file(file_name, bucket, object_name, 
             ExtraArgs={
-                'Metadata': {'Content-Type': 'text/html', 'x-amz-meta-content-type': 'binary/octet-stream'}, 
+                'ContentType': 'text/html',
                 'ACL': 'public-read'
                 }
         )
