@@ -135,11 +135,14 @@ def S3_upload_file(file_name, bucket, object_name=None):
     try:
         response = s3_client.upload_file(file_name, bucket, object_name, 
             ExtraArgs={
-                'Metadata': {'Content-Type': 'text/html'}, 
+                'ContentType': 'text/html',
                 'ACL': 'public-read'
                 }
         )
-        print(response)
+        #s3_object = s3_client.Object('ch-transcriptlogs', file_name)
+        #s3_object.metadata.update({'x-amz-meta-content-type':'text/html'})
+        #s3_object.copy_from(CopySource={'Bucket':'ch-transcriptlogs', 'x-amz-meta-content-type':'binary/octet-stream'}, Metadata=s3_object.metadata, MetadataDirective='REPLACE')
+
     except ClientError as e:
         logging.error(e)
         return False

@@ -107,7 +107,7 @@ async def TicketExport(
         f.write(myIO.getbuffer())
 
     S3_upload_file(f"transcript-{channel.name}.html", "ch-transcriptlogs")
-    S3_URL = f"[Direct Transcript Link](https://ch-transcriptlogs.s3.us-east-2.amazonaws.com/transcript-{channel.name}.html)"
+    S3_URL = f"[Direct Transcript Link](https://acad-transcripts.schoolsimplified.org/transcript-{channel.name}.html)"
     embed.add_field(name="Transcript Link", value=S3_URL)
     if response != None:
         msg = await response.send(embed=embed)
@@ -151,7 +151,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         discord.SelectOption(label="Algebra"),
         discord.SelectOption(label="Geometry"),
         discord.SelectOption(label="Precalculous"),
-        discord.SelectOption(label="Calculous"),
+        discord.SelectOption(label="Calculus"), #Calculus
         discord.SelectOption(label="Statistics"),
         discord.SelectOption(label="Other"),
     ]
