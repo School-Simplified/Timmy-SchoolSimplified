@@ -151,7 +151,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         discord.SelectOption(label="Algebra"),
         discord.SelectOption(label="Geometry"),
         discord.SelectOption(label="Precalculous"),
-        discord.SelectOption(label="Calculous"),
+        discord.SelectOption(label="Calculus"), #Calculus
         discord.SelectOption(label="Statistics"),
         discord.SelectOption(label="Other"),
     ]
