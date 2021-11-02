@@ -462,6 +462,28 @@ class BaseTickerInfo(BaseModel):
     """
     id = AutoField()
     counter = BigIntegerField()
+
+class VCDeletionQueue(BaseModel):
+    """
+    #VCDeletionQueue
+
+    `id`: AutoField()
+    Database Entry
+
+    `ChannelID`: BigIntegerField()
+    Channel ID of the Voice Channel.
+
+    `GuildID`: BigIntegerField()
+    Guild ID of the Voice Channel.
+
+    `DTF`: DateTimeField()
+    DateTime Object of when the Voice Channel was scheduled to be deleted.
+    """
+    id = AutoField()
+    ChannelID = BigIntegerField()
+    GuildID = BigIntegerField()
+    DTF = DateTimeField()
+
 app = Flask(__name__)
 
 
