@@ -49,20 +49,10 @@ MasterSubjectOptions = [
         emoji="🗣",
     ),
     discord.SelectOption(
-        label="Computer Science Helpers",
-        description="If you need help with Computer Science, click here!",
-        emoji="💻",
-    ),
-    discord.SelectOption(
-        label="Fine Art Helpers",
-        description="If you need help with Fine Arts, click here!",
-        emoji="🎨",
-    ),
-    discord.SelectOption(
         label="Other Helpers",
         description="If you need help with anything else, click here!",
         emoji="🧐",
-    ),
+    )
 ]
 
 
@@ -180,7 +170,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         discord.SelectOption(label="Chinese"),
         discord.SelectOption(label="Korean"),
         discord.SelectOption(label="Spanish"),
-        discord.SelectOption(label="Other"),
+        discord.SelectOption(label="Other Languages"),
     ]
 
     OtherOptions = [
@@ -209,8 +199,8 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['English Helpers']": EnglishOptions,
         "['Essay Helpers']": EssayOptions,
         "['Language Helpers']": LanguageOptions,
-        "['Computer Science Helpers']": MAIN_ID.cat_scienceTicket,
-        "['Fine Art Helpers']": MAIN_ID.cat_fineArtsTicket,
+        "['Computer Science Helpers']": MAIN_ID.cat_otherTicket,
+        "['Fine Art Helpers']": MAIN_ID.cat_otherTicket,
         "['Other Helpers']": OtherOptions,
     }
 
@@ -221,8 +211,8 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['English Helpers']": MAIN_ID.cat_englishTicket,
         "['Essay Helpers']": MAIN_ID.cat_essayTicket,
         "['Language Helpers']": MAIN_ID.cat_languageTicket,
-        "['Computer Science Helpers']": MAIN_ID.cat_scienceTicket,
-        "['Fine Art Helpers']": MAIN_ID.cat_fineArtsTicket,
+        "['Computer Science Helpers']": MAIN_ID.cat_otherTicket,
+        "['Fine Art Helpers']": MAIN_ID.cat_otherTicket,
         "['Other Helpers']": MAIN_ID.cat_otherTicket,
     }
     name = decodeName[value]
@@ -597,14 +587,19 @@ class DropdownTickets(commands.Cog):
             SelectMenuHandler(
                 MasterSubjectOptions,
                 "persistent_view:ticketdrop",
-                "masa short",
+                "Select a subject!",
                 1,
                 1,
                 interaction_message="Check your DM's!",
                 ephemeral=True,
             )
         )
-        await ctx.send("hello", view=MasterSubjectView)
+        await ctx.send("""**Note:** *Make sure to allow direct messages from server members!*\n
+        <:SchoolSimplified:820705120429277194> **__How to Get School Help:__**
+            > <:SS:865715703545069568> Click on the dropdown find the general subject you need help with.
+            > <:SS:865715703545069568> In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
+            > <:SS:865715703545069568> Send the question in your direct messages as per the bot instructions.
+            > <:SS:865715703545069568> Send a picture of your assignment title in your direct messages as per the bot instructions.""", view=MasterSubjectView)
 
 
 def setup(bot):

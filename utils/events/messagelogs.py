@@ -19,9 +19,6 @@ class MessageLogs(commands.Cog):
     async def on_message_delete(self, message: discord.Message):
         if message.author.bot:
             return
-
-        print(int(message.channel.id) in self.channels)
-
         if int(message.channel.id) in self.channels:
             embed = discord.Embed(
                 title="Deleted Message Log",
@@ -48,8 +45,6 @@ class MessageLogs(commands.Cog):
     async def on_message_edit(self, before, after):
         if before.author.bot:
             return
-
-        print(int(before.channel.id) in self.channels)
 
         if int(before.channel.id) in self.channels:
             embed: discord.Embed = discord.Embed(
