@@ -470,6 +470,9 @@ class VCDeletionQueue(BaseModel):
     `id`: AutoField()
     Database Entry
 
+    `discordID`: BigIntegerField()
+    Discord ID of the user.
+    
     `ChannelID`: BigIntegerField()
     Channel ID of the Voice Channel.
 
@@ -480,6 +483,7 @@ class VCDeletionQueue(BaseModel):
     DateTime Object of when the Voice Channel was scheduled to be deleted.
     """
     id = AutoField()
+    discordID = BigIntegerField()
     ChannelID = BigIntegerField()
     GuildID = BigIntegerField()
     DTF = DateTimeField()

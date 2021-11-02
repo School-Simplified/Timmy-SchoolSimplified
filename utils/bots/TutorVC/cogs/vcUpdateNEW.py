@@ -88,6 +88,10 @@ class TutorVCUpdate(commands.Cog):
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
         }
+        self.PRIVVC_DELETION_QUEUE.start()
+
+    def cog_unload(self):
+        self.PRIVVC_DELETION_QUEUE.cancel()
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -376,11 +380,14 @@ class TutorVCUpdate(commands.Cog):
             return
         for VC in database.VCDeletionQueue:
             VC: database.VCDeletionQueue = VC
+            VC.DTF = pytz.timezone("America/New_York").localize(VC.DTF)
+            TDO: timedelta = datetime.now(pytz.timezone("US/Eastern")) - VC.DTF
+            print(TDO.total_seconds())
 
-            if timedelta(minutes=2) > datetime.now(pytz.timezone("US/Eastern")) - VC.DTF:
+            if TDO.total_seconds() > 120:
                 VoiceChannel: discord.VoiceChannel = await self.bot.fetch_channel(VC.ChannelID)
                 VCGuild: discord.Guild = await self.bot.fetch_guild(VC.GuildID)
-                VCOwner: discord.Member = await VCGuild.fetch_member(VC.authorID)
+                VCOwner: discord.Member = await VCGuild.fetch_member(VC.discordID)
                 acadChannel = await self.bot.fetch_channel(self.channel_id[VCOwner.guild.id])
 
                 if VCOwner in VoiceChannel.members:

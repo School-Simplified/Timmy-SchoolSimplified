@@ -550,7 +550,10 @@ class DropdownTickets(commands.Cog):
     async def TicketInactive(self):
         TicketInfoTB = database.TicketInfo
         for entry in TicketInfoTB:
-            channel: discord.TextChannel = await self.bot.fetch_channel(entry.ChannelID)
+            try:
+                channel: discord.TextChannel = await self.bot.fetch_channel(entry.ChannelID)
+            except Exception as e:
+                return print(entry.ChannelID, e)
             fetchMessage = await channel.history(limit=1).flatten()
             query = (
                 database.TicketInfo.select()
