@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import discord
 from core import database
 from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID
-from discord.ext import commands
+from discord.ext import commands, tasks
 import pytz
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
@@ -168,130 +168,9 @@ class TutorVCUpdate(commands.Cog):
                                 None, reason="Hogging the VC Start Channel."
                             )
 
+                    query = database.VCDeletionQueue.create(discordID=member.id, GuildID=member.guild.id, ChannelID=before.channel.id, DTF = datetime.now(pytz.timezone('US/Eastern')))
+                    query.save()
                     await acadChannel.send(content=member.mention, embed=embed)
-                    await asyncio.sleep(120)
-
-                    if member in before.channel.members:
-                        return print("returned")
-
-                    else:
-                        query = database.VCChannelInfo.select().where(
-                            (database.VCChannelInfo.authorID == member.id)
-                            & (database.VCChannelInfo.ChannelID == before.channel.id)
-                            & (
-                                database.VCChannelInfo.GuildID
-                                == before.channel.guild.id
-                            )
-                        )
-                        if query.exists():
-                            query = (
-                                database.VCChannelInfo.select()
-                                .where(
-                                    (database.VCChannelInfo.authorID == member.id)
-                                    & (
-                                        database.VCChannelInfo.ChannelID
-                                        == before.channel.id
-                                    )
-                                    & (
-                                        database.VCChannelInfo.GuildID
-                                        == before.channel.guild.id
-                                    )
-                                )
-                                .get()
-                            )
-                            VCDatetime = pytz.timezone("America/New_York").localize(
-                                query.datetimeObj
-                            )
-
-                            day, now = showTotalMinutes(VCDatetime)
-                            daySTR = int(VCDatetime.timestamp())
-                            nowSTR = int(now.timestamp())
-
-                            query.delete_instance()
-
-                            try:
-                                await before.channel.delete()
-                            except Exception as e:
-                                print(f"Error Deleting Channel:\n{e}")
-                            else:
-                                embed = discord.Embed(
-                                    title=f"{Emoji.archive} {member.display_name} Total Voice Minutes",
-                                    description=f"{member.mention} you have spent a total of {Emoji.calender} "
-                                    f"`{day} minutes` in voice channel, **{query.name}**."
-                                    f"\n**THIS TIME MAY NOT BE ACCURATE**",
-                                    color=discord.Colour.gold(),
-                                )
-                                embed.set_footer(
-                                    text="The voice channel has been deleted!"
-                                )
-
-                                await acadChannel.send(
-                                    content=member.mention, embed=embed
-                                )
-                                tutorSession = (
-                                    database.TutorBot_Sessions.select().where(
-                                        database.TutorBot_Sessions.SessionID
-                                        == query.TutorBotSessionID
-                                    )
-                                )
-                                if tutorSession.exists():
-
-                                    tutorSession = tutorSession.get()
-
-                                    student = await self.bot.fetch_user(
-                                        tutorSession.StudentID
-                                    )
-                                    tutor = await self.bot.fetch_user(
-                                        tutorSession.TutorID
-                                    )
-                                    HOURCH = await self.bot.fetch_channel(
-                                        self.TutorLogID
-                                    )
-
-                                    hourlog = discord.Embed(
-                                        title="Hour Log",
-                                        description=f"{tutor.mention}'s Tutor Log",
-                                        color=discord.Colour.blue(),
-                                    )
-                                    hourlog.add_field(
-                                        name="Information",
-                                        value=f"**Tutor:** {tutor.mention}"
-                                        f"\n**Student:** {student.mention}"
-                                        f"\n**Time Started:** <t:{daySTR}>t>"
-                                        f"\n**Time Ended:** <t:{nowSTR}:t>"
-                                        f"\n\n**Total Time:** {day}",
-                                    )
-                                    hourlog.set_footer(
-                                        text=f"Session ID: {tutorSession.SessionID}"
-                                    )
-                                    await HOURCH.send(embed=embed)
-
-                                    feedback = discord.Embed(
-                                        title="Feedback!",
-                                        description="Hey it looks like you're tutor session just ended, "
-                                        "if you'd like to let us know how we did please fill "
-                                        "out the form below!"
-                                        "\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8",
-                                        color=discord.Colour.green(),
-                                    )
-                                    loggedhours = discord.Embed(
-                                        title="Logged Hours",
-                                        description="Hey! It looks like you've finished your tutor session, "
-                                        "I've already went ahead and sent your session legnth "
-                                        f"in <#{TUT_ID.ch_hourLogs}>."
-                                        "\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.",
-                                        color=discord.Color.green(),
-                                    )
-
-                                    try:
-                                        await tutor.send(embed=feedback)
-                                        await student.send(embed=loggedhours)
-                                    except discord.HTTPException:
-                                        pass
-                        else:
-                            print("no query, moving on...")
-                else:
-                    print("no")
 
         if (
             after.channel is not None
@@ -490,6 +369,142 @@ class TutorVCUpdate(commands.Cog):
                         print("Already deleted, moving on...")
 
         database.db.close()
+
+    @tasks.loop(seconds = 60)
+    async def PRIVVC_DELETION_QUEUE(self):
+        if len(database.VCDeletionQueue) == 0:
+            return
+        for VC in database.VCDeletionQueue:
+            VC: database.VCDeletionQueue = VC
+
+            if timedelta(minutes=2) > datetime.now(pytz.timezone("US/Eastern")) - VC.DTF:
+                VoiceChannel: discord.VoiceChannel = await self.bot.fetch_channel(VC.ChannelID)
+                VCGuild: discord.Guild = await self.bot.fetch_guild(VC.GuildID)
+                VCOwner: discord.Member = await VCGuild.fetch_member(VC.authorID)
+                acadChannel = await self.bot.fetch_channel(self.channel_id[VCOwner.guild.id])
+
+                if VCOwner in VoiceChannel.members:
+                    return print("returned")
+
+                else:
+                    query = database.VCChannelInfo.select().where(
+                        (database.VCChannelInfo.authorID == VCOwner.id)
+                        & (database.VCChannelInfo.ChannelID == VoiceChannel.id)
+                        & (
+                            database.VCChannelInfo.GuildID
+                            == VoiceChannel.guild.id
+                        )
+                    )
+                    if query.exists():
+                        query = (
+                            database.VCChannelInfo.select()
+                            .where(
+                                (database.VCChannelInfo.authorID == VCOwner.id)
+                                & (
+                                    database.VCChannelInfo.ChannelID
+                                    == VoiceChannel.id
+                                )
+                                & (
+                                    database.VCChannelInfo.GuildID
+                                    == VoiceChannel.guild.id
+                                )
+                            )
+                            .get()
+                        )
+                        VCDatetime = pytz.timezone("America/New_York").localize(
+                            query.datetimeObj
+                        )
+
+                        day, now = showTotalMinutes(VCDatetime)
+                        daySTR = int(VCDatetime.timestamp())
+                        nowSTR = int(now.timestamp())
+
+                        query.delete_instance()
+
+                        try:
+                            await VoiceChannel.delete()
+                        except Exception as e:
+                            print(f"Error Deleting Channel:\n{e}")
+                        else:
+                            embed = discord.Embed(
+                                title=f"{Emoji.archive} {VCOwner.display_name} Total Voice Minutes",
+                                description=f"{VCOwner.mention} you have spent a total of {Emoji.calender} "
+                                f"`{day} minutes` in voice channel, **{query.name}**."
+                                f"\n**THIS TIME MAY NOT BE ACCURATE**",
+                                color=discord.Colour.gold(),
+                            )
+                            embed.set_footer(
+                                text="The voice channel has been deleted!"
+                            )
+
+                            await acadChannel.send(
+                                content=VCOwner.mention, embed=embed
+                            )
+                            tutorSession = (
+                                database.TutorBot_Sessions.select().where(
+                                    database.TutorBot_Sessions.SessionID
+                                    == query.TutorBotSessionID
+                                )
+                            )
+                            if tutorSession.exists():
+
+                                tutorSession = tutorSession.get()
+
+                                student = await self.bot.fetch_user(
+                                    tutorSession.StudentID
+                                )
+                                tutor = await self.bot.fetch_user(
+                                    tutorSession.TutorID
+                                )
+                                HOURCH = await self.bot.fetch_channel(
+                                    self.TutorLogID
+                                )
+
+                                hourlog = discord.Embed(
+                                    title="Hour Log",
+                                    description=f"{tutor.mention}'s Tutor Log",
+                                    color=discord.Colour.blue(),
+                                )
+                                hourlog.add_field(
+                                    name="Information",
+                                    value=f"**Tutor:** {tutor.mention}"
+                                    f"\n**Student:** {student.mention}"
+                                    f"\n**Time Started:** <t:{daySTR}>t>"
+                                    f"\n**Time Ended:** <t:{nowSTR}:t>"
+                                    f"\n\n**Total Time:** {day}",
+                                )
+                                hourlog.set_footer(
+                                    text=f"Session ID: {tutorSession.SessionID}"
+                                )
+                                await HOURCH.send(embed=embed)
+
+                                feedback = discord.Embed(
+                                    title="Feedback!",
+                                    description="Hey it looks like you're tutor session just ended, "
+                                    "if you'd like to let us know how we did please fill "
+                                    "out the form below!"
+                                    "\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8",
+                                    color=discord.Colour.green(),
+                                )
+                                loggedhours = discord.Embed(
+                                    title="Logged Hours",
+                                    description="Hey! It looks like you've finished your tutor session, "
+                                    "I've already went ahead and sent your session legnth "
+                                    f"in <#{TUT_ID.ch_hourLogs}>."
+                                    "\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.",
+                                    color=discord.Color.green(),
+                                )
+
+                                try:
+                                    await tutor.send(embed=feedback)
+                                    await student.send(embed=loggedhours)
+                                except discord.HTTPException:
+                                    pass
+                    else:
+                        print("no query, moving on...")
+            else:
+                print("Did not give 2 minutes, moving on...")
+
 
 
 def setup(bot):
