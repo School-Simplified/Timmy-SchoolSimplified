@@ -427,6 +427,7 @@ class TutorVCUpdate(commands.Cog):
                         nowSTR = int(now.timestamp())
 
                         query.delete_instance()
+                        VC.delete_instance()
 
                         try:
                             await VoiceChannel.delete()
