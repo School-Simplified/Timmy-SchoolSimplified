@@ -520,7 +520,8 @@ tables = {
     "TicketInfo": TicketInfo,
     "PunishmentTag": PunishmentTag,
     "CTag:": CTag,
-    "BaseTickerInfo": BaseTickerInfo
+    "BaseTickerInfo": BaseTickerInfo,
+    "VCDeletionQueue": VCDeletionQueue
 }
 
 iter_table(tables)
