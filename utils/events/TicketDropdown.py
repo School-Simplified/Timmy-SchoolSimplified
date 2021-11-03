@@ -649,9 +649,8 @@ class DropdownTickets(commands.Cog):
             msg, transcript_file, url = await TicketExport(
                 self, channel, ResponseLogChannel, TicketOwner, authorList
             )
-            S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
-            print(transcript_file.filename)
-            os.remove(transcript_file.filename)
+            #S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
+            #print(transcript_file.filename)
 
             try:
                 await msgO.edit(
