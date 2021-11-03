@@ -27,9 +27,9 @@ class CoreBotConfig(commands.Cog):
     async def filter(self):
         pass
 
-    @filter.command()
+    @commands.command()
     @is_botAdmin4
-    async def modify(self, ctx, num: int, val: bool):
+    async def Fmodify(self, ctx, num: int, val: bool):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
             .where(database.CheckInformation.id == 1)

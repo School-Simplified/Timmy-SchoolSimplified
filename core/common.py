@@ -122,11 +122,9 @@ def S3_upload_file(file_name, bucket, object_name=None):
     :param object_name: S3 object name. If not specified then file_name is used
     :return: True if file was uploaded, else False
     """
-
     # If S3 object_name was not specified, use file_name
     if object_name is None:
         object_name = os.path.basename(file_name)
-
     # Upload the file
     s3_client = boto3.client(
         "s3",
@@ -146,9 +144,8 @@ def S3_upload_file(file_name, bucket, object_name=None):
         # s3_object.copy_from(CopySource={'Bucket':'ch-transcriptlogs', 'x-amz-meta-content-type':'binary/octet-stream'}, Metadata=s3_object.metadata, MetadataDirective='REPLACE')
 
     except ClientError as e:
-        logging.error(e)
-        return False
-    return True
+        print(e)
+    
 
 
 class MAIN_ID:
@@ -416,6 +413,7 @@ class Emoji:
 
     timmyBook = "<:timmy_book:880875405962264667>"
     loadingGIF = "<a:Loading:904192577094426626>"
+    loadingGIF2="<a:Loading:905563298089541673>"
 
 
 class hexColors:
@@ -512,6 +510,7 @@ class SelectMenuHandler(ui.Select):
         interaction_message: typing.Union[str, None] = None,
         ephemeral: bool = True,
         coroutine: coroutineType = None,
+        view_response = None
     ):
         """
         Parameters:
@@ -537,6 +536,7 @@ class SelectMenuHandler(ui.Select):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
+        self.view_response = view_response
 
         if self.custom_id_:
             super().__init__(
@@ -563,7 +563,8 @@ class SelectMenuHandler(ui.Select):
             if self.custom_id_ is None:
                 self.view.value = self.values[0]
             else:
-                self.view.value = self.custom_id_
+                #self.view.value = self.custom_id_
+                self.view_response = self.values[0]
 
             if self.interaction_message_:
                 await interaction.response.send_message(
