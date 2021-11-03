@@ -450,6 +450,7 @@ class TicketInfo(BaseModel):
     ChannelID = BigIntegerField()
     authorID = BigIntegerField()
 
+
 class BaseTickerInfo(BaseModel):
     """
     #BaseTickerInfo
@@ -460,8 +461,10 @@ class BaseTickerInfo(BaseModel):
     `counter`: BigIntegerField()
     Counter for the total amount of channels.
     """
+
     id = AutoField()
     counter = BigIntegerField()
+
 
 class VCDeletionQueue(BaseModel):
     """
@@ -472,7 +475,7 @@ class VCDeletionQueue(BaseModel):
 
     `discordID`: BigIntegerField()
     Discord ID of the user.
-    
+
     `ChannelID`: BigIntegerField()
     Channel ID of the Voice Channel.
 
@@ -482,11 +485,13 @@ class VCDeletionQueue(BaseModel):
     `DTF`: DateTimeField()
     DateTime Object of when the Voice Channel was scheduled to be deleted.
     """
+
     id = AutoField()
     discordID = BigIntegerField()
     ChannelID = BigIntegerField()
     GuildID = BigIntegerField()
     DTF = DateTimeField()
+
 
 app = Flask(__name__)
 
@@ -525,7 +530,7 @@ tables = {
     "PunishmentTag": PunishmentTag,
     "CTag:": CTag,
     "BaseTickerInfo": BaseTickerInfo,
-    "VCDeletionQueue": VCDeletionQueue
+    "VCDeletionQueue": VCDeletionQueue,
 }
 
 iter_table(tables)

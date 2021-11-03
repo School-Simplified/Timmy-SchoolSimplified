@@ -9,9 +9,18 @@ import chat_exporter
 import discord
 import pytz
 from core import database
-from core.common import (ACAD_ID, HR_ID, MAIN_ID, MKT_ID, TECH_ID,
-                         ButtonHandler, Emoji, Others, S3_upload_file,
-                         SelectMenuHandler)
+from core.common import (
+    ACAD_ID,
+    HR_ID,
+    MAIN_ID,
+    MKT_ID,
+    TECH_ID,
+    ButtonHandler,
+    Emoji,
+    Others,
+    S3_upload_file,
+    SelectMenuHandler,
+)
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
@@ -52,7 +61,7 @@ MasterSubjectOptions = [
         label="Other Helpers",
         description="If you need help with anything else, click here!",
         emoji="🧐",
-    )
+    ),
 ]
 
 
@@ -61,7 +70,7 @@ async def TicketExport(
     channel: discord.TextChannel,
     response: discord.TextChannel = None,
     user: discord.User = None,
-    responsesauthor: typing.List[discord.User] = None
+    responsesauthor: typing.List[discord.User] = None,
 ):
     transcript = await chat_exporter.export(channel, None)
     query = (
@@ -85,14 +94,14 @@ async def TicketExport(
     embed.add_field(name="Category", value=channel.category.name)
     embed.set_footer(text="Transcript Attached Above")
     var = transcript.encode()
-    #print(var)
+    # print(var)
 
     transcript_file = discord.File(
         io.BytesIO(var), filename=f"transcript-{channel.name}.html"
     )
 
     myIO = BytesIO()
-    myIO.write(var) 
+    myIO.write(var)
     with open(f"transcript-{channel.name}.html", "wb") as f:
         f.write(myIO.getbuffer())
 
@@ -104,15 +113,15 @@ async def TicketExport(
     if responsesauthor != None:
         for UAuthor in responsesauthor:
             try:
-                await UAuthor.send(embed = embed)
+                await UAuthor.send(embed=embed)
             except Exception:
                 continue
         if user not in responsesauthor:
             try:
-                await user.send(embed = embed)
+                await user.send(embed=embed)
             except Exception:
                 pass
-        
+
     return msg, transcript_file, S3_URL
 
 
@@ -141,7 +150,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         discord.SelectOption(label="Algebra"),
         discord.SelectOption(label="Geometry"),
         discord.SelectOption(label="Precalculous"),
-        discord.SelectOption(label="Calculus"), #Calculus
+        discord.SelectOption(label="Calculus"),  # Calculus
         discord.SelectOption(label="Statistics"),
         discord.SelectOption(label="Other"),
     ]
@@ -236,7 +245,7 @@ class DropdownTickets(commands.Cog):
 
     def cog_unload(self):
         self.TicketInactive.cancel()
-    
+
     @commands.Cog.listener("on_interaction")
     async def TicketDropdown(self, interaction: discord.Interaction):
         InteractionResponse = interaction.data
@@ -259,11 +268,15 @@ class DropdownTickets(commands.Cog):
             author = interaction.user
             DMChannel = await author.create_dm()
             try:
-                await interaction.response.send_message("Check your DM's!", ephemeral=True)
+                await interaction.response.send_message(
+                    "Check your DM's!", ephemeral=True
+                )
             except Exception:
                 await interaction.followup.send("Check your DM's!", ephemeral=True)
             except Exception:
-                await interaction.channel.send(f"{interaction.user.mention} Check your DM's!", delete_after=5.0)
+                await interaction.channel.send(
+                    f"{interaction.user.mention} Check your DM's!", delete_after=5.0
+                )
 
             def check(m):
                 return (
@@ -295,7 +308,7 @@ class DropdownTickets(commands.Cog):
                 try:
                     await DMChannel.send(embed=embed, view=MiscOptList)
                 except Exception as e:
-                    await interaction.followup.user.send(embed=embed, view=MiscOptList)
+                    await interaction.followup.send(embed=embed, view=MiscOptList)
                 timeout = await MiscOptList.wait()
                 if not timeout:
                     selection_str = MiscOptList.value
@@ -337,7 +350,9 @@ class DropdownTickets(commands.Cog):
             CounterNum.counter = CounterNum.counter + 1
             CounterNum.save()
 
-            LDC = await DMChannel.send(f"Please wait, creating your ticket {Emoji.loadingGIF}")
+            LDC = await DMChannel.send(
+                f"Please wait, creating your ticket {Emoji.loadingGIF}"
+            )
             channel: discord.TextChannel = await guild.create_text_channel(
                 f"{selection_str}-{TNUM}", category=c
             )
@@ -396,7 +411,9 @@ class DropdownTickets(commands.Cog):
             attachmentlist = ", ".join(attachmentlist)
 
             try:
-                embed = discord.Embed(title="Ticket Information", color=discord.Colour.blue())
+                embed = discord.Embed(
+                    title="Ticket Information", color=discord.Colour.blue()
+                )
                 embed.set_author(
                     name=f"{interaction.user.name}#{interaction.user.discriminator}",
                     url=interaction.user.avatar.url,
@@ -404,11 +421,13 @@ class DropdownTickets(commands.Cog):
                 )
                 embed.add_field(name="Question:", value=answer1.content, inline=False)
                 embed.add_field(name="Attachment URL:", value=attachmentlist)
-                #embed.set_image(url=attachmentlist[0])
+                # embed.set_image(url=attachmentlist[0])
                 await channel.send(embed=embed)
             except Exception as e:
                 print(e)
-                await channel.send(f"**Ticket Information**\n\nQuestion: {answer1.content}")
+                await channel.send(
+                    f"**Ticket Information**\n\nQuestion: {answer1.content}"
+                )
                 await channel.send(f"Attachment URL: {str(attachmentlist)}")
 
             await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
@@ -447,7 +466,13 @@ class DropdownTickets(commands.Cog):
                     button_user=author,
                 )
             )
-            await channel.send(embed=embed, view=ButtonViews)
+            try:
+                await interaction.followup.send(embed=embed, view=ButtonViews)
+            except Exception:
+                try:
+                    await interaction.response.send_message(embed=embed, view=ButtonViews)
+                except Exception:
+                    await interaction.channel.send(embed=embed, view=ButtonViews)
 
         elif InteractionResponse["custom_id"] == "ch_lock_CONFIRM":
             channel = interaction.message.channel
@@ -502,7 +527,7 @@ class DropdownTickets(commands.Cog):
         elif InteractionResponse["custom_id"] == "ch_lock_CANCEL":
             channel = interaction.message.channel
             author = interaction.user
-            await channel.send(
+            await interaction.channel.send(
                 f"{author.mention} Alright, canceling request.", delete_after=5.0
             )
             await interaction.message.delete()
@@ -511,7 +536,7 @@ class DropdownTickets(commands.Cog):
             channel = await self.bot.fetch_channel(interaction.channel_id)
             author = interaction.user
 
-            await channel.send(
+            await interaction.response.send_message(
                 f"{author.mention} Alright, canceling request.", delete_after=5.0
             )
             await interaction.message.delete()
@@ -524,8 +549,9 @@ class DropdownTickets(commands.Cog):
             msg, file, S3_URL = await TicketExport(
                 self, channel, ResponseLogChannel, author
             )
-            await channel.send(f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}")
-            
+            await interaction.response.send_message(
+                f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}"
+            )
 
         elif InteractionResponse["custom_id"] == "ch_lock_C&D":
             channel = await self.bot.fetch_channel(interaction.channel_id)
@@ -551,7 +577,19 @@ class DropdownTickets(commands.Cog):
             print(transcript_file.filename)
             os.remove(transcript_file.filename)
 
-            await channel.send(f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}")
+            try:
+                await interaction.response.send_message(
+                    f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                )
+            except Exception:
+                try:
+                    await interaction.followup.send(
+                        f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                    )
+                except Exception:
+                    await interaction.channel.send(
+                        f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                    )
             await asyncio.sleep(5)
             await channel.send(f"{author.mention} Alright, closing ticket.")
             await channel.delete()
@@ -562,7 +600,9 @@ class DropdownTickets(commands.Cog):
         TicketInfoTB = database.TicketInfo
         for entry in TicketInfoTB:
             try:
-                channel: discord.TextChannel = await self.bot.fetch_channel(entry.ChannelID)
+                channel: discord.TextChannel = await self.bot.fetch_channel(
+                    entry.ChannelID
+                )
             except Exception as e:
                 return print(entry.ChannelID, e)
             fetchMessage = await channel.history(limit=1).flatten()
@@ -575,9 +615,10 @@ class DropdownTickets(commands.Cog):
             messages = await channel.history(limit=None).flatten()
             authorList = []
 
-            if fetchMessage[0].created_at < (datetime.now(pytz.timezone("US/Eastern")) - timedelta(
-                minutes=self.TICKET_INACTIVE_TIME
-            )):
+            if fetchMessage[0].created_at < (
+                datetime.now(pytz.timezone("US/Eastern"))
+                - timedelta(minutes=self.TICKET_INACTIVE_TIME)
+            ):
                 await channel.send(
                     f"Ticket has been inactive for {self.TICKET_INACTIVE_TIME} hours.\nTicket has been closed."
                 )
@@ -589,10 +630,8 @@ class DropdownTickets(commands.Cog):
                     self, channel, None, TicketOwner, authorList
                 )
 
-
                 await channel.delete()
                 query.delete()
-
 
     @commands.command()
     async def sendCHTKTView(self, ctx):
@@ -608,12 +647,15 @@ class DropdownTickets(commands.Cog):
                 ephemeral=True,
             )
         )
-        await ctx.send("""**Note:** *Make sure to allow direct messages from server members!*\n
+        await ctx.send(
+            """**Note:** *Make sure to allow direct messages from server members!*\n
         <:SchoolSimplified:820705120429277194> **__How to Get School Help:__**
             > <:SS:865715703545069568> Click on the dropdown find the general subject you need help with.
             > <:SS:865715703545069568> In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
             > <:SS:865715703545069568> Send the question in your direct messages as per the bot instructions.
-            > <:SS:865715703545069568> Send a picture of your assignment title in your direct messages as per the bot instructions.""", view=MasterSubjectView)
+            > <:SS:865715703545069568> Send a picture of your assignment title in your direct messages as per the bot instructions.""",
+            view=MasterSubjectView,
+        )
 
 
 def setup(bot):
