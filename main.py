@@ -26,9 +26,19 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 from tqdm import tqdm
 
 from core import database
-from core.common import (MAIN_ID, TECH_ID, TUT_ID, Emoji, LockButton, Others,
-                         bcolors, get_extensions, getGuildList, hexColors,
-                         id_generator)
+from core.common import (
+    MAIN_ID,
+    TECH_ID,
+    TUT_ID,
+    Emoji,
+    LockButton,
+    Others,
+    bcolors,
+    get_extensions,
+    getGuildList,
+    hexColors,
+    id_generator,
+)
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
 

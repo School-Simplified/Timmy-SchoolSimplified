@@ -113,6 +113,7 @@ def prompt_config2(msg, key):
     with config_file.open("w+") as f:
         json.dump(config, f, indent=4)
 
+
 def S3_upload_file(file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket
 
@@ -127,26 +128,28 @@ def S3_upload_file(file_name, bucket, object_name=None):
         object_name = os.path.basename(file_name)
 
     # Upload the file
-    s3_client =  boto3.client('s3',
-        aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID'),
-        aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY'),
-        region_name = 'us-east-2'
+    s3_client = boto3.client(
+        "s3",
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+        region_name="us-east-2",
     )
     try:
-        response = s3_client.upload_file(file_name, bucket, object_name, 
-            ExtraArgs={
-                'ContentType': 'text/html',
-                'ACL': 'public-read'
-                }
+        response = s3_client.upload_file(
+            file_name,
+            bucket,
+            object_name,
+            ExtraArgs={"ContentType": "text/html", "ACL": "public-read"},
         )
-        #s3_object = s3_client.Object('ch-transcriptlogs', file_name)
-        #s3_object.metadata.update({'x-amz-meta-content-type':'text/html'})
-        #s3_object.copy_from(CopySource={'Bucket':'ch-transcriptlogs', 'x-amz-meta-content-type':'binary/octet-stream'}, Metadata=s3_object.metadata, MetadataDirective='REPLACE')
+        # s3_object = s3_client.Object('ch-transcriptlogs', file_name)
+        # s3_object.metadata.update({'x-amz-meta-content-type':'text/html'})
+        # s3_object.copy_from(CopySource={'Bucket':'ch-transcriptlogs', 'x-amz-meta-content-type':'binary/octet-stream'}, Metadata=s3_object.metadata, MetadataDirective='REPLACE')
 
     except ClientError as e:
         logging.error(e)
         return False
     return True
+
 
 class MAIN_ID:
     """

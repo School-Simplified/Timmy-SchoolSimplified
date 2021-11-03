@@ -172,8 +172,8 @@ class TutorVCUpdate(commands.Cog):
                                 None, reason="Hogging the VC Start Channel."
                             )
 
-                    #query = database.VCDeletionQueue.create(discordID=member.id, GuildID=member.guild.id, ChannelID=before.channel.id, DTF = datetime.now(pytz.timezone('US/Eastern')))
-                    #query.save()
+                    # query = database.VCDeletionQueue.create(discordID=member.id, GuildID=member.guild.id, ChannelID=before.channel.id, DTF = datetime.now(pytz.timezone('US/Eastern')))
+                    # query.save()
                     await acadChannel.send(content=member.mention, embed=embed)
                     await asyncio.sleep(120)
 
@@ -497,7 +497,7 @@ class TutorVCUpdate(commands.Cog):
 
         database.db.close()
 
-    @tasks.loop(seconds = 60)
+    @tasks.loop(seconds=60)
     async def PRIVVC_DELETION_QUEUE(self):
         return
         if len(database.VCDeletionQueue) == 0:
@@ -511,14 +511,18 @@ class TutorVCUpdate(commands.Cog):
             if TDO.total_seconds() > 120:
                 print(VC.ChannelID)
                 try:
-                    VoiceChannel: discord.VoiceChannel = await self.bot.fetch_channel(VC.ChannelID)
+                    VoiceChannel: discord.VoiceChannel = await self.bot.fetch_channel(
+                        VC.ChannelID
+                    )
                 except Exception as e:
                     print(f"Error Fetching Channel:\n{e}")
                     VC.delete_instance()
                     continue
                 VCGuild: discord.Guild = await self.bot.fetch_guild(VC.GuildID)
                 VCOwner: discord.Member = await VCGuild.fetch_member(VC.discordID)
-                acadChannel = await self.bot.fetch_channel(self.channel_id[VCOwner.guild.id])
+                acadChannel = await self.bot.fetch_channel(
+                    self.channel_id[VCOwner.guild.id]
+                )
 
                 if len(VoiceChannel.members) != 0:
                     if VCOwner in VoiceChannel.members:
@@ -528,20 +532,14 @@ class TutorVCUpdate(commands.Cog):
                     query = database.VCChannelInfo.select().where(
                         (database.VCChannelInfo.authorID == VCOwner.id)
                         & (database.VCChannelInfo.ChannelID == VoiceChannel.id)
-                        & (
-                            database.VCChannelInfo.GuildID
-                            == VoiceChannel.guild.id
-                        )
+                        & (database.VCChannelInfo.GuildID == VoiceChannel.guild.id)
                     )
                     if query.exists():
                         query = (
                             database.VCChannelInfo.select()
                             .where(
                                 (database.VCChannelInfo.authorID == VCOwner.id)
-                                & (
-                                    database.VCChannelInfo.ChannelID
-                                    == VoiceChannel.id
-                                )
+                                & (database.VCChannelInfo.ChannelID == VoiceChannel.id)
                                 & (
                                     database.VCChannelInfo.GuildID
                                     == VoiceChannel.guild.id
@@ -572,18 +570,12 @@ class TutorVCUpdate(commands.Cog):
                                 f"\n**THIS TIME MAY NOT BE ACCURATE**",
                                 color=discord.Colour.gold(),
                             )
-                            embed.set_footer(
-                                text="The voice channel has been deleted!"
-                            )
+                            embed.set_footer(text="The voice channel has been deleted!")
 
-                            await acadChannel.send(
-                                content=VCOwner.mention, embed=embed
-                            )
-                            tutorSession = (
-                                database.TutorBot_Sessions.select().where(
-                                    database.TutorBot_Sessions.SessionID
-                                    == query.TutorBotSessionID
-                                )
+                            await acadChannel.send(content=VCOwner.mention, embed=embed)
+                            tutorSession = database.TutorBot_Sessions.select().where(
+                                database.TutorBot_Sessions.SessionID
+                                == query.TutorBotSessionID
                             )
                             if tutorSession.exists():
 
@@ -592,12 +584,8 @@ class TutorVCUpdate(commands.Cog):
                                 student = await self.bot.fetch_user(
                                     tutorSession.StudentID
                                 )
-                                tutor = await self.bot.fetch_user(
-                                    tutorSession.TutorID
-                                )
-                                HOURCH = await self.bot.fetch_channel(
-                                    self.TutorLogID
-                                )
+                                tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                                HOURCH = await self.bot.fetch_channel(self.TutorLogID)
 
                                 hourlog = discord.Embed(
                                     title="Hour Log",
@@ -643,7 +631,6 @@ class TutorVCUpdate(commands.Cog):
                         print("no query, moving on...")
             else:
                 print("Did not give 2 minutes, moving on...")
-
 
 
 def setup(bot):
