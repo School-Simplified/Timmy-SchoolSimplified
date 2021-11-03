@@ -209,7 +209,7 @@ class VerificationStaff(commands.Cog):
                         "I didn't seem to find any roles to give you, please try requesting them in <#878679747255750696>!",
                         ephemeral=True,
                     )
-                except discord.errors.InteractionResponded:
+                except discord.InteractionResponded:
                     try:
                         await interaction.followup.send(
                             "I didn't seem to find any roles to give you, please try requesting them in <#878679747255750696>!",

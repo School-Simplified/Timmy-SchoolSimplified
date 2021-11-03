@@ -26,6 +26,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+class TicketButton(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.value = None
+
+    @discord.ui.button(
+        label="Create Ticket",
+        style=discord.ButtonStyle.blurple,
+        custom_id="persistent_view:ticketdrop",
+        emoji="📝",
+    )
+    async def verify(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.value = True
+
 MasterSubjectOptions = [
     discord.SelectOption(
         label="Math Helpers",
@@ -86,15 +100,14 @@ async def TicketExport(
     embed = discord.Embed(title="Channel Transcript", color=discord.Colour.green())
     embed.set_author(
         name=f"{user.name}#{user.discriminator}",
-        url=user.avatar.url,
-        icon_url=user.avatar.url,
+        url=user.display_avatar.url,
+        icon_url=user.display_avatar.url,
     )
     embed.add_field(name="Transcript Owner", value=TicketOwner.mention)
     embed.add_field(name="Ticket Name", value=channel.name, inline=False)
     embed.add_field(name="Category", value=channel.category.name)
     embed.set_footer(text="Transcript Attached Above")
     var = transcript.encode()
-    # print(var)
 
     transcript_file = discord.File(
         io.BytesIO(var), filename=f"transcript-{channel.name}.html"
@@ -121,6 +134,8 @@ async def TicketExport(
                 await user.send(embed=embed)
             except Exception:
                 pass
+
+    os.remove(f"transcript-{channel.name}.html")
 
     return msg, transcript_file, S3_URL
 
@@ -149,7 +164,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
     MathOptions = [
         discord.SelectOption(label="Algebra"),
         discord.SelectOption(label="Geometry"),
-        discord.SelectOption(label="Precalculous"),
+        discord.SelectOption(label="Precalculus"),
         discord.SelectOption(label="Calculus"),  # Calculus
         discord.SelectOption(label="Statistics"),
         discord.SelectOption(label="Other"),
@@ -260,7 +275,7 @@ class DropdownTickets(commands.Cog):
 
         if (
             interaction.guild_id == self.mainserver
-            and interaction.message.id == int(self.CHID_DEFAULT)
+            #and interaction.message.id == int(self.CHID_DEFAULT)
             and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
         ):
             channel = await self.bot.fetch_channel(interaction.channel_id)
@@ -284,13 +299,28 @@ class DropdownTickets(commands.Cog):
                     and m.channel == DMChannel
                     and m.author.id is author.id
                 )
+            
+            MSV = discord.ui.View()
+            var = SelectMenuHandler(
+                    MasterSubjectOptions,
+                    "persistent_view:ticketdrop",
+                    "Click a subject!"
+                )
+            MSV.add_item(
+                var
+            )
+            await DMChannel.send("**Let's start this!**\nStart off by selecting a subject that matches what your ticket is about!", view = MSV)
+            timeout = await MSV.wait()
+            if not timeout:
+                MasterSubjectView = var.view_response
+            else:
+                return await DMChannel.send("Timed out, try again later.")
 
-            ViewResponse = str(InteractionResponse["values"])
+            ViewResponse = str(MasterSubjectView)
             print(ViewResponse)
-            TypeSubject, CategoryID, OptList = decodeDict(self, ViewResponse)
+            TypeSubject, CategoryID, OptList = decodeDict(self, f"['{ViewResponse}']")
             print(f"CATID: {CategoryID}")
             c = discord.utils.get(guild.categories, id=int(CategoryID))
-            print(c)
 
             if not TypeSubject == OptList:
                 MiscOptList = discord.ui.View()
@@ -303,12 +333,13 @@ class DropdownTickets(commands.Cog):
                 )
 
                 embed = discord.Embed(
-                    title="1) Ticket Info", color=discord.Color.gold()
+                    title="1) Ticket Info", description="Select a more specific topic!", color=discord.Color.gold()
                 )
                 try:
                     await DMChannel.send(embed=embed, view=MiscOptList)
                 except Exception as e:
                     await interaction.followup.send(embed=embed, view=MiscOptList)
+
                 timeout = await MiscOptList.wait()
                 if not timeout:
                     selection_str = MiscOptList.value
@@ -317,7 +348,7 @@ class DropdownTickets(commands.Cog):
             else:
                 selection_str = TypeSubject
 
-            embed = discord.Embed(title="2) Send Question", color=discord.Color.blue())
+            embed = discord.Embed(title="2) Send Question", description="Whats your question?", color=discord.Color.blue())
             await DMChannel.send(embed=embed)
             answer1 = await self.bot.wait_for("message", check=check)
             if answer1.content is None or answer1.content == "" or answer1.content == " ":
@@ -328,6 +359,7 @@ class DropdownTickets(commands.Cog):
                 description="**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.",
                 color=discord.Color.blue(),
             )
+            embed.set_footer(text="We need images/urls as proof that you aren't cheating, School Simplified does not offer assistance on assessments.")
 
             await DMChannel.send(embed=embed)
             answer2: discord.Message = await self.bot.wait_for("message", check=check)
@@ -376,7 +408,6 @@ class DropdownTickets(commands.Cog):
                 "Bot: TeXit",
             ]
             for role in roles:
-                print(role)
                 RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
                 await channel.set_permissions(
                     RoleOBJ,
@@ -470,11 +501,11 @@ class DropdownTickets(commands.Cog):
             )
             try:
                 await interaction.followup.send(embed=embed, view=ButtonViews)
-            except Exception:
+            except:
                 try:
                     await interaction.response.send_message(embed=embed, view=ButtonViews)
-                except Exception:
-                    await interaction.channel.send(embed=embed, view=ButtonViews)
+                except:
+                    await channel.send(embed=embed, view=ButtonViews)
 
         elif InteractionResponse["custom_id"] == "ch_lock_CONFIRM":
             channel = interaction.message.channel
@@ -497,6 +528,7 @@ class DropdownTickets(commands.Cog):
                 description="Click an appropriate button.",
                 color=discord.Colour.red(),
             )
+            embed.set_footer(text = "This ticket has been closed!")
             ButtonViews2 = discord.ui.View()
 
             ButtonViews2.add_item(
@@ -513,6 +545,14 @@ class DropdownTickets(commands.Cog):
                     label="Create Transcript",
                     custom_id="ch_lock_T",
                     emoji="📝",
+                )
+            )
+            ButtonViews2.add_item(
+                ButtonHandler(
+                    style=discord.ButtonStyle.grey,
+                    label="Re-Open Ticket",
+                    custom_id="ch_lock_R",
+                    emoji="🔓",
                 )
             )
             ButtonViews2.add_item(
@@ -547,18 +587,46 @@ class DropdownTickets(commands.Cog):
                     f"{author.mention} Alright, canceling request.", delete_after=5.0
                 )
             await interaction.message.delete()
+        
+        elif InteractionResponse["custom_id"] == "ch_lock_R":
+            """
+            Re-open Ticket
+            """
+            channel = await self.bot.fetch_channel(interaction.channel_id)
+            author = interaction.user
+            guild = interaction.message.guild
+            query = (
+                database.TicketInfo.select()
+                .where(database.TicketInfo.ChannelID == interaction.channel_id)
+                .get()
+            )
+            TicketOwner = await guild.fetch_member(query.authorID)
+            await channel.set_permissions(
+                TicketOwner, read_messages=True, reason="Ticket Perms ReOpen (User)"
+            )
+            
+            try:
+                await interaction.response.send_message(
+                    f"{author.mention} Ticket has been re-opened.", delete_after=5.0
+                )
+            except Exception:
+                await interaction.channel.send(
+                    f"{author.mention} Ticket has been re-opened.", delete_after=5.0
+                )
+            await interaction.message.delete()
+
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":
             channel = await self.bot.fetch_channel(interaction.channel_id)
             ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
             author = interaction.user
+            msg = await interaction.channel.send(f"Please wait, creating your transcript {Emoji.loadingGIF2}")
 
             msg, file, S3_URL = await TicketExport(
                 self, channel, ResponseLogChannel, author
             )
-            await interaction.response.send_message(
-                f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}"
-            )
+            await msg.delete()
+            await interaction.channel.send(f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}")
 
         elif InteractionResponse["custom_id"] == "ch_lock_C&D":
             channel = await self.bot.fetch_channel(interaction.channel_id)
@@ -569,6 +637,7 @@ class DropdownTickets(commands.Cog):
                 .where(database.TicketInfo.ChannelID == interaction.channel_id)
                 .get()
             )
+            msgO = await interaction.channel.send(f"Please wait, generating a transcript {Emoji.loadingGIF2}")
             TicketOwner = await self.bot.fetch_user(query.authorID)
 
             messages = await channel.history(limit=None).flatten()
@@ -585,16 +654,16 @@ class DropdownTickets(commands.Cog):
             os.remove(transcript_file.filename)
 
             try:
-                await interaction.response.send_message(
+                await msgO.edit(
                     f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                 )
             except Exception:
                 try:
-                    await interaction.followup.send(
+                    await msgO.edit(
                         f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                     )
                 except Exception:
-                    await interaction.channel.send(
+                    await msgO.edit(
                         f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                     )
             await asyncio.sleep(5)
@@ -647,7 +716,7 @@ class DropdownTickets(commands.Cog):
             SelectMenuHandler(
                 MasterSubjectOptions,
                 "persistent_view:ticketdrop",
-                "Select a subject!",
+                "Click here to start a ticket!",
                 1,
                 1,
                 interaction_message="Check your DM's!",
@@ -657,11 +726,11 @@ class DropdownTickets(commands.Cog):
         await ctx.send(
             """**Note:** *Make sure to allow direct messages from server members!*\n
         <:SchoolSimplified:820705120429277194> **__How to Get School Help:__**
-            > <:SS:865715703545069568> Click on the dropdown find the general subject you need help with.
+            > <:SS:865715703545069568> Click on the button to start the process.
             > <:SS:865715703545069568> In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
             > <:SS:865715703545069568> Send the question in your direct messages as per the bot instructions.
             > <:SS:865715703545069568> Send a picture of your assignment title in your direct messages as per the bot instructions.""",
-            view=MasterSubjectView,
+            view=TicketButton(),
         )
 
 
