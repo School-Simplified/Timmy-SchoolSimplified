@@ -258,6 +258,12 @@ class DropdownTickets(commands.Cog):
             guild = interaction.message.guild
             author = interaction.user
             DMChannel = await author.create_dm()
+            try:
+                await interaction.response.send_message("Check your DM's!", ephemeral=True)
+            except Exception:
+                await interaction.followup.send("Check your DM's!", ephemeral=True)
+            except Exception:
+                await interaction.channel.send(f"{interaction.user.mention} Check your DM's!", delete_after=5.0)
 
             def check(m):
                 return (
@@ -389,16 +395,21 @@ class DropdownTickets(commands.Cog):
             )
             attachmentlist = ", ".join(attachmentlist)
 
-            embed = discord.Embed(title="Ticket Information", color=discord.Colour.blue())
-            embed.set_author(
-                name=f"{interaction.user.name}#{interaction.user.discriminator}",
-                url=interaction.user.avatar.url,
-                icon_url=interaction.user.avatar.url,
-            )
-            embed.add_field(name="Question:", value=answer1.content, inline=False)
-            embed.add_field(name="Attachment URL:", value=attachmentlist)
-            #embed.set_image(url=attachmentlist[0])
-            await channel.send(embed=embed)
+            try:
+                embed = discord.Embed(title="Ticket Information", color=discord.Colour.blue())
+                embed.set_author(
+                    name=f"{interaction.user.name}#{interaction.user.discriminator}",
+                    url=interaction.user.avatar.url,
+                    icon_url=interaction.user.avatar.url,
+                )
+                embed.add_field(name="Question:", value=answer1.content, inline=False)
+                embed.add_field(name="Attachment URL:", value=attachmentlist)
+                #embed.set_image(url=attachmentlist[0])
+                await channel.send(embed=embed)
+            except Exception as e:
+                print(e)
+                await channel.send(f"**Ticket Information**\n\nQuestion: {answer1.content}")
+                await channel.send(f"Attachment URL: {str(attachmentlist)}")
 
             await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
 
