@@ -320,6 +320,8 @@ class DropdownTickets(commands.Cog):
             embed = discord.Embed(title="2) Send Question", color=discord.Color.blue())
             await DMChannel.send(embed=embed)
             answer1 = await self.bot.wait_for("message", check=check)
+            if answer1.content is None or answer1.content == "" or answer1.content == " ":
+                return await DMChannel.send("No question was sent, try selecting a subject back in the homework help channel again.")
 
             embed = discord.Embed(
                 title="3) Send Assignment Title",
@@ -419,14 +421,14 @@ class DropdownTickets(commands.Cog):
                     url=interaction.user.avatar.url,
                     icon_url=interaction.user.avatar.url,
                 )
-                embed.add_field(name="Question:", value=answer1.content, inline=False)
-                embed.add_field(name="Attachment URL:", value=attachmentlist)
+                embed.add_field(name="Question:", value=f"A: {answer1.content}", inline=False)
+                embed.add_field(name="Attachment URL:", value=f"URL: {attachmentlist}")
                 # embed.set_image(url=attachmentlist[0])
                 await channel.send(embed=embed)
             except Exception as e:
                 print(e)
                 await channel.send(
-                    f"**Ticket Information**\n\nQuestion: {answer1.content}"
+                    f"**Ticket Information**\n\n{interaction.user.mention}\nQuestion: {answer1.content}"
                 )
                 await channel.send(f"Attachment URL: {str(attachmentlist)}")
 
@@ -536,9 +538,14 @@ class DropdownTickets(commands.Cog):
             channel = await self.bot.fetch_channel(interaction.channel_id)
             author = interaction.user
 
-            await interaction.response.send_message(
-                f"{author.mention} Alright, canceling request.", delete_after=5.0
-            )
+            try:
+                await interaction.response.send_message(
+                    f"{author.mention} Alright, canceling request.", delete_after=5.0
+                )
+            except Exception:
+                await interaction.channel.send(
+                    f"{author.mention} Alright, canceling request.", delete_after=5.0
+                )
             await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":
