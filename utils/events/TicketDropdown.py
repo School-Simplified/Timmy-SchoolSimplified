@@ -362,7 +362,7 @@ class DropdownTickets(commands.Cog):
                     reason="Ticket Perms",
                 )
             await channel.set_permissions(
-                interaction.message.author,
+                interaction.user,
                 read_messages=True,
                 send_messages=True,
                 reason="Ticket Perms (User)",
