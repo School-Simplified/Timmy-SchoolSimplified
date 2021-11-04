@@ -455,6 +455,7 @@ class DropdownTickets(commands.Cog):
                 embed.add_field(name="Attachment URL:", value=f"URL: {attachmentlist}")
                 # embed.set_image(url=attachmentlist[0])
                 await channel.send(embed=embed)
+                await channel.send(f"URLs:\n{attachmentlist}")
             except Exception as e:
                 print(e)
                 await channel.send(
@@ -678,7 +679,8 @@ class DropdownTickets(commands.Cog):
                     entry.ChannelID
                 )
             except Exception as e:
-                return print(entry.ChannelID, e)
+                print(entry.ChannelID, e)
+                continue
             fetchMessage = await channel.history(limit=1).flatten()
             query = (
                 database.TicketInfo.select()
@@ -688,6 +690,8 @@ class DropdownTickets(commands.Cog):
             TicketOwner = await self.bot.fetch_user(query.authorID)
             messages = await channel.history(limit=None).flatten()
             authorList = []
+            if len(messages) == 0:
+                continue
 
             if fetchMessage[0].created_at < (
                 datetime.now(pytz.timezone("US/Eastern"))

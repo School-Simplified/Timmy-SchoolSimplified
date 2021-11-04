@@ -172,10 +172,10 @@ class TutorVCUpdate(commands.Cog):
                                 None, reason="Hogging the VC Start Channel."
                             )
 
-                    # query = database.VCDeletionQueue.create(discordID=member.id, GuildID=member.guild.id, ChannelID=before.channel.id, DTF = datetime.now(pytz.timezone('US/Eastern')))
-                    # query.save()
+                    query = database.VCDeletionQueue.create(discordID=member.id, GuildID=member.guild.id, ChannelID=before.channel.id, DTF = datetime.now(pytz.timezone('US/Eastern')))
+                    query.save()
                     await acadChannel.send(content=member.mention, embed=embed)
-                    await asyncio.sleep(120)
+                    """await asyncio.sleep(120)
 
                     if member in before.channel.members:
                         return print("returned")
@@ -297,7 +297,7 @@ class TutorVCUpdate(commands.Cog):
                         else:
                             print("no query, moving on...")
                 else:
-                    print("no")
+                    print("no")"""
 
         if (
             after.channel is not None
@@ -499,7 +499,6 @@ class TutorVCUpdate(commands.Cog):
 
     @tasks.loop(seconds=60)
     async def PRIVVC_DELETION_QUEUE(self):
-        return
         if len(database.VCDeletionQueue) == 0:
             return
         for VC in database.VCDeletionQueue:
