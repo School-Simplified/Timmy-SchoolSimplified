@@ -567,7 +567,7 @@ class DropdownTickets(commands.Cog):
                 )
             )
 
-            await channel.send(embed=embed, view=ButtonViews2)
+            await channel.send(author.mention, embed=embed, view=ButtonViews2)
 
         elif InteractionResponse["custom_id"] == "ch_lock_CANCEL":
             channel = interaction.message.channel
