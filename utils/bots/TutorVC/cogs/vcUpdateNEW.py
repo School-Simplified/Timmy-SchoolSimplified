@@ -392,6 +392,11 @@ class TutorVCUpdate(commands.Cog):
                         name="Voice Channel Commands",
                         value="https://timmy.schoolsimplified.org/tutorvc",
                     )
+                    embed.add_field(
+                        name="BETA: Check out VC Games!",
+                        value="https://timmy.schoolsimplified.org/tutorvc#voice-channel-activities-games\nStart by running: `+startgame` once in a voice channel!",
+                        inline=False
+                    )
                     embed.set_footer(
                         text="If you have any questions, consult the help command! | +help"
                     )
@@ -405,6 +410,12 @@ class TutorVCUpdate(commands.Cog):
                     embed.add_field(
                         name="Voice Channel Commands",
                         value="https://timmy.schoolsimplified.org/tutorvc",
+                        inline=False
+                    )
+                    embed.add_field(
+                        name="BETA: Check out VC Games!",
+                        value="https://timmy.schoolsimplified.org/tutorvc#voice-channel-activities-games\nStart by running: `+startgame` once in a voice channel!",
+                        inline=False
                     )
                     embed.set_footer(
                         text="If you have any questions, consult the help command! | +help"
