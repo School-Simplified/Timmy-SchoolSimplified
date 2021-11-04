@@ -137,6 +137,8 @@ async def TicketExport(
 
     os.remove(f"transcript-{channel.name}.html")
 
+    if response == None:
+        msg == None
     return msg, transcript_file, S3_URL
 
 
@@ -700,9 +702,9 @@ class DropdownTickets(commands.Cog):
                 await channel.send(
                     f"Ticket has been inactive for {self.TICKET_INACTIVE_TIME} hours.\nTicket has been closed."
                 )
-                for msg in messages:
-                    if msg.author not in authorList:
-                        authorList.append(msg.author)
+                for msgI in messages:
+                    if msgI.author not in authorList:
+                        authorList.append(msgI.author)
 
                 msg, transcript_file, url = await TicketExport(
                     self, channel, None, TicketOwner, authorList

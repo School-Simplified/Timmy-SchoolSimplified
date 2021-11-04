@@ -5,7 +5,7 @@ import discord
 import pytz
 from core import database
 from core.checks import is_botAdmin
-from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID
+from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID, SelectMenuHandler
 from discord.ext import commands
 
 
@@ -48,6 +48,63 @@ def showTotalMinutes(dateObj: datetime):
 
     return minutes, now
 
+VCGamesList = [
+    discord.SelectOption(
+        label="Awkword"
+    ),
+    discord.SelectOption(
+        label="Betrayal"
+    ),
+    discord.SelectOption(
+        label="CG4"
+    ),
+    discord.SelectOption(
+        label="Chess in the Park"
+    ),
+    discord.SelectOption(
+        label="Doodle Crew"
+    ),
+    discord.SelectOption(
+        label="Letter Tile"
+    ),
+    discord.SelectOption(
+        label="Fishington"
+    ),
+    discord.SelectOption(
+        label="Poker Night"
+    ),
+    discord.SelectOption(
+        label="Putts"
+    ),
+    discord.SelectOption(
+        label="Sketchy Artist"
+    ),
+    discord.SelectOption(
+        label="Spell Cast"
+    ),
+    discord.SelectOption(
+        label="Youtube Together"
+    ),
+    discord.SelectOption(
+        label="Word Snacks"
+    )
+]
+
+GameDict = {
+    "Awkword": 879863881349087252,
+    "Betrayal": 773336526917861400,
+    "CG4": 832025144389533716,
+    "Chess in the Park": 832012774040141894,
+    "Doodle Crew": 878067389634314250,
+    "Letter Tile": 879863686565621790,
+    "Fishington": 814288819477020702,
+    "Poker Night": 755827207812677713,
+    "Putts": 832012854282158180,
+    "Sketchy Artist": 879864070101172255,
+    "Spell Cast": 852509694341283871,
+    "Youtube Together": 755600276941176913,
+    "Word Snacks": 879863976006127627
+}
 
 class TutorVCCMD(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -132,6 +189,117 @@ class TutorVCCMD(commands.Cog):
             MAIN_ID.g_main: MAIN_ID.ch_startPrivateVC,
             STAFF_ID.g_staff: STAFF_ID.g_staff,
         }
+
+    @commands.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def startgame(self, ctx: commands.Context):
+        database.db.connect(reuse_if_open=True)
+        voice_state = ctx.author.voice
+        if voice_state is None:
+            query = database.VCChannelInfo.select().where(
+                (database.VCChannelInfo.authorID == ctx.author.id)
+                & (database.VCChannelInfo.GuildID == ctx.guild.id)
+            )
+            if query.exists():
+                query = (
+                    database.VCChannelInfo.select()
+                    .where(
+                        (database.VCChannelInfo.authorID == ctx.author.id)
+                        & (database.VCChannelInfo.GuildID == ctx.guild.id)
+                    )
+                    .get()
+                )
+                channel: discord.VoiceChannel = await self.bot.fetch_channel(query.ChannelID)
+                view = discord.ui.View()
+                var = SelectMenuHandler(
+                        VCGamesList,
+                        "VCGameDropdown",
+                        "Click a game you want to start!",
+                        select_user=ctx.author
+                    )
+                view.add_item(
+                    var
+                )
+                await ctx.send("Select a game from the dropdown you wish to initiate.", view = view)
+                timeout = await view.wait()
+                if not timeout:
+                    SelectedGame = var.view_response
+                else:
+                    return await ctx.send("Timed out, try again later.")
+                GameID = GameDict[SelectedGame]
+                GameLink = str(await channel.create_activity_invite(GameID))
+                await ctx.send("Loading...")
+                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+
+
+            else:
+                embed = discord.Embed(
+                    title=f"{Emoji.deny} Ownership Check Failed",
+                    description=f"You are not the owner of this voice channel, "
+                    f"please ask the original owner to start a game!",
+                    color=discord.Colour.red(),
+                )
+                return await ctx.send(embed=embed)
+
+        elif voice_state.channel.id in self.presetChannels:
+            embed = discord.Embed(
+                title=f"{Emoji.invalidchannel} UnAuthorized Channel Deletion",
+                description="You are not allowed to delete these channels!"
+                "\n\n**Error Detection:**"
+                "\n**1)** Detected Static Channels",
+                color=discord.Colour.dark_red(),
+            )
+            return await ctx.send(embed=embed)
+
+        elif voice_state.channel.category_id in self.categoryID:
+            query = database.VCChannelInfo.select().where(
+                (database.VCChannelInfo.authorID == ctx.author.id)
+                & (database.VCChannelInfo.ChannelID == voice_state.channel.id)
+                & (database.VCChannelInfo.GuildID == ctx.guild.id)
+            )
+
+            if query.exists():
+                q: database.VCChannelInfo = (
+                    database.VCChannelInfo.select()
+                    .where(
+                        (database.VCChannelInfo.authorID == ctx.author.id)
+                        & (database.VCChannelInfo.ChannelID == voice_state.channel.id)
+                        & (database.VCChannelInfo.GuildID == ctx.guild.id)
+                    )
+                    .get()
+                )
+                channel: discord.VoiceChannel = await self.bot.fetch_channel(q.ChannelID)
+                view = discord.ui.View()
+                var = SelectMenuHandler(
+                        VCGamesList,
+                        "VCGameDropdown",
+                        "Click a game you want to start!",
+                        select_user=ctx.author
+                    )
+                view.add_item(
+                    var
+                )
+                await ctx.send("Select a game from the dropdown you wish to initiate.", view = view)
+                timeout = await view.wait()
+                if not timeout:
+                    SelectedGame = var.view_response
+                else:
+                    return await ctx.send("Timed out, try again later.")
+                print(SelectedGame)
+                GameID = GameDict[SelectedGame]
+                GameLink = str(await channel.create_activity_invite(GameID))
+                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+
+            else:
+                embed = discord.Embed(
+                    title=f"{Emoji.deny} Ownership Check Failed",
+                    description=f"You are not the owner of this voice channel, "
+                    f"please ask the original owner to start a game!",
+                    color=discord.Colour.red(),
+                )
+                return await ctx.send(embed=embed)
+        database.db.close()
+
 
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
