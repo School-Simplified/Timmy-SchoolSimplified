@@ -138,7 +138,7 @@ async def TicketExport(
     os.remove(f"transcript-{channel.name}.html")
 
     if response == None:
-        msg == None
+        msg = None
     return msg, transcript_file, S3_URL
 
 
@@ -349,7 +349,7 @@ class DropdownTickets(commands.Cog):
             else:
                 selection_str = TypeSubject
 
-            embed = discord.Embed(title="2) Send Question", description="Whats your question?", color=discord.Color.blue())
+            embed = discord.Embed(title="2) Send Question", description="Whats your question?\n**DO NOT SEND URL's.** You must send the question in plain test.", color=discord.Color.blue())
             await DMChannel.send(embed=embed)
             answer1 = await self.bot.wait_for("message", check=check)
             if answer1.content is None or answer1.content == "" or answer1.content == " ":
@@ -357,7 +357,7 @@ class DropdownTickets(commands.Cog):
 
             embed = discord.Embed(
                 title="3) Send Assignment Title",
-                description="**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.",
+                description="**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.\n\nSend them all in one message for them to all be sent.",
                 color=discord.Color.blue(),
             )
             embed.set_footer(text="We need images/urls as proof that you aren't cheating, School Simplified does not offer assistance on assessments.")
@@ -439,9 +439,10 @@ class DropdownTickets(commands.Cog):
                     custom_id="ch_lock",
                 )
             )
-            await channel.send(
+            LCM = await channel.send(
                 interaction.user.mention, embed=controlTicket, view=LockControlButton
             )
+            await LCM.pin()
             attachmentlist = ", ".join(attachmentlist)
 
             try:
@@ -670,9 +671,9 @@ class DropdownTickets(commands.Cog):
             await asyncio.sleep(5)
             await channel.send(f"{author.mention} Alright, closing ticket.")
             await channel.delete()
-            query.delete()
+            query.delete_instance()
 
-    @tasks.loop(hours=1.0)
+    @tasks.loop(minutes=1.0)
     async def TicketInactive(self):
         TicketInfoTB = database.TicketInfo
         for entry in TicketInfoTB:
@@ -682,15 +683,12 @@ class DropdownTickets(commands.Cog):
                 )
             except Exception as e:
                 print(entry.ChannelID, e)
+                entry.delete_instance()
                 continue
             fetchMessage = await channel.history(limit=1).flatten()
-            query = (
-                database.TicketInfo.select()
-                .where(database.TicketInfo.ChannelID == entry.ChannelID)
-                .get()
-            )
-            TicketOwner = await self.bot.fetch_user(query.authorID)
+            TicketOwner = await self.bot.fetch_user(entry.authorID)
             messages = await channel.history(limit=None).flatten()
+            LogCH = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
             authorList = []
             if len(messages) == 0:
                 continue
@@ -706,12 +704,25 @@ class DropdownTickets(commands.Cog):
                     if msgI.author not in authorList:
                         authorList.append(msgI.author)
 
-                msg, transcript_file, url = await TicketExport(
+                MG, file, S3ink = await TicketExport(
                     self, channel, None, TicketOwner, authorList
                 )
 
+                embed = discord.Embed(title="Channel Transcript", color=discord.Colour.green())
+                embed.set_author(
+                    name=f"{TicketOwner.name}#{TicketOwner.discriminator}",
+                    url=TicketOwner.display_avatar.url,
+                    icon_url=TicketOwner.display_avatar.url,
+                )
+                embed.add_field(name="Transcript Owner", value=TicketOwner.mention)
+                embed.add_field(name="Ticket Name", value=channel.name, inline=False)
+                embed.add_field(name="Category", value=channel.category.name, inline=False)
+                embed.add_field(name="Transcript Link", value=S3ink, inline=False)
+                embed.set_footer(text="Transcript Attached Above | Ticket was closed due to inactivity")
+                await LogCH.send(embed=embed)
+
                 await channel.delete()
-                query.delete()
+                entry.delete_instance()
 
     @commands.command()
     async def sendCHTKTView(self, ctx):
