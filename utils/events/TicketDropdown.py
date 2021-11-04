@@ -173,7 +173,6 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
     ScienceOptions = [
         discord.SelectOption(label="Biology"),
         discord.SelectOption(label="Chemistry"),
-        discord.SelectOption(label="Biology"),
         discord.SelectOption(label="Physics"),
         discord.SelectOption(label="Psych"),
         discord.SelectOption(label="Other"),
