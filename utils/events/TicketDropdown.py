@@ -543,19 +543,19 @@ class DropdownTickets(commands.Cog):
                 )
             )
             ButtonViews2.add_item(
+                    ButtonHandler(
+                        style=discord.ButtonStyle.grey,
+                        label="Re-Open Ticket",
+                        custom_id="ch_lock_R",
+                        emoji="🔓",
+                    )
+                )
+            ButtonViews2.add_item(
                 ButtonHandler(
                     style=discord.ButtonStyle.blurple,
                     label="Create Transcript",
                     custom_id="ch_lock_T",
                     emoji="📝",
-                )
-            )
-            ButtonViews2.add_item(
-                ButtonHandler(
-                    style=discord.ButtonStyle.grey,
-                    label="Re-Open Ticket",
-                    custom_id="ch_lock_R",
-                    emoji="🔓",
                 )
             )
             ButtonViews2.add_item(
@@ -673,6 +673,37 @@ class DropdownTickets(commands.Cog):
             await channel.delete()
             query.delete_instance()
 
+    @commands.command()
+    async def close(self, ctx):
+        if ctx.channel.id in [MAIN_ID.cat_scienceTicket, MAIN_ID.cat_fineArtsTicket, MAIN_ID.cat_mathTicket, MAIN_ID.cat_socialStudiesTicket, MAIN_ID.cat_englishTicket, MAIN_ID.cat_essayTicket, MAIN_ID.cat_languageTicket, MAIN_ID.cat_otherTicket]:
+            embed = discord.Embed(
+                title="Confirm?",
+                description="Click an appropriate button.",
+                color=discord.Colour.red(),
+            )
+            ButtonViews = discord.ui.View()
+            ButtonViews.add_item(
+                ButtonHandler(
+                    style=discord.ButtonStyle.green,
+                    label="Confirm",
+                    custom_id="ch_lock_CONFIRM",
+                    emoji="✅",
+                    button_user=ctx.author,
+                )
+            )
+            ButtonViews.add_item(
+                ButtonHandler(
+                    style=discord.ButtonStyle.red,
+                    label="Cancel",
+                    custom_id="ch_lock_CANCEL",
+                    emoji="❌",
+                    button_user=ctx.author,
+                )
+            )
+            await ctx.send(embed=embed, view=ButtonViews)
+        else:
+            await ctx.send("Not a ticket.")
+
     @tasks.loop(minutes=1.0)
     async def TicketInactive(self):
         TicketInfoTB = database.TicketInfo
@@ -697,10 +728,49 @@ class DropdownTickets(commands.Cog):
                 datetime.now(pytz.timezone("US/Eastern"))
                 - timedelta(minutes=self.TICKET_INACTIVE_TIME)
             ):
-                await channel.send(
-                    f"Ticket has been inactive for {self.TICKET_INACTIVE_TIME} hours.\nTicket has been closed."
+                ButtonViews2 = discord.ui.View()
+
+                ButtonViews2.add_item(
+                    ButtonHandler(
+                        style=discord.ButtonStyle.green,
+                        label="Close & Delete Ticket",
+                        custom_id="ch_lock_C&D",
+                        emoji="🔒",
+                    )
                 )
-                for msgI in messages:
+                ButtonViews2.add_item(
+                    ButtonHandler(
+                        style=discord.ButtonStyle.grey,
+                        label="Re-Open Ticket",
+                        custom_id="ch_lock_R",
+                        emoji="🔓",
+                    )
+                )
+                ButtonViews2.add_item(
+                    ButtonHandler(
+                        style=discord.ButtonStyle.blurple,
+                        label="Create Transcript",
+                        custom_id="ch_lock_T",
+                        emoji="📝",
+                    )
+                )
+                ButtonViews2.add_item(
+                    ButtonHandler(
+                        style=discord.ButtonStyle.red,
+                        label="Cancel",
+                        custom_id="ch_lock_C",
+                        emoji="❌",
+                    )
+                )
+                await channel.set_permissions(
+                    TicketOwner, read_messages=False, reason="Ticket Perms Close (User)"
+                )
+                await channel.send(
+                    f"Ticket has been inactive for {self.TICKET_INACTIVE_TIME} hours.\nTicket has been closed.",
+                    view=ButtonViews2
+                )
+
+                """for msgI in messages:
                     if msgI.author not in authorList:
                         authorList.append(msgI.author)
 
@@ -722,7 +792,7 @@ class DropdownTickets(commands.Cog):
                 await LogCH.send(embed=embed)
 
                 await channel.delete()
-                entry.delete_instance()
+                entry.delete_instance()"""
 
     @commands.command()
     async def sendCHTKTView(self, ctx):
