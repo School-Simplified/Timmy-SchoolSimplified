@@ -520,14 +520,14 @@ class DropdownTickets(commands.Cog):
                 )
             )
             try:
-                await interaction.followup.send(embed=embed, view=ButtonViews)
+                await interaction.followup.send(f"{author.mention}\n", embed=embed, view=ButtonViews)
             except:
                 try:
                     await interaction.response.send_message(
-                        embed=embed, view=ButtonViews
+                        f"{author.mention}\n", embed=embed, view=ButtonViews
                     )
                 except:
-                    await channel.send(embed=embed, view=ButtonViews)
+                    await channel.send(f"{author.mention}\n", embed=embed, view=ButtonViews)
 
         elif InteractionResponse["custom_id"] == "ch_lock_CONFIRM":
             channel = interaction.message.channel
@@ -540,10 +540,14 @@ class DropdownTickets(commands.Cog):
             )
 
             TicketOwner = await guild.fetch_member(query.authorID)
-            await channel.set_permissions(
-                TicketOwner, read_messages=False, reason="Ticket Perms Close (User)"
-            )
-
+            if TicketOwner == None:
+                await channel.send(
+                    f"{author.mention} The ticket owner has left the server."
+                )
+            else:
+                await channel.set_permissions(
+                    TicketOwner, read_messages=False, reason="Ticket Perms Close(User)"
+                )
             await interaction.message.delete()
             embed = discord.Embed(
                 title="Support Staff Commands",
@@ -623,19 +627,19 @@ class DropdownTickets(commands.Cog):
                 .get()
             )
             TicketOwner = await guild.fetch_member(query.authorID)
-            await channel.set_permissions(
-                TicketOwner, read_messages=True, reason="Ticket Perms ReOpen (User)"
-            )
-
-            try:
-                await interaction.response.send_message(
-                    f"{author.mention} Ticket has been re-opened.", delete_after=5.0
+            if TicketOwner == None:
+                await channel.send(
+                    f"{author.mention} Sorry, but the ticket owner has left the server."
                 )
-            except Exception:
-                await interaction.channel.send(
-                    f"{author.mention} Ticket has been re-opened.", delete_after=5.0
+                return
+            else:
+                await channel.set_permissions(
+                    TicketOwner, read_messages=True, reason="Ticket Perms Re-Open (User)"
                 )
-            await interaction.message.delete()
+                await channel.send(
+                    f"{author.mention} Alright, the ticket has been re-opened."
+                )
+                await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":
             channel = await self.bot.fetch_channel(interaction.channel_id)
@@ -650,7 +654,7 @@ class DropdownTickets(commands.Cog):
             )
             await msg.delete()
             await interaction.channel.send(
-                f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}"
+                f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}"
             )
 
         elif InteractionResponse["custom_id"] == "ch_lock_C&D":
@@ -663,7 +667,7 @@ class DropdownTickets(commands.Cog):
                 .get()
             )
             msgO = await interaction.channel.send(
-                f"Please wait, generating a transcript {Emoji.loadingGIF2}"
+                f"{author.mention}\nPlease wait, generating a transcript {Emoji.loadingGIF2}"
             )
             TicketOwner = await self.bot.fetch_user(query.authorID)
 
@@ -681,16 +685,16 @@ class DropdownTickets(commands.Cog):
 
             try:
                 await msgO.edit(
-                    f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                    f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                 )
             except Exception:
                 try:
                     await msgO.edit(
-                        f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                        f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                     )
                 except Exception:
                     await msgO.edit(
-                        f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                        f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                     )
             await asyncio.sleep(5)
             await channel.send(f"{author.mention} Alright, closing ticket.")
@@ -733,7 +737,7 @@ class DropdownTickets(commands.Cog):
                     button_user=ctx.author,
                 )
             )
-            await ctx.send(embed=embed, view=ButtonViews)
+            await ctx.send(f"{ctx.author.mention}\n", embed=embed, view=ButtonViews)
         else:
             await ctx.send("Not a ticket.")
 
