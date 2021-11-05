@@ -145,7 +145,6 @@ def S3_upload_file(file_name, bucket, object_name=None):
 
     except ClientError as e:
         print(e)
-    
 
 
 class MAIN_ID:
@@ -413,7 +412,7 @@ class Emoji:
 
     timmyBook = "<:timmy_book:880875405962264667>"
     loadingGIF = "<a:Loading:904192577094426626>"
-    loadingGIF2="<a:Loading:905563298089541673>"
+    loadingGIF2 = "<a:Loading:905563298089541673>"
 
 
 class hexColors:
@@ -487,7 +486,8 @@ class bcolors:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
 
-class EmbeddedActivity():
+
+class EmbeddedActivity:
     awkword = 879863881349087252
     betrayal = 773336526917861400
     cg2_qa = 832012815819604009
@@ -518,7 +518,8 @@ class EmbeddedActivity():
     watch_together_dev = 880218832743055411
     word_snacks = 879863976006127627
     word_snacks_dev = 879864010126786570
-    youtube_together = 755600276941176913 
+    youtube_together = 755600276941176913
+
 
 class SelectMenuHandler(ui.Select):
     """Adds a SelectMenu to a specific message and returns it's value when option selected.
@@ -542,7 +543,7 @@ class SelectMenuHandler(ui.Select):
         interaction_message: typing.Union[str, None] = None,
         ephemeral: bool = True,
         coroutine: coroutineType = None,
-        view_response = None
+        view_response=None,
     ):
         """
         Parameters:
@@ -595,7 +596,7 @@ class SelectMenuHandler(ui.Select):
             if self.custom_id_ is None:
                 self.view.value = self.values[0]
             else:
-                #self.view.value = self.custom_id_
+                # self.view.value = self.custom_id_
                 self.view_response = self.values[0]
 
             if self.interaction_message_:

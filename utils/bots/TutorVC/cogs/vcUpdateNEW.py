@@ -172,7 +172,12 @@ class TutorVCUpdate(commands.Cog):
                                 None, reason="Hogging the VC Start Channel."
                             )
 
-                    query = database.VCDeletionQueue.create(discordID=member.id, GuildID=member.guild.id, ChannelID=before.channel.id, DTF = datetime.now(pytz.timezone('US/Eastern')))
+                    query = database.VCDeletionQueue.create(
+                        discordID=member.id,
+                        GuildID=member.guild.id,
+                        ChannelID=before.channel.id,
+                        DTF=datetime.now(pytz.timezone("US/Eastern")),
+                    )
                     query.save()
                     await acadChannel.send(content=member.mention, embed=embed)
                     """await asyncio.sleep(120)
@@ -395,7 +400,7 @@ class TutorVCUpdate(commands.Cog):
                     embed.add_field(
                         name="BETA: Check out VC Games!",
                         value="https://timmy.schoolsimplified.org/tutorvc#voice-channel-activities-games\nStart by running: `+startgame` once in a voice channel!",
-                        inline=False
+                        inline=False,
                     )
                     embed.set_footer(
                         text="If you have any questions, consult the help command! | +help"
@@ -410,12 +415,12 @@ class TutorVCUpdate(commands.Cog):
                     embed.add_field(
                         name="Voice Channel Commands",
                         value="https://timmy.schoolsimplified.org/tutorvc",
-                        inline=False
+                        inline=False,
                     )
                     embed.add_field(
                         name="BETA: Check out VC Games!",
                         value="https://timmy.schoolsimplified.org/tutorvc#voice-channel-activities-games\nStart by running: `+startgame` once in a voice channel!",
-                        inline=False
+                        inline=False,
                     )
                     embed.set_footer(
                         text="If you have any questions, consult the help command! | +help"

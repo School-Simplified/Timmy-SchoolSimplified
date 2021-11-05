@@ -26,6 +26,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class TicketButton(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -39,6 +40,7 @@ class TicketButton(discord.ui.View):
     )
     async def verify(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.value = True
+
 
 MasterSubjectOptions = [
     discord.SelectOption(
@@ -276,7 +278,7 @@ class DropdownTickets(commands.Cog):
 
         if (
             interaction.guild_id == self.mainserver
-            #and interaction.message.id == int(self.CHID_DEFAULT)
+            # and interaction.message.id == int(self.CHID_DEFAULT)
             and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
         ):
             channel = await self.bot.fetch_channel(interaction.channel_id)
@@ -300,17 +302,16 @@ class DropdownTickets(commands.Cog):
                     and m.channel == DMChannel
                     and m.author.id is author.id
                 )
-            
+
             MSV = discord.ui.View()
             var = SelectMenuHandler(
-                    MasterSubjectOptions,
-                    "persistent_view:ticketdrop",
-                    "Click a subject!"
-                )
-            MSV.add_item(
-                var
+                MasterSubjectOptions, "persistent_view:ticketdrop", "Click a subject!"
             )
-            await DMChannel.send("**Let's start this!**\nStart off by selecting a subject that matches what your ticket is about!", view = MSV)
+            MSV.add_item(var)
+            await DMChannel.send(
+                "**Let's start this!**\nStart off by selecting a subject that matches what your ticket is about!",
+                view=MSV,
+            )
             timeout = await MSV.wait()
             if not timeout:
                 MasterSubjectView = var.view_response
@@ -334,7 +335,9 @@ class DropdownTickets(commands.Cog):
                 )
 
                 embed = discord.Embed(
-                    title="1) Ticket Info", description="Select a more specific topic!", color=discord.Color.gold()
+                    title="1) Ticket Info",
+                    description="Select a more specific topic!",
+                    color=discord.Color.gold(),
                 )
                 try:
                     await DMChannel.send(embed=embed, view=MiscOptList)
@@ -349,18 +352,30 @@ class DropdownTickets(commands.Cog):
             else:
                 selection_str = TypeSubject
 
-            embed = discord.Embed(title="2) Send Question", description="Whats your question?\n**DO NOT SEND URL's.** You must send the question in plain test.", color=discord.Color.blue())
+            embed = discord.Embed(
+                title="2) Send Question",
+                description="Whats your question?\n**DO NOT SEND URL's.** You must send the question in plain test.",
+                color=discord.Color.blue(),
+            )
             await DMChannel.send(embed=embed)
             answer1 = await self.bot.wait_for("message", check=check)
-            if answer1.content is None or answer1.content == "" or answer1.content == " ":
-                return await DMChannel.send("No question was sent, try selecting a subject back in the homework help channel again.")
+            if (
+                answer1.content is None
+                or answer1.content == ""
+                or answer1.content == " "
+            ):
+                return await DMChannel.send(
+                    "No question was sent, try selecting a subject back in the homework help channel again."
+                )
 
             embed = discord.Embed(
                 title="3) Send Assignment Title",
                 description="**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.\n\nSend them all in one message for them to all be sent.",
                 color=discord.Color.blue(),
             )
-            embed.set_footer(text="We need images/urls as proof that you aren't cheating, School Simplified does not offer assistance on assessments.")
+            embed.set_footer(
+                text="We need images/urls as proof that you aren't cheating, School Simplified does not offer assistance on assessments."
+            )
 
             await DMChannel.send(embed=embed)
             answer2: discord.Message = await self.bot.wait_for("message", check=check)
@@ -454,7 +469,9 @@ class DropdownTickets(commands.Cog):
                     url=interaction.user.avatar.url,
                     icon_url=interaction.user.avatar.url,
                 )
-                embed.add_field(name="Question:", value=f"A: {answer1.content}", inline=False)
+                embed.add_field(
+                    name="Question:", value=f"A: {answer1.content}", inline=False
+                )
                 embed.add_field(name="Attachment URL:", value=f"URL: {attachmentlist}")
                 # embed.set_image(url=attachmentlist[0])
                 await channel.send(embed=embed)
@@ -506,7 +523,9 @@ class DropdownTickets(commands.Cog):
                 await interaction.followup.send(embed=embed, view=ButtonViews)
             except:
                 try:
-                    await interaction.response.send_message(embed=embed, view=ButtonViews)
+                    await interaction.response.send_message(
+                        embed=embed, view=ButtonViews
+                    )
                 except:
                     await channel.send(embed=embed, view=ButtonViews)
 
@@ -531,7 +550,7 @@ class DropdownTickets(commands.Cog):
                 description="Click an appropriate button.",
                 color=discord.Colour.red(),
             )
-            embed.set_footer(text = "This ticket has been closed!")
+            embed.set_footer(text="This ticket has been closed!")
             ButtonViews2 = discord.ui.View()
 
             ButtonViews2.add_item(
@@ -543,13 +562,13 @@ class DropdownTickets(commands.Cog):
                 )
             )
             ButtonViews2.add_item(
-                    ButtonHandler(
-                        style=discord.ButtonStyle.grey,
-                        label="Re-Open Ticket",
-                        custom_id="ch_lock_R",
-                        emoji="🔓",
-                    )
+                ButtonHandler(
+                    style=discord.ButtonStyle.grey,
+                    label="Re-Open Ticket",
+                    custom_id="ch_lock_R",
+                    emoji="🔓",
                 )
+            )
             ButtonViews2.add_item(
                 ButtonHandler(
                     style=discord.ButtonStyle.blurple,
@@ -590,7 +609,7 @@ class DropdownTickets(commands.Cog):
                     f"{author.mention} Alright, canceling request.", delete_after=5.0
                 )
             await interaction.message.delete()
-        
+
         elif InteractionResponse["custom_id"] == "ch_lock_R":
             """
             Re-open Ticket
@@ -607,7 +626,7 @@ class DropdownTickets(commands.Cog):
             await channel.set_permissions(
                 TicketOwner, read_messages=True, reason="Ticket Perms ReOpen (User)"
             )
-            
+
             try:
                 await interaction.response.send_message(
                     f"{author.mention} Ticket has been re-opened.", delete_after=5.0
@@ -618,18 +637,21 @@ class DropdownTickets(commands.Cog):
                 )
             await interaction.message.delete()
 
-
         elif InteractionResponse["custom_id"] == "ch_lock_T":
             channel = await self.bot.fetch_channel(interaction.channel_id)
             ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
             author = interaction.user
-            msg = await interaction.channel.send(f"Please wait, creating your transcript {Emoji.loadingGIF2}")
+            msg = await interaction.channel.send(
+                f"Please wait, creating your transcript {Emoji.loadingGIF2}"
+            )
 
             msg, file, S3_URL = await TicketExport(
                 self, channel, ResponseLogChannel, author
             )
             await msg.delete()
-            await interaction.channel.send(f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}")
+            await interaction.channel.send(
+                f"Transcript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}"
+            )
 
         elif InteractionResponse["custom_id"] == "ch_lock_C&D":
             channel = await self.bot.fetch_channel(interaction.channel_id)
@@ -640,7 +662,9 @@ class DropdownTickets(commands.Cog):
                 .where(database.TicketInfo.ChannelID == interaction.channel_id)
                 .get()
             )
-            msgO = await interaction.channel.send(f"Please wait, generating a transcript {Emoji.loadingGIF2}")
+            msgO = await interaction.channel.send(
+                f"Please wait, generating a transcript {Emoji.loadingGIF2}"
+            )
             TicketOwner = await self.bot.fetch_user(query.authorID)
 
             messages = await channel.history(limit=None).flatten()
@@ -652,8 +676,8 @@ class DropdownTickets(commands.Cog):
             msg, transcript_file, url = await TicketExport(
                 self, channel, ResponseLogChannel, TicketOwner, authorList
             )
-            #S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
-            #print(transcript_file.filename)
+            # S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
+            # print(transcript_file.filename)
 
             try:
                 await msgO.edit(
@@ -675,7 +699,16 @@ class DropdownTickets(commands.Cog):
 
     @commands.command()
     async def close(self, ctx):
-        if ctx.channel.id in [MAIN_ID.cat_scienceTicket, MAIN_ID.cat_fineArtsTicket, MAIN_ID.cat_mathTicket, MAIN_ID.cat_socialStudiesTicket, MAIN_ID.cat_englishTicket, MAIN_ID.cat_essayTicket, MAIN_ID.cat_languageTicket, MAIN_ID.cat_otherTicket]:
+        if ctx.channel.id in [
+            MAIN_ID.cat_scienceTicket,
+            MAIN_ID.cat_fineArtsTicket,
+            MAIN_ID.cat_mathTicket,
+            MAIN_ID.cat_socialStudiesTicket,
+            MAIN_ID.cat_englishTicket,
+            MAIN_ID.cat_essayTicket,
+            MAIN_ID.cat_languageTicket,
+            MAIN_ID.cat_otherTicket,
+        ]:
             embed = discord.Embed(
                 title="Confirm?",
                 description="Click an appropriate button.",
@@ -767,7 +800,7 @@ class DropdownTickets(commands.Cog):
                 )
                 await channel.send(
                     f"Ticket has been inactive for {self.TICKET_INACTIVE_TIME} hours.\nTicket has been closed.",
-                    view=ButtonViews2
+                    view=ButtonViews2,
                 )
 
                 """for msgI in messages:
