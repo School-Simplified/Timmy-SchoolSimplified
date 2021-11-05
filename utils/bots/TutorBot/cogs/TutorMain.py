@@ -1,7 +1,9 @@
+import time
 import discord
+import pytz
 from core import database
-from discord.ext import commands
 from core.common import Others
+from discord.ext import commands
 
 
 class TutorMain(commands.Cog):
@@ -32,7 +34,10 @@ class TutorMain(commands.Cog):
                 ListTen = []
                 i = 0
                 for entry in query:
-                    ts = int(entry.Date.timestamp())
+                    TutorSession = pytz.timezone("America/New_York").localize(entry.Date)
+
+                    result = time.strptime(f"{TutorSession.", "%d %B, %Y")
+                    ts = int(TutorSession.timestamp())
                     studentUser = await self.bot.fetch_user(entry.StudentID)
                     ListTen.append(
                         f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{ts}:f> -> {studentUser.name}"

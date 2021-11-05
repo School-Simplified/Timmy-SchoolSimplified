@@ -48,46 +48,21 @@ def showTotalMinutes(dateObj: datetime):
 
     return minutes, now
 
+
 VCGamesList = [
-    discord.SelectOption(
-        label="Awkword"
-    ),
-    discord.SelectOption(
-        label="Betrayal"
-    ),
-    discord.SelectOption(
-        label="CG4"
-    ),
-    discord.SelectOption(
-        label="Chess in the Park"
-    ),
-    discord.SelectOption(
-        label="Doodle Crew"
-    ),
-    discord.SelectOption(
-        label="Letter Tile"
-    ),
-    discord.SelectOption(
-        label="Fishington"
-    ),
-    discord.SelectOption(
-        label="Poker Night"
-    ),
-    discord.SelectOption(
-        label="Putts"
-    ),
-    discord.SelectOption(
-        label="Sketchy Artist"
-    ),
-    discord.SelectOption(
-        label="Spell Cast"
-    ),
-    discord.SelectOption(
-        label="Youtube Together"
-    ),
-    discord.SelectOption(
-        label="Word Snacks"
-    )
+    discord.SelectOption(label="Awkword"),
+    discord.SelectOption(label="Betrayal"),
+    discord.SelectOption(label="CG4"),
+    discord.SelectOption(label="Chess in the Park"),
+    discord.SelectOption(label="Doodle Crew"),
+    discord.SelectOption(label="Letter Tile"),
+    discord.SelectOption(label="Fishington"),
+    discord.SelectOption(label="Poker Night"),
+    discord.SelectOption(label="Putts"),
+    discord.SelectOption(label="Sketchy Artist"),
+    discord.SelectOption(label="Spell Cast"),
+    discord.SelectOption(label="Youtube Together"),
+    discord.SelectOption(label="Word Snacks"),
 ]
 
 GameDict = {
@@ -103,8 +78,9 @@ GameDict = {
     "Sketchy Artist": 879864070101172255,
     "Spell Cast": 852509694341283871,
     "Youtube Together": 755600276941176913,
-    "Word Snacks": 879863976006127627
+    "Word Snacks": 879863976006127627,
 }
+
 
 class TutorVCCMD(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -209,18 +185,20 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(query.ChannelID)
+                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                    query.ChannelID
+                )
                 view = discord.ui.View()
                 var = SelectMenuHandler(
-                        VCGamesList,
-                        "VCGameDropdown",
-                        "Click a game you want to start!",
-                        select_user=ctx.author
-                    )
-                view.add_item(
-                    var
+                    VCGamesList,
+                    "VCGameDropdown",
+                    "Click a game you want to start!",
+                    select_user=ctx.author,
                 )
-                await ctx.send("Select a game from the dropdown you wish to initiate.", view = view)
+                view.add_item(var)
+                await ctx.send(
+                    "Select a game from the dropdown you wish to initiate.", view=view
+                )
                 timeout = await view.wait()
                 if not timeout:
                     SelectedGame = var.view_response
@@ -230,7 +208,6 @@ class TutorVCCMD(commands.Cog):
                 GameLink = str(await channel.create_activity_invite(GameID))
                 await ctx.send("Loading...")
                 await ctx.send(f"**Click the link to get started!**\n{GameLink}")
-
 
             else:
                 embed = discord.Embed(
@@ -268,18 +245,20 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(q.ChannelID)
+                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                    q.ChannelID
+                )
                 view = discord.ui.View()
                 var = SelectMenuHandler(
-                        VCGamesList,
-                        "VCGameDropdown",
-                        "Click a game you want to start!",
-                        select_user=ctx.author
-                    )
-                view.add_item(
-                    var
+                    VCGamesList,
+                    "VCGameDropdown",
+                    "Click a game you want to start!",
+                    select_user=ctx.author,
                 )
-                await ctx.send("Select a game from the dropdown you wish to initiate.", view = view)
+                view.add_item(var)
+                await ctx.send(
+                    "Select a game from the dropdown you wish to initiate.", view=view
+                )
                 timeout = await view.wait()
                 if not timeout:
                     SelectedGame = var.view_response
@@ -299,7 +278,6 @@ class TutorVCCMD(commands.Cog):
                 )
                 return await ctx.send(embed=embed)
         database.db.close()
-
 
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
