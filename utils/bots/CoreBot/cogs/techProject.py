@@ -12,9 +12,9 @@ async def createChannel(
     discordEmbed: discord.Embed,
 ):
     if type == "Developer Team":
-        DDM = discord.utils.get(ctx.guild.roles, name="Developer Manager")
-        ADT = discord.utils.get(ctx.guild.roles, name="Assistant Dev Manager")
-        DT = discord.utils.get(ctx.guild.roles, name="Developer")
+        DDM = ctx.guild.get_role(TECH_ID.r_developerManager)
+        ADT = ctx.guild.get_role(TECH_ID.r_assistantBotDevManager)
+        DT = ctx.guild.get_role(TECH_ID.r_botDeveloper)
 
         RolePerms = [DDM, ADT, DT]
         Title = "developer"
@@ -63,8 +63,7 @@ class TechProjectCMD(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.decodeDict = {
-            "['Developer Team']": "Developer Team",
-            "['Discord Team']": "Discord Team",
+            "['Developer Team']": "Bot Developer Team",
             "['Website Team']": "Website Team",
         }
 

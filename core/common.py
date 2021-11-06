@@ -285,6 +285,10 @@ class TECH_ID:
     # *** Categories ***
     cat_developerComms = 873261268495106119
 
+    # *** Roles ***
+    r_developerManager = 805596419066822686
+    r_assistantBotDevManager = 816498160880844802
+    r_botDeveloper = 805610985594814475
 
 class MKT_ID:
     """
