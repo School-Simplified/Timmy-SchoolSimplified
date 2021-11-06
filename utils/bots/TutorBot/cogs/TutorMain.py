@@ -4,7 +4,7 @@ import pytz
 from core import database
 from core.common import Others
 from discord.ext import commands
-
+from datetime import datetime
 
 class TutorMain(commands.Cog):
     def __init__(self, bot):
@@ -34,13 +34,15 @@ class TutorMain(commands.Cog):
                 ListTen = []
                 i = 0
                 for entry in query:
-                    TutorSession = pytz.timezone("America/New_York").localize(entry.Date)
-
-                    result = time.strptime(f"{TutorSession}", "%d %B, %Y")
-                    ts = int(TutorSession.timestamp())
+                    entry: database.TutorBot_Sessions = entry
+                    DateOBJ = pytz.timezone("America/New_York").localize(entry.Date)
+                    if not isinstance(DateOBJ, datetime):
+                        DateOBJ = datetime.fromisoformat(DateOBJ)
+                        
+                    result = datetime.strftime(DateOBJ, "%B %d, %Y | %I:%M %p EST")
                     studentUser = await self.bot.fetch_user(entry.StudentID)
                     ListTen.append(
-                        f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{ts}:f> -> {studentUser.name}"
+                        f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {result} -> {studentUser.name}"
                     )
 
                 embed.add_field(name="List:", value="\n".join(ListTen), inline=False)
