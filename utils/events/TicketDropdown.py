@@ -20,6 +20,7 @@ from core.common import (
     Others,
     S3_upload_file,
     SelectMenuHandler,
+    CHHelperRoles
 )
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
@@ -251,6 +252,19 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
 
     return name, CategoryID, OptList
 
+def getRole(guild: discord.Guild, subject: str) -> discord.Role:
+    """Returns the role of the subject.
+
+    Args:
+        guild (discord.Guild): The guild where the role is in
+        subject (str): Subject name
+
+    Returns:
+        discord.Role: Role of the subject
+    """
+
+    role = guild.get_role(CHHelperRoles[subject])
+    return role
 
 class DropdownTickets(commands.Cog):
     def __init__(self, bot):
@@ -351,6 +365,7 @@ class DropdownTickets(commands.Cog):
                     return await DMChannel.send("Timed out, try again later.")
             else:
                 selection_str = TypeSubject
+                
 
             embed = discord.Embed(
                 title="2) Send Question",
@@ -403,6 +418,8 @@ class DropdownTickets(commands.Cog):
             LDC = await DMChannel.send(
                 f"Please wait, creating your ticket {Emoji.loadingGIF}"
             )
+            
+
             channel: discord.TextChannel = await guild.create_text_channel(
                 f"{selection_str}-{TNUM}", category=c
             )
@@ -413,9 +430,9 @@ class DropdownTickets(commands.Cog):
             query.save()
 
             roles = [
-                "Board Member",
-                "Senior Executive",
-                "Executive",
+                #"Board Member",
+                #"Senior Executive",
+                #"Executive", 
                 "Head Moderator",
                 "Moderator",
                 "Academic Manager",
@@ -423,21 +440,33 @@ class DropdownTickets(commands.Cog):
                 "Chat Helper",
                 "Bot: TeXit",
             ]
+
             for role in roles:
                 RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
-                await channel.set_permissions(
-                    RoleOBJ,
-                    read_messages=True,
-                    send_messages=True,
-                    reason="Ticket Perms",
-                )
+                if not (RoleOBJ.id == MAIN_ID.r_chatHelper or RoleOBJ.id == MAIN_ID.r_leadHelper) and not channel.category.id == MAIN_ID.cat_essayTicket:
+                    if RoleOBJ.id == MAIN_ID.r_essayReviser:
+                        if channel.category.id == MAIN_ID.cat_essayTicket or channel.category.id == MAIN_ID.cat_englishTicket:
+                            await channel.set_permissions(
+                                RoleOBJ,
+                                read_messages=True,
+                                send_messages=True,
+                                reason="Ticket Perms",
+                            )
+                        else:
+                            continue
+                else: 
+                    await channel.set_permissions( 
+                        RoleOBJ,
+                        read_messages=True,
+                        send_messages=True,
+                        reason="Ticket Perms",
+                    )
             await channel.set_permissions(
                 interaction.user,
                 read_messages=True,
                 send_messages=True,
                 reason="Ticket Perms (User)",
             )
-
             controlTicket = discord.Embed(
                 title="Control Panel",
                 description="To end this ticket, click the lock button!",
@@ -454,6 +483,7 @@ class DropdownTickets(commands.Cog):
                     custom_id="ch_lock",
                 )
             )
+            
             LCM = await channel.send(
                 interaction.user.mention, embed=controlTicket, view=LockControlButton
             )
@@ -473,9 +503,12 @@ class DropdownTickets(commands.Cog):
                     name="Question:", value=f"A: {answer1.content}", inline=False
                 )
                 embed.add_field(name="Attachment URL:", value=f"URL: {attachmentlist}")
-                # embed.set_image(url=attachmentlist[0])
-                await channel.send(embed=embed)
+                
+                mentionRole = getRole(interaction.guild, selection_str)
+                await channel.send(mentionRole.mention, embed=embed)
                 await channel.send(f"URLs:\n{attachmentlist}")
+
+
             except Exception as e:
                 print(e)
                 await channel.send(
@@ -539,8 +572,9 @@ class DropdownTickets(commands.Cog):
                 .get()
             )
 
-            TicketOwner = await guild.fetch_member(query.authorID)
-            if TicketOwner == None:
+            try:                      
+                TicketOwner = await guild.fetch_member(query.authorID)
+            except discord.NotFound:
                 await channel.send(
                     f"{author.mention} The ticket owner has left the server."
                 )
@@ -601,7 +635,7 @@ class DropdownTickets(commands.Cog):
             await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_C":
-            channel = await self.bot.fetch_channel(interaction.channel_id)
+            channel = await self.bot.fetch_channel(interaction.channel_id)            
             author = interaction.user
 
             try:
@@ -626,8 +660,9 @@ class DropdownTickets(commands.Cog):
                 .where(database.TicketInfo.ChannelID == interaction.channel_id)
                 .get()
             )
-            TicketOwner = await guild.fetch_member(query.authorID)
-            if TicketOwner == None:
+            try:
+                TicketOwner = await guild.fetch_member(query.authorID)
+            except discord.NotFound:
                 await channel.send(
                     f"{author.mention} Sorry, but the ticket owner has left the server."
                 )
@@ -702,17 +737,13 @@ class DropdownTickets(commands.Cog):
             query.delete_instance()
 
     @commands.command()
-    async def close(self, ctx):
-        if ctx.channel.id in [
-            MAIN_ID.cat_scienceTicket,
-            MAIN_ID.cat_fineArtsTicket,
-            MAIN_ID.cat_mathTicket,
-            MAIN_ID.cat_socialStudiesTicket,
-            MAIN_ID.cat_englishTicket,
-            MAIN_ID.cat_essayTicket,
-            MAIN_ID.cat_languageTicket,
-            MAIN_ID.cat_otherTicket,
-        ]:
+    async def close(self, ctx: commands.Context):
+        query = (
+            database.TicketInfo.select()
+            .where(database.TicketInfo.ChannelID == ctx.channel.id)
+            .get()
+        )
+        if query.exists():
             embed = discord.Embed(
                 title="Confirm?",
                 description="Click an appropriate button.",

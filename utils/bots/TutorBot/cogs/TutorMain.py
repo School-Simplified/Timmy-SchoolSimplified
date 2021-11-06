@@ -36,7 +36,7 @@ class TutorMain(commands.Cog):
                 for entry in query:
                     TutorSession = pytz.timezone("America/New_York").localize(entry.Date)
 
-                    result = time.strptime(f"{TutorSession}", "%d %B, %Y")
+                    result = time.strptime(TutorSession, "%B %d, %Y | %I:%M %p")
                     ts = int(TutorSession.timestamp())
                     studentUser = await self.bot.fetch_user(entry.StudentID)
                     ListTen.append(
