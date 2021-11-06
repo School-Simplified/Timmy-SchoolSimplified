@@ -419,7 +419,7 @@ class DropdownTickets(commands.Cog):
                 f"Please wait, creating your ticket {Emoji.loadingGIF}"
             )
             if selection_str in ["Other", "Other Languages"]:
-                mainSubject = c.name.replace("═", "").replace("⁃", "").strip()
+                mainSubject = c.name.replace("═", "").replace("⁃", "").replace("Ticket", "").strip()
                 channel: discord.TextChannel = await guild.create_text_channel(
                     f"other-{mainSubject}-{TNUM}", category=c
                 )
