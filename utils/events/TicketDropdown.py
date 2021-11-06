@@ -421,7 +421,7 @@ class DropdownTickets(commands.Cog):
             if selection_str in ["Other", "Other Languages"]:
                 mainSubject = c.name.replace("═", "").replace("⁃", "").strip()
                 channel: discord.TextChannel = await guild.create_text_channel(
-                    f"{mainSubject}-other-{TNUM}"
+                    f"other-{mainSubject}-{TNUM}"
                 )
             else:
                 channel: discord.TextChannel = await guild.create_text_channel(
