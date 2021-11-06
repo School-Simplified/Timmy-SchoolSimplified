@@ -11,7 +11,7 @@ async def createChannel(
     member: discord.Member,
     discordEmbed: discord.Embed,
 ):
-    if type == "Developer Team":
+    if type == "Bot Developer Team":
         DDM = ctx.guild.get_role(TECH_ID.r_developerManager)
         ADT = ctx.guild.get_role(TECH_ID.r_assistantBotDevManager)
         DT = ctx.guild.get_role(TECH_ID.r_botDeveloper)
