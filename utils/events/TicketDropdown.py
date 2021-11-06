@@ -418,11 +418,16 @@ class DropdownTickets(commands.Cog):
             LDC = await DMChannel.send(
                 f"Please wait, creating your ticket {Emoji.loadingGIF}"
             )
-            
-
-            channel: discord.TextChannel = await guild.create_text_channel(
-                f"{selection_str}-{TNUM}", category=c
-            )
+            if selection_str in ["Other", "Other Languages"]:
+                mainSubject = c.name.replace("═", "").replace("⁃", "").strip()
+                channel: discord.TextChannel = await guild.create_text_channel(
+                    f"{mainSubject}-other-{TNUM}"
+                )
+            else:
+                channel: discord.TextChannel = await guild.create_text_channel(
+                    f"{selection_str}-{TNUM}", category=c
+                )
+                
             await channel.set_permissions(
                 guild.default_role, read_messages=False, reason="Ticket Perms"
             )
