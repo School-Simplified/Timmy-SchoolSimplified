@@ -124,7 +124,7 @@ class TechProjectCMD(commands.Cog):
 
         options = [
             discord.SelectOption(
-                label="Developer Team",
+                label="Bot Developer Team",
                 description="If you need a Discord Bot or a modification to one, click here!",
                 emoji="🤖",
             ),
