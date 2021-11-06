@@ -63,8 +63,7 @@ class TechProjectCMD(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.decodeDict = {
-            "['Developer Team']": "Developer Team",
-            "['Discord Team']": "Discord Team",
+            "['Developer Team']": "Bot Developer Team",
             "['Website Team']": "Website Team",
         }
 
