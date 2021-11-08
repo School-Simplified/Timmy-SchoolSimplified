@@ -43,6 +43,11 @@ class TicketButton(discord.ui.View):
         self.value = True
 
 
+"""
+if not (RoleOBJ.id == MAIN_ID.r_chatHelper or RoleOBJ.id == MAIN_ID.r_leadHelper) and not channel.category.id == MAIN_ID.cat_essayTicket:
+                    if RoleOBJ.id == MAIN_ID.r_essayReviser:
+                        if channel.category.id == MAIN_ID.cat_essayTicket or channel.category.id == MAIN_ID.cat_englishTicket:
+"""
 MasterSubjectOptions = [
     discord.SelectOption(
         label="Math Helpers",
@@ -252,7 +257,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
 
     return name, CategoryID, OptList
 
-def getRole(guild: discord.Guild, subject: str) -> discord.Role:
+def getRole(guild: discord.Guild, subject: str, broad_subject: str) -> discord.Role:
     """Returns the role of the subject.
 
     Args:
@@ -264,6 +269,11 @@ def getRole(guild: discord.Guild, subject: str) -> discord.Role:
     """
 
     role = guild.get_role(CHHelperRoles[subject])
+    if role == None:
+        role = guild.get_role(CHHelperRoles[broad_subject])
+    
+    if role == None:
+        role = guild.get_role(CHHelperRoles["CH_ROLE"])
     return role
 
 class DropdownTickets(commands.Cog):
@@ -273,6 +283,7 @@ class DropdownTickets(commands.Cog):
         self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
         self.CHID_DEFAULT = Others.CHID_DEFAULT
+        self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
         self.TicketInactive.start()
 
     def cog_unload(self):
@@ -440,38 +451,49 @@ class DropdownTickets(commands.Cog):
                 #"Executive", 
                 "Head Moderator",
                 "Moderator",
-                "Academic Manager",
                 "Lead Helper",
                 "Chat Helper",
                 "Bot: TeXit",
+                "Academics Executive"
             ]
-
             for role in roles:
                 RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
-                if not (RoleOBJ.id == MAIN_ID.r_chatHelper or RoleOBJ.id == MAIN_ID.r_leadHelper) and not channel.category.id == MAIN_ID.cat_essayTicket:
-                    if RoleOBJ.id == MAIN_ID.r_essayReviser:
-                        if channel.category.id == MAIN_ID.cat_essayTicket or channel.category.id == MAIN_ID.cat_englishTicket:
-                            await channel.set_permissions(
-                                RoleOBJ,
-                                read_messages=True,
-                                send_messages=True,
-                                reason="Ticket Perms",
-                            )
-                        else:
-                            continue
-                else: 
-                    await channel.set_permissions( 
-                        RoleOBJ,
-                        read_messages=True,
-                        send_messages=True,
-                        reason="Ticket Perms",
-                    )
+                await channel.set_permissions(
+                    RoleOBJ,
+                    read_messages=True,
+                    send_messages=True,
+                    reason="Ticket Perms",
+                )
             await channel.set_permissions(
                 interaction.user,
                 read_messages=True,
                 send_messages=True,
                 reason="Ticket Perms (User)",
             )
+
+            if channel.category_id in self.EssayCategory:
+                roles = ['Essay Reviser']
+                for role in roles:
+                    RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
+                    await channel.set_permissions(
+                        RoleOBJ,
+                        read_messages=True,
+                        send_messages=True,
+                        reason="Ticket Perms",
+                    )
+            else:
+                roles = ['Chat Helpers', 'Lead Helpers']
+                for role in roles:
+                    RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
+                    await channel.set_permissions(
+                        RoleOBJ,
+                        read_messages=True,
+                        send_messages=True,
+                        reason="Ticket Perms",
+                    )
+
+
+
             controlTicket = discord.Embed(
                 title="Control Panel",
                 description="To end this ticket, click the lock button!",
@@ -509,7 +531,7 @@ class DropdownTickets(commands.Cog):
                 )
                 embed.add_field(name="Attachment URL:", value=f"URL: {attachmentlist}")
                 
-                mentionRole = getRole(interaction.guild, selection_str)
+                mentionRole = getRole(interaction.guild, selection_str, ViewResponse)
                 await channel.send(mentionRole.mention, embed=embed)
                 await channel.send(f"URLs:\n{attachmentlist}")
 
@@ -686,7 +708,7 @@ class DropdownTickets(commands.Cog):
             ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
             author = interaction.user
             msg = await interaction.channel.send(
-                f"Please wait, creating your transcript {Emoji.loadingGIF2}"
+                f"Please wait, creating your transcript {Emoji.loadingGIF2}\n**THIS MAY TAKE SOME TIME**"
             )
 
             msg, file, S3_URL = await TicketExport(
@@ -707,7 +729,7 @@ class DropdownTickets(commands.Cog):
                 .get()
             )
             msgO = await interaction.channel.send(
-                f"{author.mention}\nPlease wait, generating a transcript {Emoji.loadingGIF2}"
+                f"{author.mention}\nPlease wait, generating a transcript {Emoji.loadingGIF2}\n**THIS MAY TAKE SOME TIME**"
             )
             TicketOwner = await self.bot.fetch_user(query.authorID)
 
