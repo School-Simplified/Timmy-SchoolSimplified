@@ -768,9 +768,9 @@ class DropdownTickets(commands.Cog):
         query = (
             database.TicketInfo.select()
             .where(database.TicketInfo.ChannelID == ctx.channel.id)
-            .get()
         )
         if query.exists():
+            query = query.get()
             embed = discord.Embed(
                 title="Confirm?",
                 description="Click an appropriate button.",
