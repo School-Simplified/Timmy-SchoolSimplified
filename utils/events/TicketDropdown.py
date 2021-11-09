@@ -482,7 +482,7 @@ class DropdownTickets(commands.Cog):
                         reason="Ticket Perms",
                     )
             else:
-                roles = ['Chat Helpers', 'Lead Helpers']
+                roles = ['Chat Helper', 'Lead Helper']
                 for role in roles:
                     RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
                     await channel.set_permissions(
