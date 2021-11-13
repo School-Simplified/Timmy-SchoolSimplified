@@ -408,6 +408,8 @@ class DropdownTickets(commands.Cog):
                     text="We need a Google Docs as proof that you aren't cheating, School Simplified does not offer assistance on assessments."
                 )
 
+                # TODO: PROOF FOR GOOGLE DOCS LINK
+
             else:
 
                 embed = discord.Embed(
@@ -733,28 +735,24 @@ class DropdownTickets(commands.Cog):
                 self, channel, ResponseLogChannel, author
             )
 
-            try:
-                sa_creds = json.loads(os.getenv("GSPREADSJSON"))
-                creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, self.scope)
-                client = gspread.authorize(creds)
-                print("Connected to Gspread.")
-                sheet = client.open_by_key(self.essaySheet_key).sheet1
-            except Exception as e:
-                print(f"ERROR: Could not authorize GSpreads: {e}")
+            sa_creds = json.loads(os.getenv("GSPREADSJSON"))
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, self.scope)
+            client = gspread.authorize(creds)
+            print("Connected to Gspread.")
+            sheet = client.open_by_key(self.essayTicketLog_key).sheet1
 
-            else:
-                authors = []
-                async for message in channel.history(limit=None):
-                    if f"{message.author} ({message.author.id})" not in authors:
-                        authors.append(f"{message.author} ({message.author.id})")
+            authors = []
+            async for message in channel.history(limit=None):
+                if f"{message.author} ({message.author.id})" not in authors:
+                    authors.append(f"{message.author} ({message.author.id})")
 
-                authors.insert(0, S3_URL)
-                authors.insert(1, "")           #
-                authors.insert(2, "")           #
-                authors.insert(3, "")           # because of connected cells
-                authors.insert(4, "")           #
-                authors.insert(5, "")           #
-                sheet.append_row(authors)
+            authors.insert(0, S3_URL)
+            authors.insert(1, "")           #
+            authors.insert(2, "")           #
+            authors.insert(3, "")           # because of connected cells
+            authors.insert(4, "")           #
+            authors.insert(5, "")           #
+            sheet.append_row(authors)
 
             await msg.delete()
             await interaction.channel.send(
