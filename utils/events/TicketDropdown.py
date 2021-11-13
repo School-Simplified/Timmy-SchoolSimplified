@@ -194,7 +194,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         discord.SelectOption(label="US Gov"),
         discord.SelectOption(label="Euro"),
         discord.SelectOption(label="Human Geo"),
-        discord.SelectOption(label="Economy Helper"),
+        discord.SelectOption(label="Economy"),
         discord.SelectOption(label="Other"),
     ]
 
@@ -203,7 +203,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         discord.SelectOption(label="Chinese"),
         discord.SelectOption(label="Korean"),
         discord.SelectOption(label="Spanish"),
-        discord.SelectOption(label="Other Languages"),
+        discord.SelectOption(label="Other"),
     ]
 
     OtherOptions = [
@@ -220,8 +220,6 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['English Helpers']": "English Helpers",
         "['Essay Helpers']": "Essay Helpers",
         "['Language Helpers']": "Language Helpers",
-        "['Computer Science Helpers']": "Computer Science Helpers",
-        "['Fine Art Helpers']": "Fine Art Helpers",
         "['Other Helpers']": "Other Helpers",
     }
 
@@ -232,8 +230,6 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['English Helpers']": EnglishOptions,
         "['Essay Helpers']": EssayOptions,
         "['Language Helpers']": LanguageOptions,
-        "['Computer Science Helpers']": MAIN_ID.cat_otherTicket,
-        "['Fine Art Helpers']": MAIN_ID.cat_otherTicket,
         "['Other Helpers']": OtherOptions,
     }
 
@@ -244,8 +240,6 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['English Helpers']": MAIN_ID.cat_englishTicket,
         "['Essay Helpers']": MAIN_ID.cat_essayTicket,
         "['Language Helpers']": MAIN_ID.cat_languageTicket,
-        "['Computer Science Helpers']": MAIN_ID.cat_otherTicket,
-        "['Fine Art Helpers']": MAIN_ID.cat_otherTicket,
         "['Other Helpers']": MAIN_ID.cat_otherTicket,
     }
     name = decodeName[value]
@@ -257,24 +251,25 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
 
     return name, CategoryID, OptList
 
-def getRole(guild: discord.Guild, subject: str, broad_subject: str) -> discord.Role:
+def getRole(guild: discord.Guild, mainSubject: str, subject: str) -> discord.Role:
     """Returns the role of the subject.
 
     Args:
         guild (discord.Guild): The guild where the role is in
+        mainSubject (str): Main subject name
         subject (str): Subject name
 
     Returns:
         discord.Role: Role of the subject
     """
-
-    role = guild.get_role(CHHelperRoles[subject])
-    if role == None:
-        role = guild.get_role(CHHelperRoles[broad_subject])
     
-    if role == None:
-        role = guild.get_role(CHHelperRoles["CH_ROLE"])
+    if subject == "Other":
+        role = guild.get_role(CHHelperRoles[mainSubject])
+    else:
+        role = guild.get_role(CHHelperRoles[subject])
+
     return role
+
 
 class DropdownTickets(commands.Cog):
     def __init__(self, bot):
@@ -429,8 +424,9 @@ class DropdownTickets(commands.Cog):
             LDC = await DMChannel.send(
                 f"Please wait, creating your ticket {Emoji.loadingGIF}"
             )
-            if selection_str in ["Other", "Other Languages"]:
-                mainSubject = c.name.replace("═", "").replace("⁃", "").replace("Ticket", "").strip()
+
+            mainSubject = c.name.replace("═", "").replace("⁃", "").replace("Ticket", "").strip()
+            if selection_str == "Other":
                 channel: discord.TextChannel = await guild.create_text_channel(
                     f"other-{mainSubject}-{TNUM}", category=c
                 )
@@ -531,7 +527,8 @@ class DropdownTickets(commands.Cog):
                 )
                 embed.add_field(name="Attachment URL:", value=f"URL: {attachmentlist}")
                 
-                mentionRole = getRole(interaction.guild, selection_str, ViewResponse)
+                mentionRole = getRole(interaction.guild, mainSubject, selection_str)
+                
                 await channel.send(mentionRole.mention, embed=embed)
                 await channel.send(f"URLs:\n{attachmentlist}")
 
