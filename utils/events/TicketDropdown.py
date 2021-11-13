@@ -375,7 +375,7 @@ class DropdownTickets(commands.Cog):
 
             embed = discord.Embed(
                 title="2) Send Question",
-                description="Whats your question?\n**DO NOT SEND URL's.** You must send the question in plain test.",
+                description="What is your question or topic?\nDo not send a URL. You must send the question or topic in plain text.",
                 color=discord.Color.blue(),
             )
             await DMChannel.send(embed=embed)
