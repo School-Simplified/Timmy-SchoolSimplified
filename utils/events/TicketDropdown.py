@@ -600,8 +600,6 @@ class DropdownTickets(commands.Cog):
                 mentionRole = getRole(interaction.guild, mainSubject, selection_str)
                 
                 await channel.send(mentionRole.mention, embed=embed)
-                await channel.send(f"URLs:\n{attachmentlist}")
-
 
             except Exception as e:
                 print(e)
@@ -790,7 +788,7 @@ class DropdownTickets(commands.Cog):
 
             authors = []
             async for message in channel.history(limit=None):
-                if f"{message.author} ({message.author.id})" not in authors:
+                if f"{message.author} ({message.author.id})" not in authors and not message.author.bot:
                     authors.append(f"{message.author} ({message.author.id})")
 
             authors.insert(0, S3_URL)
@@ -831,6 +829,25 @@ class DropdownTickets(commands.Cog):
             )
             # S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
             # print(transcript_file.filename)
+
+            sa_creds = json.loads(os.getenv("GSPREADSJSON"))
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, self.scope)
+            gspread_client = gspread.authorize(creds)
+            print("Connected to Gspread.")
+            sheet = gspread_client.open_by_key(self.essayTicketLog_key).sheet1
+
+            authors = []
+            async for message in channel.history(limit=None):
+                if f"{message.author} ({message.author.id})" not in authors and not message.author.bot:
+                    authors.append(f"{message.author} ({message.author.id})")
+
+            authors.insert(0, url)
+            authors.insert(1, "")  #
+            authors.insert(2, "")  #
+            authors.insert(3, "")  # because of connected cells
+            authors.insert(4, "")  #
+            authors.insert(5, "")  #
+            sheet.append_row(authors)
 
             try:
                 await msgO.edit(
