@@ -422,8 +422,7 @@ class DropdownTickets(commands.Cog):
 
                 embed = discord.Embed(
                     title="3) Additional comment",
-                    description="**Acceptable Forms of Proof:**"
-                                "If you don't have an additional comment, just write \"No\".",
+                    description="If you don't have an additional comment, just write \"No\".",
                     color=discord.Color.blue(),
                 )
 
