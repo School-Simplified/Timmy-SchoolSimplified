@@ -491,7 +491,7 @@ CHHelperRoles = {
     "US Gov": 862160366096482314,
     "Euro": 862159915660476427,
     "Human Geo": 862960195108601866,
-    "Economy Helper": 862159734257352724,
+    "Economy": 862159734257352724,
 
     "Language": 862160078370635796,
     "French": 862160075559665724,
@@ -504,10 +504,7 @@ CHHelperRoles = {
     "Fine Arts":  862160360626716733,
     "Research": 862159906148450314,
     "SAT/ACT": 862159736384258048,
-
-    "Other": None,
-    "Other Languages": 862160078370635796,
-
+  
     "Essay Reviewer": 854135371507171369,
     "Language Helper": 862160078370635796,
     "Science Helper": 862160358264274944,
