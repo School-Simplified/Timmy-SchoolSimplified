@@ -7,6 +7,7 @@ from io import BytesIO
 import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import re
 
 import chat_exporter
 import discord
@@ -379,38 +380,72 @@ class DropdownTickets(commands.Cog):
                     return await DMChannel.send("Timed out, try again later.")
             else:
                 selection_str = TypeSubject
-                
-
-            embed = discord.Embed(
-                title="2) Send Question",
-                description="What is your question or topic?\nDo not send a URL. You must send the question or topic in plain text.",
-                color=discord.Color.blue(),
-            )
-            await DMChannel.send(embed=embed)
-            answer1 = await self.bot.wait_for("message", check=check)
-            if (
-                answer1.content is None
-                or answer1.content == ""
-                or answer1.content == " "
-            ):
-                return await DMChannel.send(
-                    "No question was sent, try selecting a subject back in the homework help channel again."
-                )
 
             if ViewResponse == "Essay Helpers":
                 embed = discord.Embed(
-                    title="3) Send Assignment Title",
-                    description="**Acceptable Forms of Proof:**"
-                                "\n1) Link of a Google Docs",
+                    title="2) Send Google Docs Link",
+                    description="Please send the link of a Google Docs of your essay."
+                                "\nDo not send a file.",
                     color=discord.Color.blue(),
                 )
-                embed.set_footer(
-                    text="We need a Google Docs as proof that you aren't cheating, School Simplified does not offer assistance on assessments."
+                await DMChannel.send(embed=embed)
+
+                answer1 = await self.bot.wait_for("message", check=check)
+                if answer1.content is None or answer1.content == "" or answer1.content == " ":
+                    return await DMChannel.send(
+                        "No message was sent, try selecting a subject back in the homework help channel again."
+                    )
+
+                attachmentlist = []
+
+                uri_re = re.compile(r"""(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|"""
+                                    r"""www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?"""
+                                    r""":[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))"""
+                                    r"""*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|"""
+                                    r"""[^\s`!()\[\]{};:'".,<>?«»“”‘’]))""")
+
+                list_input = uri_re.split(answer1.content)
+                if len(list_input) > 1:
+                    found_link = list_input[1]
+                    found_link = re.sub(r'^.*?https', 'https', found_link)
+                    if ":" in found_link:
+                        last_check = found_link.split(":")
+                        if last_check[1].isdigit():
+                            found_link = None
+                else:
+                    found_link = None
+
+                if found_link == "docs.google.com":
+                    attachmentlist.append(found_link)
+                else:
+                    return await DMChannel.send("No Google Docs link found.")
+
+                embed = discord.Embed(
+                    title="3) Additional comment",
+                    description="**Acceptable Forms of Proof:**"
+                                "If you don't have an additional comment, just write \"No\".",
+                    color=discord.Color.blue(),
                 )
 
-                # TODO: PROOF FOR GOOGLE DOCS LINK
+                await DMChannel.send(embed=embed)
+                answer2: discord.Message = await self.bot.wait_for("message", check=check)
 
             else:
+                embed = discord.Embed(
+                    title="2) Send Question",
+                    description="What is your question or topic?\nDo not send a URL. You must send the question or topic in plain text.",
+                    color=discord.Color.blue(),
+                )
+                await DMChannel.send(embed=embed)
+                answer1 = await self.bot.wait_for("message", check=check)
+                if (
+                    answer1.content is None
+                    or answer1.content == ""
+                    or answer1.content == " "
+                ):
+                    return await DMChannel.send(
+                        "No question was sent, try selecting a subject back in the homework help channel again."
+                    )
 
                 embed = discord.Embed(
                     title="3) Send Assignment Title",
@@ -421,18 +456,18 @@ class DropdownTickets(commands.Cog):
                     text="We need images/urls as proof that you aren't cheating, School Simplified does not offer assistance on assessments."
                 )
 
-            await DMChannel.send(embed=embed)
-            answer2: discord.Message = await self.bot.wait_for("message", check=check)
+                await DMChannel.send(embed=embed)
+                answer2: discord.Message = await self.bot.wait_for("message", check=check)
 
-            attachmentlist = []
-            if answer2.attachments:
-                for URL in answer2.attachments:
-                    attachmentlist.append(URL.url)
-            else:
-                if answer2.content.find("https://") != -1:
-                    attachmentlist.append(answer2.content)
+                attachmentlist = []
+                if answer2.attachments:
+                    for URL in answer2.attachments:
+                        attachmentlist.append(URL.url)
                 else:
-                    return await DMChannel.send("No attachments found.")
+                    if answer2.content.find("https://") != -1:
+                        attachmentlist.append(answer2.content)
+                    else:
+                        return await DMChannel.send("No attachments found.")
 
             print(attachmentlist)
             CounterNum = (
@@ -511,8 +546,6 @@ class DropdownTickets(commands.Cog):
                         reason="Ticket Perms",
                     )
 
-
-
             controlTicket = discord.Embed(
                 title="Control Panel",
                 description="To end this ticket, click the lock button!",
@@ -537,18 +570,33 @@ class DropdownTickets(commands.Cog):
             attachmentlist = ", ".join(attachmentlist)
 
             try:
-                embed = discord.Embed(
-                    title="Ticket Information", color=discord.Colour.blue()
-                )
-                embed.set_author(
-                    name=f"{interaction.user.name}#{interaction.user.discriminator}",
-                    url=interaction.user.avatar.url,
-                    icon_url=interaction.user.avatar.url,
-                )
-                embed.add_field(
-                    name="Question:", value=f"A: {answer1.content}", inline=False
-                )
-                embed.add_field(name="Attachment URL:", value=f"URL: {attachmentlist}")
+                if ViewResponse == "Essay Helpers":
+                    embed = discord.Embed(
+                        title="Ticket Information", color=discord.Colour.blue()
+                    )
+                    embed.set_author(
+                        name=f"{interaction.user.name}#{interaction.user.discriminator}",
+                        url=interaction.user.avatar.url,
+                        icon_url=interaction.user.avatar.url,
+                    )
+                    embed.add_field(
+                        name="Google Docs Link: ", value=f"{answer1.content}", inline=False
+                    )
+                    embed.add_field(name="Additional Comment:", value=f"{answer2.content}")
+
+                else:
+                    embed = discord.Embed(
+                        title="Ticket Information", color=discord.Colour.blue()
+                    )
+                    embed.set_author(
+                        name=f"{interaction.user.name}#{interaction.user.discriminator}",
+                        url=interaction.user.avatar.url,
+                        icon_url=interaction.user.avatar.url,
+                    )
+                    embed.add_field(
+                        name="Question:", value=f"A: {answer1.content}", inline=False
+                    )
+                    embed.add_field(name="Attachment URL:", value=f"URL: {attachmentlist}")
                 
                 mentionRole = getRole(interaction.guild, mainSubject, selection_str)
                 
