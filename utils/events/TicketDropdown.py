@@ -4,6 +4,9 @@ import os
 import typing
 from datetime import datetime, timedelta
 from io import BytesIO
+import json
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 import chat_exporter
 import discord
@@ -280,6 +283,11 @@ class DropdownTickets(commands.Cog):
         self.CHID_DEFAULT = Others.CHID_DEFAULT
         self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
         self.TicketInactive.start()
+
+        # Google Spreadsheet
+        self.scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
+                      "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
+        self.essayTicketLog_key = "1pB5xpsBGKIES5vmEY4hjluFg7-FYolOmN_w3s20yzr0"
 
     def cog_unload(self):
         self.TicketInactive.cancel()
@@ -711,6 +719,30 @@ class DropdownTickets(commands.Cog):
             msg, file, S3_URL = await TicketExport(
                 self, channel, ResponseLogChannel, author
             )
+
+            try:
+                sa_creds = json.loads(os.getenv("GSPREADSJSON"))
+                creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, self.scope)
+                client = gspread.authorize(creds)
+                print("Connected to Gspread.")
+                sheet = client.open_by_key(self.essaySheet_key).sheet1
+            except Exception as e:
+                print(f"ERROR: Could not authorize GSpreads: {e}")
+
+            else:
+                authors = []
+                async for message in ctx.channel.history(limit=None):
+                    if f"{message.author} ({message.author.id})" not in authors:
+                        authors.append(f"{message.author} ({message.author.id})")
+
+                authors.insert(0, S3_URL)
+                authors.insert(1, "")
+                authors.insert(2, "")
+                authors.insert(3, "")
+                authors.insert(4, "")
+                authors.insert(5, "")
+                sheet.append_row(authors)
+
             await msg.delete()
             await interaction.channel.send(
                 f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}"
