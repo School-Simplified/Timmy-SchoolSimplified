@@ -220,8 +220,6 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['English Helpers']": "English Helpers",
         "['Essay Helpers']": "Essay Helpers",
         "['Language Helpers']": "Language Helpers",
-        "['Computer Science Helpers']": "Computer Science Helpers",
-        "['Fine Art Helpers']": "Fine Art Helpers",
         "['Other Helpers']": "Other Helpers",
     }
 
@@ -232,8 +230,6 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['English Helpers']": EnglishOptions,
         "['Essay Helpers']": EssayOptions,
         "['Language Helpers']": LanguageOptions,
-        "['Computer Science Helpers']": MAIN_ID.cat_otherTicket,
-        "['Fine Art Helpers']": MAIN_ID.cat_otherTicket,
         "['Other Helpers']": OtherOptions,
     }
 
@@ -244,8 +240,6 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['English Helpers']": MAIN_ID.cat_englishTicket,
         "['Essay Helpers']": MAIN_ID.cat_essayTicket,
         "['Language Helpers']": MAIN_ID.cat_languageTicket,
-        "['Computer Science Helpers']": MAIN_ID.cat_otherTicket,
-        "['Fine Art Helpers']": MAIN_ID.cat_otherTicket,
         "['Other Helpers']": MAIN_ID.cat_otherTicket,
     }
     name = decodeName[value]
