@@ -381,7 +381,7 @@ class DropdownTickets(commands.Cog):
             else:
                 selection_str = TypeSubject
 
-            if ViewResponse == "Essay Helpers":
+            if ViewResponse == "Essay Helpers" and selection_str == "Essay Reviser":
                 embed = discord.Embed(
                     title="2) Send Google Docs Link",
                     description="Please send the link of a Google Docs of your essay."
@@ -570,7 +570,7 @@ class DropdownTickets(commands.Cog):
             attachmentlist = ", ".join(attachmentlist)
 
             try:
-                if ViewResponse == "Essay Helpers":
+                if ViewResponse == "Essay Helpers" and selection_str == "Essay Reviser":
                     embed = discord.Embed(
                         title="Ticket Information", color=discord.Colour.blue()
                     )
