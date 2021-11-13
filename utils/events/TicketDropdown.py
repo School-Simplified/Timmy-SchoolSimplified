@@ -731,16 +731,16 @@ class DropdownTickets(commands.Cog):
 
             else:
                 authors = []
-                async for message in ctx.channel.history(limit=None):
+                async for message in channel.history(limit=None):
                     if f"{message.author} ({message.author.id})" not in authors:
                         authors.append(f"{message.author} ({message.author.id})")
 
                 authors.insert(0, S3_URL)
-                authors.insert(1, "")
-                authors.insert(2, "")
-                authors.insert(3, "")
-                authors.insert(4, "")
-                authors.insert(5, "")
+                authors.insert(1, "")           #
+                authors.insert(2, "")           #
+                authors.insert(3, "")           # because of connected cells
+                authors.insert(4, "")           #
+                authors.insert(5, "")           #
                 sheet.append_row(authors)
 
             await msg.delete()
