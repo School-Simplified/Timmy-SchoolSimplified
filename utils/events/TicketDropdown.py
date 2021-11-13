@@ -854,8 +854,11 @@ class DropdownTickets(commands.Cog):
                         emoji="❌",
                     )
                 )
+                overwrite = discord.PermissionOverwrite()
+                overwrite.read_messages = False
+                print(channel, overwrite)
                 await channel.set_permissions(
-                    TicketOwner, read_messages=False, reason="Ticket Perms Close (User)"
+                    TicketOwner, overwrite=overwrite, reason="Ticket Perms Close (User)"
                 )
                 await channel.send(
                     f"Ticket has been inactive for {self.TICKET_INACTIVE_TIME} hours.\nTicket has been closed.",
