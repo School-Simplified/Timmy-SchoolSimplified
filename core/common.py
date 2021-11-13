@@ -363,6 +363,8 @@ class ACAD_ID:
 
     # *** Guilds ***
     g_acad = 801974357395636254
+    cat_essay = 854945037875806220
+    cat_english = 800475854353596469
 
 
 class HR_ID:
@@ -501,8 +503,17 @@ CHHelperRoles = {
     "Comp Science": 862160355622780969,
     "Fine Arts":  862160360626716733,
     "Research": 862159906148450314,
-    "SAT/ACT": 862159736384258048
+    "SAT/ACT": 862159736384258048,
+  
+    "Essay Reviewer": 854135371507171369,
+    "Language Helper": 862160078370635796,
+    "Science Helper": 862160358264274944,
+    "Math Helper": 862160874214129705,
+    "Social Studies Helper": 862160071466811412,
+
+    "CH_ROLE": 811416051144458250
 }
+
 
 rulesDict = {
     1: f"All Terms of Service and Community Guidelines apply. && {Emoji.barrow} https://discord.com/terms\n{Emoji.barrow} https://discord.com/guidelines",
