@@ -737,9 +737,9 @@ class DropdownTickets(commands.Cog):
 
             sa_creds = json.loads(os.getenv("GSPREADSJSON"))
             creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, self.scope)
-            client = gspread.authorize(creds)
+            gspread_client = gspread.authorize(creds)
             print("Connected to Gspread.")
-            sheet = client.open_by_key(self.essayTicketLog_key).sheet1
+            sheet = gspread_client.open_by_key(self.essayTicketLog_key).sheet1
 
             authors = []
             async for message in channel.history(limit=None):
