@@ -397,14 +397,27 @@ class DropdownTickets(commands.Cog):
                     "No question was sent, try selecting a subject back in the homework help channel again."
                 )
 
-            embed = discord.Embed(
-                title="3) Send Assignment Title",
-                description="**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.\n\nSend them all in one message for them to all be sent.",
-                color=discord.Color.blue(),
-            )
-            embed.set_footer(
-                text="We need images/urls as proof that you aren't cheating, School Simplified does not offer assistance on assessments."
-            )
+            if ViewResponse == "Essay Helpers":
+                embed = discord.Embed(
+                    title="3) Send Assignment Title",
+                    description="**Acceptable Forms of Proof:**"
+                                "\n1) Link of a Google Docs",
+                    color=discord.Color.blue(),
+                )
+                embed.set_footer(
+                    text="We need a Google Docs as proof that you aren't cheating, School Simplified does not offer assistance on assessments."
+                )
+
+            else:
+
+                embed = discord.Embed(
+                    title="3) Send Assignment Title",
+                    description="**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.\n\nSend them all in one message for them to all be sent.",
+                    color=discord.Color.blue(),
+                )
+                embed.set_footer(
+                    text="We need images/urls as proof that you aren't cheating, School Simplified does not offer assistance on assessments."
+                )
 
             await DMChannel.send(embed=embed)
             answer2: discord.Message = await self.bot.wait_for("message", check=check)
