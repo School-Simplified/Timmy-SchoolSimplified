@@ -31,6 +31,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
+                    "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
+essayTicketLog_key = "1pB5xpsBGKIES5vmEY4hjluFg7-FYolOmN_w3s20yzr0"
+
+sa_creds = json.loads(os.getenv("GSPREADSJSON"))
+creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, scope)
+gspread_client = gspread.authorize(creds)
+print("Connected to Gspread.")
+
 
 class TicketButton(discord.ui.View):
     def __init__(self):
@@ -284,11 +293,9 @@ class DropdownTickets(commands.Cog):
         self.CHID_DEFAULT = Others.CHID_DEFAULT
         self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
         self.TicketInactive.start()
+        self.sheet  = gspread_client.open_by_key(essayTicketLog_key).sheet1
 
-        # Google Spreadsheet
-        self.scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
-                      "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-        self.essayTicketLog_key = "1pB5xpsBGKIES5vmEY4hjluFg7-FYolOmN_w3s20yzr0"
+
 
     def cog_unload(self):
         self.TicketInactive.cancel()
@@ -780,11 +787,6 @@ class DropdownTickets(commands.Cog):
                 self, channel, ResponseLogChannel, author
             )
 
-            sa_creds = json.loads(os.getenv("GSPREADSJSON"))
-            creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, self.scope)
-            gspread_client = gspread.authorize(creds)
-            print("Connected to Gspread.")
-            sheet = gspread_client.open_by_key(self.essayTicketLog_key).sheet1
 
             authors = []
             async for message in channel.history(limit=None):
@@ -799,7 +801,7 @@ class DropdownTickets(commands.Cog):
             authors.insert(3, "")           # because of connected cells
             authors.insert(4, "")           #
             authors.insert(5, "")           #
-            sheet.append_row(authors)
+            self.sheet.append_row(authors)
 
             await msg.delete()
             await interaction.channel.send(

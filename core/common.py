@@ -405,7 +405,7 @@ class Emoji:
     addgear = "<:add5x:862875088311025675>"
     minusgear = "<:minusgear:862875088217702421>"
     invalidchannel = "<:invalidchannel:862875088361619477>"
-    barrow = "<:barrow:862572842985193502>"
+    barrow = "<:SS:865715703545069568>"
     person = "<:person:883771751127990333>"
     activity = "<:note:883771751190908989>"
     check = "<:success:834967474101420032>"
