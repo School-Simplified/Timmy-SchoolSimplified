@@ -202,7 +202,7 @@ class MAIN_ID:
     r_advocacyClub = 883169000866070539
     r_speechClub = 883170166161149983
     r_clubPresident = 883160826180173895
-    
+
     r_chatHelper = 811416051144458250
     r_leadHelper = 810684359765393419
     r_essayReviser = 854135371507171369
@@ -293,6 +293,7 @@ class TECH_ID:
     r_developerManager = 805596419066822686
     r_assistantBotDevManager = 816498160880844802
     r_botDeveloper = 805610985594814475
+
 
 class MKT_ID:
     """
@@ -466,26 +467,23 @@ class Others:
     TICKET_INACTIVE_TIME = 1440
     CHID_DEFAULT = 905217698865225728
 
+
 CHHelperRoles = {
     "Essay Reviser": 854135371507171369,
-
     "English": 862160296914714645,
     "English Language": 862160080896000010,
     "English Literature": 862160567921541171,
-
     "Math": 862160874214129705,
     "Algebra": 862161250656976896,
     "Geometry": 862160836029317160,
     "Precalculus": 862160740509024337,
     "Calculus": 862160709252939837,
     "Statistics": 862160620563202079,
-
     "Science": 862160358264274944,
     "Biology": 862160682472439828,
     "Chemistry": 862160317794615296,
     "Physics": 862160774075383808,
     "Psych": 862160362677993493,
-
     "Social Studies": 862160071466811412,
     "World History": 862159919943254056,
     "US History": 862159910254673982,
@@ -493,17 +491,15 @@ CHHelperRoles = {
     "Euro": 862159915660476427,
     "Human Geo": 862960195108601866,
     "Economy": 862159734257352724,
-
     "Language": 862160078370635796,
     "French": 862160075559665724,
     "Chinese": 862143325683318804,
     "Korean": 862143319458316298,
     "Spanish": 856704808807563294,
-
     "Computer Science": 862160355622780969,
-    "Fine Arts":  862160360626716733,
+    "Fine Arts": 862160360626716733,
     "Research": 862159906148450314,
-    "SAT/ACT": 862159736384258048
+    "SAT/ACT": 862159736384258048,
 }
 
 

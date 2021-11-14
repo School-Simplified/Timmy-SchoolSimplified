@@ -6,6 +6,7 @@ from core.common import Others
 from discord.ext import commands
 from datetime import datetime
 
+
 class TutorMain(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -38,7 +39,7 @@ class TutorMain(commands.Cog):
                     DateOBJ = pytz.timezone("America/New_York").localize(entry.Date)
                     if not isinstance(DateOBJ, datetime):
                         DateOBJ = datetime.fromisoformat(DateOBJ)
-                        
+
                     result = datetime.strftime(DateOBJ, "%B %d, %Y | %I:%M %p EST")
                     studentUser = await self.bot.fetch_user(entry.StudentID)
                     ListTen.append(
@@ -83,17 +84,15 @@ class TutorMain(commands.Cog):
                     color=discord.Color.red(),
                 )
                 await ctx.send(embed=embed)
-    
+
     @commands.command()
     @commands.has_any_role("Senior Tutor", "Tutoring Manager", "Tutoring Director")
     async def mview(self, ctx, user: discord.User):
         """
         View someone else's tutor sessions
         """
-        query: database.TutorBot_Sessions = (
-            database.TutorBot_Sessions.select().where(
-                database.TutorBot_Sessions.TutorID == user.id
-            )
+        query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
+            database.TutorBot_Sessions.TutorID == user.id
         )
 
         embed = discord.Embed(
@@ -114,7 +113,7 @@ class TutorMain(commands.Cog):
                 DateOBJ = pytz.timezone("America/New_York").localize(entry.Date)
                 if not isinstance(DateOBJ, datetime):
                     DateOBJ = datetime.fromisoformat(DateOBJ)
-                    
+
                 result = datetime.strftime(DateOBJ, "%B %d, %Y | %I:%M %p EST")
                 studentUser = await self.bot.fetch_user(entry.StudentID)
                 ListTen.append(
