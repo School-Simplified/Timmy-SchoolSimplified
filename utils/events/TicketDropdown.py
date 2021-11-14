@@ -106,6 +106,7 @@ async def TicketExport(
     response: discord.TextChannel = None,
     user: discord.User = None,
     responsesauthor: typing.List[discord.User] = None,
+    directTranscript: bool = False,
 ):
     transcript = await chat_exporter.export(channel, None)
     query = (
@@ -142,6 +143,7 @@ async def TicketExport(
     S3_upload_file(f"transcript-{channel.name}.html", "ch-transcriptlogs")
     S3_URL = f"[Direct Transcript Link](https://acad-transcripts.schoolsimplified.org/transcript-{channel.name}.html)"
     embed.add_field(name="Transcript Link", value=S3_URL)
+
     if response != None:
         msg = await response.send(embed=embed)
     if responsesauthor != None:
@@ -159,7 +161,7 @@ async def TicketExport(
     os.remove(f"transcript-{channel.name}.html")
 
     if response == None:
-        msg = None
+        msg = S3_URL
     return msg, transcript_file, S3_URL
 
 
@@ -344,10 +346,15 @@ class DropdownTickets(commands.Cog):
                 MasterSubjectOptions, "persistent_view:ticketdrop", "Click a subject!"
             )
             MSV.add_item(var)
-            await DMChannel.send(
-                "**Let's start this!**\nStart off by selecting a subject that matches what your ticket is about!",
-                view=MSV,
-            )
+            try:
+                await DMChannel.send(
+                    "**Let's start this!**\nStart off by selecting a subject that matches what your ticket is about!",
+                    view=MSV,
+                )
+            except Exception as e:
+                await interaction.channel.send(
+                    f"{interaction.user.mention} I can't send you messages, please check you're privacy settings!", delete_after=5.0
+                )
             timeout = await MSV.wait()
             if not timeout:
                 MasterSubjectView = var.view_response
@@ -613,7 +620,7 @@ class DropdownTickets(commands.Cog):
                 await channel.send(
                     f"**Ticket Information**\n\n{interaction.user.mention}\nQuestion: {answer1.content}"
                 )
-                await channel.send(f"Attachment URL: {str(attachmentlist)}")
+            await channel.send(f"Attachment URL: {str(attachmentlist)}")
 
             await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
 
@@ -776,15 +783,15 @@ class DropdownTickets(commands.Cog):
                 await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":
-            channel = await self.bot.fetch_channel(interaction.channel_id)
-            ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
+            channel = interaction.channel
+            ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
             author = interaction.user
             msg = await interaction.channel.send(
                 f"Please wait, creating your transcript {Emoji.loadingGIF2}\n**THIS MAY TAKE SOME TIME**"
             )
 
             msg, file, S3_URL = await TicketExport(
-                self, channel, ResponseLogChannel, author
+                self, channel, ResponseLogChannel, author, None, True
             )
 
 
@@ -835,10 +842,10 @@ class DropdownTickets(commands.Cog):
             # print(transcript_file.filename)
 
             sa_creds = json.loads(os.getenv("GSPREADSJSON"))
-            creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, self.scope)
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, scope)
             gspread_client = gspread.authorize(creds)
             print("Connected to Gspread.")
-            sheet = gspread_client.open_by_key(self.essayTicketLog_key).sheet1
+            sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
 
             authors = []
             async for message in channel.history(limit=None):
