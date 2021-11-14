@@ -791,6 +791,8 @@ class DropdownTickets(commands.Cog):
                 if f"{message.author} ({message.author.id})" not in authors and not message.author.bot:
                     authors.append(f"{message.author} ({message.author.id})")
 
+            raw_url = S3_URL.split("](")[1].strip(")")
+
             authors.insert(0, S3_URL)
             authors.insert(1, "")           #
             authors.insert(2, "")           #
@@ -841,7 +843,9 @@ class DropdownTickets(commands.Cog):
                 if f"{message.author} ({message.author.id})" not in authors and not message.author.bot:
                     authors.append(f"{message.author} ({message.author.id})")
 
-            authors.insert(0, url)
+            raw_url = url.split("](")[1].strip(")")
+
+            authors.insert(0, raw_url)
             authors.insert(1, "")  #
             authors.insert(2, "")  #
             authors.insert(3, "")  # because of connected cells
