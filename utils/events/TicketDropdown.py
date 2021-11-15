@@ -4,6 +4,10 @@ import os
 import typing
 from datetime import datetime, timedelta
 from io import BytesIO
+import json
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+import re
 
 import chat_exporter
 import discord
@@ -20,12 +24,25 @@ from core.common import (
     Others,
     S3_upload_file,
     SelectMenuHandler,
-    CHHelperRoles
+    CHHelperRoles,
 )
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
 load_dotenv()
+
+scope = [
+    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/drive",
+]
+essayTicketLog_key = "1pB5xpsBGKIES5vmEY4hjluFg7-FYolOmN_w3s20yzr0"
+
+sa_creds = json.loads(os.getenv("GSPREADSJSON"))
+creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, scope)
+gspread_client = gspread.authorize(creds)
+print("Connected to Gspread.")
 
 
 class TicketButton(discord.ui.View):
@@ -93,6 +110,7 @@ async def TicketExport(
     response: discord.TextChannel = None,
     user: discord.User = None,
     responsesauthor: typing.List[discord.User] = None,
+    directTranscript: bool = False,
 ):
     transcript = await chat_exporter.export(channel, None)
     query = (
@@ -129,6 +147,7 @@ async def TicketExport(
     S3_upload_file(f"transcript-{channel.name}.html", "ch-transcriptlogs")
     S3_URL = f"[Direct Transcript Link](https://acad-transcripts.schoolsimplified.org/transcript-{channel.name}.html)"
     embed.add_field(name="Transcript Link", value=S3_URL)
+
     if response != None:
         msg = await response.send(embed=embed)
     if responsesauthor != None:
@@ -146,7 +165,7 @@ async def TicketExport(
     os.remove(f"transcript-{channel.name}.html")
 
     if response == None:
-        msg = None
+        msg = S3_URL
     return msg, transcript_file, S3_URL
 
 
@@ -251,6 +270,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
 
     return name, CategoryID, OptList
 
+
 def getRole(guild: discord.Guild, mainSubject: str, subject: str) -> discord.Role:
     """Returns the role of the subject.
 
@@ -262,7 +282,7 @@ def getRole(guild: discord.Guild, mainSubject: str, subject: str) -> discord.Rol
     Returns:
         discord.Role: Role of the subject
     """
-    
+
     if subject == "Other":
         role = guild.get_role(CHHelperRoles[mainSubject])
     else:
@@ -280,6 +300,7 @@ class DropdownTickets(commands.Cog):
         self.CHID_DEFAULT = Others.CHID_DEFAULT
         self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
         self.TicketInactive.start()
+        self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
 
     def cog_unload(self):
         self.TicketInactive.cancel()
@@ -328,10 +349,16 @@ class DropdownTickets(commands.Cog):
                 MasterSubjectOptions, "persistent_view:ticketdrop", "Click a subject!"
             )
             MSV.add_item(var)
-            await DMChannel.send(
-                "**Let's start this!**\nStart off by selecting a subject that matches what your ticket is about!",
-                view=MSV,
-            )
+            try:
+                await DMChannel.send(
+                    "**Let's start this!**\nStart off by selecting a subject that matches what your ticket is about!",
+                    view=MSV,
+                )
+            except Exception as e:
+                await interaction.channel.send(
+                    f"{interaction.user.mention} I can't send you messages, please check you're privacy settings!",
+                    delete_after=5.0,
+                )
             timeout = await MSV.wait()
             if not timeout:
                 MasterSubjectView = var.view_response
@@ -371,45 +398,103 @@ class DropdownTickets(commands.Cog):
                     return await DMChannel.send("Timed out, try again later.")
             else:
                 selection_str = TypeSubject
-                
 
-            embed = discord.Embed(
-                title="2) Send Question",
-                description="Whats your question?\n**DO NOT SEND URL's.** You must send the question in plain test.",
-                color=discord.Color.blue(),
-            )
-            await DMChannel.send(embed=embed)
-            answer1 = await self.bot.wait_for("message", check=check)
-            if (
-                answer1.content is None
-                or answer1.content == ""
-                or answer1.content == " "
-            ):
-                return await DMChannel.send(
-                    "No question was sent, try selecting a subject back in the homework help channel again."
+            if ViewResponse == "Essay Helpers" and selection_str == "Essay Reviser":
+                embed = discord.Embed(
+                    title="2) Send Google Docs Link",
+                    description="Please send the link of a Google Docs of your essay."
+                    "\nDo not send a file.",
+                    color=discord.Color.blue(),
+                )
+                await DMChannel.send(embed=embed)
+
+                answer1 = await self.bot.wait_for("message", check=check)
+                if (
+                    answer1.content is None
+                    or answer1.content == ""
+                    or answer1.content == " "
+                ):
+                    return await DMChannel.send(
+                        "No message was sent, try selecting a subject back in the homework help channel again."
+                    )
+
+                attachmentlist = []
+
+                uri_re = re.compile(
+                    r"""(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|"""
+                    r"""www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?"""
+                    r""":[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))"""
+                    r"""*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|"""
+                    r"""[^\s`!()\[\]{};:'".,<>?«»“”‘’]))"""
                 )
 
-            embed = discord.Embed(
-                title="3) Send Assignment Title",
-                description="**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.\n\nSend them all in one message for them to all be sent.",
-                color=discord.Color.blue(),
-            )
-            embed.set_footer(
-                text="We need images/urls as proof that you aren't cheating, School Simplified does not offer assistance on assessments."
-            )
-
-            await DMChannel.send(embed=embed)
-            answer2: discord.Message = await self.bot.wait_for("message", check=check)
-
-            attachmentlist = []
-            if answer2.attachments:
-                for URL in answer2.attachments:
-                    attachmentlist.append(URL.url)
-            else:
-                if answer2.content.find("https://") != -1:
-                    attachmentlist.append(answer2.content)
+                list_input = uri_re.split(answer1.content)
+                if len(list_input) > 1:
+                    found_link = list_input[1]
+                    found_link = re.sub(r"^.*?https", "https", found_link)
+                    if ":" in found_link:
+                        last_check = found_link.split(":")
+                        if last_check[1].isdigit():
+                            found_link = None
                 else:
-                    return await DMChannel.send("No attachments found.")
+                    found_link = None
+
+                if "docs.google." in found_link:
+                    attachmentlist.append(found_link)
+                else:
+                    return await DMChannel.send("No Google Docs link found.")
+
+                embed = discord.Embed(
+                    title="3) Additional comment",
+                    description='If you don\'t have an additional comment, just write "No".',
+                    color=discord.Color.blue(),
+                )
+
+                await DMChannel.send(embed=embed)
+                answer2: discord.Message = await self.bot.wait_for(
+                    "message", check=check
+                )
+
+            else:
+                embed = discord.Embed(
+                    title="2) Send Question",
+                    description="What is your question or topic?\nDo not send a URL. You must send the question or topic in plain text.",
+                    color=discord.Color.blue(),
+                )
+                await DMChannel.send(embed=embed)
+                answer1 = await self.bot.wait_for("message", check=check)
+                if (
+                    answer1.content is None
+                    or answer1.content == ""
+                    or answer1.content == " "
+                ):
+                    return await DMChannel.send(
+                        "No question was sent, try selecting a subject back in the homework help channel again."
+                    )
+
+                embed = discord.Embed(
+                    title="3) Send Assignment Title",
+                    description="**Acceptable Forms of Proof:**\n1) Images/Attachments.\n2) URL's such as Gyazo.\n\nSend them all in one message for them to all be sent.",
+                    color=discord.Color.blue(),
+                )
+                embed.set_footer(
+                    text="We need images/urls as proof that you aren't cheating, School Simplified does not offer assistance on assessments."
+                )
+
+                await DMChannel.send(embed=embed)
+                answer2: discord.Message = await self.bot.wait_for(
+                    "message", check=check
+                )
+
+                attachmentlist = []
+                if answer2.attachments:
+                    for URL in answer2.attachments:
+                        attachmentlist.append(URL.url)
+                else:
+                    if answer2.content.find("https://") != -1:
+                        attachmentlist.append(answer2.content)
+                    else:
+                        return await DMChannel.send("No attachments found.")
 
             print(attachmentlist)
             CounterNum = (
@@ -425,7 +510,9 @@ class DropdownTickets(commands.Cog):
                 f"Please wait, creating your ticket {Emoji.loadingGIF}"
             )
 
-            mainSubject = c.name.replace("═", "").replace("⁃", "").replace("Ticket", "").strip()
+            mainSubject = (
+                c.name.replace("═", "").replace("⁃", "").replace("Ticket", "").strip()
+            )
             if selection_str == "Other":
                 channel: discord.TextChannel = await guild.create_text_channel(
                     f"other-{mainSubject}-{TNUM}", category=c
@@ -434,7 +521,7 @@ class DropdownTickets(commands.Cog):
                 channel: discord.TextChannel = await guild.create_text_channel(
                     f"{selection_str}-{TNUM}", category=c
                 )
-                
+
             await channel.set_permissions(
                 guild.default_role, read_messages=False, reason="Ticket Perms"
             )
@@ -442,15 +529,15 @@ class DropdownTickets(commands.Cog):
             query.save()
 
             roles = [
-                #"Board Member",
-                #"Senior Executive",
-                #"Executive", 
+                # "Board Member",
+                # "Senior Executive",
+                # "Executive",
                 "Head Moderator",
                 "Moderator",
                 "Lead Helper",
                 "Chat Helper",
                 "Bot: TeXit",
-                "Academics Executive"
+                "Academics Executive",
             ]
             for role in roles:
                 RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
@@ -468,9 +555,11 @@ class DropdownTickets(commands.Cog):
             )
 
             if channel.category_id in self.EssayCategory:
-                roles = ['Essay Reviser']
+                roles = ["Essay Reviser"]
                 for role in roles:
-                    RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
+                    RoleOBJ = discord.utils.get(
+                        interaction.message.guild.roles, name=role
+                    )
                     await channel.set_permissions(
                         RoleOBJ,
                         read_messages=True,
@@ -478,17 +567,17 @@ class DropdownTickets(commands.Cog):
                         reason="Ticket Perms",
                     )
             else:
-                roles = ['Chat Helper', 'Lead Helper']
+                roles = ["Chat Helper", "Lead Helper"]
                 for role in roles:
-                    RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
+                    RoleOBJ = discord.utils.get(
+                        interaction.message.guild.roles, name=role
+                    )
                     await channel.set_permissions(
                         RoleOBJ,
                         read_messages=True,
                         send_messages=True,
                         reason="Ticket Perms",
                     )
-
-
 
             controlTicket = discord.Embed(
                 title="Control Panel",
@@ -506,7 +595,7 @@ class DropdownTickets(commands.Cog):
                     custom_id="ch_lock",
                 )
             )
-            
+
             LCM = await channel.send(
                 interaction.user.mention, embed=controlTicket, view=LockControlButton
             )
@@ -514,31 +603,50 @@ class DropdownTickets(commands.Cog):
             attachmentlist = ", ".join(attachmentlist)
 
             try:
-                embed = discord.Embed(
-                    title="Ticket Information", color=discord.Colour.blue()
-                )
-                embed.set_author(
-                    name=f"{interaction.user.name}#{interaction.user.discriminator}",
-                    url=interaction.user.avatar.url,
-                    icon_url=interaction.user.avatar.url,
-                )
-                embed.add_field(
-                    name="Question:", value=f"A: {answer1.content}", inline=False
-                )
-                embed.add_field(name="Attachment URL:", value=f"URL: {attachmentlist}")
-                
-                mentionRole = getRole(interaction.guild, mainSubject, selection_str)
-                
-                await channel.send(mentionRole.mention, embed=embed)
-                await channel.send(f"URLs:\n{attachmentlist}")
+                if ViewResponse == "Essay Helpers" and selection_str == "Essay Reviser":
+                    embed = discord.Embed(
+                        title="Ticket Information", color=discord.Colour.blue()
+                    )
+                    embed.set_author(
+                        name=f"{interaction.user.name}#{interaction.user.discriminator}",
+                        url=interaction.user.avatar.url,
+                        icon_url=interaction.user.avatar.url,
+                    )
+                    embed.add_field(
+                        name="Google Docs Link: ",
+                        value=f"{answer1.content}",
+                        inline=False,
+                    )
+                    embed.add_field(
+                        name="Additional Comment:", value=f"{answer2.content}"
+                    )
 
+                else:
+                    embed = discord.Embed(
+                        title="Ticket Information", color=discord.Colour.blue()
+                    )
+                    embed.set_author(
+                        name=f"{interaction.user.name}#{interaction.user.discriminator}",
+                        url=interaction.user.avatar.url,
+                        icon_url=interaction.user.avatar.url,
+                    )
+                    embed.add_field(
+                        name="Question:", value=f"A: {answer1.content}", inline=False
+                    )
+                    embed.add_field(
+                        name="Attachment URL:", value=f"URL: {attachmentlist}"
+                    )
+
+                mentionRole = getRole(interaction.guild, mainSubject, selection_str)
+
+                await channel.send(mentionRole.mention, embed=embed)
 
             except Exception as e:
                 print(e)
                 await channel.send(
                     f"**Ticket Information**\n\n{interaction.user.mention}\nQuestion: {answer1.content}"
                 )
-                await channel.send(f"Attachment URL: {str(attachmentlist)}")
+            await channel.send(f"Attachment URL: {str(attachmentlist)}")
 
             await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
 
@@ -577,14 +685,18 @@ class DropdownTickets(commands.Cog):
                 )
             )
             try:
-                await interaction.followup.send(f"{author.mention}\n", embed=embed, view=ButtonViews)
+                await interaction.followup.send(
+                    f"{author.mention}\n", embed=embed, view=ButtonViews
+                )
             except:
                 try:
                     await interaction.response.send_message(
                         f"{author.mention}\n", embed=embed, view=ButtonViews
                     )
                 except:
-                    await channel.send(f"{author.mention}\n", embed=embed, view=ButtonViews)
+                    await channel.send(
+                        f"{author.mention}\n", embed=embed, view=ButtonViews
+                    )
 
         elif InteractionResponse["custom_id"] == "ch_lock_CONFIRM":
             channel = interaction.message.channel
@@ -596,7 +708,7 @@ class DropdownTickets(commands.Cog):
                 .get()
             )
 
-            try:                      
+            try:
                 TicketOwner = await guild.fetch_member(query.authorID)
             except discord.NotFound:
                 await channel.send(
@@ -659,7 +771,7 @@ class DropdownTickets(commands.Cog):
             await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_C":
-            channel = await self.bot.fetch_channel(interaction.channel_id)            
+            channel = await self.bot.fetch_channel(interaction.channel_id)
             author = interaction.user
 
             try:
@@ -693,7 +805,9 @@ class DropdownTickets(commands.Cog):
                 return
             else:
                 await channel.set_permissions(
-                    TicketOwner, read_messages=True, reason="Ticket Perms Re-Open (User)"
+                    TicketOwner,
+                    read_messages=True,
+                    reason="Ticket Perms Re-Open (User)",
                 )
                 await channel.send(
                     f"{author.mention} Alright, the ticket has been re-opened."
@@ -701,16 +815,37 @@ class DropdownTickets(commands.Cog):
                 await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":
-            channel = await self.bot.fetch_channel(interaction.channel_id)
-            ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
+            channel = interaction.channel
+            ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                MAIN_ID.ch_transcriptLogs
+            )
             author = interaction.user
             msg = await interaction.channel.send(
                 f"Please wait, creating your transcript {Emoji.loadingGIF2}\n**THIS MAY TAKE SOME TIME**"
             )
 
             msg, file, S3_URL = await TicketExport(
-                self, channel, ResponseLogChannel, author
+                self, channel, ResponseLogChannel, author, None, True
             )
+
+            authors = []
+            async for message in channel.history(limit=None):
+                if (
+                    f"{message.author} ({message.author.id})" not in authors
+                    and not message.author.bot
+                ):
+                    authors.append(f"{message.author} ({message.author.id})")
+
+            raw_url = S3_URL.split("](")[1].strip(")")
+
+            authors.insert(0, S3_URL)
+            authors.insert(1, "")  #
+            authors.insert(2, "")  #
+            authors.insert(3, "")  # because of connected cells
+            authors.insert(4, "")  #
+            authors.insert(5, "")  #
+            self.sheet.append_row(authors)
+
             await msg.delete()
             await interaction.channel.send(
                 f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}"
@@ -736,11 +871,36 @@ class DropdownTickets(commands.Cog):
             for msg in messages:
                 if msg.author not in authorList:
                     authorList.append(msg.author)
+            print(self, channel, ResponseLogChannel, TicketOwner, authorList)
             msg, transcript_file, url = await TicketExport(
                 self, channel, ResponseLogChannel, TicketOwner, authorList
             )
             # S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
             # print(transcript_file.filename)
+
+            sa_creds = json.loads(os.getenv("GSPREADSJSON"))
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, scope)
+            gspread_client = gspread.authorize(creds)
+            print("Connected to Gspread.")
+            sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
+
+            authors = []
+            async for message in channel.history(limit=None):
+                if (
+                    f"{message.author} ({message.author.id})" not in authors
+                    and not message.author.bot
+                ):
+                    authors.append(f"{message.author} ({message.author.id})")
+
+            raw_url = url.split("](")[1].strip(")")
+
+            authors.insert(0, raw_url)
+            authors.insert(1, "")  #
+            authors.insert(2, "")  #
+            authors.insert(3, "")  # because of connected cells
+            authors.insert(4, "")  #
+            authors.insert(5, "")  #
+            sheet.append_row(authors)
 
             try:
                 await msgO.edit(
@@ -762,9 +922,8 @@ class DropdownTickets(commands.Cog):
 
     @commands.command()
     async def close(self, ctx: commands.Context):
-        query = (
-            database.TicketInfo.select()
-            .where(database.TicketInfo.ChannelID == ctx.channel.id)
+        query = database.TicketInfo.select().where(
+            database.TicketInfo.ChannelID == ctx.channel.id
         )
         if query.exists():
             query = query.get()
@@ -854,8 +1013,11 @@ class DropdownTickets(commands.Cog):
                         emoji="❌",
                     )
                 )
+                overwrite = discord.PermissionOverwrite()
+                overwrite.read_messages = False
+                print(channel, overwrite)
                 await channel.set_permissions(
-                    TicketOwner, read_messages=False, reason="Ticket Perms Close (User)"
+                    TicketOwner, overwrite=overwrite, reason="Ticket Perms Close (User)"
                 )
                 await channel.send(
                     f"Ticket has been inactive for {self.TICKET_INACTIVE_TIME} hours.\nTicket has been closed.",

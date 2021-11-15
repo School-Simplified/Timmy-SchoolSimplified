@@ -6,6 +6,7 @@ from core.common import Others
 from discord.ext import commands
 from datetime import datetime
 
+
 class TutorMain(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -38,7 +39,7 @@ class TutorMain(commands.Cog):
                     DateOBJ = pytz.timezone("America/New_York").localize(entry.Date)
                     if not isinstance(DateOBJ, datetime):
                         DateOBJ = datetime.fromisoformat(DateOBJ)
-                        
+
                     result = datetime.strftime(DateOBJ, "%B %d, %Y | %I:%M %p EST")
                     studentUser = await self.bot.fetch_user(entry.StudentID)
                     ListTen.append(
@@ -83,6 +84,45 @@ class TutorMain(commands.Cog):
                     color=discord.Color.red(),
                 )
                 await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_any_role("Senior Tutor", "Tutoring Manager", "Tutoring Director")
+    async def mview(self, ctx, user: discord.User):
+        """
+        View someone else's tutor sessions
+        """
+        query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
+            database.TutorBot_Sessions.TutorID == user.id
+        )
+
+        embed = discord.Embed(
+            title="Scheduled Tutor Sessions", color=discord.Color.dark_blue()
+        )
+        embed.add_field(name="Schedule:", value=f"{user.name}'s Schedule:")
+
+        if query.count() == 0:
+            embed.add_field(
+                name="List:", value="This user has no tutor sessions yet!", inline=False
+            )
+
+        else:
+            ListTen = []
+            i = 0
+            for entry in query:
+                entry: database.TutorBot_Sessions = entry
+                DateOBJ = pytz.timezone("America/New_York").localize(entry.Date)
+                if not isinstance(DateOBJ, datetime):
+                    DateOBJ = datetime.fromisoformat(DateOBJ)
+
+                result = datetime.strftime(DateOBJ, "%B %d, %Y | %I:%M %p EST")
+                studentUser = await self.bot.fetch_user(entry.StudentID)
+                ListTen.append(
+                    f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {result} -> {studentUser.name}"
+                )
+
+            embed.add_field(name="List:", value="\n".join(ListTen), inline=False)
+        embed.set_thumbnail(url=Others.timmyTeacher_png)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
