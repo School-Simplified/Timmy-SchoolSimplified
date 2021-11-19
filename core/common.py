@@ -8,7 +8,8 @@ import subprocess
 import sys
 import typing
 from pathlib import Path
-from typing import Any, Awaitable, Callable, List, Tuple
+from typing import Any, Awaitable, Callable, List, Tuple, Union
+import configcatclient
 
 import chat_exporter
 import discord
@@ -23,6 +24,8 @@ from core import database
 # global variables
 coroutineType = Callable[[Any, Any], Awaitable[Any]]
 
+configcat_client = configcatclient.create_client(
+    'FI3ZCHuHAkqAlIMJBnqJ2A/2uvu9aPHI0Sw-YTWieS0SA') # <-- This is the actual SDK Key for your production environment.
 
 async def rawExport(self, channel, response, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
@@ -160,62 +163,63 @@ class MAIN_ID:
         msg: discord.Message
     """
 
-    # *** Guilds ***
-    g_main = 763119924385939498
+    ID_DICT = {
+        # *** Guilds ***
+        "g_main": 763119924385939498,
 
-    # *** Channels ***
-    ch_commands = 763409002913595412
-    ch_seniorMods = 878792926266810418
-    ch_moderators = 786068971048140820
-    ch_mutedChat = 808919081469739008
-    ch_modLogs = 863177000372666398
-    ch_tutoring = 865716647083507733
-    ch_transcriptLogs = 767434763337728030
-    ch_actionLogs = 767206398060396574
-    ch_modCommands = 786057630383865858
-    ch_controlPanel = 843637802293788692
-    ch_startPrivateVC = 784556875487248394
+        # *** Channels ***
+        "ch_commands": 763409002913595412,
+        "ch_seniorMods": 878792926266810418,
+        "ch_moderators": 786068971048140820,
+        "ch_mutedChat": 808919081469739008,
+        "ch_modLogs": 863177000372666398,
+        "ch_tutoring": 865716647083507733,
+        "ch_transcriptLogs": 767434763337728030,
+        "ch_actionLogs": 767206398060396574,
+        "ch_modCommands": 786057630383865858,
+        "ch_controlPanel": 843637802293788692,
+        "ch_startPrivateVC": 784556875487248394,
 
-    # *** Categories ***
-    cat_casual = 763121170324783146
-    cat_community = 800163651805773824
-    cat_lounge = 774847738239385650
-    cat_events = 805299289604620328
-    cat_voice = 763857608964046899
-    cat_scienceTicket = 800479815471333406
-    cat_fineArtsTicket = 833210452758364210
-    cat_mathTicket = 800472371973980181
-    cat_socialStudiesTicket = 800481237608824882
-    cat_englishTicket = 800475854353596469
-    cat_essayTicket = 854945037875806220
-    cat_languageTicket = 800477414361792562
-    cat_otherTicket = 825917349558747166
-    cat_privateVC = 776988961087422515
+        # *** Categories ***
+        "cat_casual": 763121170324783146,
+        "cat_community": 800163651805773824,
+        "cat_lounge": 774847738239385650,
+        "cat_events": 805299289604620328,
+        "cat_voice": 763857608964046899,
+        "cat_scienceTicket": 800479815471333406,
+        "cat_fineArtsTicket": 833210452758364210,
+        "cat_mathTicket": 800472371973980181,
+        "cat_socialStudiesTicket": 800481237608824882,
+        "cat_englishTicket": 800475854353596469,
+        "cat_essayTicket": 854945037875806220,
+        "cat_languageTicket": 800477414361792562,
+        "cat_otherTicket": 825917349558747166,
+        "cat_privateVC": 776988961087422515,
 
-    # *** Roles ***
-    r_codingClub = 883169286665936996
-    r_debateClub = 883170141771272294
-    r_musicClub = 883170072355561483
-    r_cookingClub = 883162279904960562
-    r_chessClub = 883564455219306526
-    r_bookClub = 883162511560560720
-    r_advocacyClub = 883169000866070539
-    r_speechClub = 883170166161149983
-    r_clubPresident = 883160826180173895
+        # *** Roles ***
+        "r_codingClub": 883169286665936996,
+        "r_debateClub": 883170141771272294,
+        "r_musicClub": 883170072355561483,
+        "r_cookingClub": 883162279904960562,
+        "r_chessClub": 883564455219306526,
+        "r_bookClub": 883162511560560720,
+        "r_advocacyClub": 883169000866070539,
+        "r_speechClub": 883170166161149983,
+        "r_clubPresident": 883160826180173895,
+        "r_chatHelper": 811416051144458250,
+        "r_leadHelper": 810684359765393419,
+        "r_essayReviser": 854135371507171369,
 
-    r_chatHelper = 811416051144458250
-    r_leadHelper = 810684359765393419
-    r_essayReviser = 854135371507171369
-
-    # *** Messages ***
-    # Tutoring
-    msg_math = 866904767568543744
-    msg_science = 866904901174427678
-    msg_english = 866905061182930944
-    msg_language = 866905971519389787
-    msg_art = 866906016602652743
-    msg_socialStudies = 866905205094481951
-    msg_computerScience = 867550791635566623
+        # *** Messages ***
+        # Tutoring
+        "msg_math": 866904767568543744,
+        "msg_science": 866904901174427678,
+        "msg_english": 866905061182930944,
+        "msg_language": 866905971519389787,
+        "msg_art": 866906016602652743,
+        "msg_socialStudies": 866905205094481951,
+        "msg_computerScience": 867550791635566623,
+    }
 
 
 class STAFF_ID:
@@ -231,18 +235,19 @@ class STAFF_ID:
         msg: discord.Message
     """
 
-    # *** Guilds ***
-    g_staff = 891521033700540457
+    ID_DICT = {
+        # *** Guilds ***
+        "g_staff": 891521033700540457,
 
-    # *** Channels ***
-    ch_verificationLogs = 894241199433580614
-    ch_verification = 894240578651443232
-    ch_console = 895041227123228703
-    ch_startPrivateVC = 895041070956675082
+        # *** Channels ***
+        "ch_verificationLogs": 894241199433580614,
+        "ch_verification": 894240578651443232,
+        "ch_console": 895041227123228703,
+        "ch_startPrivateVC": 895041070956675082,
 
-    # *** Categories ***
-    cat_privateVC = 895041016057446411
-
+        # *** Categories ***
+        "cat_privateVC": 895041016057446411
+    }
 
 class DIGITAL_ID:
     """
@@ -257,12 +262,14 @@ class DIGITAL_ID:
         msg: discord.Message
     """
 
-    # *** Guilds ***
-    g_digital = 778406166735880202
+    ID_DICT = {
+        # *** Guilds ***
+        "g_digital": 778406166735880202,
 
-    # *** Channels ***
-    ch_verification = 878681438462050356
-    ch_waitingRoom = 878679747255750696
+        # *** Channels ***
+        "ch_verification": 878681438462050356,
+        "ch_waitingRoom": 878679747255750696
+    }
 
 
 class TECH_ID:
@@ -278,21 +285,23 @@ class TECH_ID:
         msg: discord.Message
     """
 
-    # *** Guilds ***
-    g_tech = 805593783684562965
+    ID_DICT = {
+        # *** Guilds ***
+        "g_tech": 805593783684562965,
 
-    # *** Channels ***
-    ch_tracebacks = 851949397533392936
-    ch_commissionLogs = 849722616880300061
-    ch_ticketLog = 872915565600182282
+        # *** Channels ***
+        "ch_tracebacks": 851949397533392936,
+        "ch_commissionLogs": 849722616880300061,
+        "ch_ticketLog": 872915565600182282,
 
-    # *** Categories ***
-    cat_developerComms = 873261268495106119
+        # *** Categories ***
+        "cat_developerComms": 873261268495106119,
 
-    # *** Roles ***
-    r_developerManager = 805596419066822686
-    r_assistantBotDevManager = 816498160880844802
-    r_botDeveloper = 805610985594814475
+        # *** Roles ***
+        "r_developerManager": 805596419066822686,
+        "r_assistantBotDevManager": 816498160880844802,
+        "r_botDeveloper": 805610985594814475
+    }
 
 
 class MKT_ID:
@@ -308,24 +317,26 @@ class MKT_ID:
         msg: discord.Message
     """
 
-    # *** Guilds ***
-    g_mkt = 799855854182596618
+    ID_DICT = {
+        # *** Guilds ***
+        "g_mkt": 799855854182596618,
 
-    # *** Channels ***
-    ch_commands = 799855856295608345
-    ch_commissionTranscripts = 820843692385632287
+        # *** Channels ***
+        "ch_commands": 799855856295608345,
+        "ch_commissionTranscripts": 820843692385632287,
 
-    # *** Categories ***
-    cat_design = 820873176208375838
-    cat_media = 882031123541143632
-    cat_discord = 888668259220615198
+        # *** Categories ***
+        "cat_design": 820873176208375838,
+        "cat_media": 882031123541143632,
+        "cat_discord": 888668259220615198,
 
-    # *** Roles ***
-    r_discordManager = 890778255655841833
-    r_discordTeam = 805276710404489227
-    r_designManager = 882755765910261760
-    r_designTeam = 864161064526020628
-    r_contentCreatorManager = 864165192148189224
+        # *** Roles ***
+        "r_discordManager": 890778255655841833,
+        "r_discordTeam": 805276710404489227,
+        "r_designManager": 882755765910261760,
+        "r_designTeam": 864161064526020628,
+        "r_contentCreatorManager": 864165192148189224
+    }
 
 
 class TUT_ID:
@@ -341,12 +352,14 @@ class TUT_ID:
         msg: discord.Message
     """
 
-    # *** Guilds ***
-    g_tut = 860897711334621194
+    ID_DICT = {
+        # *** Guilds ***
+        "g_tut": 860897711334621194,
 
-    # *** Channels ***
-    ch_botCommands = 862480236965003275
-    ch_hourLogs = 873326994220265482
+        # *** Channels ***
+        "ch_botCommands": 862480236965003275,
+        "ch_hourLogs": 873326994220265482
+    }
 
 
 class ACAD_ID:
@@ -362,10 +375,14 @@ class ACAD_ID:
         msg: discord.Message
     """
 
-    # *** Guilds ***
-    g_acad = 801974357395636254
-    cat_essay = 854945037875806220
-    cat_english = 800475854353596469
+    ID_DICT = {
+        # *** Guilds ***
+        "g_acad": 801974357395636254,
+
+        # *** Categories ***
+        "cat_essay": 854945037875806220,
+        "cat_english": 800475854353596469
+    }
 
 
 class HR_ID:
@@ -383,6 +400,25 @@ class HR_ID:
 
     # *** Guilds ***
     g_hr = 815753072742891532
+
+
+def get_value(classType: Union[MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, ACAD_ID, HR_ID],
+              value: str) -> int:
+    """
+    Get a value of a ID class within ConfigCat.
+
+    Parameters:
+        classType: The class of the ID which should be returned
+        value: The variable name (name of the ID)
+    """
+
+    if configcat_client.get_value(value) is None:
+        raise ValueError(f"Cannot find {value} within ConfigCat!")
+
+    if value in classType.ID_DICT:
+        return int(configcat_client.get_value(value, classType.ID_DICT[value]))
+    else:
+        return int(configcat_client.get_value(value, None))
 
 
 class Emoji:
