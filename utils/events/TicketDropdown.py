@@ -965,7 +965,7 @@ class DropdownTickets(commands.Cog):
                 )
             except Exception as e:
                 print(entry.ChannelID, e)
-                entry.delete_instance()
+                #entry.delete_instance()
                 continue
             fetchMessage = await channel.history(limit=1).flatten()
             TicketOwner = await self.bot.fetch_user(entry.authorID)
