@@ -38,7 +38,7 @@ from core.common import (
     getGuildList,
     hexColors,
     id_generator,
-    CheckDB_CC
+    CheckDB_CC,
 )
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
@@ -50,7 +50,7 @@ logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
 logger.addHandler(LogTail)
 
-logger.warning("Started Timmy")
+logger.warning("Started Timmy"); print("Starting Timmy...")
 
 
 class Timmy(commands.Bot):

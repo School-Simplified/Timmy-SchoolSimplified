@@ -1,6 +1,7 @@
 from pathlib import Path
 import discord
 from core import database
+from core.common import CheckDB_CC
 from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4
 from core.common import Emoji, hexColors
 from discord.ext import commands
@@ -87,13 +88,13 @@ class CoreBotConfig(commands.Cog):
         )
         embed.add_field(
             name="Checks",
-            value=f"1) `Maintenance Mode`\n{Emoji.barrow} {CheckDB.MasterMaintenance}"
-            f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB.guildNone}"
-            f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB.externalGuild}"
-            f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB.ModRoleBypass}"
-            f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB.ruleBypass}"
-            f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB.publicCategories}"
-            f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB.elseSituation}",
+            value=f"1) `Maintenance Mode`\n{Emoji.barrow} {CheckDB_CC.MasterMaintenance}"
+            f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB_CC.guildNone}"
+            f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB_CC.externalGuild}"
+            f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB_CC.ModRoleBypass}"
+            f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB_CC.ruleBypass}"
+            f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB_CC.publicCategories}"
+            f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB_CC.elseSituation}",
         )
         await ctx.send(embed=embed)
 
