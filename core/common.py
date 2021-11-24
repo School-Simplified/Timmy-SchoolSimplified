@@ -1,6 +1,7 @@
 import asyncio
 import io
 import json
+import logging
 import os
 import random
 import string
@@ -9,23 +10,51 @@ import sys
 import typing
 from pathlib import Path
 from typing import Any, Awaitable, Callable, List, Tuple, Union
-import configcatclient
 
+import boto3
 import chat_exporter
+import configcatclient
 import discord
+from botocore.exceptions import ClientError
 from discord import Button, ButtonStyle, SelectOption, ui
 from discord.ext import commands
-import logging
-import boto3
-from botocore.exceptions import ClientError
-import os
+from dotenv import load_dotenv
+
 from core import database
 
+load_dotenv()
 # global variables
 coroutineType = Callable[[Any, Any], Awaitable[Any]]
 
-configcat_client = configcatclient.create_client(
-    'FI3ZCHuHAkqAlIMJBnqJ2A/2uvu9aPHI0Sw-YTWieS0SA') # <-- This is the actual SDK Key for your production environment.
+class ConfigcatClient:
+    MAIN_ID_CC = configcatclient.create_client(
+        os.getenv("MAINID_CC")
+    )
+    STAFF_ID_CC = configcatclient.create_client(
+        os.getenv("STAFFID_CC")
+    )
+    DIGITAL_ID_CC = configcatclient.create_client(
+        os.getenv("DIGITALID_CC")
+    )
+    TECH_ID_CC = configcatclient.create_client(
+        os.getenv("TECHID_CC")
+    )
+    MKT_ID_CC = configcatclient.create_client(
+        os.getenv("MKTID_CC")
+    )
+    TUT_ID_CC = configcatclient.create_client(
+        os.getenv("TUTID_CC")
+    )
+    ACAD_ID_CC = configcatclient.create_client(
+        os.getenv("ACADID_CC")
+    )
+    HR_ID_CC = configcatclient.create_client(
+        os.getenv("HRID_CC")
+    )
+    CHECK_DB_CC = configcatclient.create_client(
+        os.getenv("CHECKDB_CC")
+    )
+
 
 async def rawExport(self, channel, response, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
@@ -154,242 +183,6 @@ class MAIN_ID:
     """
     IDs of the SS Main server.
     NOTE: If you want to add IDs, please use the format as below.
-
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    ID_DICT = {
-        # *** Guilds ***
-        "g_main": 763119924385939498,
-
-        # *** Channels ***
-        "ch_commands": 763409002913595412,
-        "ch_seniorMods": 878792926266810418,
-        "ch_moderators": 786068971048140820,
-        "ch_mutedChat": 808919081469739008,
-        "ch_modLogs": 863177000372666398,
-        "ch_tutoring": 865716647083507733,
-        "ch_transcriptLogs": 767434763337728030,
-        "ch_actionLogs": 767206398060396574,
-        "ch_modCommands": 786057630383865858,
-        "ch_controlPanel": 843637802293788692,
-        "ch_startPrivateVC": 784556875487248394,
-
-        # *** Categories ***
-        "cat_casual": 763121170324783146,
-        "cat_community": 800163651805773824,
-        "cat_lounge": 774847738239385650,
-        "cat_events": 805299289604620328,
-        "cat_voice": 763857608964046899,
-        "cat_scienceTicket": 800479815471333406,
-        "cat_fineArtsTicket": 833210452758364210,
-        "cat_mathTicket": 800472371973980181,
-        "cat_socialStudiesTicket": 800481237608824882,
-        "cat_englishTicket": 800475854353596469,
-        "cat_essayTicket": 854945037875806220,
-        "cat_languageTicket": 800477414361792562,
-        "cat_otherTicket": 825917349558747166,
-        "cat_privateVC": 776988961087422515,
-
-        # *** Roles ***
-        "r_codingClub": 883169286665936996,
-        "r_debateClub": 883170141771272294,
-        "r_musicClub": 883170072355561483,
-        "r_cookingClub": 883162279904960562,
-        "r_chessClub": 883564455219306526,
-        "r_bookClub": 883162511560560720,
-        "r_advocacyClub": 883169000866070539,
-        "r_speechClub": 883170166161149983,
-        "r_clubPresident": 883160826180173895,
-        "r_chatHelper": 811416051144458250,
-        "r_leadHelper": 810684359765393419,
-        "r_essayReviser": 854135371507171369,
-
-        # *** Messages ***
-        # Tutoring
-        "msg_math": 866904767568543744,
-        "msg_science": 866904901174427678,
-        "msg_english": 866905061182930944,
-        "msg_language": 866905971519389787,
-        "msg_art": 866906016602652743,
-        "msg_socialStudies": 866905205094481951,
-        "msg_computerScience": 867550791635566623,
-    }
-
-
-class STAFF_ID:
-    """
-    IDs of the SS Staff Community server.
-    NOTE: If you want to add IDs, please use the format as below.
-
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    ID_DICT = {
-        # *** Guilds ***
-        "g_staff": 891521033700540457,
-
-        # *** Channels ***
-        "ch_verificationLogs": 894241199433580614,
-        "ch_verification": 894240578651443232,
-        "ch_console": 895041227123228703,
-        "ch_startPrivateVC": 895041070956675082,
-
-        # *** Categories ***
-        "cat_privateVC": 895041016057446411
-    }
-
-class DIGITAL_ID:
-    """
-    IDs of the SS Staff Community server.
-    NOTE: If you want to add IDs, please use the format as below.
-
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    ID_DICT = {
-        # *** Guilds ***
-        "g_digital": 778406166735880202,
-
-        # *** Channels ***
-        "ch_verification": 878681438462050356,
-        "ch_waitingRoom": 878679747255750696
-    }
-
-
-class TECH_ID:
-    """
-    IDs of the SS Technical & Information Department server.
-    NOTE: If you want to add IDs, please use the format as below.
-
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    ID_DICT = {
-        # *** Guilds ***
-        "g_tech": 805593783684562965,
-
-        # *** Channels ***
-        "ch_tracebacks": 851949397533392936,
-        "ch_commissionLogs": 849722616880300061,
-        "ch_ticketLog": 872915565600182282,
-
-        # *** Categories ***
-        "cat_developerComms": 873261268495106119,
-
-        # *** Roles ***
-        "r_developerManager": 805596419066822686,
-        "r_assistantBotDevManager": 816498160880844802,
-        "r_botDeveloper": 805610985594814475
-    }
-
-
-class MKT_ID:
-    """
-    IDs of the SS Marketing Department server.
-    NOTE: If you want to add IDs, please use the format as below.
-
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    ID_DICT = {
-        # *** Guilds ***
-        "g_mkt": 799855854182596618,
-
-        # *** Channels ***
-        "ch_commands": 799855856295608345,
-        "ch_commissionTranscripts": 820843692385632287,
-
-        # *** Categories ***
-        "cat_design": 820873176208375838,
-        "cat_media": 882031123541143632,
-        "cat_discord": 888668259220615198,
-
-        # *** Roles ***
-        "r_discordManager": 890778255655841833,
-        "r_discordTeam": 805276710404489227,
-        "r_designManager": 882755765910261760,
-        "r_designTeam": 864161064526020628,
-        "r_contentCreatorManager": 864165192148189224
-    }
-
-
-class TUT_ID:
-    """
-    IDs of the SS Tutoring Division server.
-    NOTE: If you want to add IDs, please use the format as below.
-
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    ID_DICT = {
-        # *** Guilds ***
-        "g_tut": 860897711334621194,
-
-        # *** Channels ***
-        "ch_botCommands": 862480236965003275,
-        "ch_hourLogs": 873326994220265482
-    }
-
-
-class ACAD_ID:
-    """
-    IDs of the SS Academics Department server.
-    NOTE: If you want to add IDs, please use the format as below.
-
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    ID_DICT = {
-        # *** Guilds ***
-        "g_acad": 801974357395636254,
-
-        # *** Categories ***
-        "cat_essay": 854945037875806220,
-        "cat_english": 800475854353596469
-    }
-
-
-class HR_ID:
-    """
-    IDs of the SS HR Department server.
-    NOTE: If you want to add IDs, please use the format as below.
-
     Format:
         g: discord.Guild
         ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
@@ -399,11 +192,280 @@ class HR_ID:
     """
 
     # *** Guilds ***
-    g_hr = 815753072742891532
+    g_main = ConfigcatClient.MAIN_ID_CC.get_value("g_main", 763119924385939498)
+
+    # *** Channels ***
+    ch_commands = ConfigcatClient.MAIN_ID_CC.get_value("ch_commands", 763409002913595412)
+    ch_seniorMods = ConfigcatClient.MAIN_ID_CC.get_value("ch_seniormods", 878792926266810418)
+    ch_moderators = ConfigcatClient.MAIN_ID_CC.get_value("ch_moderators", 786068971048140820)
+    ch_mutedChat = ConfigcatClient.MAIN_ID_CC.get_value("ch_mutedchat", 808919081469739008)
+    ch_modLogs = ConfigcatClient.MAIN_ID_CC.get_value("ch_modlogs", 863177000372666398)
+    ch_tutoring = ConfigcatClient.MAIN_ID_CC.get_value("ch_tutoring", 865716647083507733)
+    ch_transcriptLogs = ConfigcatClient.MAIN_ID_CC.get_value(
+        "ch_transcriptlogs", 767434763337728030
+    )
+    ch_actionLogs = ConfigcatClient.MAIN_ID_CC.get_value("ch_actionlogs", 767206398060396574)
+    ch_modCommands = ConfigcatClient.MAIN_ID_CC.get_value("ch_modcommands", 786057630383865858)
+    ch_controlPanel = ConfigcatClient.MAIN_ID_CC.get_value("ch_controlpanel", 843637802293788692)
+    ch_startPrivateVC = ConfigcatClient.MAIN_ID_CC.get_value(
+        "ch_startprivatevc", 784556875487248394
+    )
+
+    # *** Categories ***
+    cat_casual = ConfigcatClient.MAIN_ID_CC.get_value("cat_casual", 763121170324783146)
+    cat_community = ConfigcatClient.MAIN_ID_CC.get_value("cat_community", 800163651805773824)
+    cat_lounge = ConfigcatClient.MAIN_ID_CC.get_value("cat_lounge", 774847738239385650)
+    cat_events = ConfigcatClient.MAIN_ID_CC.get_value("cat_events", 805299289604620328)
+    cat_voice = ConfigcatClient.MAIN_ID_CC.get_value("cat_voice", 763857608964046899)
+    cat_scienceTicket = ConfigcatClient.MAIN_ID_CC.get_value(
+        "cat_scienceticket", 800479815471333406
+    )
+    cat_fineArtsTicket = ConfigcatClient.MAIN_ID_CC.get_value(
+        "cat_fineartsticket", 833210452758364210
+    )
+    cat_mathTicket = ConfigcatClient.MAIN_ID_CC.get_value("cat_mathticket", 800472371973980181)
+    cat_socialStudiesTicket = ConfigcatClient.MAIN_ID_CC.get_value(
+        "cat_socialstudiesticket", 800481237608824882
+    )
+    cat_englishTicket = ConfigcatClient.MAIN_ID_CC.get_value(
+        "cat_englishticket", 800475854353596469
+    )
+    cat_essayTicket = ConfigcatClient.MAIN_ID_CC.get_value("cat_essayticket", 854945037875806220)
+    cat_languageTicket = ConfigcatClient.MAIN_ID_CC.get_value(
+        "cat_languageticket", 800477414361792562
+    )
+    cat_otherTicket = ConfigcatClient.MAIN_ID_CC.get_value("cat_otherticket", 825917349558747166)
+    cat_privateVC = ConfigcatClient.MAIN_ID_CC.get_value("cat_privatevc", 776988961087422515)
+
+    # *** Roles ***
+    r_codingClub = ConfigcatClient.MAIN_ID_CC.get_value("r_codingclub", 883169286665936996)
+    r_debateClub = ConfigcatClient.MAIN_ID_CC.get_value("r_debateclub", 883170141771272294)
+    r_musicClub = ConfigcatClient.MAIN_ID_CC.get_value("r_musicclub", 883170072355561483)
+    r_cookingClub = ConfigcatClient.MAIN_ID_CC.get_value("r_cookingclub", 883162279904960562)
+    r_chessClub = ConfigcatClient.MAIN_ID_CC.get_value("r_chessclub", 883564455219306526)
+    r_bookClub = ConfigcatClient.MAIN_ID_CC.get_value("r_bookclub", 883162511560560720)
+    r_advocacyClub = ConfigcatClient.MAIN_ID_CC.get_value("r_advocacyclub", 883169000866070539)
+    r_speechClub = ConfigcatClient.MAIN_ID_CC.get_value("r_speechclub", 883170166161149983)
+    r_clubPresident = ConfigcatClient.MAIN_ID_CC.get_value("r_clubpresident", 883160826180173895)
+
+    r_chatHelper = ConfigcatClient.MAIN_ID_CC.get_value("r_chathelper", 811416051144458250)
+    r_leadHelper = ConfigcatClient.MAIN_ID_CC.get_value("r_leadhelper", 810684359765393419)
+    r_essayReviser = ConfigcatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369)
+
+    # *** Messages ***
+    # Tutoring
+    msg_math = ConfigcatClient.MAIN_ID_CC.get_value("msg_math", 866904767568543744)
+    msg_science = ConfigcatClient.MAIN_ID_CC.get_value("msg_science", 866904901174427678)
+    msg_english = ConfigcatClient.MAIN_ID_CC.get_value("msg_english", 866905061182930944)
+    msg_language = ConfigcatClient.MAIN_ID_CC.get_value("msg_language", 866905971519389787)
+    msg_art = ConfigcatClient.MAIN_ID_CC.get_value("msg_art", 866906016602652743)
+    msg_socialStudies = ConfigcatClient.MAIN_ID_CC.get_value(
+        "msg_socialstudies", 866905205094481951
+    )
+    msg_computerScience = ConfigcatClient.MAIN_ID_CC.get_value(
+        "msg_computerscience", 867550791635566623
+    )
 
 
-def get_value(classType: Union[MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, ACAD_ID, HR_ID],
-              value: str) -> int:
+class STAFF_ID:
+    """
+    IDs of the SS Staff Community server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_staff = ConfigcatClient.STAFF_ID_CC.get_value("g_staff", 891521033700540457)
+
+    # *** Channels ***
+    ch_verificationLogs = ConfigcatClient.STAFF_ID_CC.get_value(
+        "ch_verificationlogs", 894241199433580614
+    )
+    ch_verification = ConfigcatClient.STAFF_ID_CC.get_value("ch_verification", 894240578651443232)
+    ch_console = ConfigcatClient.STAFF_ID_CC.get_value("ch_console", 895041227123228703)
+    ch_startPrivateVC = ConfigcatClient.STAFF_ID_CC.get_value(
+        "ch_startprivatevc", 895041070956675082
+    )
+
+    # *** Categories ***
+    cat_privateVC = ConfigcatClient.STAFF_ID_CC.get_value("cat_privatevc", 895041016057446411)
+
+
+class DIGITAL_ID:
+    """
+    IDs of the SS Staff Community server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_digital = ConfigcatClient.DIGITAL_ID_CC.get_value("g_digital", 778406166735880202)
+
+    # *** Channels ***
+    ch_verification = ConfigcatClient.DIGITAL_ID_CC.get_value("ch_verification", 878681438462050356)
+    ch_waitingRoom = ConfigcatClient.DIGITAL_ID_CC.get_value("ch_waitingroom", 878679747255750696)
+
+
+class TECH_ID:
+    """
+    IDs of the SS Technical & Information Department server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_tech = ConfigcatClient.TECH_ID_CC.get_value("g_tech", 805593783684562965)
+
+    # *** Channels ***
+    ch_tracebacks = ConfigcatClient.TECH_ID_CC.get_value("ch_tracebacks", 851949397533392936)
+    ch_commissionLogs = ConfigcatClient.TECH_ID_CC.get_value(
+        "ch_commissionlogs", 849722616880300061
+    )
+    ch_ticketLog = ConfigcatClient.TECH_ID_CC.get_value("ch_ticketlog", 872915565600182282)
+
+    # *** Categories ***
+    cat_developerComms = ConfigcatClient.TECH_ID_CC.get_value(
+        "cat_developercomms", 873261268495106119
+    )
+
+    # *** Roles ***
+    r_developerManager = ConfigcatClient.TECH_ID_CC.get_value(
+        "r_developermanager", 805596419066822686
+    )
+    r_assistantBotDevManager = ConfigcatClient.TECH_ID_CC.get_value(
+        "r_assistantbotdevmanager", 816498160880844802
+    )
+    r_botDeveloper = ConfigcatClient.TECH_ID_CC.get_value("r_botdeveloper", 805610985594814475)
+
+
+class MKT_ID:
+    """
+    IDs of the SS Marketing Department server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_mkt = ConfigcatClient.MKT_ID_CC.get_value("g_mkt", 799855854182596618)
+
+    # *** Channels ***
+    ch_commands = ConfigcatClient.MKT_ID_CC.get_value("ch_commands", 799855856295608345)
+    ch_commissionTranscripts = ConfigcatClient.MKT_ID_CC.get_value(
+        "ch_commissiontranscripts", 820843692385632287
+    )
+
+    # *** Categories ***
+    cat_design = ConfigcatClient.MKT_ID_CC.get_value("cat_design", 820873176208375838)
+    cat_media = ConfigcatClient.MKT_ID_CC.get_value("cat_media", 882031123541143632)
+    cat_discord = ConfigcatClient.MKT_ID_CC.get_value("cat_discord", 888668259220615198)
+
+    # *** Roles ***
+    r_discordManager = ConfigcatClient.MKT_ID_CC.get_value(
+        "r_discordmanager", 890778255655841833
+    )
+    r_discordTeam = ConfigcatClient.MKT_ID_CC.get_value("r_discordteam", 805276710404489227)
+    r_designManager = ConfigcatClient.MKT_ID_CC.get_value("r_designmanager", 882755765910261760)
+    r_designTeam = ConfigcatClient.MKT_ID_CC.get_value("r_designteam", 864161064526020628)
+    r_contentCreatorManager = ConfigcatClient.MKT_ID_CC.get_value(
+        "r_contentcreatormanager", 864165192148189224
+    )
+
+
+class TUT_ID:
+    """
+    IDs of the SS Tutoring Division server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_tut = ConfigcatClient.TUT_ID_CC.get_value("g_tut", 860897711334621194)
+
+    # *** Channels ***
+    ch_botCommands = ConfigcatClient.TUT_ID_CC.get_value("ch_botcommands", 862480236965003275)
+    ch_hourLogs = ConfigcatClient.TUT_ID_CC.get_value("ch_hourlogs", 873326994220265482)
+
+
+class ACAD_ID:
+    """
+    IDs of the SS Academics Department server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_acad = ConfigcatClient.ACAD_ID_CC.get_value("g_acad", 801974357395636254)
+    cat_essay = ConfigcatClient.ACAD_ID_CC.get_value("cat_essay", 854945037875806220)
+    cat_english = ConfigcatClient.ACAD_ID_CC.get_value("cat_english", 800475854353596469)
+
+
+class HR_ID:
+    """
+    IDs of the SS HR Department server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_hr = ConfigcatClient.HR_ID_CC.get_value("g_hr", 815753072742891532)
+
+
+class CheckDB_CC:
+    """
+    Checks and Safeguards for the Bot.
+    """
+
+    MasterMaintenance = ConfigcatClient.CHECK_DB_CC.get_value("mastermaintenance", False)
+    guildNone = ConfigcatClient.CHECK_DB_CC.get_value("guildnone", False)
+    externalGuild = ConfigcatClient.CHECK_DB_CC.get_value("externalguild", True)
+    ModRoleBypass = ConfigcatClient.CHECK_DB_CC.get_value("modrolebypass", True)
+    ruleBypass = ConfigcatClient.CHECK_DB_CC.get_value("rulebypass", True)
+    publicCategories = ConfigcatClient.CHECK_DB_CC.get_value("publiccategories", False)
+    elseSituation = ConfigcatClient.CHECK_DB_CC.get_value("elsesituation", True)
+    PersistantChange = ConfigcatClient.CHECK_DB_CC.get_value("persistantchange", True)
+
+
+def get_value(
+    classType: Union[
+        MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, ACAD_ID, HR_ID
+    ],
+    value: str,
+) -> int:
     """
     Get a value of a ID class within ConfigCat.
 
@@ -412,13 +474,13 @@ def get_value(classType: Union[MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, T
         value: The variable name (name of the ID)
     """
 
-    if configcat_client.get_value(value) is None:
+    if ConfigcatClient.get_value(value, None) is None:
         raise ValueError(f"Cannot find {value} within ConfigCat!")
 
     if value in classType.ID_DICT:
-        return int(configcat_client.get_value(value, classType.ID_DICT[value]))
+        return int(ConfigcatClient.get_value(value, classType.ID_DICT[value]))
     else:
-        return int(configcat_client.get_value(value, None))
+        return int(ConfigcatClient.get_value(value, None))
 
 
 class Emoji:

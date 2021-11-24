@@ -673,7 +673,9 @@ class TutorVCCMD(commands.Cog):
         database.db.close()
 
     @commands.command()
-    @commands.has_any_role("Moderator", "Secret Service", "Head Moderator", "Mod Trainee", "!")
+    @commands.has_any_role(
+        "Moderator", "Secret Service", "Head Moderator", "Mod Trainee", "!"
+    )
     async def forceend(self, ctx, channel):
         database.db.connect(reuse_if_open=True)
         channel = await self.bot.fetch_channel(channel)
