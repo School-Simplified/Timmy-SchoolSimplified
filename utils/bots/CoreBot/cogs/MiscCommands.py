@@ -103,6 +103,66 @@ class MiscCMD(commands.Cog):
             await ctx.send(masa.mention + f" {msg}")
         else:
             await ctx.send(masa.mention)
+    
+    @commands.command()
+    @commands.has_any_role("Moderator")
+    async def debateban(self, ctx, member: discord.Member, *, reason=None):
+        DebateBan = discord.utils.get(ctx.guild.roles, name="NoDebate")
+
+        if member.id == self.bot.user.id:
+            embed = discord.Embed(
+                title="Unable to Debate Ban this User",
+                description="Why are you trying to ban me?",
+                color=hexColors.red_error,
+            )
+            return await ctx.send(embed=embed)
+
+        if member.id == ctx.author.id:
+            embed = discord.Embed(
+                title="Unable to Debate Ban this User",
+                description="Why are you trying to ban yourself?",
+                color=hexColors.red_error,
+            )
+            return await ctx.send(embed=embed)
+
+        if DebateBan not in member.roles:
+            try:
+                if reason is None:
+                    await ctx.send("Please specify a reason for this Debate Ban!")
+                    return
+
+                UpdateReason = f"DebateBan requested by {ctx.author.display_name} | Reason: {reason}"
+                await member.add_roles(DebateBan, reason=UpdateReason)
+            except Exception as e:
+                await ctx.send(f"ERROR:\n{e}")
+                print(e)
+            else:
+                embed = discord.Embed(
+                    title="Debate Banned!",
+                    description=f"{Emoji.confirm} {member.display_name} has been debate banned!"
+                    f"\n{Emoji.barrow} **Reason:** {reason}",
+                    color=hexColors.yellow_ticketBan,
+                )
+                await ctx.send(embed=embed)
+
+        else:
+            try:
+                if reason is None:
+                    reason = "No Reason Given"
+
+                UpdateReason = f"Debate UnBan requested by {ctx.author.display_name} | Reason: {reason}"
+                await member.remove_roles(DebateBan, reason=UpdateReason)
+            except Exception as e:
+                await ctx.send(f"ERROR:\n{e}")
+            else:
+                embed = discord.Embed(
+                    title="Debate Unbanned!",
+                    description=f"{Emoji.confirm} {member.display_name} has been debate unbanned!"
+                    f"\n{Emoji.barrow} **Reason:** {reason}",
+                    color=hexColors.yellow_ticketBan,
+                )
+                await ctx.send(embed=embed)
+
 
     @commands.command()
     async def obama(self, ctx):
