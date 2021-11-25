@@ -88,13 +88,13 @@ class TutorVCUpdate(commands.Cog):
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
         }
-        self.PRIVVC_DELETION_QUEUE.start()
+        #self.PRIVVC_DELETION_QUEUE.start()
 
-    def cog_unload(self):
-        self.PRIVVC_DELETION_QUEUE.cancel()
+    #def cog_unload(self):
+        #self.PRIVVC_DELETION_QUEUE.cancel()
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member, before, after):
+    async def on_voice_state_update(self, member: discord.Member, before, after):
         database.db.connect(reuse_if_open=True)
         try:
             lobbyStart = await self.bot.fetch_channel(
@@ -180,7 +180,7 @@ class TutorVCUpdate(commands.Cog):
                     )
                     query.save()
                     await acadChannel.send(content=member.mention, embed=embed)
-                    """await asyncio.sleep(120)
+                    await asyncio.sleep(120)
 
                     if member in before.channel.members:
                         return print("returned")
@@ -302,7 +302,7 @@ class TutorVCUpdate(commands.Cog):
                         else:
                             print("no query, moving on...")
                 else:
-                    print("no")"""
+                    print("no")
 
         if (
             after.channel is not None
@@ -513,7 +513,7 @@ class TutorVCUpdate(commands.Cog):
 
         database.db.close()
 
-    @tasks.loop(seconds=60)
+    """@tasks.loop(seconds=60)
     async def PRIVVC_DELETION_QUEUE(self):
         if len(database.VCDeletionQueue) == 0:
             return
@@ -645,7 +645,7 @@ class TutorVCUpdate(commands.Cog):
                     else:
                         print("no query, moving on...")
             else:
-                print("Did not give 2 minutes, moving on...")
+                print("Did not give 2 minutes, moving on...")"""
 
 
 def setup(bot):

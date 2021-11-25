@@ -152,7 +152,7 @@ class RoleCheck(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        mainServer = self.bot.get_guild(MAIN_ID.g_main)
+        mainServer = await self.bot.fetch_guild(MAIN_ID.g_main)
         user = mainServer.get_member(before.id)
 
         if mainServer is None:

@@ -116,7 +116,7 @@ class MiscCMD(commands.Cog):
     async def countban(self, ctx, member: discord.Member, *, reason=None):
         NoCount = discord.utils.get(ctx.guild.roles, name="NoCounting")
 
-        if member.id == self.bot.id:
+        if member.id == self.bot.user.id:
             embed = discord.Embed(
                 title="Unable to CountBan this User",
                 description="Why are you trying to CountBan me?",

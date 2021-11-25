@@ -192,79 +192,78 @@ class MAIN_ID:
     """
 
     # *** Guilds ***
-    g_main = ConfigcatClient.MAIN_ID_CC.get_value("g_main", 763119924385939498)
+    g_main = int(ConfigcatClient.MAIN_ID_CC.get_value("g_main", 763119924385939498))
 
-    # *** Channels ***
-    ch_commands = ConfigcatClient.MAIN_ID_CC.get_value("ch_commands", 763409002913595412)
-    ch_seniorMods = ConfigcatClient.MAIN_ID_CC.get_value("ch_seniormods", 878792926266810418)
-    ch_moderators = ConfigcatClient.MAIN_ID_CC.get_value("ch_moderators", 786068971048140820)
-    ch_mutedChat = ConfigcatClient.MAIN_ID_CC.get_value("ch_mutedchat", 808919081469739008)
-    ch_modLogs = ConfigcatClient.MAIN_ID_CC.get_value("ch_modlogs", 863177000372666398)
-    ch_tutoring = ConfigcatClient.MAIN_ID_CC.get_value("ch_tutoring", 865716647083507733)
-    ch_transcriptLogs = ConfigcatClient.MAIN_ID_CC.get_value(
+    ch_commands = int(ConfigcatClient.MAIN_ID_CC.get_value("ch_commands", 763409002913595412))
+    ch_seniorMods = int(ConfigcatClient.MAIN_ID_CC.get_value("ch_seniormods", 878792926266810418))
+    ch_moderators = int(ConfigcatClient.MAIN_ID_CC.get_value("ch_moderators", 786068971048140820))
+    ch_mutedChat = int(ConfigcatClient.MAIN_ID_CC.get_value("ch_mutedchat", 808919081469739008))
+    ch_modLogs = int(ConfigcatClient.MAIN_ID_CC.get_value("ch_modlogs", 863177000372666398))
+    ch_tutoring = int(ConfigcatClient.MAIN_ID_CC.get_value("ch_tutoring", 865716647083507733))
+    ch_transcriptLogs = int(ConfigcatClient.MAIN_ID_CC.get_value(
         "ch_transcriptlogs", 767434763337728030
-    )
-    ch_actionLogs = ConfigcatClient.MAIN_ID_CC.get_value("ch_actionlogs", 767206398060396574)
-    ch_modCommands = ConfigcatClient.MAIN_ID_CC.get_value("ch_modcommands", 786057630383865858)
-    ch_controlPanel = ConfigcatClient.MAIN_ID_CC.get_value("ch_controlpanel", 843637802293788692)
-    ch_startPrivateVC = ConfigcatClient.MAIN_ID_CC.get_value(
+    ))
+    ch_actionLogs = int(ConfigcatClient.MAIN_ID_CC.get_value("ch_actionlogs", 767206398060396574))
+    ch_modCommands = int(ConfigcatClient.MAIN_ID_CC.get_value("ch_modcommands", 786057630383865858))
+    ch_controlPanel = int(ConfigcatClient.MAIN_ID_CC.get_value("ch_controlpanel", 843637802293788692))
+    ch_startPrivateVC = int(ConfigcatClient.MAIN_ID_CC.get_value(
         "ch_startprivatevc", 784556875487248394
-    )
+    ))
 
     # *** Categories ***
-    cat_casual = ConfigcatClient.MAIN_ID_CC.get_value("cat_casual", 763121170324783146)
-    cat_community = ConfigcatClient.MAIN_ID_CC.get_value("cat_community", 800163651805773824)
-    cat_lounge = ConfigcatClient.MAIN_ID_CC.get_value("cat_lounge", 774847738239385650)
-    cat_events = ConfigcatClient.MAIN_ID_CC.get_value("cat_events", 805299289604620328)
-    cat_voice = ConfigcatClient.MAIN_ID_CC.get_value("cat_voice", 763857608964046899)
-    cat_scienceTicket = ConfigcatClient.MAIN_ID_CC.get_value(
+    cat_casual = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_casual", 763121170324783146))
+    cat_community = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_community", 800163651805773824))
+    cat_lounge = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_lounge", 774847738239385650))
+    cat_events = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_events", 805299289604620328))
+    cat_voice = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_voice", 763857608964046899))
+    cat_scienceTicket = int(ConfigcatClient.MAIN_ID_CC.get_value(
         "cat_scienceticket", 800479815471333406
-    )
-    cat_fineArtsTicket = ConfigcatClient.MAIN_ID_CC.get_value(
+    ))
+    cat_fineArtsTicket = int(ConfigcatClient.MAIN_ID_CC.get_value(
         "cat_fineartsticket", 833210452758364210
-    )
-    cat_mathTicket = ConfigcatClient.MAIN_ID_CC.get_value("cat_mathticket", 800472371973980181)
-    cat_socialStudiesTicket = ConfigcatClient.MAIN_ID_CC.get_value(
+    ))
+    cat_mathTicket = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_mathticket", 800472371973980181))
+    cat_socialStudiesTicket = int(ConfigcatClient.MAIN_ID_CC.get_value(
         "cat_socialstudiesticket", 800481237608824882
-    )
-    cat_englishTicket = ConfigcatClient.MAIN_ID_CC.get_value(
+    ))
+    cat_englishTicket = int(ConfigcatClient.MAIN_ID_CC.get_value(
         "cat_englishticket", 800475854353596469
-    )
-    cat_essayTicket = ConfigcatClient.MAIN_ID_CC.get_value("cat_essayticket", 854945037875806220)
-    cat_languageTicket = ConfigcatClient.MAIN_ID_CC.get_value(
+    ))
+    cat_essayTicket = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_essayticket", 854945037875806220))
+    cat_languageTicket = int(ConfigcatClient.MAIN_ID_CC.get_value(
         "cat_languageticket", 800477414361792562
-    )
-    cat_otherTicket = ConfigcatClient.MAIN_ID_CC.get_value("cat_otherticket", 825917349558747166)
-    cat_privateVC = ConfigcatClient.MAIN_ID_CC.get_value("cat_privatevc", 776988961087422515)
+    ))
+    cat_otherTicket = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_otherticket", 825917349558747166))
+    cat_privateVC = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_privatevc", 776988961087422515))
 
     # *** Roles ***
-    r_codingClub = ConfigcatClient.MAIN_ID_CC.get_value("r_codingclub", 883169286665936996)
-    r_debateClub = ConfigcatClient.MAIN_ID_CC.get_value("r_debateclub", 883170141771272294)
-    r_musicClub = ConfigcatClient.MAIN_ID_CC.get_value("r_musicclub", 883170072355561483)
-    r_cookingClub = ConfigcatClient.MAIN_ID_CC.get_value("r_cookingclub", 883162279904960562)
-    r_chessClub = ConfigcatClient.MAIN_ID_CC.get_value("r_chessclub", 883564455219306526)
-    r_bookClub = ConfigcatClient.MAIN_ID_CC.get_value("r_bookclub", 883162511560560720)
-    r_advocacyClub = ConfigcatClient.MAIN_ID_CC.get_value("r_advocacyclub", 883169000866070539)
-    r_speechClub = ConfigcatClient.MAIN_ID_CC.get_value("r_speechclub", 883170166161149983)
-    r_clubPresident = ConfigcatClient.MAIN_ID_CC.get_value("r_clubpresident", 883160826180173895)
+    r_codingClub = int(ConfigcatClient.MAIN_ID_CC.get_value("r_codingclub", 883169286665936996))
+    r_debateClub = int(ConfigcatClient.MAIN_ID_CC.get_value("r_debateclub", 883170141771272294))
+    r_musicClub = int(ConfigcatClient.MAIN_ID_CC.get_value("r_musicclub", 883170072355561483))
+    r_cookingClub = int(ConfigcatClient.MAIN_ID_CC.get_value("r_cookingclub", 883162279904960562))
+    r_chessClub = int(ConfigcatClient.MAIN_ID_CC.get_value("r_chessclub", 883564455219306526))
+    r_bookClub = int(ConfigcatClient.MAIN_ID_CC.get_value("r_bookclub", 883162511560560720))
+    r_advocacyClub = int(ConfigcatClient.MAIN_ID_CC.get_value("r_advocacyclub", 883169000866070539))
+    r_speechClub = int(ConfigcatClient.MAIN_ID_CC.get_value("r_speechclub", 883170166161149983))
+    r_clubPresident = int(ConfigcatClient.MAIN_ID_CC.get_value("r_clubpresident", 883160826180173895))
 
-    r_chatHelper = ConfigcatClient.MAIN_ID_CC.get_value("r_chathelper", 811416051144458250)
-    r_leadHelper = ConfigcatClient.MAIN_ID_CC.get_value("r_leadhelper", 810684359765393419)
-    r_essayReviser = ConfigcatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369)
+    r_chatHelper = int(ConfigcatClient.MAIN_ID_CC.get_value("r_chathelper", 811416051144458250))
+    r_leadHelper = int(ConfigcatClient.MAIN_ID_CC.get_value("r_leadhelper", 810684359765393419))
+    r_essayReviser = int(ConfigcatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369))
 
     # *** Messages ***
     # Tutoring
-    msg_math = ConfigcatClient.MAIN_ID_CC.get_value("msg_math", 866904767568543744)
-    msg_science = ConfigcatClient.MAIN_ID_CC.get_value("msg_science", 866904901174427678)
-    msg_english = ConfigcatClient.MAIN_ID_CC.get_value("msg_english", 866905061182930944)
-    msg_language = ConfigcatClient.MAIN_ID_CC.get_value("msg_language", 866905971519389787)
-    msg_art = ConfigcatClient.MAIN_ID_CC.get_value("msg_art", 866906016602652743)
-    msg_socialStudies = ConfigcatClient.MAIN_ID_CC.get_value(
+    msg_math = int(ConfigcatClient.MAIN_ID_CC.get_value("msg_math", 866904767568543744))
+    msg_science = int(ConfigcatClient.MAIN_ID_CC.get_value("msg_science", 866904901174427678))
+    msg_english = int(ConfigcatClient.MAIN_ID_CC.get_value("msg_english", 866905061182930944))
+    msg_language = int(ConfigcatClient.MAIN_ID_CC.get_value("msg_language", 866905971519389787))
+    msg_art = int(ConfigcatClient.MAIN_ID_CC.get_value("msg_art", 866906016602652743))
+    msg_socialStudies = int(ConfigcatClient.MAIN_ID_CC.get_value(
         "msg_socialstudies", 866905205094481951
-    )
-    msg_computerScience = ConfigcatClient.MAIN_ID_CC.get_value(
+    ))
+    msg_computerScience = int(ConfigcatClient.MAIN_ID_CC.get_value(
         "msg_computerscience", 867550791635566623
-    )
+    ))
 
 
 class STAFF_ID:
@@ -280,20 +279,20 @@ class STAFF_ID:
     """
 
     # *** Guilds ***
-    g_staff = ConfigcatClient.STAFF_ID_CC.get_value("g_staff", 891521033700540457)
+    g_staff = int(ConfigcatClient.STAFF_ID_CC.get_value("g_staff", 891521033700540457))
 
     # *** Channels ***
-    ch_verificationLogs = ConfigcatClient.STAFF_ID_CC.get_value(
+    ch_verificationLogs = int(ConfigcatClient.STAFF_ID_CC.get_value(
         "ch_verificationlogs", 894241199433580614
-    )
-    ch_verification = ConfigcatClient.STAFF_ID_CC.get_value("ch_verification", 894240578651443232)
-    ch_console = ConfigcatClient.STAFF_ID_CC.get_value("ch_console", 895041227123228703)
-    ch_startPrivateVC = ConfigcatClient.STAFF_ID_CC.get_value(
+    ))
+    ch_verification = int(ConfigcatClient.STAFF_ID_CC.get_value("ch_verification", 894240578651443232))
+    ch_console = int(ConfigcatClient.STAFF_ID_CC.get_value("ch_console", 895041227123228703))
+    ch_startPrivateVC = int(ConfigcatClient.STAFF_ID_CC.get_value(
         "ch_startprivatevc", 895041070956675082
-    )
+    ))
 
     # *** Categories ***
-    cat_privateVC = ConfigcatClient.STAFF_ID_CC.get_value("cat_privatevc", 895041016057446411)
+    cat_privateVC = int(ConfigcatClient.STAFF_ID_CC.get_value("cat_privatevc", 895041016057446411))
 
 
 class DIGITAL_ID:
@@ -309,11 +308,11 @@ class DIGITAL_ID:
     """
 
     # *** Guilds ***
-    g_digital = ConfigcatClient.DIGITAL_ID_CC.get_value("g_digital", 778406166735880202)
+    g_digital = int(ConfigcatClient.DIGITAL_ID_CC.get_value("g_digital", 778406166735880202))
 
     # *** Channels ***
-    ch_verification = ConfigcatClient.DIGITAL_ID_CC.get_value("ch_verification", 878681438462050356)
-    ch_waitingRoom = ConfigcatClient.DIGITAL_ID_CC.get_value("ch_waitingroom", 878679747255750696)
+    ch_verification = int(ConfigcatClient.DIGITAL_ID_CC.get_value("ch_verification", 878681438462050356))
+    ch_waitingRoom = int(ConfigcatClient.DIGITAL_ID_CC.get_value("ch_waitingroom", 878679747255750696))
 
 
 class TECH_ID:
@@ -329,28 +328,28 @@ class TECH_ID:
     """
 
     # *** Guilds ***
-    g_tech = ConfigcatClient.TECH_ID_CC.get_value("g_tech", 805593783684562965)
+    g_tech = int(ConfigcatClient.TECH_ID_CC.get_value("g_tech", 805593783684562965))
 
     # *** Channels ***
-    ch_tracebacks = ConfigcatClient.TECH_ID_CC.get_value("ch_tracebacks", 851949397533392936)
-    ch_commissionLogs = ConfigcatClient.TECH_ID_CC.get_value(
+    ch_tracebacks = int(ConfigcatClient.TECH_ID_CC.get_value("ch_tracebacks", 851949397533392936))
+    ch_commissionLogs = int(ConfigcatClient.TECH_ID_CC.get_value(
         "ch_commissionlogs", 849722616880300061
-    )
-    ch_ticketLog = ConfigcatClient.TECH_ID_CC.get_value("ch_ticketlog", 872915565600182282)
+    ))
+    ch_ticketLog = int(ConfigcatClient.TECH_ID_CC.get_value("ch_ticketlog", 872915565600182282))
 
     # *** Categories ***
-    cat_developerComms = ConfigcatClient.TECH_ID_CC.get_value(
+    cat_developerComms = int(ConfigcatClient.TECH_ID_CC.get_value(
         "cat_developercomms", 873261268495106119
-    )
+    ))
 
     # *** Roles ***
-    r_developerManager = ConfigcatClient.TECH_ID_CC.get_value(
+    r_developerManager = int(ConfigcatClient.TECH_ID_CC.get_value(
         "r_developermanager", 805596419066822686
-    )
-    r_assistantBotDevManager = ConfigcatClient.TECH_ID_CC.get_value(
+    ))
+    r_assistantBotDevManager = int(ConfigcatClient.TECH_ID_CC.get_value(
         "r_assistantbotdevmanager", 816498160880844802
-    )
-    r_botDeveloper = ConfigcatClient.TECH_ID_CC.get_value("r_botdeveloper", 805610985594814475)
+    ))
+    r_botDeveloper = int(ConfigcatClient.TECH_ID_CC.get_value("r_botdeveloper", 805610985594814475))
 
 
 class MKT_ID:
@@ -366,29 +365,29 @@ class MKT_ID:
     """
 
     # *** Guilds ***
-    g_mkt = ConfigcatClient.MKT_ID_CC.get_value("g_mkt", 799855854182596618)
+    g_mkt = int(ConfigcatClient.MKT_ID_CC.get_value("g_mkt", 799855854182596618))
 
     # *** Channels ***
-    ch_commands = ConfigcatClient.MKT_ID_CC.get_value("ch_commands", 799855856295608345)
-    ch_commissionTranscripts = ConfigcatClient.MKT_ID_CC.get_value(
+    ch_commands = int(ConfigcatClient.MKT_ID_CC.get_value("ch_commands", 799855856295608345))
+    ch_commissionTranscripts = int(ConfigcatClient.MKT_ID_CC.get_value(
         "ch_commissiontranscripts", 820843692385632287
-    )
+    ))
 
     # *** Categories ***
-    cat_design = ConfigcatClient.MKT_ID_CC.get_value("cat_design", 820873176208375838)
-    cat_media = ConfigcatClient.MKT_ID_CC.get_value("cat_media", 882031123541143632)
-    cat_discord = ConfigcatClient.MKT_ID_CC.get_value("cat_discord", 888668259220615198)
+    cat_design = int(ConfigcatClient.MKT_ID_CC.get_value("cat_design", 820873176208375838))
+    cat_media = int(ConfigcatClient.MKT_ID_CC.get_value("cat_media", 882031123541143632))
+    cat_discord = int(ConfigcatClient.MKT_ID_CC.get_value("cat_discord", 888668259220615198))
 
     # *** Roles ***
-    r_discordManager = ConfigcatClient.MKT_ID_CC.get_value(
+    r_discordManager = int(ConfigcatClient.MKT_ID_CC.get_value(
         "r_discordmanager", 890778255655841833
-    )
-    r_discordTeam = ConfigcatClient.MKT_ID_CC.get_value("r_discordteam", 805276710404489227)
-    r_designManager = ConfigcatClient.MKT_ID_CC.get_value("r_designmanager", 882755765910261760)
-    r_designTeam = ConfigcatClient.MKT_ID_CC.get_value("r_designteam", 864161064526020628)
-    r_contentCreatorManager = ConfigcatClient.MKT_ID_CC.get_value(
+    ))
+    r_discordTeam = int(ConfigcatClient.MKT_ID_CC.get_value("r_discordteam", 805276710404489227))
+    r_designManager = int(ConfigcatClient.MKT_ID_CC.get_value("r_designmanager", 882755765910261760))
+    r_designTeam = int(ConfigcatClient.MKT_ID_CC.get_value("r_designteam", 864161064526020628))
+    r_contentCreatorManager = int(ConfigcatClient.MKT_ID_CC.get_value(
         "r_contentcreatormanager", 864165192148189224
-    )
+    ))
 
 
 class TUT_ID:
@@ -404,11 +403,11 @@ class TUT_ID:
     """
 
     # *** Guilds ***
-    g_tut = ConfigcatClient.TUT_ID_CC.get_value("g_tut", 860897711334621194)
+    g_tut = int(ConfigcatClient.TUT_ID_CC.get_value("g_tut", 860897711334621194))
 
     # *** Channels ***
-    ch_botCommands = ConfigcatClient.TUT_ID_CC.get_value("ch_botcommands", 862480236965003275)
-    ch_hourLogs = ConfigcatClient.TUT_ID_CC.get_value("ch_hourlogs", 873326994220265482)
+    ch_botCommands = int(ConfigcatClient.TUT_ID_CC.get_value("ch_botcommands", 862480236965003275))
+    ch_hourLogs = int(ConfigcatClient.TUT_ID_CC.get_value("ch_hourlogs", 873326994220265482))
 
 
 class ACAD_ID:
@@ -424,9 +423,9 @@ class ACAD_ID:
     """
 
     # *** Guilds ***
-    g_acad = ConfigcatClient.ACAD_ID_CC.get_value("g_acad", 801974357395636254)
-    cat_essay = ConfigcatClient.ACAD_ID_CC.get_value("cat_essay", 854945037875806220)
-    cat_english = ConfigcatClient.ACAD_ID_CC.get_value("cat_english", 800475854353596469)
+    g_acad = int(ConfigcatClient.ACAD_ID_CC.get_value("g_acad", 801974357395636254))
+    cat_essay = int(ConfigcatClient.ACAD_ID_CC.get_value("cat_essay", 854945037875806220))
+    cat_english = int(ConfigcatClient.ACAD_ID_CC.get_value("cat_english", 800475854353596469))
 
 
 class HR_ID:
@@ -442,7 +441,7 @@ class HR_ID:
     """
 
     # *** Guilds ***
-    g_hr = ConfigcatClient.HR_ID_CC.get_value("g_hr", 815753072742891532)
+    g_hr = int(ConfigcatClient.HR_ID_CC.get_value("g_hr", 815753072742891532))
 
 
 class CheckDB_CC:
@@ -450,14 +449,14 @@ class CheckDB_CC:
     Checks and Safeguards for the Bot.
     """
 
-    MasterMaintenance = ConfigcatClient.CHECK_DB_CC.get_value("mastermaintenance", False)
-    guildNone = ConfigcatClient.CHECK_DB_CC.get_value("guildnone", False)
-    externalGuild = ConfigcatClient.CHECK_DB_CC.get_value("externalguild", True)
-    ModRoleBypass = ConfigcatClient.CHECK_DB_CC.get_value("modrolebypass", True)
-    ruleBypass = ConfigcatClient.CHECK_DB_CC.get_value("rulebypass", True)
-    publicCategories = ConfigcatClient.CHECK_DB_CC.get_value("publiccategories", False)
-    elseSituation = ConfigcatClient.CHECK_DB_CC.get_value("elsesituation", True)
-    PersistantChange = ConfigcatClient.CHECK_DB_CC.get_value("persistantchange", True)
+    MasterMaintenance = int(ConfigcatClient.CHECK_DB_CC.get_value("mastermaintenance", False))
+    guildNone = int(ConfigcatClient.CHECK_DB_CC.get_value("guildnone", False))
+    externalGuild = int(ConfigcatClient.CHECK_DB_CC.get_value("externalguild", True))
+    ModRoleBypass = int(ConfigcatClient.CHECK_DB_CC.get_value("modrolebypass", True))
+    ruleBypass = int(ConfigcatClient.CHECK_DB_CC.get_value("rulebypass", True))
+    publicCategories = int(ConfigcatClient.CHECK_DB_CC.get_value("publiccategories", False))
+    elseSituation = int(ConfigcatClient.CHECK_DB_CC.get_value("elsesituation", True))
+    PersistantChange = int(ConfigcatClient.CHECK_DB_CC.get_value("persistantchange", True))
 
 
 def get_value(
