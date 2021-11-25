@@ -19,7 +19,7 @@ class RedirectURL(commands.Cog):
     @is_botAdmin
     async def ra(self, ctx, redirect_code, destination_url: str):
         val = self.raOBJ.add_redirect(redirect_code, destination_url)
-        await ctx.send(f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!")
+        await ctx.send(f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!\n\nAccess it at https://rs.schoolsimplified.org/{redirect_code}")
 
     @commands.command(alliases=["redirectremove", "removeredirect"])
     @is_botAdmin
