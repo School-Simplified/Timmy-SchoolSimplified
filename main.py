@@ -38,6 +38,7 @@ from core.common import (
     getGuildList,
     hexColors,
     id_generator,
+    CheckDB_CC,
 )
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
@@ -49,7 +50,7 @@ logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
 logger.addHandler(LogTail)
 
-logger.warning("Started Timmy")
+logger.warning("Started Timmy"); print("Starting Timmy...")
 
 
 class Timmy(commands.Bot):
@@ -339,12 +340,6 @@ async def mainModeCheck(ctx: commands.Context):
     CO = discord.utils.get(ctx.guild.roles, name="CO")
     SS = discord.utils.get(ctx.guild.roles, name="Secret Service")
 
-    CheckDB: database.CheckInformation = (
-        database.CheckInformation.select()
-        .where(database.CheckInformation.id == 1)
-        .get()
-    )
-
     blacklistedUsers = []
     for p in database.Blacklist:
         blacklistedUsers.append(p.discordID)
@@ -361,7 +356,7 @@ async def mainModeCheck(ctx: commands.Context):
         return True
 
     # Maintenance Check
-    elif CheckDB.MasterMaintenance:
+    elif CheckDB_CC.MasterMaintenance:
         embed = discord.Embed(
             title="Master Maintenance ENABLED",
             description=f"{Emoji.deny} The bot is currently unavailable as it is under maintenance, check back later!",
@@ -380,11 +375,11 @@ async def mainModeCheck(ctx: commands.Context):
 
     # DM Check
     elif ctx.guild is None:
-        return CheckDB.guildNone
+        return CheckDB_CC.guildNone
 
     # External Server Check
     elif ctx.guild.id != MAIN_ID.g_main:
-        return CheckDB.externalGuild
+        return CheckDB_CC.externalGuild
 
     # Mod Role Check
     elif (
@@ -393,19 +388,19 @@ async def mainModeCheck(ctx: commands.Context):
         or CO in ctx.author.roles
         or SS in ctx.author.roles
     ):
-        return CheckDB.ModRoleBypass
+        return CheckDB_CC.ModRoleBypass
 
     # Rule Command Check
     elif ctx.command.name == "rule":
-        return CheckDB.ruleBypass
+        return CheckDB_CC.ruleBypass
 
     # Public Category Check
     elif ctx.channel.category_id in Me.publicCH:
-        return CheckDB.publicCategories
+        return CheckDB_CC.publicCategories
 
     # Else...
     else:
-        return CheckDB.elseSituation
+        return CheckDB_CC.elseSituation
 
 
 @bot.event
