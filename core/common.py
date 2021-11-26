@@ -1011,19 +1011,6 @@ class TicketTempConfirm(discord.ui.View):
         self.stop()
 
 
-def get_extensions():
-    extensions = []
-    extensions.append("jishaku")
-    if sys.platform == "win32" or sys.platform == "cygwin":
-        dirpath = "\\"
-    else:
-        dirpath = "/"
-
-    for file in Path("utils").glob("**/*.py"):
-        if "!" in file.name or "DEV" in file.name:
-            continue
-        extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
-    return extensions
 
 
 async def id_generator(size=3, chars=string.ascii_uppercase):
