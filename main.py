@@ -24,7 +24,6 @@ from logtail import LogtailHandler
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 from tqdm import tqdm
-from setproctile import setproctile
 
 from core import database
 from core.common import (
@@ -45,7 +44,6 @@ from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
 
 LogTail = LogtailHandler(source_token=os.getenv("LOGTAIL"))
-setproctile("timmy-proc")
 load_dotenv()
 
 logger = logging.getLogger("discord")
