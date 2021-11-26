@@ -1,32 +1,25 @@
-name: pytest
-
-on: [pull_request, push]
+name: SSH & PyTest
+on:
+  push:
+    branches: [ main ]
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - run: python3 -m venv testingvenv 
-      - run: source testingvenv/bin/activate
-
-      - run: export TOKEN=${{ env.TMO_TMB_TK }}
-      - run: export DSN_SENTRY=${{ env.TMO_DSN_SENTRY }}
-      - run: export ACADID_CC=${{ env.TMO_ACADID_CC }}
-      - run: export MAINID_CC=${{ env.TMO_MAINID_CC }}
-      - run: export STAFFID_CC=${{ env.TMO_STAFFID_CC }}
-      - run: export DIGITALID_CC=${{ env.TMO_DIGITALID_CC }}
-      - run: export TECHID_CC=${{ env.TMO_TECHID_CC }}
-      - run: export MKTID_CC=${{ env.TMO_MKTID_CC }}
-      - run: export TUTID_CC=${{ env.TMO_TUTID_CC }}
-      - run: export HRID_CC=${{ env.TMO_HRID_CC }}
-      - run: export CHECKDB_CC=${{ env.TMO_CHECKDB_CC }}
-
-      - run: python3 -m pip install --upgrade pip
-      - run: python3 -m pip uninstall wheel -y
-      - run: python3 -m pip install -U wheel
-      - run: python3 -m pip uninstall setuptools -y
-      - run: python3 -m pip install -Iv setuptools==49.6.0 --force-reinstall
-      - run: python3 -m pip install -r requirements.txt
-      - run: python3 -m pytest
+    - name: Run PyTest
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          source ~/timmy/bin/activate
+          cd Timmy-SchoolSimplified
+          git fetch --all
+          git reset --hard origin/main
+          pip install --upgrade -r requirements.txt
+          pip uninstall discord.py -y
+          python3 -m pytest
