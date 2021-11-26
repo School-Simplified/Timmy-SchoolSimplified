@@ -1,9 +1,11 @@
-from discord.ext import commands
-from dotenv import load_dotenv
-import pytest
-import discord.ext.test as dpytest
 import sys
 from pathlib import Path
+
+import discord.ext.test as dpytest
+import pytest
+from discord.ext import commands
+from dotenv import load_dotenv
+
 
 def get_extensions():
     extensions = []
