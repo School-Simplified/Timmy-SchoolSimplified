@@ -333,7 +333,7 @@ async def on_ready():
     ╱╰╯╰┻┻┻┻┻┻╋╮┃
     ╱╱╱╱╱╱╱╱╱╱╰━╯
     
-    Bot Account: {bot.username} | {bot.user.id}
+    Bot Account: {bot.user.name} | {bot.user.id}
     {bcolors.OKCYAN}Discord API Wrapper Version: {discord.__version__}{bcolors.ENDC}
     {bcolors.WARNING}TimmyOS Version: {output}{bcolors.ENDC}
     {databaseField}
