@@ -16,7 +16,7 @@ import chat_exporter
 import configcatclient
 import discord
 from botocore.exceptions import ClientError
-from discord import Button, ButtonStyle, SelectOption, ui
+from discord import ApplicationCommandError, Button, ButtonStyle, DiscordException, SelectOption, ui
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -481,6 +481,11 @@ def get_value(
     else:
         return int(ConfigcatClient.get_value(value, None))
 
+class ErrorCodes:
+    {
+        "TOE-": [discord.errors, DiscordException, ApplicationCommandError],
+        "TOE-": [KeyError, TypeError, ]
+    }
 
 class Emoji:
     """
