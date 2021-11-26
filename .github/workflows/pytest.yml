@@ -1,0 +1,19 @@
+name: pytest
+
+on: [pull_request, push]
+
+jobs:
+  mypy:
+    runs_on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2\
+      - run: python3 -m venv testingvenv 
+      - run: source testingvenv/bin/activate 
+      - run: python3 -m pip install --upgrade pip
+      - run: python3 -m pip uninstall wheel -y
+      - run: python3 -m pip install -U wheel
+      - run: python3 -m pip uninstall setuptools -y
+      - run: python3 -m pip install -Iv setuptools==49.6.0 --force-reinstall
+      - run: python3 -m pip install -r requirements.txt
+      - run: python3 -m pytest
