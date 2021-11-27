@@ -120,7 +120,20 @@ async def paginate_embed(
             await message.clear_reactions()
             break
 
+def get_extensions():
+    extensions = []
+    extensions.append("jishaku")
+    if sys.platform == "win32" or sys.platform == "cygwin":
+        dirpath = "\\"
+    else:
+        dirpath = "/"
 
+    for file in Path("utils").glob("**/*.py"):
+        if "!" in file.name or "DEV" in file.name:
+            continue
+        extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
+    return extensions
+    
 def load_config(name) -> Tuple[dict, Path]:
     config_file = Path(f"utils/bots/RoleSync/{name}.json")
     config_file.touch(exist_ok=True)

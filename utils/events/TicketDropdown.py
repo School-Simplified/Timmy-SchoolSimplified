@@ -537,10 +537,11 @@ class DropdownTickets(commands.Cog):
                 "Lead Helper",
                 "Chat Helper",
                 "Bot: TeXit",
-                "Academics Executive",
+                "Academics Director",
             ]
             for role in roles:
                 RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
+                print(role, RoleOBJ)
                 await channel.set_permissions(
                     RoleOBJ,
                     read_messages=True,
