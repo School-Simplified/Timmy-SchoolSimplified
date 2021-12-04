@@ -519,7 +519,7 @@ class DropdownTickets(commands.Cog):
                 mainSubject = (
                     c.name.replace("═", "").replace("⁃", "").replace("Ticket", "").strip()
                 )
-                
+
             if selection_str == "Other":
                 channel: discord.TextChannel = await guild.create_text_channel(
                     f"other-{mainSubject}-{TNUM}", category=c
@@ -650,7 +650,7 @@ class DropdownTickets(commands.Cog):
                 await channel.send(mentionRole.mention, embed=embed)
 
             except Exception as e:
-                raise e
+                print(e)
                 await channel.send(
                     f"**Ticket Information**\n\n{interaction.user.mention}\nQuestion: {answer1.content}"
                 )
