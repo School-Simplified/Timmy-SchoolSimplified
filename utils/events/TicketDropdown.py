@@ -843,7 +843,7 @@ class DropdownTickets(commands.Cog):
 
                 raw_url = S3_URL.split("](")[1].strip(")")
 
-                authors.insert(0, S3_URL)
+                authors.insert(0, raw_url)
                 authors.insert(1, "")  #
                 authors.insert(2, "")  #
                 authors.insert(3, "")  # because of connected cells
