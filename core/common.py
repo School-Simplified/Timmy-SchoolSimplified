@@ -16,7 +16,7 @@ import chat_exporter
 import configcatclient
 import discord
 from botocore.exceptions import ClientError
-from discord import Button, ButtonStyle, SelectOption, ui
+from discord import ApplicationCommandError, Button, ButtonStyle, DiscordException, SelectOption, ui
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -120,7 +120,20 @@ async def paginate_embed(
             await message.clear_reactions()
             break
 
+def get_extensions():
+    extensions = []
+    extensions.append("jishaku")
+    if sys.platform == "win32" or sys.platform == "cygwin":
+        dirpath = "\\"
+    else:
+        dirpath = "/"
 
+    for file in Path("utils").glob("**/*.py"):
+        if "!" in file.name or "DEV" in file.name:
+            continue
+        extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
+    return extensions
+    
 def load_config(name) -> Tuple[dict, Path]:
     config_file = Path(f"utils/bots/RoleSync/{name}.json")
     config_file.touch(exist_ok=True)
@@ -231,7 +244,7 @@ class MAIN_ID:
     ))
     cat_essayTicket = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_essayticket", 854945037875806220))
     cat_languageTicket = int(ConfigcatClient.MAIN_ID_CC.get_value(
-        "cat_languageticket", 800477414361792562
+        "cat_languageticket", 825917349558747166
     ))
     cat_otherTicket = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_otherticket", 825917349558747166))
     cat_privateVC = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_privatevc", 776988961087422515))
@@ -481,6 +494,11 @@ def get_value(
     else:
         return int(ConfigcatClient.get_value(value, None))
 
+class ErrorCodes:
+    {
+        "TOE-": [discord.errors, DiscordException, ApplicationCommandError],
+        "TOE-": [KeyError, TypeError, ]
+    }
 
 class Emoji:
     """
@@ -566,6 +584,7 @@ class Others:
 
 
 CHHelperRoles = {
+    "Essay": 854135371507171369,
     "Essay Reviser": 854135371507171369,
     "English": 862160296914714645,
     "English Language": 862160080896000010,
@@ -1006,19 +1025,6 @@ class TicketTempConfirm(discord.ui.View):
         self.stop()
 
 
-def get_extensions():
-    extensions = []
-    extensions.append("jishaku")
-    if sys.platform == "win32" or sys.platform == "cygwin":
-        dirpath = "\\"
-    else:
-        dirpath = "/"
-
-    for file in Path("utils").glob("**/*.py"):
-        if "!" in file.name or "DEV" in file.name:
-            continue
-        extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
-    return extensions
 
 
 async def id_generator(size=3, chars=string.ascii_uppercase):

@@ -1,10 +1,7 @@
 import json
 import logging
 import os
-import random
-import string
 import subprocess
-import sys
 import time
 import traceback
 from datetime import datetime
@@ -15,7 +12,6 @@ import chat_exporter
 import discord
 import pytz
 import requests
-from discord import Member
 from discord.commands import Option
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
@@ -23,7 +19,6 @@ from dotenv import load_dotenv
 from logtail import LogtailHandler
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
-from tqdm import tqdm
 
 from core import database
 from core.common import (
@@ -279,6 +274,14 @@ async def scheduleSession(
         )
         await ctx.send(embed=embed)
 
+for ext in get_extensions():
+    try:
+        bot.load_extension(ext)
+    except discord.ExtensionAlreadyLoaded:
+        bot.unload_extension(ext)
+        bot.load_extension(ext)
+    except discord.ExtensionNotFound:
+        raise commands.ExtensionNotFound(ext)
 
 @bot.event
 async def on_ready():
@@ -301,36 +304,46 @@ async def on_ready():
             f"{bcolors.OKGREEN}Selected Database: External ({IP}){bcolors.ENDC}"
         )
     else:
-        databaseField = f"{bcolors.FAIL}Selected Database: localhost{bcolors.ENDC}\n{bcolors.WARNING}WARNING: You are not connected to an external database, it is recommended that you use a server as SQLite solutions may lead to data corruption!{bcolors.ENDC}"
+        databaseField = f"{bcolors.FAIL}Selected Database: localhost{bcolors.ENDC}\n{bcolors.WARNING}WARNING: Not recommended to use SQLite.{bcolors.ENDC}"
+
+    try:
+        p = subprocess.run(
+            "git describe --always",
+            shell=True,
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+        output = p.stdout
+    except subprocess.CalledProcessError:
+        output = "ERROR"
+
+    chat_exporter.init_exporter(bot)
 
     print(
-        """
+        f"""
     ╭━━┳╮
     ╰╮╭╋╋━━┳━━┳┳╮
     ╱┃┃┃┃┃┃┃┃┃┃┃┃
     ╱╰╯╰┻┻┻┻┻┻╋╮┃
     ╱╱╱╱╱╱╱╱╱╱╰━╯
+    
+    Bot Account: {bot.user.name} | {bot.user.id}
+    {bcolors.OKCYAN}Discord API Wrapper Version: {discord.__version__}{bcolors.ENDC}
+    {bcolors.WARNING}TimmyOS Version: {output}{bcolors.ENDC}
+    {databaseField}
+
+    {bcolors.OKCYAN}Current Time: {now}{bcolors.ENDC}
+    {bcolors.OKGREEN}Cogs, libraries, and views have successfully been initalized.{bcolors.ENDC}
+    ==================================================
+    {bcolors.WARNING}Statistics{bcolors.ENDC}
+
+    Guilds: {len(bot.guilds)}
+    Members: {len(bot.users)}
     """
     )
-    print(f"Logged in as: {bot.user.name} ({bot.user.id})")
-    print(f"{bcolors.OKBLUE}CONNECTED TO DISCORD{bcolors.ENDC}")
-    print(
-        f"{bcolors.OKCYAN}Current Discord.py Version: {discord.__version__}{bcolors.ENDC}"
-    )
-    print(f"{bcolors.OKCYAN}Current Time: {now}{bcolors.ENDC}\n")
-    print(databaseField)
-
-    chat_exporter.init_exporter(bot)
 
 
-for ext in get_extensions():
-    try:
-        bot.load_extension(ext)
-    except discord.ExtensionAlreadyLoaded:
-        bot.unload_extension(ext)
-        bot.load_extension(ext)
-    except discord.ExtensionNotFound:
-        raise commands.ExtensionNotFound(ext)
 
 
 @bot.check
@@ -404,7 +417,7 @@ async def mainModeCheck(ctx: commands.Context):
 
 
 @bot.event
-async def on_command_error(ctx, error: Exception):
+async def on_command_error(ctx: commands.Context, error: Exception):
     tb = error.__traceback__
     etype = type(error)
     exception = traceback.format_exception(etype, error, tb, chain=True)

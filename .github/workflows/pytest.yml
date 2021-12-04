@@ -1,14 +1,12 @@
-name: SSH & Deploy Image
-on:
-  push:
-    branches: [ main ]
+name: SSH & PyTest
+on: [pull_request, push]
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - name: Run Docker CMD
+    - name: Run PyTest
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -20,7 +18,7 @@ jobs:
           cd Timmy-SchoolSimplified
           git fetch --all
           git reset --hard origin/main
-          pip install --upgrade --force-reinstall -r requirements.txt
+          pip install --upgrade -r requirements.txt
           pip uninstall discord.py -y
-          ps -ef | grep python3 | grep -v grep | awk '{print $2}' | xargs kill
-          nohup python3 main.py &
+          python3 -m pytest
+
