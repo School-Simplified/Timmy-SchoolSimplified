@@ -244,7 +244,7 @@ class MAIN_ID:
     ))
     cat_essayTicket = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_essayticket", 854945037875806220))
     cat_languageTicket = int(ConfigcatClient.MAIN_ID_CC.get_value(
-        "cat_languageticket", 825917349558747166
+        "cat_languageticket", 800477414361792562
     ))
     cat_otherTicket = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_otherticket", 825917349558747166))
     cat_privateVC = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_privatevc", 776988961087422515))
