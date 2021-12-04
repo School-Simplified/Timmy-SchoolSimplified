@@ -650,7 +650,7 @@ class DropdownTickets(commands.Cog):
                 await channel.send(mentionRole.mention, embed=embed)
 
             except Exception as e:
-                print(e)
+                print(f"{e.__class__.__name__}: {e}")
                 await channel.send(
                     f"**Ticket Information**\n\n{interaction.user.mention}\nQuestion: {answer1.content}"
                 )
