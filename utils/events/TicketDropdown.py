@@ -833,23 +833,26 @@ class DropdownTickets(commands.Cog):
             )
 
             if channel.category_id == MAIN_ID.cat_essayTicket:
-                authors = []
-                async for message in channel.history(limit=None):
-                    if (
-                        f"{message.author} ({message.author.id})" not in authors
-                        and not message.author.bot
-                    ):
-                        authors.append(f"{message.author} ({message.author.id})")
-
                 raw_url = S3_URL.split("](")[1].strip(")")
+                values = self.sheet.col_values(1)
 
-                authors.insert(0, raw_url)
-                authors.insert(1, "")  #
-                authors.insert(2, "")  #
-                authors.insert(3, "")  # because of connected cells
-                authors.insert(4, "")  #
-                authors.insert(5, "")  #
-                self.sheet.append_row(authors)
+                if raw_url not in values:
+                    authors = []
+                    async for message in channel.history(limit=None):
+                        if (
+                            f"{message.author} ({message.author.id})" not in authors
+                            and not message.author.bot
+                        ):
+                            authors.append(f"{message.author} ({message.author.id})")
+
+
+                    authors.insert(0, raw_url)
+                    authors.insert(1, "")  #
+                    authors.insert(2, "")  #
+                    authors.insert(3, "")  # because of connected cells
+                    authors.insert(4, "")  #
+                    authors.insert(5, "")  #
+                    self.sheet.append_row(authors)
 
             await msg.delete()
             await interaction.channel.send(
@@ -884,29 +887,26 @@ class DropdownTickets(commands.Cog):
             # print(transcript_file.filename)
 
             if channel.category_id == MAIN_ID.cat_essayTicket:
-                sa_creds = json.loads(os.getenv("GSPREADSJSON"))
-                creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, scope)
-                gspread_client = gspread.authorize(creds)
-                print("Connected to Gspread.")
-                sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
-
-                authors = []
-                async for message in channel.history(limit=None):
-                    if (
-                        f"{message.author} ({message.author.id})" not in authors
-                        and not message.author.bot
-                    ):
-                        authors.append(f"{message.author} ({message.author.id})")
-
                 raw_url = url.split("](")[1].strip(")")
+                values = self.sheet.col_values(1)
 
-                authors.insert(0, raw_url)
-                authors.insert(1, "")  #
-                authors.insert(2, "")  #
-                authors.insert(3, "")  # because of connected cells
-                authors.insert(4, "")  #
-                authors.insert(5, "")  #
-                sheet.append_row(authors)
+                if raw_url not in values:
+                    authors = []
+                    async for message in channel.history(limit=None):
+                        if (
+                            f"{message.author} ({message.author.id})" not in authors
+                            and not message.author.bot
+                        ):
+                            authors.append(f"{message.author} ({message.author.id})")
+
+
+                    authors.insert(0, raw_url)
+                    authors.insert(1, "")  #
+                    authors.insert(2, "")  #
+                    authors.insert(3, "")  # because of connected cells
+                    authors.insert(4, "")  #
+                    authors.insert(5, "")  #
+                    self.sheet.append_row(authors)
 
             try:
                 await msgO.edit(
