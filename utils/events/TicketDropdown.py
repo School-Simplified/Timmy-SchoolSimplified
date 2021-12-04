@@ -258,7 +258,7 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['Social Studies Helpers']": MAIN_ID.cat_socialStudiesTicket,
         "['English Helpers']": MAIN_ID.cat_englishTicket,
         "['Essay Helpers']": MAIN_ID.cat_essayTicket,
-        "['Language Helpers']": MAIN_ID.cat_languageTicket,
+        "['Language Helpers']": MAIN_ID.cat_otherTicket,
         "['Other Helpers']": MAIN_ID.cat_otherTicket,
     }
     name = decodeName[value]
@@ -513,9 +513,13 @@ class DropdownTickets(commands.Cog):
                 f"Please wait, creating your ticket {Emoji.loadingGIF}"
             )
 
-            mainSubject = (
-                c.name.replace("═", "").replace("⁃", "").replace("Ticket", "").strip()
-            )
+            if TypeSubject == "Language Helpers":
+                mainSubject = "languages"
+            else:
+                mainSubject = (
+                    c.name.replace("═", "").replace("⁃", "").replace("Ticket", "").strip()
+                )
+                
             if selection_str == "Other":
                 channel: discord.TextChannel = await guild.create_text_channel(
                     f"other-{mainSubject}-{TNUM}", category=c
