@@ -283,6 +283,9 @@ def getRole(guild: discord.Guild, mainSubject: str, subject: str) -> discord.Rol
         discord.Role: Role of the subject
     """
 
+    mainSubject = mainSubject.title()
+    subject = subject.title()
+
     if subject == "Other":
         role = guild.get_role(CHHelperRoles[mainSubject])
     else:
@@ -643,7 +646,7 @@ class DropdownTickets(commands.Cog):
                 await channel.send(mentionRole.mention, embed=embed)
 
             except Exception as e:
-                print(e)
+                raise e
                 await channel.send(
                     f"**Ticket Information**\n\n{interaction.user.mention}\nQuestion: {answer1.content}"
                 )
