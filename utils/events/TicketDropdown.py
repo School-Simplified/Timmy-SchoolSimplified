@@ -3,6 +3,7 @@ import io
 import os
 import typing
 from datetime import datetime, timedelta
+from pytz import timezone
 from io import BytesIO
 import json
 import gspread
@@ -532,7 +533,9 @@ class DropdownTickets(commands.Cog):
             await channel.set_permissions(
                 guild.default_role, read_messages=False, reason="Ticket Perms"
             )
-            query = database.TicketInfo.create(ChannelID=channel.id, authorID=author.id)
+            tz = timezone('EST')
+            opened_at = datetime.now(tz)
+            query = database.TicketInfo.create(ChannelID=channel.id, authorID=author.id, createdAt=opened_at)
             query.save()
 
             roles = [
@@ -841,22 +844,36 @@ class DropdownTickets(commands.Cog):
                 values = self.sheet.col_values(1)
 
                 if raw_url not in values:
-                    authors = []
+                    row = []
                     async for message in channel.history(limit=None):
                         if (
-                            f"{message.author} ({message.author.id})" not in authors
+                            f"{message.author} ({message.author.id})" not in row
                             and not message.author.bot
                         ):
-                            authors.append(f"{message.author} ({message.author.id})")
+                            row.append(f"{message.author} ({message.author.id})")
 
+                    query = (
+                        database.TicketInfo.select()
+                            .where(database.TicketInfo.ChannelID == interaction.channel_id)
+                            .get()
+                    )
 
-                    authors.insert(0, raw_url)
-                    authors.insert(1, "")  #
-                    authors.insert(2, "")  #
-                    authors.insert(3, "")  # because of connected cells
-                    authors.insert(4, "")  #
-                    authors.insert(5, "")  #
-                    self.sheet.append_row(authors)
+                    tz = timezone('EST')
+                    closed_at_raw = datetime.now(tz)
+                    opened_at_raw = query.createdAt
+                    
+                    opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
+                    closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
+
+                    row.insert(0, raw_url)
+                    row.insert(1, "")  #
+                    row.insert(2, "")  #
+                    row.insert(3, "")  # because of connected cells
+                    row.insert(4, "")  #
+                    row.insert(5, "")  #
+                    row.insert(6, opened_at)
+                    row.insert(7, closed_at)
+                    self.sheet.append_row(row)
 
             await msg.delete()
             await interaction.channel.send(
@@ -895,22 +912,30 @@ class DropdownTickets(commands.Cog):
                 values = self.sheet.col_values(1)
 
                 if raw_url not in values:
-                    authors = []
+                    row = []
                     async for message in channel.history(limit=None):
                         if (
-                            f"{message.author} ({message.author.id})" not in authors
+                            f"{message.author} ({message.author.id})" not in row
                             and not message.author.bot
                         ):
-                            authors.append(f"{message.author} ({message.author.id})")
+                            row.append(f"{message.author} ({message.author.id})")
 
+                    tz = timezone('EST')
+                    closed_at_raw = datetime.now(tz)
+                    opened_at_raw = query.createdAt
 
-                    authors.insert(0, raw_url)
-                    authors.insert(1, "")  #
-                    authors.insert(2, "")  #
-                    authors.insert(3, "")  # because of connected cells
-                    authors.insert(4, "")  #
-                    authors.insert(5, "")  #
-                    self.sheet.append_row(authors)
+                    opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
+                    closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
+
+                    row.insert(0, raw_url)
+                    row.insert(1, "")  #
+                    row.insert(2, "")  #
+                    row.insert(3, "")  # because of connected cells
+                    row.insert(4, "")  #
+                    row.insert(5, "")  #
+                    row.insert(6, opened_at)
+                    row.insert(7, closed_at)
+                    self.sheet.append_row(row)
 
             try:
                 await msgO.edit(
