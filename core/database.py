@@ -420,11 +420,15 @@ class TicketInfo(BaseModel):
 
     `authorID`: BigIntegerField()
     Author ID of the Ticket Owner.
+
+    `createdAt`: DateTimeField()
+    A datetime object when the ticket opened.
     """
 
     id = AutoField()
     ChannelID = BigIntegerField()
     authorID = BigIntegerField()
+    createdAt = DateTimeField()
 
 
 class BaseTickerInfo(BaseModel):

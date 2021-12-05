@@ -305,7 +305,6 @@ class DropdownTickets(commands.Cog):
         self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
         self.TicketInactive.start()
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
-        self.opened_at = None
 
     def cog_unload(self):
         self.TicketInactive.cancel()
@@ -535,8 +534,8 @@ class DropdownTickets(commands.Cog):
                 guild.default_role, read_messages=False, reason="Ticket Perms"
             )
             tz = timezone('EST')
-            self.opened_at = datetime.now(tz)
-            query = database.TicketInfo.create(ChannelID=channel.id, authorID=author.id)
+            opened_at = datetime.now(tz)
+            query = database.TicketInfo.create(ChannelID=channel.id, authorID=author.id, createdAt=opened_at)
             query.save()
 
             roles = [
@@ -853,9 +852,17 @@ class DropdownTickets(commands.Cog):
                         ):
                             row.append(f"{message.author} ({message.author.id})")
 
+                    query = (
+                        database.TicketInfo.select()
+                            .where(database.TicketInfo.ChannelID == interaction.channel_id)
+                            .get()
+                    )
+
                     tz = timezone('EST')
                     closed_at_raw = datetime.now(tz)
-                    opened_at = datetime.strftime(self.opened_at, "%Y-%m-%d\n%I.%M %p")
+                    opened_at_raw = query.createdAt
+                    
+                    opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
                     closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
 
                     row.insert(0, raw_url)
@@ -915,7 +922,9 @@ class DropdownTickets(commands.Cog):
 
                     tz = timezone('EST')
                     closed_at_raw = datetime.now(tz)
-                    opened_at = datetime.strftime(self.opened_at, "%Y-%m-%d\n%I.%M %p")
+                    opened_at_raw = query.createdAt
+
+                    opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
                     closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
 
                     row.insert(0, raw_url)
