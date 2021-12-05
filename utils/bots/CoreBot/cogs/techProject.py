@@ -37,6 +37,9 @@ async def createChannel(
     await channel.set_permissions(
         ctx.guild.default_role, read_messages=False, reason="Ticket Perms"
     )
+    await channel.set_permissions(
+        member, read_messages=True, reason="Ticket Perms"
+    )
 
     for role in RolePerms:
         await channel.set_permissions(
