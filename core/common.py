@@ -560,6 +560,7 @@ class hexColors:
     red_error = 0xF5160A
     orange_error = 0xFC3D03
     mod_blurple = 0x4DBEFF
+    ss_blurple = 0x7080FA
 
 
 class Others:
