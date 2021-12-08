@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from core.common import hexColors
+from core.common import hexColors, Others
 
 class Donation(commands.Cog):
 
@@ -18,6 +18,7 @@ class Donation(commands.Cog):
                             f"\n\n**Donate here: https://schoolsimplified.org/donate**"
             )
             embedDonate.set_footer(text="Great thanks to all our donors!")
+            embedDonate.set_thumbnail(url=Others.timmyHappy_png)
             await ctx.send(embed=embedDonate)
 
 def setup(bot):
