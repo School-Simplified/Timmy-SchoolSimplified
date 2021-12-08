@@ -13,4 +13,4 @@ class Donation(commands.Cog):
             await ctx.send("Donation linke here")
 
 def setup(bot):
-    bot.add_cog(bot)
+    bot.add_cog(Donation(bot))
