@@ -21,7 +21,7 @@ class Donation(commands.Cog):
             )
             embedDonate.set_footer(text="Great thanks to all our donors!")
             embedDonate.set_thumbnail(url=f"attachment://{Others.timmyDonation_png}")
-            await ctx.send(embed=embedDonate)
+            await ctx.send(embed=embedDonate, file=timmyDonation_png)
 
 def setup(bot):
     bot.add_cog(Donation(bot))
