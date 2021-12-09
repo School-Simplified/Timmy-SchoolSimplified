@@ -578,6 +578,8 @@ class Others:
     timmyHappy_png = "https://i.gyazo.com/a0b221679db0f980504e64535885a5fd.png"
     timmyBook_png = "https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533"
     timmyTeacher_png = "https://media.discordapp.net/attachments/875233489727922177/877378910214586368/tutoring.png?width=411&height=532"
+    timmyDonation_png = "timmydonation.png"
+    timmyDonation_path = "./utils/bots/CoreBot/LogFiles/timmydonation.png"
 
     space_character = "　"
     TICKET_INACTIVE_TIME = 1440
