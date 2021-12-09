@@ -11,6 +11,8 @@ class Donation(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.guild)
     async def donate(self, ctx: commands.Context):
         if ctx.author.id == 305354423801217025:
+            timmyDonation_png = discord.File(Others.timmyDonation_path, filename=Others.timmyDonation_png)
+
             embedDonate = discord.Embed(
                 color=hexColors.ss_blurple,
                 title=f"Donate",
@@ -18,7 +20,7 @@ class Donation(commands.Cog):
                             f"\n\n**Donate here: https://schoolsimplified.org/donate**"
             )
             embedDonate.set_footer(text="Great thanks to all our donors!")
-            embedDonate.set_thumbnail(url=Others.timmyHappy_png)
+            embedDonate.set_thumbnail(url=f"attachment://{Others.timmyDonation_png}")
             await ctx.send(embed=embedDonate)
 
 def setup(bot):
