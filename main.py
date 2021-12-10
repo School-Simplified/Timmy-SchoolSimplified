@@ -30,7 +30,6 @@ from core.common import (
     Others,
     bcolors,
     get_extensions,
-    getGuildList,
     hexColors,
     id_generator,
     CheckDB_CC,

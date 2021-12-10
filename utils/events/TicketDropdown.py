@@ -443,7 +443,7 @@ class DropdownTickets(commands.Cog):
                 else:
                     found_link = None
 
-                if "docs.google." in found_link:
+                if found_link is not None and "docs.google." in found_link:
                     attachmentlist.append(found_link)
                 else:
                     return await DMChannel.send("No Google Docs link found.")
