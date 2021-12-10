@@ -16,7 +16,9 @@ class Donation(commands.Cog):
             embedDonate = discord.Embed(
                 color=hexColors.ss_blurple,
                 title=f"Donate",
-                description=f"We do not charge anything for our services, so we rely on your donations! Please consider donating to us."
+                description=f"Thank you for your generosity in donating to School Simplified. "
+                            f"We do not charge anything for our services, and your support helps to further our mission "
+                            f"*to empower the next generation to revolutionize the future through learning*."
                             f"\n\n**Donate here: https://schoolsimplified.org/donate**"
             )
             embedDonate.set_footer(text="Great thanks to all our donors!")
