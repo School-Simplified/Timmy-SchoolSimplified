@@ -38,7 +38,7 @@ class StudyToDo(commands.Cog):
 
         embed = discord.Embed(
             title="Successfully Added Item!",
-            description=f"{item} has been added successfully with the id `{str(q.id)}`.",
+            description=f"{item} has been added successfully with the id `{str(query.id)}`.",
             color=discord.Color.gold(),
         )
         embed.set_footer(text="StudyBot")
