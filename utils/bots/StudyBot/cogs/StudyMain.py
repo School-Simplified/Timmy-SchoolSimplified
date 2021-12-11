@@ -38,8 +38,8 @@ class StudyToDo(commands.Cog):
 
         embed = discord.Embed(
             title="Successfully Added Item!",
-            description=f"{item} has been added successfully with the id `{str(query.id)}`.",
-            color=discord.Color.gold(),
+            description=f"`{item}` has been added successfully with the id `{str(query.id)}`.",
+            color=hexColors.green_confirm,
         )
         embed.set_footer(text="StudyBot")
         await ctx.send(embed=embed)
@@ -58,8 +58,8 @@ class StudyToDo(commands.Cog):
 
             embed = discord.Embed(
                 title="Successfully Removed Item!",
-                description=f"'{query.item}'\nhas been removed from the database!",
-                color=discord.Color.green(),
+                description=f"`{query.item}` has been removed from the database!",
+                color=hexColors.green_confirm,
             )
             embed.set_footer(text="StudyBot")
             await ctx.send(embed=embed)
@@ -76,7 +76,7 @@ class StudyToDo(commands.Cog):
     @studytodo.command()
     async def list(self, ctx):
         todoList = []
-        query = database.ToDo.select().where(database.ToDo.discordID == ctx.author.id)
+        query = database.ToDo.select().where(database.StudyToDo.discordID == ctx.author.id)
         for todo in query:
             todoList.append(f"{str(todo.id)}) {todo.item}")
 
