@@ -518,7 +518,7 @@ async def on_command_error(ctx: commands.Context, error: Exception):
         else:
             em = discord.Embed(
                 title="Bad Argument!",
-                description=f"Unable to parse arguments, check what arguments you provided.\nUsage:\n`{signature}`",
+                description=f"Unable to parse arguments, check what arguments you provided.\n\nUsage:\n`{signature}`",
                 color=hexColors.red_error,
             )
             em.set_thumbnail(url=Others.error_png)
