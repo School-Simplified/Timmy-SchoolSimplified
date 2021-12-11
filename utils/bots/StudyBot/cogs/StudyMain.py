@@ -14,7 +14,9 @@ class StudyToDo(commands.Cog):
     @commands.group(aliaseS=["study-todo"])
     async def studytodo(self, ctx: commands.Context):
         if ctx.message.content == "+studytodo":
-            signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
+            print(ctx.command.parent.commands)
+            subcommands = "/".join(ctx.command.parent.commands)
+            signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
 
             embed = discord.Embed(
                 color=hexColors.red_error,
