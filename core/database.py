@@ -343,7 +343,7 @@ class StudyToDo(BaseModel):
     Discord ID/owner that the specific item is assigned/associated with.
 
     `item`: TextField()
-    Study-ToDo Item.
+    Study To-Do Item.
     """
 
     id = AutoField()
@@ -523,6 +523,7 @@ tables = {
     "CheckInformation": CheckInformation,
     "Blacklist": Blacklist,
     "ToDO": ToDo,
+    "StudyToDo": StudyToDo,
     "WhitelistedPrefix": WhitelistedPrefix,
     "TutorBot_Sessions": TutorBot_Sessions,
     "Uptime": Uptime,
