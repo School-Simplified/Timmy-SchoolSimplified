@@ -11,8 +11,8 @@ class StudyToDo(commands.Cog):
 
 
     @commands.group(aliaseS=["study-todo"])
-    async def studytodo(self, ctx):
-        print(ctx)
+    async def studytodo(self, ctx: commands.Context):
+        print(ctx.message)
 
     @studytodo.command()
     async def add(self, ctx: commands.Context, *, item):
