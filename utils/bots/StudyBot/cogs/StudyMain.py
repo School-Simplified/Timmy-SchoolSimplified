@@ -14,7 +14,7 @@ class StudyToDo(commands.Cog):
     @commands.group(aliaseS=["study-todo"])
     async def studytodo(self, ctx: commands.Context):
         if ctx.message.content == "+studytodo":
-            print(ctx.command.parents)
+            print(self.studytodo.commands)
 
             subcommands = "/".join(ctx.command.parent.commands)
             signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
