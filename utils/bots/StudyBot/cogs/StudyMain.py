@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 from core import database
+from core.common import hexColors
 
 
 class StudyToDo(commands.Cog):
@@ -12,7 +13,18 @@ class StudyToDo(commands.Cog):
 
     @commands.group(aliaseS=["study-todo"])
     async def studytodo(self, ctx: commands.Context):
-        print(ctx.message.content)
+        if ctx.message.content == "+studytodo":
+            signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
+
+            embed = discord.Embed(
+                color=hexColors.red_error,
+                title="Missing/Extra Required Arguments Passed In!",
+                description=f"You have missed one or several arguments in this command"
+                            f"\n\nUsage:"
+                            f"\n`{signature}`"
+            )
+            embed.set_footer(text="Consult the Help Command if you are having trouble or call over a Bot Manager!")
+            await ctx.send(embed=embed)
 
     @studytodo.command()
     async def add(self, ctx: commands.Context, *, item):
