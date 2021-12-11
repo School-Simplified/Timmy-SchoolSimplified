@@ -13,7 +13,7 @@ class TodoCMD(commands.Cog):
     @commands.group()
     async def todo(self, ctx):
         if ctx.message.content == "+todo":
-            subcommands = "/".join([subcommand.name for subcommand in self.studytodo.commands])
+            subcommands = "/".join([subcommand.name for subcommand in self.todo.commands])
             signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
 
             embed = discord.Embed(
