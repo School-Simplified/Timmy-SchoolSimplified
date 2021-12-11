@@ -12,7 +12,7 @@ class StudyToDo(commands.Cog):
 
     @commands.group(aliaseS=["study-todo"])
     async def studytodo(self, ctx):
-        pass
+        print("STUDYTODO")
 
     @studytodo.command()
     async def add(self, ctx: commands.Context, *, item):
