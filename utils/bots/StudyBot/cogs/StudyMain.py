@@ -16,7 +16,7 @@ class StudyToDo(commands.Cog):
         if ctx.message.content == "+studytodo":
             print(self.studytodo.commands)
 
-            subcommands = "/".join(ctx.command.parent.commands)
+            subcommands = "/".join([subcommand.name for subcommand in self.studytodo.commands])
             signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
 
             embed = discord.Embed(
