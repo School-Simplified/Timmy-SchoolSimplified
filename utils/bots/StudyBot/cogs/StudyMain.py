@@ -50,7 +50,7 @@ class StudyToDo(commands.Cog):
         Removes an item from the study to-do list of the author/owner.
         """
 
-        query = database.StudyToDo.select().where(database.ToDo.id == todo_id)
+        query = database.StudyToDo.select().where(database.StudyToDo.id == todo_id)
 
         if query.exists():
             query = query.get()
