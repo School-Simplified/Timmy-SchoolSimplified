@@ -76,7 +76,7 @@ class StudyToDo(commands.Cog):
     @studytodo.command()
     async def list(self, ctx):
         todoList = []
-        query = database.ToDo.select().where(database.StudyToDo.discordID == ctx.author.id)
+        query = database.StudyToDo.select().where(database.StudyToDo.discordID == ctx.author.id)
         for todo in query:
             todoList.append(f"{str(todo.id)}) {todo.item}")
 
