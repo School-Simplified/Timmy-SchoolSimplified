@@ -556,6 +556,7 @@ class DropdownTickets(commands.Cog):
                     RoleOBJ,
                     read_messages=True,
                     send_messages=True,
+                    manage_messages=True,
                     reason="Ticket Perms",
                 )
             await channel.set_permissions(
@@ -1055,7 +1056,7 @@ class DropdownTickets(commands.Cog):
                     TicketOwner, overwrite=overwrite, reason="Ticket Perms Close (User)"
                 )
                 await channel.send(
-                    f"Ticket has been inactive for {self.TICKET_INACTIVE_TIME} hours.\nTicket has been closed.",
+                    f"Ticket has been inactive for 24 hours.\nTicket has been closed.",
                     view=ButtonViews2,
                 )
 
