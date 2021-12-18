@@ -1,9 +1,9 @@
-source ~/pipfuckaround/bin/activate 
+source pipfuckaround2/bin/activate 
 
 pip3 install --upgrade pip
 pip3 uninstall aiohttp -y
 pip3 install -Iv aiohttp==3.7.4
-pip3 install -r requirements.txt --force-reinstall
+pip3 install -r req2.txt --force-reinstall
 pip3 uninstall aiohttp -y
 pip3 install -Iv aiohttp==3.7.4
 pip3 uninstall chat-exporter
