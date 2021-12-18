@@ -342,6 +342,26 @@ class ToDo(BaseModel):
     item = TextField()
 
 
+class StudyToDo(BaseModel):
+    """
+    # StudyToDo:
+    The to-dos for the StudyBot.
+
+    `id`: AutoField()
+    Database Entry
+
+    `discordID`: BigIntegerField()
+    Discord ID/owner that the specific item is assigned/associated with.
+
+    `item`: TextField()
+    Study To-Do Item.
+    """
+
+    id = AutoField()
+    discordID = BigIntegerField()
+    item = TextField()
+
+
 class WhitelistedPrefix(BaseModel):
     """
     # WhitelistedPrefix
@@ -514,6 +534,7 @@ tables = {
     "CheckInformation": CheckInformation,
     "Blacklist": Blacklist,
     "ToDO": ToDo,
+    "StudyToDo": StudyToDo,
     "WhitelistedPrefix": WhitelistedPrefix,
     "TutorBot_Sessions": TutorBot_Sessions,
     "Uptime": Uptime,
