@@ -559,6 +559,25 @@ class DropdownTickets(commands.Cog):
                     manage_messages=True,
                     reason="Ticket Perms",
                 )
+                RoleOBJ = discord.utils.get(guild.roles, name=role)
+                if not (RoleOBJ.id == MAIN_ID.r_chatHelper or RoleOBJ.id == MAIN_ID.r_leadHelper) and not channel.category.id == MAIN_ID.cat_essayTicket:
+                    if RoleOBJ.id == MAIN_ID.r_essayReviser:
+                        if channel.category.id == MAIN_ID.cat_essayTicket or channel.category.id == MAIN_ID.cat_englishTicket:
+                            await channel.set_permissions(
+                                RoleOBJ,
+                                read_messages=True,
+                                send_messages=True,
+                                reason="Ticket Perms",
+                            )
+                        else:
+                            continue
+                else: 
+                    await channel.set_permissions( 
+                        RoleOBJ,
+                        read_messages=True,
+                        send_messages=True,
+                        reason="Ticket Perms",
+                    )
             await channel.set_permissions(
                 interaction.user,
                 read_messages=True,
