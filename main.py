@@ -1,3 +1,4 @@
+import faulthandler
 import json
 import logging
 import os
@@ -21,24 +22,15 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
-from core.common import (
-    MAIN_ID,
-    TECH_ID,
-    TUT_ID,
-    Emoji,
-    LockButton,
-    Others,
-    bcolors,
-    get_extensions,
-    hexColors,
-    id_generator,
-    CheckDB_CC,
-)
+from core.common import (MAIN_ID, TECH_ID, TUT_ID, CheckDB_CC, Emoji, GSuiteVerify,
+                         LockButton, Others, bcolors, get_extensions,
+                         hexColors, id_generator)
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
 
 LogTail = LogtailHandler(source_token=os.getenv("LOGTAIL"))
 load_dotenv()
+faulthandler.enable()
 
 logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
@@ -294,6 +286,7 @@ async def on_ready():
     if not query.PersistantChange:
         bot.add_view(LockButton(bot))
         bot.add_view(VerifyButton())
+        bot.add_view(GSuiteVerify())
         query.PersistantChange = True
         query.save()
 
@@ -317,7 +310,7 @@ async def on_ready():
     except subprocess.CalledProcessError:
         output = "ERROR"
 
-    chat_exporter.init_exporter(bot)
+    #chat_exporter.init_exporter(bot)
 
     print(
         f"""
