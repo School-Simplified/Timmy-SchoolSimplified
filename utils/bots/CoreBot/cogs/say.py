@@ -8,7 +8,7 @@ from google.cloud import texttospeech
 from gtts import gTTS
 from oauth2client.service_account import ServiceAccountCredentials
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "creds.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gsheetsadmin/TTScreds.json"
 
 
 class SayCMD(commands.Cog):

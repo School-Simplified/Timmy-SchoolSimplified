@@ -539,6 +539,7 @@ class Emoji:
     timmyBook = "<:timmy_book:880875405962264667>"
     loadingGIF = "<a:Loading:904192577094426626>"
     loadingGIF2 = "<a:Loading:905563298089541673>"
+    gsuitelogo = "<:gsuitelogo:932034284724834384>"
 
 
 class hexColors:
@@ -932,6 +933,24 @@ class LockButton(discord.ui.View):
         msg = await ch.send(
             "Are you sure you want to close this ticket?", view=TempConfirmInstance
         )
+
+
+
+class GSuiteVerify(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.value = None
+    
+
+    @discord.ui.button(
+        label="Verify with GSuite",
+        style=discord.ButtonStyle.blurple,
+        custom_id="persistent_view:gsuiteverify",
+        emoji=Emoji.gsuitelogo,
+    )
+    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.value = True
+
 
 
 class TempConfirm(discord.ui.View):
