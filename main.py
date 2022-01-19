@@ -13,6 +13,7 @@ import chat_exporter
 import discord
 import pytz
 import requests
+import sentry_sdk
 from discord.commands import Option
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
@@ -22,9 +23,9 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
-from core.common import (MAIN_ID, TECH_ID, TUT_ID, CheckDB_CC, Emoji, GSuiteVerify,
-                         LockButton, Others, bcolors, get_extensions,
-                         hexColors, id_generator)
+from core.common import (MAIN_ID, TECH_ID, TUT_ID, CheckDB_CC, Emoji,
+                         GSuiteVerify, LockButton, Others, bcolors,
+                         get_extensions, hexColors, id_generator)
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
 
@@ -410,6 +411,18 @@ async def mainModeCheck(ctx: commands.Context):
 
 @bot.event
 async def on_command_error(ctx: commands.Context, error: Exception):
+    sentry_sdk.set_user(None)
+    sentry_sdk.set_user({"id": ctx.author.id, "username": ctx.author.name})
+
+    sentry_sdk.set_context("user", {
+        "name": ctx.author.name,
+        "id": ctx.author.id,
+        "command": ctx.command.name,
+        "guild": ctx.guild.name,
+        "guild_id": ctx.guild.id,
+        "channel": ctx.channel.name,
+        "channel_id": ctx.channel.id,
+    })
     tb = error.__traceback__
     etype = type(error)
     exception = traceback.format_exception(etype, error, tb, chain=True)

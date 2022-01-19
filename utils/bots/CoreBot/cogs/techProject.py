@@ -79,11 +79,6 @@ class TechProjectCMD(commands.Cog):
             name="Developer Commissions",
             value="If you'd like to start a Developer Commission, please fill out the form via `+request` and a ticket will autoamtically be created for you!",
         )
-        embed.add_field(
-            name="Discord Commissions",
-            value=f"If you'd like to start a Discord Commission, please react with {Emoji.discordLogo} !",
-            inline=False,
-        )
         await ctx.send(embed=embed)
 
     @commands.command()
