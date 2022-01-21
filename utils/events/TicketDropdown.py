@@ -894,7 +894,7 @@ class DropdownTickets(commands.Cog):
                     row.insert(6, opened_at)
                     row.insert(7, closed_at)
                     self.sheet.append_row(row)
-                    self.sheet.sort((8, "asc"))
+                    self.sheet.sort((8, "des"))
 
 
             await msg.delete()
@@ -958,7 +958,7 @@ class DropdownTickets(commands.Cog):
                     row.insert(6, opened_at)
                     row.insert(7, closed_at)
                     self.sheet.append_row(row)
-                    self.sheet.sort((8, "asc"))
+                    self.sheet.sort((8, "des"))
 
             try:
                 await msgO.edit(
