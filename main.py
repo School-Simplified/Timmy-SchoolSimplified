@@ -1,3 +1,4 @@
+import faulthandler
 import json
 import logging
 import os
@@ -12,6 +13,7 @@ import chat_exporter
 import discord
 import pytz
 import requests
+import sentry_sdk
 from discord.commands import Option
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
@@ -21,25 +23,15 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
-from core.common import (
-    MAIN_ID,
-    TECH_ID,
-    TUT_ID,
-    Emoji,
-    LockButton,
-    Others,
-    bcolors,
-    get_extensions,
-    getGuildList,
-    hexColors,
-    id_generator,
-    CheckDB_CC,
-)
+from core.common import (MAIN_ID, TECH_ID, TUT_ID, CheckDB_CC, Emoji,
+                         GSuiteVerify, LockButton, Others, bcolors,
+                         get_extensions, hexColors, id_generator)
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
 from utils.events.VerificationStaff import VerifyButton
 
 LogTail = LogtailHandler(source_token=os.getenv("LOGTAIL"))
 load_dotenv()
+faulthandler.enable()
 
 logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
@@ -295,6 +287,7 @@ async def on_ready():
     if not query.PersistantChange:
         bot.add_view(LockButton(bot))
         bot.add_view(VerifyButton())
+        bot.add_view(GSuiteVerify())
         query.PersistantChange = True
         query.save()
 
@@ -318,7 +311,7 @@ async def on_ready():
     except subprocess.CalledProcessError:
         output = "ERROR"
 
-    chat_exporter.init_exporter(bot)
+    #chat_exporter.init_exporter(bot)
 
     print(
         f"""
@@ -418,6 +411,18 @@ async def mainModeCheck(ctx: commands.Context):
 
 @bot.event
 async def on_command_error(ctx: commands.Context, error: Exception):
+    sentry_sdk.set_user(None)
+    sentry_sdk.set_user({"id": ctx.author.id, "username": ctx.author.name})
+
+    sentry_sdk.set_context("user", {
+        "name": ctx.author.name,
+        "id": ctx.author.id,
+        "command": ctx.command.name,
+        "guild": ctx.guild.name,
+        "guild_id": ctx.guild.id,
+        "channel": ctx.channel.name,
+        "channel_id": ctx.channel.id,
+    })
     tb = error.__traceback__
     etype = type(error)
     exception = traceback.format_exception(etype, error, tb, chain=True)
@@ -519,7 +524,7 @@ async def on_command_error(ctx: commands.Context, error: Exception):
         else:
             em = discord.Embed(
                 title="Bad Argument!",
-                description=f"Unable to parse arguments, check what arguments you provided.\nUsage:\n`{signature}`",
+                description=f"Unable to parse arguments, check what arguments you provided.\n\nUsage:\n`{signature}`",
                 color=hexColors.red_error,
             )
             em.set_thumbnail(url=Others.error_png)

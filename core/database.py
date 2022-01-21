@@ -1,14 +1,21 @@
 import os
+import sys
 from datetime import datetime
+from distutils.util import strtobool
 
 from dotenv import load_dotenv
 from flask import Flask
-import peewee
 from peewee import *
 
-__version__ = "2.2.0"
+from .common import bcolors
 
 load_dotenv()
+useDB = True
+
+if not os.getenv("PyTestMODE"):
+    useDB = input(f"{bcolors.WARNING}Do you want to use MySQL? (y/n)\nThis option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications.{bcolors.ENDC}")
+    useDB = strtobool(useDB)
+
 
 """
 Change to a SqliteDatabase if you don't have any MySQL Credentials.
@@ -16,43 +23,47 @@ If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove
 """
 
 if os.getenv("IP") is None:
+    print(f"{bcolors.OKBLUE}Successfully connected to the SQLite Database{bcolors.ENDC}")
     db = SqliteDatabase("data.db")
 
-if bool(os.getenv("SSL_TRUE")) and os.getenv("IP") is not None:
-    try:
-        db = MySQLDatabase(
-            os.getenv("DatabaseName"),
-            user=os.getenv("Username"),
-            password=os.getenv("Password"),
-            host=os.getenv("IP"),
-            port=int(os.getenv("PORT")),
-            ssl={"key": os.getenv("SSL_PATH")},
-        )
-    except Exception as e:
-        print(e)
+elif os.getenv("IP") is not None:
+    #useDB = bool(input(f"{bcolors.WARNING}Do you want to use MySQL? (y/n)\n    > This option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications.{bcolors.ENDC}"))
+    if useDB:
+        try:
+            db = MySQLDatabase(
+                os.getenv("DatabaseName"),
+                user=os.getenv("Username"),
+                password=os.getenv("Password"),
+                host=os.getenv("IP"),
+                port=int(os.getenv("PORT"))
+            )
+            print(f"{bcolors.OKBLUE}Successfully connected to the MySQL Database{bcolors.ENDC}")
+        except Exception as e:
+            print(f"{bcolors.FAIL}Unable to connect to the MySQL Database:\n    > {e}\n\nSwitching to SQLite...{bcolors.ENDC}")
+            db = SqliteDatabase("data.db")
+    else:
         db = SqliteDatabase("data.db")
-
-elif not bool(os.getenv("SSL_TRUE")) and os.getenv("IP") is not None:
-    try:
-        db = MySQLDatabase(
-            os.getenv("DatabaseName"),
-            user=os.getenv("Username"),
-            password=os.getenv("Password"),
-            host=os.getenv("IP"),
-            port=int(os.getenv("PORT")),
-        )
-    except Exception as e:
-        print(e)
-        db = SqliteDatabase("data.db")
+        if not os.getenv("PyTestMODE"):
+            print(f"{bcolors.OKBLUE}Successfully connected to the SQLite Database{bcolors.ENDC}")
+        else:
+            print(f"{bcolors.OKBLUE}Created a SQLite Database for testing...{bcolors.ENDC}")
 
 
-def iter_table(model_dict):
+
+def iter_table(model_dict: dict):
     """Iterates through a dictionary of tables, confirming they exist and creating them if necessary."""
     for key in model_dict:
         if not db.table_exists(key):
             db.connect(reuse_if_open=True)
             db.create_tables([model_dict[key]])
             db.close()
+        else:
+            db.connect(reuse_if_open=True)
+            for column in model_dict[key]._meta.sorted_fields:
+                if not db.column_exists(key, column.name):
+                    db.create_column(key, column.name)
+            db.close()
+
 
 
 """
@@ -331,6 +342,26 @@ class ToDo(BaseModel):
     item = TextField()
 
 
+class StudyToDo(BaseModel):
+    """
+    # StudyToDo:
+    The to-dos for the StudyBot.
+
+    `id`: AutoField()
+    Database Entry
+
+    `discordID`: BigIntegerField()
+    Discord ID/owner that the specific item is assigned/associated with.
+
+    `item`: TextField()
+    Study To-Do Item.
+    """
+
+    id = AutoField()
+    discordID = BigIntegerField()
+    item = TextField()
+
+
 class WhitelistedPrefix(BaseModel):
     """
     # WhitelistedPrefix
@@ -503,6 +534,7 @@ tables = {
     "CheckInformation": CheckInformation,
     "Blacklist": Blacklist,
     "ToDO": ToDo,
+    "StudyToDo": StudyToDo,
     "WhitelistedPrefix": WhitelistedPrefix,
     "TutorBot_Sessions": TutorBot_Sessions,
     "Uptime": Uptime,

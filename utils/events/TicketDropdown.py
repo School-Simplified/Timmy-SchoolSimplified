@@ -443,7 +443,7 @@ class DropdownTickets(commands.Cog):
                 else:
                     found_link = None
 
-                if "docs.google." in found_link:
+                if found_link is not None and "docs.google." in found_link:
                     attachmentlist.append(found_link)
                 else:
                     return await DMChannel.send("No Google Docs link found.")
@@ -556,8 +556,28 @@ class DropdownTickets(commands.Cog):
                     RoleOBJ,
                     read_messages=True,
                     send_messages=True,
+                    manage_messages=True,
                     reason="Ticket Perms",
                 )
+                RoleOBJ = discord.utils.get(guild.roles, name=role)
+                if not (RoleOBJ.id == MAIN_ID.r_chatHelper or RoleOBJ.id == MAIN_ID.r_leadHelper) and not channel.category.id == MAIN_ID.cat_essayTicket:
+                    if RoleOBJ.id == MAIN_ID.r_essayReviser:
+                        if channel.category.id == MAIN_ID.cat_essayTicket or channel.category.id == MAIN_ID.cat_englishTicket:
+                            await channel.set_permissions(
+                                RoleOBJ,
+                                read_messages=True,
+                                send_messages=True,
+                                reason="Ticket Perms",
+                            )
+                        else:
+                            continue
+                else: 
+                    await channel.set_permissions( 
+                        RoleOBJ,
+                        read_messages=True,
+                        send_messages=True,
+                        reason="Ticket Perms",
+                    )
             await channel.set_permissions(
                 interaction.user,
                 read_messages=True,
@@ -874,6 +894,8 @@ class DropdownTickets(commands.Cog):
                     row.insert(6, opened_at)
                     row.insert(7, closed_at)
                     self.sheet.append_row(row)
+                    self.sheet.sort((8, "des"))
+
 
             await msg.delete()
             await interaction.channel.send(
@@ -936,6 +958,7 @@ class DropdownTickets(commands.Cog):
                     row.insert(6, opened_at)
                     row.insert(7, closed_at)
                     self.sheet.append_row(row)
+                    self.sheet.sort((8, "des"))
 
             try:
                 await msgO.edit(
@@ -1055,7 +1078,7 @@ class DropdownTickets(commands.Cog):
                     TicketOwner, overwrite=overwrite, reason="Ticket Perms Close (User)"
                 )
                 await channel.send(
-                    f"Ticket has been inactive for {self.TICKET_INACTIVE_TIME} hours.\nTicket has been closed.",
+                    f"Ticket has been inactive for 24 hours.\nTicket has been closed.",
                     view=ButtonViews2,
                 )
 

@@ -4,8 +4,6 @@ from pathlib import Path
 import discord.ext.test as dpytest
 import pytest
 from discord.ext import commands
-from dotenv import load_dotenv
-
 
 def get_extensions():
     extensions = []
@@ -20,8 +18,6 @@ def get_extensions():
             continue
         extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
     return extensions
-
-load_dotenv()
 
 @pytest.fixture
 def bot(event_loop):
