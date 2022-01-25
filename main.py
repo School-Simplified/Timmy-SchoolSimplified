@@ -408,13 +408,13 @@ async def mainModeCheck(ctx: commands.Context):
     else:
         return CheckDB_CC.elseSituation
 
-
-@bot.event
-async def on_command_error(ctx: commands.Context, error: Exception):
+@bot.before_invoke
+async def before_invoke(ctx: commands.Context):
     sentry_sdk.set_user(None)
     sentry_sdk.set_user({"id": ctx.author.id, "username": ctx.author.name})
-
-    sentry_sdk.set_context("user", {
+    sentry_sdk.set_tag("username", f"{ctx.author.name}#{ctx.author.discriminator}")
+    if ctx.command == None:
+        sentry_sdk.set_context("user", {
         "name": ctx.author.name,
         "id": ctx.author.id,
         "command": ctx.command.name,
@@ -423,6 +423,20 @@ async def on_command_error(ctx: commands.Context, error: Exception):
         "channel": ctx.channel.name,
         "channel_id": ctx.channel.id,
     })
+    else:
+        sentry_sdk.set_context("user", {
+            "name": ctx.author.name,
+            "id": ctx.author.id,
+            "command": "Unknown",
+            "guild": ctx.guild.name,
+            "guild_id": ctx.guild.id,
+            "channel": ctx.channel.name,
+            "channel_id": ctx.channel.id,
+        })
+
+
+@bot.event
+async def on_command_error(ctx: commands.Context, error: Exception):
     tb = error.__traceback__
     etype = type(error)
     exception = traceback.format_exception(etype, error, tb, chain=True)
