@@ -12,6 +12,7 @@ class TutorMain(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.RepeatEmoji = {False: "\U00002b1b", True: "🔁"}
+        self.ExpireEmoji = {False: "", True: "| ⚠️"}
 
     @slash_command(name="view",)
     async def view(self, ctx, id=None):
@@ -44,12 +45,13 @@ class TutorMain(commands.Cog):
                     result = datetime.strftime(DateOBJ, "%B %d, %Y | %I:%M %p EST")
                     studentUser = await self.bot.fetch_user(entry.StudentID)
                     ListTen.append(
-                        f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {result} -> {studentUser.name}"
+                        f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {result} -> {studentUser.name} {self.ExpireEmoji[entry.GracePeriod_Status]}"
                     )
 
                 embed.add_field(name="List:", value="\n".join(ListTen), inline=False)
             embed.set_thumbnail(url=Others.timmyTeacher_png)
-            await ctx.respond(embed=embed)
+            embed.set_footer(text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find these sessions with a warning sign next to them.")
+            await ctx.send(embed=embed)
 
         else:
             entry = database.TutorBot_Sessions.select().where(
@@ -124,12 +126,13 @@ class TutorMain(commands.Cog):
                 result = datetime.strftime(DateOBJ, "%B %d, %Y | %I:%M %p EST")
                 studentUser = await self.bot.fetch_user(entry.StudentID)
                 ListTen.append(
-                    f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {result} -> {studentUser.name}"
+                    f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {result} -> {studentUser.name} {self.ExpireEmoji[entry.GracePeriod_Status]}"
                 )
 
             embed.add_field(name="List:", value="\n".join(ListTen), inline=False)
         embed.set_thumbnail(url=Others.timmyTeacher_png)
-        await ctx.respond(embed=embed)
+        embed.set_footer(text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find these sessions with a warning sign next to them.")
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
