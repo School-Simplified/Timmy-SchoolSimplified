@@ -144,20 +144,20 @@ database.db.close()
 @bot.slash_command(description="Play a game of TicTacToe with someone!")
 async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you want")):
     if ctx.channel.id != MAIN_ID.ch_commands:
-        return await ctx.send(
+        return await ctx.respond(
             f"{ctx.author.mention}\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!",
             ephemeral=True,
         )
     if user is None:
-        return await ctx.send("lonely :(, sorry but you need a person to play against!")
+        return await ctx.respond("lonely :(, sorry but you need a person to play against!")
     elif user == bot.user:
-        return await ctx.send("i'm good.")
+        return await ctx.respond("i'm good.")
     elif user == ctx.author:
-        return await ctx.send(
+        return await ctx.respond(
             "lonely :(, sorry but you need an actual person to play against, not yourself!"
         )
 
-    await ctx.send(
+    await ctx.respond(
         f"Tic Tac Toe: {ctx.author.mention} goes first",
         view=TicTacToe(ctx.author, user),
     )
@@ -179,11 +179,7 @@ async def short(ctx, member: discord.Member):
 async def short_detector(
     ctx, member: Option(discord.Member, "Enter a user you want to check!")
 ):
-    if (
-        member.id == 736765405728735232
-        or member.id == 518581570152693771
-        or member.id == 544724467709116457
-    ):
+    if member.id in [736765405728735232, 518581570152693771, 544724467709116457]:
         await ctx.respond(f"{member.mention} is short!")
     else:
         await ctx.respond(f"{member.mention} is tall!")
@@ -192,15 +188,15 @@ async def short_detector(
 @bot.user_command(name="Play TicTacToe with them!")
 async def tictactoeCTX(ctx, member: discord.Member):
     if member is None:
-        return await ctx.send("lonely :(, sorry but you need a person to play against!")
+        return await ctx.respond("lonely :(, sorry but you need a person to play against!")
     elif member == bot.user:
-        return await ctx.send("i'm good.")
+        return await ctx.respond("i'm good.")
     elif member == ctx.author:
-        return await ctx.send(
+        return await ctx.respond(
             "lonely :(, sorry but you need an actual person to play against, not yourself!"
         )
 
-    await ctx.send(
+    await ctx.respond(
         f"Tic Tac Toe: {ctx.author.mention} goes first",
         view=TicTacToe(ctx.author, member),
     )
@@ -257,14 +253,14 @@ async def scheduleSession(
             ReminderSet=False,
         )
         query.save()
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
     else:
         embed = discord.Embed(
             title="Failed to Generate Session",
             description=f"Unfortunately this session appears to be in the past and Timmy does not support expired sessions.",
             color=discord.Color.red(),
         )
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
 
 for ext in get_extensions():
     try:
