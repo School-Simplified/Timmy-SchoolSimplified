@@ -261,8 +261,8 @@ async def schedule(
             color=discord.Color.red(),
         )
         await ctx.respond(embed=embed)
-
-
+        
+        
 for ext in get_extensions():
     try:
         bot.load_extension(ext)
