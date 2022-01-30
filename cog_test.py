@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -28,6 +29,7 @@ def bot(event_loop):
 
 @pytest.mark.asyncio
 async def test_cogs(bot):
+    os.environ["PyTestMODE"] = True
     for ext in get_extensions():
         bot.load_extension(ext)
 
