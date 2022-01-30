@@ -80,15 +80,18 @@ class VerificationStaff(commands.Cog):
                         "<:sadturtl:879197443600834600> An error occurred while trying to verify your status, please contact a staff member! (Error Code: TM-NOMEMBERFOUND)",
                         ephemeral=True,
                     )
-                except discord.errors.InteractionResponded:
+                except discord.InteractionResponded:
                     try:
                         await interaction.followup.send(
-                            "<:sadturtl:879197443600834600> An error occurred while trying to verify your status, please contact a staff member! (Error Code: TM-NOMEMBERFOUND)",
+                            "<:sadturtl:879197443600834600> An error occurred while trying to verify your status, "
+                            "please contact a staff member! (Error Code: TM-NOMEMBERFOUND)",
                             ephemeral=True,
                         )
                     except:
                         await interaction.channel.send(
-                            f"{interaction.user.mention} <:sadturtl:879197443600834600> An error occurred while trying to verify your status, please contact a staff member! (Error Code: TM-NOMEMBERFOUND)",
+                            f"{interaction.user.mention} <:sadturtl:879197443600834600> An error occurred while "
+                            f"trying to verify your status, please contact a staff member! (Error Code: "
+                            f"TM-NOMEMBERFOUND)",
                             delete_after=10.0,
                         )
                 finally:
@@ -172,7 +175,7 @@ class VerificationStaff(commands.Cog):
                     await interaction.response.send_message(
                         "You have been verified!", ephemeral=True
                     )
-                except discord.errors.InteractionResponded:
+                except discord.InteractionResponded:
                     try:
                         await interaction.followup.send(
                             "You have been verified!", ephemeral=True
@@ -205,18 +208,21 @@ class VerificationStaff(commands.Cog):
 
                 try:
                     await interaction.response.send_message(
-                        "I didn't seem to find any roles to give you, please try requesting them in <#878679747255750696>!",
+                        "I didn't seem to find any roles to give you, please try requesting them in "
+                        "<#878679747255750696>!",
                         ephemeral=True,
                     )
                 except discord.InteractionResponded:
                     try:
                         await interaction.followup.send(
-                            "I didn't seem to find any roles to give you, please try requesting them in <#878679747255750696>!",
+                            "I didn't seem to find any roles to give you, please try requesting them in "
+                            "<#878679747255750696>!",
                             ephemeral=True,
                         )
                     except:
                         await VerificationChannel.send(
-                            f"{interaction.user.mention} I didn't seem to find any roles to give you, please try requesting them in <#878679747255750696>!",
+                            f"{interaction.user.mention} I didn't seem to find any roles to give you, please try "
+                            f"requesting them in <#878679747255750696>!",
                             delete_after=10.0,
                         )
 

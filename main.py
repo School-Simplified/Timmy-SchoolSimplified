@@ -202,6 +202,7 @@ async def tictactoeCTX(ctx, member: discord.Member):
     )
 
 
+<<<<<<< HEAD
 @bot.slash_command(
     name="schedule",
     description="Create a Tutor Session",
@@ -263,6 +264,8 @@ async def schedule(
         await ctx.respond(embed=embed)
 
 
+=======
+>>>>>>> beta
 for ext in get_extensions():
     try:
         bot.load_extension(ext)
@@ -404,6 +407,7 @@ async def mainModeCheck(ctx: commands.Context):
     else:
         return CheckDB_CC.elseSituation
 
+
 @bot.before_invoke
 async def before_invoke(ctx: commands.Context):
     sentry_sdk.set_user(None)
@@ -411,14 +415,14 @@ async def before_invoke(ctx: commands.Context):
     sentry_sdk.set_tag("username", f"{ctx.author.name}#{ctx.author.discriminator}")
     if ctx.command == None:
         sentry_sdk.set_context("user", {
-        "name": ctx.author.name,
-        "id": ctx.author.id,
-        "command": ctx.command.name,
-        "guild": ctx.guild.name,
-        "guild_id": ctx.guild.id,
-        "channel": ctx.channel.name,
-        "channel_id": ctx.channel.id,
-    })
+            "name": ctx.author.name,
+            "id": ctx.author.id,
+            "command": ctx.command.name,
+            "guild": ctx.guild.name,
+            "guild_id": ctx.guild.id,
+            "channel": ctx.channel.name,
+            "channel_id": ctx.channel.id,
+        })
     else:
         sentry_sdk.set_context("user", {
             "name": ctx.author.name,
@@ -429,6 +433,12 @@ async def before_invoke(ctx: commands.Context):
             "channel": ctx.channel.name,
             "channel_id": ctx.channel.id,
         })
+
+
+@bot.event
+async def on_application_command_error(interaction: discord.Interaction, error: Exception):
+    ctx: discord.ApplicationContext = await bot.get_application_context(interaction)
+    pass  # TODO implement something here
 
 
 @bot.event

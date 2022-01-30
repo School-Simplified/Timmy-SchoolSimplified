@@ -177,12 +177,10 @@ class TutorVCCMD(commands.Cog):
             )
             if query.exists():
                 query = (
-                    database.VCChannelInfo.select()
-                        .where(
+                    database.VCChannelInfo.select().where(
                         (database.VCChannelInfo.authorID == ctx.author.id)
                         & (database.VCChannelInfo.GuildID == ctx.guild.id)
-                    )
-                        .get()
+                    ).get()
                 )
                 channel: discord.VoiceChannel = self.bot.get_channel(query.ChannelID)
                 view = discord.ui.View()
