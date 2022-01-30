@@ -1,9 +1,8 @@
 import random
 import string
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 import discord
-import pytz
 from core import database
 from core.common import MAIN_ID, TUT_ID
 from discord.ext import commands
@@ -26,7 +25,6 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
 class TutorBotStaffCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.est = pytz.timezone("US/Eastern")
 
     @slash_command(
         name="schedule",
@@ -50,28 +48,28 @@ class TutorBotStaffCMD(commands.Cog):
             color=discord.Color.green(),
         )
         now = datetime.now()
-        now: datetime = now.astimezone(pytz.timezone("US/Eastern"))
         year = now.strftime("%Y")
 
-        datetimeSession = datetime.strptime(
+        datetime_session = datetime.strptime(
             f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p"
         )
-        datetimeSession = pytz.timezone("America/New_York").localize(datetimeSession)
 
-        if datetimeSession >= now:
-            SessionID = await id_generator()
-
-            daterev = datetimeSession.strftime("%m/%d")
+        if datetime_session >= now:
+            session_id = await id_generator()
 
             embed.add_field(
                 name="Values",
-                value=f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n"
-                      f"**Date:** `{daterev}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`",
+                value=f"**Session ID:** `{session_id}`"
+                      f"\n**Student:** `{student.name}`"
+                      f"\n**Tutor:** `{ctx.author.name}`"
+                      f"\n**Date:** <t:{datetime_session}:d>"
+                      f"\n**Time:** <t:{datetime_session}:t>"
+                      f"\n**Repeat?:** `{repeats}`",
             )
             embed.set_footer(text=f"Subject: {subject}")
             query = database.TutorBot_Sessions.create(
-                SessionID=SessionID,
-                Date=datetimeSession,
+                SessionID=session_id,
+                Date=datetime_session,
                 Time=time,
                 StudentID=student.id,
                 TutorID=ctx.author.id,
@@ -110,29 +108,30 @@ class TutorBotStaffCMD(commands.Cog):
             description="Created session.",
             color=discord.Color.green(),
         )
-        now = datetime.now()
-        now: datetime = now.astimezone(pytz.timezone("US/Eastern"))
+        now = datetime.utcnow()
+
         year = now.strftime("%Y")
 
-        datetimeSession = datetime.strptime(
+        datetime_session = datetime.strptime(
             f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p"
         )
-        datetimeSession = pytz.timezone("America/New_York").localize(datetimeSession)
 
-        if datetimeSession >= now:
-            SessionID = await id_generator()
-
-            daterev = datetimeSession.strftime("%m/%d")
+        if datetime_session >= now:
+            session_id = await id_generator()
 
             embed.add_field(
                 name="Values",
-                value=f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n"
-                      f"**Date:** `{daterev}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`",
+                value=f"**Session ID:** `{session_id}`"
+                      f"\n**Student:** `{student.name}`"
+                      f"\n**Tutor:** `{ctx.author.name}`"
+                      f"\n**Date:** <t:{datetime_session}:d>"
+                      f"\n**Time:** <t:{datetime_session}:t>"
+                      f"\n**Repeat?:** `{repeats}`",
             )
             embed.set_footer(text=f"Subject: {subject}")
             query = database.TutorBot_Sessions.create(
-                SessionID=SessionID,
-                Date=datetimeSession,
+                SessionID=session_id,
+                Date=datetime_session,
                 Time=time,
                 StudentID=student,
                 TutorID=ctx.author.id,
