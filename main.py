@@ -270,7 +270,7 @@ for ext in get_extensions():
         bot.unload_extension(ext)
         bot.load_extension(ext)
     except discord.ExtensionNotFound:
-        raise commands.ExtensionNotFound(ext)
+        raise discord.ExtensionNotFound(ext)
 
 
 @bot.event
