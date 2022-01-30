@@ -2,7 +2,7 @@ import re
 
 import discord
 from core.common import Others, hexColors
-from core.checks import is_botAdmin
+from core.checks import is_botAdmin, predicate_LV1
 from core.gmailapi import auth, create_message
 from discord.ext import commands
 from discord import Option, slash_command, permissions
@@ -37,8 +37,10 @@ class GmailAPI(commands.Cog):
             message: Option(str, description="Your email message")):
         """Send a message to a user via their email.
         """
+        if not predicate_LV1(ctx):  # EXTRA CHECK
+            return await ctx.respond("You do not have the required permissions!")
         if not email_check(to):
-            await ctx.send("That is not a valid email address!")
+            await ctx.respond("That is not a valid email address!")
             return
 
         message = message + f"\nSent from: {ctx.author}"
