@@ -451,12 +451,13 @@ async def on_command_error(ctx: commands.Context, error: Exception):
         elif len(slash_matches) > 0:
             return await ctx.send(
                 f'Command "{cmd}" not found, command: {slash_matches[0]} is now a slash command! '
-                f'Please check https://timmy.schoolsimplified.org for more updates!'
+                f'Please check https://timmy.schoolsimplified.org/#slash-command-port for more updates!'
             )
         else:
             return await ctx.send(
                 f'Command "{cmd}" not found, use the help command to know what commands are available. '
-                f'Some commands have moved over to slash commands, please check https://timmy.schoolsimplified.org '
+                f'Some commands have moved over to slash commands, please check '
+                f'https://timmy.schoolsimplified.org/#slash-command-port '
                 f'for more updates! '
             )
 
