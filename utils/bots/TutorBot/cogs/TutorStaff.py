@@ -53,6 +53,7 @@ class TutorBotStaffCMD(commands.Cog):
         datetime_session = datetime.strptime(
             f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p"
         )
+        timestamp = int(datetime.timestamp(datetime_session))
 
         if datetime_session >= now:
             session_id = await id_generator()
@@ -62,8 +63,8 @@ class TutorBotStaffCMD(commands.Cog):
                 value=f"**Session ID:** `{session_id}`"
                       f"\n**Student:** `{student.name}`"
                       f"\n**Tutor:** `{ctx.author.name}`"
-                      f"\n**Date:** <t:{datetime_session}:d>"
-                      f"\n**Time:** <t:{datetime_session}:t>"
+                      f"\n**Date:** <t:{timestamp}:d>"
+                      f"\n**Time:** <t:{timestamp}:t>"
                       f"\n**Repeat?:** `{repeats}`",
             )
             embed.set_footer(text=f"Subject: {subject}")
@@ -118,14 +119,15 @@ class TutorBotStaffCMD(commands.Cog):
 
         if datetime_session >= now:
             session_id = await id_generator()
+            timestamp = int(datetime.timestamp(datetime_session))
 
             embed.add_field(
                 name="Values",
                 value=f"**Session ID:** `{session_id}`"
                       f"\n**Student:** `{student.name}`"
                       f"\n**Tutor:** `{ctx.author.name}`"
-                      f"\n**Date:** <t:{datetime_session}:d>"
-                      f"\n**Time:** <t:{datetime_session}:t>"
+                      f"\n**Date:** <t:{timestamp}:d>"
+                      f"\n**Time:** <t:{timestamp}:t>"
                       f"\n**Repeat?:** `{repeats}`",
             )
             embed.set_footer(text=f"Subject: {subject}")

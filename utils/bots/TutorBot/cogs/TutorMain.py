@@ -41,10 +41,11 @@ class TutorMain(commands.Cog):
                 for entry in query:
                     if not isinstance(entry.Date, datetime):
                         entry.Date = datetime.fromisoformat(entry.Date)
+                    timestamp = int(datetime.timestamp(entry.Date))
 
                     student_user = await self.bot.fetch_user(entry.StudentID)
                     list_ten.append(
-                        f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{entry.Date}:F> -> "
+                        f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{timestamp}:F> -> "
                         f"{student_user.name} {self.ExpireEmoji[entry.GracePeriod_Status]} "
                     )
 
@@ -62,6 +63,7 @@ class TutorMain(commands.Cog):
                 entry = entry.get()
 
                 student_user = await self.bot.fetch_user(entry.StudentID)
+                timestamp = int(datetime.timestamp(entry.Date))
 
                 embed = discord.Embed(
                     title="Tutor Session Query",
@@ -72,7 +74,7 @@ class TutorMain(commands.Cog):
                     value=f"**Session ID:** `{entry.SessionID}`"
                           f"\n**Student:** `{student_user.name}`"
                           f"\n**Tutor:** `{ctx.author.name}`"
-                          f"\n**Date:** <t:{entry.Date}:F>"
+                          f"\n**Date:** <t:{timestamp}:F>"
                           f"\n**Time:** `{entry.Time}`"
                           f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
                 )
@@ -121,10 +123,11 @@ class TutorMain(commands.Cog):
 
                 if not isinstance(entry.Date, datetime):
                     entry.Date = datetime.fromisoformat(entry.Date)
+                timestamp = int(datetime.timestamp(entry.Date))
 
                 student_user = await self.bot.fetch_user(entry.StudentID)
                 list_ten.append(
-                    f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{entry.Date}:F> -> {student_user.name} "
+                    f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{timestamp}:F> -> {student_user.name} "
                     f"{self.ExpireEmoji[entry.GracePeriod_Status]}"
                 )
 
