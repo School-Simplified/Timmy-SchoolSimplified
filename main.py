@@ -456,7 +456,7 @@ async def on_command_error(ctx: commands.Context, error: Exception):
         cmds = [cmd.name for cmd in bot.commands]
         matches = get_close_matches(cmd, cmds)
         slash_cmds = [cmd.qualified_name for cmd in bot.application_commands]
-        slash_matches = get_close_matches(cmd, slash_cmds)
+        slash_matches = get_close_matches(slash_cmds, cmd)
 
         if len(matches) > 0:
             return await ctx.send(
