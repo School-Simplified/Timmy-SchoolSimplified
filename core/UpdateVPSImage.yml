@@ -1,10 +1,7 @@
 name: SSH & Deploy Image
 on:
-  workflow_run:
-    workflows: ["Timmy Docker Build"]
+  push:
     branches: [ main ]
-    types:
-      - completed
 
 jobs:
   build:
@@ -19,7 +16,11 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-          docker rm $(docker stop $(docker ps -a -q --filter ancestor=timmy --format="{{.ID}}"))
-          docker pull spaceturtle0/ss-timmy:latest
-          docker tag spaceturtle0/ss-timmy timmy
-          nohup docker run -d --env-file=Timmy-SchoolSimplified/.env timmy &
+          source ~/timmy/bin/activate
+          cd Timmy-SchoolSimplified
+          git fetch --all
+          git reset --hard origin/main
+          pip install --upgrade --force-reinstall -r requirements.txt
+          pip uninstall discord.py -y
+          ps -ef | grep python3 | grep -v grep | awk '{print $2}' | xargs kill
+          nohup python3 main.py &

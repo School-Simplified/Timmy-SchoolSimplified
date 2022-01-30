@@ -8,22 +8,23 @@ from google.cloud import texttospeech
 from gtts import gTTS
 from oauth2client.service_account import ServiceAccountCredentials
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'creds.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gsheetsadmin/TTScreds.json"
+
 
 class SayCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
     @commands.command()
     @is_botAdmin
     async def say(self, ctx, *, message):
-        NE = database.AdminLogging.create(discordID = ctx.author.id, action = "SAY", content = message)
+        NE = database.AdminLogging.create(
+            discordID=ctx.author.id, action="SAY", content=message
+        )
         NE.save()
 
         await ctx.message.delete()
         await ctx.send(message)
-
 
     @commands.command()
     @is_botAdmin
@@ -32,16 +33,22 @@ class SayCMD(commands.Cog):
 
         if not text:
             # We have nothing to speak
-            await ctx.send(f"Hey {ctx.author.mention}, I need to know what to say please.")
+            await ctx.send(
+                f"Hey {ctx.author.mention}, I need to know what to say please."
+            )
             return
 
-        vc = ctx.voice_client # We use it more then once, so make it an easy variable
+        vc = ctx.voice_client  # We use it more then once, so make it an easy variable
         if not vc:
             # We are not currently in a voice channel
-            await ctx.send("I need to be in a voice channel to do this, please use the connect command.")
+            await ctx.send(
+                "I need to be in a voice channel to do this, please use the connect command."
+            )
             return
 
-        NE = database.AdminLogging.create(discordID = ctx.author.id, action = "SAYVC", content = text)
+        NE = database.AdminLogging.create(
+            discordID=ctx.author.id, action="SAYVC", content=text
+        )
         NE.save()
 
         # Lets prepare our text, and then save the audio file
@@ -61,7 +68,10 @@ class SayCMD(commands.Cog):
             out.write(response.audio_content)
 
         try:
-            vc.play(discord.FFmpegPCMAudio('text.mp3'), after=lambda e: print(f"Finished playing: {e}"))
+            vc.play(
+                discord.FFmpegPCMAudio("text.mp3"),
+                after=lambda e: print(f"Finished playing: {e}"),
+            )
 
             vc.source = discord.PCMVolumeTransformer(vc.source)
             vc.source.volume = 1
@@ -75,7 +85,3 @@ class SayCMD(commands.Cog):
 
 def setup(bot):
     bot.add_cog(SayCMD(bot))
-
-
-
-    

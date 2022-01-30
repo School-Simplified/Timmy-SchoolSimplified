@@ -1,0 +1,24 @@
+name: SSH & PyTest
+on: [pull_request]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run PyTest
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          source ~/timmyos/bin/activate
+          cd Timmy-SchoolSimplified
+          git fetch --all
+          git reset --hard origin/main
+          pip install --upgrade -r requirements.txt
+          pip uninstall discord.py -y
+          python3 -m pytest
+

@@ -11,11 +11,9 @@ class BlacklistCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
-    @commands.group(aliases=['bl'])
+    @commands.group(aliases=["bl"])
     async def blacklist(self, ctx):
         pass
-
 
     @blacklist.command()
     @is_botAdmin4
@@ -25,39 +23,44 @@ class BlacklistCMD(commands.Cog):
         q: database.Blacklist = database.Blacklist.create(discordID=user.id)
         q.save()
 
-        embed = discord.Embed(title="Successfully Blacklisted User!",
-                              description=f"{user.mention} has been added to the blacklist.",
-                              color=discord.Color.gold())
+        embed = discord.Embed(
+            title="Successfully Blacklisted User!",
+            description=f"{user.mention} has been added to the blacklist.",
+            color=discord.Color.gold(),
+        )
         await ctx.send(embed=embed)
 
     database.db.close()
-
 
     @blacklist.command()
     @is_botAdmin4
     async def remove(self, ctx, user: discord.User):
         database.db.connect(reuse_if_open=True)
 
-        query = database.Blacklist.select().where(database.Blacklist.discordID == user.id)
+        query = database.Blacklist.select().where(
+            database.Blacklist.discordID == user.id
+        )
         if query.exists():
             query = query.get()
 
             query.delete_instance()
 
-            embed = discord.Embed(title="Successfully Removed User!",
-                                 description=f"{user.mention} has been removed from the blacklist!",
-                                  color=discord.Color.green())
+            embed = discord.Embed(
+                title="Successfully Removed User!",
+                description=f"{user.mention} has been removed from the blacklist!",
+                color=discord.Color.green(),
+            )
             await ctx.send(embed=embed)
 
-
         else:
-            embed = discord.Embed(title="Invalid User!",
-                                  description="Invalid Provided: (No Record Found)",
-                                  color=discord.Color.red())
+            embed = discord.Embed(
+                title="Invalid User!",
+                description="Invalid Provided: (No Record Found)",
+                color=discord.Color.red(),
+            )
             await ctx.send(embed=embed)
 
         database.db.close()
-
 
     @blacklist.command()
     @is_botAdmin3
@@ -70,10 +73,12 @@ class BlacklistCMD(commands.Cog):
 
         blacklistList = "\n".join(emptylist)
 
-        embed = discord.Embed(title="Current Blacklist",
-                              description = blacklistList,
-                              color = discord.Color.red())
-        await ctx.send(embed = embed)
+        embed = discord.Embed(
+            title="Current Blacklist",
+            description=blacklistList,
+            color=discord.Color.red(),
+        )
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
