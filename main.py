@@ -441,14 +441,23 @@ async def on_command_error(ctx: commands.Context, error: Exception):
         cmd = ctx.invoked_with
         cmds = [cmd.name for cmd in bot.commands]
         matches = get_close_matches(cmd, cmds)
+        slash_cmds = [cmd.qualified_name for cmd in bot.application_commands]
+        slash_matches = get_close_matches(cmd, slash_cmds)
 
         if len(matches) > 0:
             return await ctx.send(
                 f'Command "{cmd}" not found, maybe you meant "{matches[0]}"?'
             )
+        elif len(slash_matches) > 0:
+            return await ctx.send(
+                f'Command "{cmd}" not found, command: {slash_matches[0]} is now a slash command! '
+                f'Please check https://timmy.schoolsimplified.org for more updates!'
+            )
         else:
             return await ctx.send(
-                f'Command "{cmd}" not found, use the help command to know what commands are available'
+                f'Command "{cmd}" not found, use the help command to know what commands are available. '
+                f'Some commands have moved over to slash commands, please check https://timmy.schoolsimplified.org '
+                f'for more updates! '
             )
 
     elif isinstance(
@@ -459,7 +468,11 @@ async def on_command_error(ctx: commands.Context, error: Exception):
         if ctx.command.name == "schedule":
             em = discord.Embed(
                 title="Missing/Extra Required Arguments Passed In!",
-                description=f"Looks like you messed up an argument somewhere here!\n\n**Check the following:**\nUsage:\n`{signature}`\n\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
+                description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
+                            f"following:**\nUsage:\n`{signature}`\n\n-> If you seperated the time and the AM/PM. (Eg; "
+                            f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
+                            f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
+                            f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
                 color=hexColors.red_error,
             )
             em.set_thumbnail(url=Others.error_png)
@@ -483,18 +496,18 @@ async def on_command_error(ctx: commands.Context, error: Exception):
 
     elif isinstance(
             error,
-            (
-                    commands.MissingAnyRole,
-                    commands.MissingRole,
-                    commands.MissingPermissions,
-                    commands.errors.MissingAnyRole,
-                    commands.errors.MissingRole,
-                    commands.errors.MissingPermissions,
-            ),
+            (commands.MissingAnyRole,
+             commands.MissingRole,
+             commands.MissingPermissions,
+             commands.errors.MissingAnyRole,
+             commands.errors.MissingRole,
+             commands.errors.MissingPermissions,
+             ),
     ):
         em = discord.Embed(
             title="Invalid Permissions!",
-            description="You do not have the associated role in order to successfully invoke this command! Contact an administrator/developer if you believe this is invalid.",
+            description="You do not have the associated role in order to successfully invoke this command! Contact an "
+                        "administrator/developer if you believe this is invalid.",
             color=hexColors.red_error,
         )
         em.set_thumbnail(url=Others.error_png)
@@ -509,7 +522,11 @@ async def on_command_error(ctx: commands.Context, error: Exception):
         if ctx.command.name == "schedule":
             em = discord.Embed(
                 title="Bad Argument!",
-                description=f"Looks like you messed up an argument somewhere here!\n\n**Check the following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
+                description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
+                            f"following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; "
+                            f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
+                            f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
+                            f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
                 color=hexColors.red_error,
             )
             em.set_thumbnail(url=Others.error_png)
