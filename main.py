@@ -207,7 +207,7 @@ async def tictactoeCTX(ctx, member: discord.Member):
     description="Create a Tutor Session",
     guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut],
 )
-@permissions.has_any_role("Tutor")
+#@permissions.has_any_role("Tutor")
 async def schedule(
         ctx,
         date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),

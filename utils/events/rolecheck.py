@@ -29,7 +29,6 @@ def getEquelRank(query):
     if query not in config:
         return None
     else:
-        print(config[query])
         return config[query]
 
 
@@ -38,8 +37,6 @@ def getAcadRole(query):
     if query not in configA:
         return None, None
     else:
-        print(configA[query])
-
         value = messageDict[configA[query]]
         return value, configA[query]
 

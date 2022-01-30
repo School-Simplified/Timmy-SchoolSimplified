@@ -18,7 +18,6 @@ async def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Mem
     if check is not None:
         if check in [role.name for role in guild.roles]:
             helper: discord.Role = discord.utils.get(guild.roles, name=check)
-            print(check, guild, helper)
             await user.add_roles(helper)
 
 
