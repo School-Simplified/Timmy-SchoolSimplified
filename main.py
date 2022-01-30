@@ -202,67 +202,6 @@ async def tictactoeCTX(ctx, member: discord.Member):
     )
 
 
-@bot.slash_command(
-    name="schedule",
-    description="Create a Tutor Session",
-    guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut],
-)
-@permissions.has_any_role("Tutor")
-async def schedule(
-        ctx,
-        date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),
-        time: Option(str, "Enter a time in HH:MM format. EX: 3:00"),
-        ampm: Option(str, "AM or PM", choices=["AM", "PM"]),
-        student: Option(discord.Member,
-                        "Enter the student you'll be tutoring for this session."),
-        subject: Option(str, "Tutoring Subject"),
-        repeats: Option(bool, "Does your Tutoring Session repeat?"),
-):
-    embed = discord.Embed(
-        title="Schedule Confirmed",
-        description="Created session.",
-        color=discord.Color.green(),
-    )
-    now = datetime.now()
-    now: datetime = now.astimezone(pytz.timezone("US/Eastern"))
-    year = now.strftime("%Y")
-
-    datetimeSession = datetime.strptime(
-        f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p"
-    )
-    datetimeSession = pytz.timezone("America/New_York").localize(datetimeSession)
-
-    if datetimeSession >= now:
-        SessionID = await id_generator()
-
-        daterev = datetimeSession.strftime("%m/%d")
-
-        embed.add_field(
-            name="Values",
-            value=f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n**Date:** `{daterev}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`",
-        )
-        embed.set_footer(text=f"Subject: {subject}")
-        query = database.TutorBot_Sessions.create(
-            SessionID=SessionID,
-            Date=datetimeSession,
-            Time=time,
-            StudentID=student.id,
-            TutorID=ctx.author.id,
-            Repeat=repeats,
-            Subject=subject,
-            ReminderSet=False,
-        )
-        query.save()
-        await ctx.respond(embed=embed)
-    else:
-        embed = discord.Embed(
-            title="Failed to Generate Session",
-            description=f"Unfortunately this session appears to be in the past and Timmy does not support expired sessions.",
-            color=discord.Color.red(),
-        )
-        await ctx.respond(embed=embed)
-
-
 for ext in get_extensions():
     try:
         bot.load_extension(ext)
@@ -404,6 +343,7 @@ async def mainModeCheck(ctx: commands.Context):
     else:
         return CheckDB_CC.elseSituation
 
+
 @bot.before_invoke
 async def before_invoke(ctx: commands.Context):
     sentry_sdk.set_user(None)
@@ -411,14 +351,14 @@ async def before_invoke(ctx: commands.Context):
     sentry_sdk.set_tag("username", f"{ctx.author.name}#{ctx.author.discriminator}")
     if ctx.command == None:
         sentry_sdk.set_context("user", {
-        "name": ctx.author.name,
-        "id": ctx.author.id,
-        "command": ctx.command.name,
-        "guild": ctx.guild.name,
-        "guild_id": ctx.guild.id,
-        "channel": ctx.channel.name,
-        "channel_id": ctx.channel.id,
-    })
+            "name": ctx.author.name,
+            "id": ctx.author.id,
+            "command": ctx.command.name,
+            "guild": ctx.guild.name,
+            "guild_id": ctx.guild.id,
+            "channel": ctx.channel.name,
+            "channel_id": ctx.channel.id,
+        })
     else:
         sentry_sdk.set_context("user", {
             "name": ctx.author.name,
