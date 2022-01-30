@@ -46,7 +46,7 @@ class CommandsOnly(commands.Cog):
                     message.author.mention, embed=embed, delete_after=5.0
                 )
 
-    @slash_command()
+    @slash_command(guild_ids=[MAIN_ID.g_main])
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def rule(self, ctx, num: Option(int, max_value=14, min_value=1)):
         RuleNumber = str(num)
