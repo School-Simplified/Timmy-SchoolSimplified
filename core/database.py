@@ -150,6 +150,32 @@ class IgnoreThis(BaseModel):
     authorID = TextField()
     GuildID = BigIntegerField()
 
+class TutorSession_GracePeriod(BaseModel):
+    """
+    # IgnoreThis
+    Information pertaining to the Deletion of Tutor Sessions
+
+    `ID`: AutoField()
+    Database Entry Number.
+
+    `SessionID`: TextField()
+    Session ID.
+
+    `authorID`: TextField()
+    Owner of the tutor session.
+
+    `ext_ID` = BigIntegerField()
+    ID of the correlating database entry.
+
+    `GP_DATE` = DateTimeField()
+    DateTime Object with built-in grace period of 10 minutes.
+    """
+    
+    id = AutoField()
+    SessionID = TextField()
+    authorID = TextField()
+    ext_ID = IntegerField()
+    GP_DATE = DateTimeField()
 
 class PunishmentTag(BaseModel):
     """
@@ -411,6 +437,9 @@ class TutorBot_Sessions(BaseModel):
 
     `ReminderSet`: BooleanField()
     Boolean that states if the user and student have been notified.
+
+    `GracePeriod_Status`: BooleanField()
+    Boolean that states if the session is about to expire.
     """
 
     id = AutoField()
@@ -422,6 +451,7 @@ class TutorBot_Sessions(BaseModel):
     TutorID = BigIntegerField()
     Repeat = BooleanField()
     ReminderSet = BooleanField()
+    GracePeriod_Status = BooleanField(default=False)
 
 
 class Uptime(BaseModel):
@@ -543,6 +573,7 @@ tables = {
     "CTag:": CTag,
     "BaseTickerInfo": BaseTickerInfo,
     "VCDeletionQueue": VCDeletionQueue,
+    "TutorSession_GracePeriod": TutorSession_GracePeriod
 }
 
 iter_table(tables)

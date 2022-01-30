@@ -12,9 +12,11 @@ class TutorBotLoop(commands.Cog):
         self.bot = bot
         self.est = pytz.timezone("US/Eastern")
         self.tutorsession.start()
+        self.tutorsession_graceperiod.start()
 
     def cog_unload(self):
         self.tutorsession.cancel()
+        self.tutorsession_graceperiod.cancel()
 
     @tasks.loop(seconds=60.0)
     async def tutorsession(self):
@@ -81,7 +83,16 @@ class TutorBotLoop(commands.Cog):
                     .where(database.TutorBot_Sessions.id == entry.id)
                     .get()
                 )
-                geten.delete_instance()
+                old = geten.Date
+                new = timedelta(minutes=10.0)
+                geten.GracePeriod_Status = True
+                geten.save()
+
+                GP_DATE = old + new
+
+                gp_en: database.TutorSession_GracePeriod = database.TutorSession_GracePeriod.create(SessionID = geten.SessionID, authorID = geten.TutorID, ext_ID = geten.id, GP_DATE = GP_DATE)
+                gp_en.save()
+                #geten.delete_instance()
 
             elif val < 0 and entry.Repeat:
                 query: database.TutorBot_Sessions = (
@@ -99,10 +110,39 @@ class TutorBotLoop(commands.Cog):
                 query.Date = nextweek
                 query.save()
 
+
+    @tasks.loop(seconds=60.0)
+    async def tutorsession_graceperiod(self):
+        now = datetime.now(self.est)
+        for entry in database.TutorSession_GracePeriod:
+            TutorSession = pytz.timezone("America/New_York").localize(entry.GP_DATE)
+            val = int((TutorSession - now).total_seconds())
+
+            if 600 >= val >= 1:
+                try:
+                    geten: database.TutorBot_Sessions = (
+                        database.TutorBot_Sessions.select()
+                        .where(database.TutorBot_Sessions.id == entry.ext_ID)
+                        .get()
+                    )
+                except Exception as e:
+                    print(e)
+                    entry.delete_instance()
+                else:
+                    geten.delete_instance()
+                    entry.delete_instance()
+
     @tutorsession.before_loop
     async def before_printer(self):
         print("Starting Tutor Loop")
         await self.bot.wait_until_ready()
+
+    @tutorsession_graceperiod.before_loop
+    async def before_printer(self):
+        print("Starting TutorGP Loop")
+        await self.bot.wait_until_ready()
+
+
 
 
 def setup(bot):
