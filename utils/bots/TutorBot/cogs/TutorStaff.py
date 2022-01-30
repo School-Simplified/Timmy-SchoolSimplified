@@ -32,7 +32,7 @@ class TutorBotStaffCMD(commands.Cog):
         name="skip",
         description="Skip a tutoring session"
     )
-    @permissions.has_any_role("Tutor")
+    #@permissions.has_any_role("Tutor")
     async def skip(self, ctx, id):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
@@ -63,7 +63,7 @@ class TutorBotStaffCMD(commands.Cog):
         name="remove",
         description="Remove a tutoring session"
     )
-    @permissions.has_any_role("Tutor")
+    #@permissions.has_any_role("Tutor")
     async def remove(self, ctx, id):
         query = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
@@ -96,7 +96,7 @@ class TutorBotStaffCMD(commands.Cog):
         name="clear",
         description="Clear a tutoring session"
     )
-    @permissions.has_any_role("Tutor")
+    #@permissions.has_any_role("Tutor")
     async def clear(self, ctx):
         query = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.TutorID == ctx.author.id
