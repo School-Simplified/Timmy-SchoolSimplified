@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 import discord
 import pytz
 from core import database
-from core.common import MAIN_ID
+from core.common import MAIN_ID, TUT_ID
 from discord.ext import commands
 from discord import slash_command, permissions
 
@@ -30,7 +30,8 @@ class TutorBotStaffCMD(commands.Cog):
 
     @slash_command(
         name="skip",
-        description="Skip a tutoring session"
+        description="Skip a tutoring session",
+        guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
     )
     @permissions.has_any_role("Tutor")
     async def skip(self, ctx, id):
@@ -61,7 +62,8 @@ class TutorBotStaffCMD(commands.Cog):
 
     @slash_command(
         name="remove",
-        description="Remove a tutoring session"
+        description="Remove a tutoring session",
+        guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
     )
     @permissions.has_any_role("Tutor")
     async def remove(self, ctx, id):
@@ -94,7 +96,8 @@ class TutorBotStaffCMD(commands.Cog):
 
     @slash_command(
         name="clear",
-        description="Clear a tutoring session"
+        description="Clear a tutoring session",
+        guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
     )
     @permissions.has_any_role("Tutor")
     async def clear(self, ctx):

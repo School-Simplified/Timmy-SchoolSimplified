@@ -1,6 +1,7 @@
 import datetime
 import time
 from datetime import datetime
+from core.common import MAIN_ID
 
 import discord
 from discord import permissions, slash_command
@@ -65,7 +66,7 @@ class TallyCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command()
+    @slash_command(guild_ids=[MAIN_ID.g_main])
     @permissions.has_any_role(
         "Moderator",
         "Lead Helper",
