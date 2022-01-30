@@ -7,7 +7,7 @@ import pytz
 from core import database
 from core.common import MAIN_ID, TUT_ID
 from discord.ext import commands
-from discord import slash_command, permissions
+from discord import Option, slash_command, permissions
 
 
 async def id_generator(size=3, chars=string.ascii_uppercase):
@@ -27,6 +27,67 @@ class TutorBotStaffCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.est = pytz.timezone("US/Eastern")
+
+    @slash_command(
+        name="schedule",
+        description="Create a Tutor Session",
+        guild_ids=[TUT_ID.g_tut],
+    )  # SLASH CMD FOR TUTOR SERVER
+    async def _schedule__(
+            self,
+            ctx,
+            date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),
+            time: Option(str, "Enter a time in HH:MM format. EX: 3:00"),
+            ampm: Option(str, "AM or PM", choices=["AM", "PM"]),
+            student: Option(int, "Enter the student you'll be tutoring for this session."),
+            subject: Option(str, "Tutoring Subject"),
+            repeats: Option(bool, "Does your Tutoring Session repeat?"),
+    ):
+        embed = discord.Embed(
+            title="Schedule Confirmed",
+            description="Created session.",
+            color=discord.Color.green(),
+        )
+        now = datetime.now()
+        now: datetime = now.astimezone(pytz.timezone("US/Eastern"))
+        year = now.strftime("%Y")
+
+        datetimeSession = datetime.strptime(
+            f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p"
+        )
+        datetimeSession = pytz.timezone("America/New_York").localize(datetimeSession)
+
+        if datetimeSession >= now:
+            SessionID = await id_generator()
+
+            daterev = datetimeSession.strftime("%m/%d")
+
+            embed.add_field(
+                name="Values",
+                value=f"**Session ID:** `{SessionID}`\n**Student:** `{student.name}`\n**Tutor:** `{ctx.author.name}`\n"
+                      f"**Date:** `{daterev}`\n**Time:** `{time}`\n**Repeat?:** `{repeats}`",
+            )
+            embed.set_footer(text=f"Subject: {subject}")
+            query = database.TutorBot_Sessions.create(
+                SessionID=SessionID,
+                Date=datetimeSession,
+                Time=time,
+                StudentID=student,
+                TutorID=ctx.author.id,
+                Repeat=repeats,
+                Subject=subject,
+                ReminderSet=False,
+            )
+            query.save()
+            await ctx.respond(embed=embed)
+        else:
+            embed = discord.Embed(
+                title="Failed to Generate Session",
+                description=f"Unfortunately this session appears to be in the past and Timmy does not support expired "
+                            f"sessions.",
+                color=discord.Color.red(),
+            )
+            await ctx.respond(embed=embed)
 
     @slash_command(
         name="skip",
