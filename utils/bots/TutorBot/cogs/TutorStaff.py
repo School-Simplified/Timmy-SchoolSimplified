@@ -101,7 +101,7 @@ class TutorBotStaffCMD(commands.Cog):
             date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),
             time: Option(str, "Enter a time in HH:MM format. EX: 3:00"),
             ampm: Option(str, "AM or PM", choices=["AM", "PM"]),
-            student: Option(int, "Enter the student (id) you'll be tutoring for this session."),
+            student: Option(int, "Enter the student ID you'll be tutoring for this session."),
             subject: Option(str, "Tutoring Subject"),
             repeats: Option(bool, "Does your Tutoring Session repeat?"),
     ):
