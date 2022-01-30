@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 
 import discord
+from discord import permissions, slash_command
 from discord.ext import commands
 from core.common import Emoji, hexColors
 
@@ -64,13 +65,19 @@ class TallyCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=["tb"])
+    @slash_command()
+    @permissions.has_any_role(
+        "Moderator",
+        "Lead Helper",
+        "Academics Manager"
+    )
     async def ticketban(self, ctx, member: discord.Member, *, reason=None):
         ticketBan = discord.utils.get(ctx.guild.roles, name="NoTickets")
         helper = discord.utils.get(ctx.guild.roles, name="Lead Helper")
         manager = discord.utils.get(ctx.guild.roles, name="Academics Manager")
         moderator = discord.utils.get(ctx.guild.roles, name="Moderator")
 
+        #  Secondary Check
         if (
             helper not in ctx.author.roles
             and manager not in ctx.author.roles
@@ -81,8 +88,7 @@ class TallyCMD(commands.Cog):
                 description="You can't use this command, you require Lead Helper+ to use this!",
                 color=hexColors.red_error,
             )
-            await ctx.send(embed=embed)
-            return
+            return await ctx.respond(embed=embed)
 
         if member.id == self.bot.user.id:
             embed = discord.Embed(
@@ -90,7 +96,7 @@ class TallyCMD(commands.Cog):
                 description="Why are you trying to ticketban me?",
                 color=hexColors.red_error,
             )
-            return await ctx.send(embed=embed)
+            return await ctx.respond(embed=embed)
 
         if member.id == ctx.author.id:
             embed = discord.Embed(
@@ -98,18 +104,17 @@ class TallyCMD(commands.Cog):
                 description="Why are you trying to ticketban yourself?",
                 color=hexColors.red_error,
             )
-            return await ctx.send(embed=embed)
+            return await ctx.respond(embed=embed)
 
         if ticketBan not in member.roles:
             try:
                 if reason is None:
-                    await ctx.send("Please specify a reason for this ticket ban!")
-                    return
+                    return await ctx.respond("Please specify a reason for this ticket ban!")
 
-                UpdateReason = f"Ticket Ban requested by {ctx.message.author.display_name} | Reason: {reason}"
-                await member.add_roles(ticketBan, reason=UpdateReason)
+                update_reason = f"Ticket Ban requested by {ctx.author.display_name} | Reason: {reason}"
+                await member.add_roles(ticketBan, reason=update_reason)
             except Exception as e:
-                await ctx.send(f"ERROR:\n{e}")
+                await ctx.respond(f"ERROR:\n{e}")
                 print(e)
             else:
                 embed = discord.Embed(
@@ -118,17 +123,17 @@ class TallyCMD(commands.Cog):
                     f"\n{Emoji.space}{Emoji.arrow} **Reason:** {reason}",
                     color=hexColors.yellow_ticketBan,
                 )
-                await ctx.send(embed=embed)
+                await ctx.respond(embed=embed)
 
         else:
             try:
                 if reason is None:
                     reason = "No Reason Given"
 
-                UpdateReason = f"Ticket UnBan requested by {ctx.message.author.display_name} | Reason: {reason}"
-                await member.remove_roles(ticketBan, reason=UpdateReason)
+                update_reason = f"Ticket UnBan requested by {ctx.author.display_name} | Reason: {reason}"
+                await member.remove_roles(ticketBan, reason=update_reason)
             except Exception as e:
-                await ctx.send(f"ERROR:\n{e}")
+                await ctx.respond(f"ERROR:\n{e}")
             else:
                 embed = discord.Embed(
                     title="Ticket Unbanned!",
@@ -136,7 +141,7 @@ class TallyCMD(commands.Cog):
                     f"\n{Emoji.space}{Emoji.arrow} **Reason:** {reason}",
                     color=hexColors.yellow_ticketBan,
                 )
-                await ctx.send(embed=embed)
+                await ctx.respond(embed=embed)
 
     @commands.command()
     @commands.has_any_role("Academics Manager", "Lead Helper")
