@@ -14,7 +14,7 @@ import discord
 import pytz
 import requests
 import sentry_sdk
-from discord.commands import Option
+from discord.commands import Option, permissions
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
@@ -37,7 +37,8 @@ logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
 logger.addHandler(LogTail)
 
-logger.warning("Started Timmy"); print("Starting Timmy...")
+logger.warning("Started Timmy");
+print("Starting Timmy...")
 
 
 class Timmy(commands.Bot):
@@ -93,7 +94,6 @@ if os.getenv("DSN_SENTRY") is not None:
         integrations=[FlaskIntegration(), sentry_logging],
     )
 
-
 # Start Check
 UpQ = database.Uptime.select().where(database.Uptime.id == 1)
 CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)
@@ -144,20 +144,20 @@ database.db.close()
 @bot.slash_command(description="Play a game of TicTacToe with someone!")
 async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you want")):
     if ctx.channel.id != MAIN_ID.ch_commands:
-        return await ctx.send(
+        return await ctx.respond(
             f"{ctx.author.mention}\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!",
             ephemeral=True,
         )
     if user is None:
-        return await ctx.send("lonely :(, sorry but you need a person to play against!")
+        return await ctx.respond("lonely :(, sorry but you need a person to play against!")
     elif user == bot.user:
-        return await ctx.send("i'm good.")
+        return await ctx.respond("i'm good.")
     elif user == ctx.author:
-        return await ctx.send(
+        return await ctx.respond(
             "lonely :(, sorry but you need an actual person to play against, not yourself!"
         )
 
-    await ctx.send(
+    await ctx.respond(
         f"Tic Tac Toe: {ctx.author.mention} goes first",
         view=TicTacToe(ctx.author, user),
     )
@@ -166,9 +166,9 @@ async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you wan
 @bot.user_command(name="Are they short?")
 async def short(ctx, member: discord.Member):
     if (
-        member.id == 736765405728735232
-        or member.id == 518581570152693771
-        or member.id == 544724467709116457
+            member.id == 736765405728735232
+            or member.id == 518581570152693771
+            or member.id == 544724467709116457
     ):
         await ctx.respond(f"{member.mention} is short!")
     else:
@@ -177,13 +177,9 @@ async def short(ctx, member: discord.Member):
 
 @bot.slash_command(description="Check's if a user is short!")
 async def short_detector(
-    ctx, member: Option(discord.Member, "Enter a user you want to check!")
+        ctx, member: Option(discord.Member, "Enter a user you want to check!")
 ):
-    if (
-        member.id == 736765405728735232
-        or member.id == 518581570152693771
-        or member.id == 544724467709116457
-    ):
+    if member.id in [736765405728735232, 518581570152693771, 544724467709116457]:
         await ctx.respond(f"{member.mention} is short!")
     else:
         await ctx.respond(f"{member.mention} is tall!")
@@ -192,15 +188,15 @@ async def short_detector(
 @bot.user_command(name="Play TicTacToe with them!")
 async def tictactoeCTX(ctx, member: discord.Member):
     if member is None:
-        return await ctx.send("lonely :(, sorry but you need a person to play against!")
+        return await ctx.respond("lonely :(, sorry but you need a person to play against!")
     elif member == bot.user:
-        return await ctx.send("i'm good.")
+        return await ctx.respond("i'm good.")
     elif member == ctx.author:
-        return await ctx.send(
+        return await ctx.respond(
             "lonely :(, sorry but you need an actual person to play against, not yourself!"
         )
 
-    await ctx.send(
+    await ctx.respond(
         f"Tic Tac Toe: {ctx.author.mention} goes first",
         view=TicTacToe(ctx.author, member),
     )
@@ -211,16 +207,16 @@ async def tictactoeCTX(ctx, member: discord.Member):
     description="Create a Tutor Session",
     guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut],
 )
-async def scheduleSession(
-    ctx,
-    date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),
-    time: Option(str, "Enter a time in HH:MM format. EX: 3:00"),
-    ampm: Option(str, "AM or PM", choices=["AM", "PM"]),
-    student: Option(
-        discord.Member, "Enter the student you'll be tutoring for this session."
-    ),
-    subject: Option(str, "Tutoring Subject"),
-    repeats: Option(bool, "Does your Tutoring Session repeat?"),
+@permissions.has_any_role("Tutor")
+async def schedule(
+        ctx,
+        date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),
+        time: Option(str, "Enter a time in HH:MM format. EX: 3:00"),
+        ampm: Option(str, "AM or PM", choices=["AM", "PM"]),
+        student: Option(discord.Member,
+                        "Enter the student you'll be tutoring for this session."),
+        subject: Option(str, "Tutoring Subject"),
+        repeats: Option(bool, "Does your Tutoring Session repeat?"),
 ):
     embed = discord.Embed(
         title="Schedule Confirmed",
@@ -257,14 +253,15 @@ async def scheduleSession(
             ReminderSet=False,
         )
         query.save()
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
     else:
         embed = discord.Embed(
             title="Failed to Generate Session",
             description=f"Unfortunately this session appears to be in the past and Timmy does not support expired sessions.",
             color=discord.Color.red(),
         )
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
+
 
 for ext in get_extensions():
     try:
@@ -273,15 +270,16 @@ for ext in get_extensions():
         bot.unload_extension(ext)
         bot.load_extension(ext)
     except discord.ExtensionNotFound:
-        raise commands.ExtensionNotFound(ext)
+        raise discord.ExtensionNotFound(ext)
+
 
 @bot.event
 async def on_ready():
     now = datetime.now()
     query: database.CheckInformation = (
         database.CheckInformation.select()
-        .where(database.CheckInformation.id == 1)
-        .get()
+            .where(database.CheckInformation.id == 1)
+            .get()
     )
 
     if not query.PersistantChange:
@@ -311,7 +309,7 @@ async def on_ready():
     except subprocess.CalledProcessError:
         output = "ERROR"
 
-    #chat_exporter.init_exporter(bot)
+    # chat_exporter.init_exporter(bot)
 
     print(
         f"""
@@ -335,8 +333,6 @@ async def on_ready():
     Members: {len(bot.users)}
     """
     )
-
-
 
 
 @bot.check
@@ -389,10 +385,10 @@ async def mainModeCheck(ctx: commands.Context):
 
     # Mod Role Check
     elif (
-        MT in ctx.author.roles
-        or VP in ctx.author.roles
-        or CO in ctx.author.roles
-        or SS in ctx.author.roles
+            MT in ctx.author.roles
+            or VP in ctx.author.roles
+            or CO in ctx.author.roles
+            or SS in ctx.author.roles
     ):
         return CheckDB_CC.ModRoleBypass
 
@@ -459,25 +455,39 @@ async def on_command_error(ctx: commands.Context, error: Exception):
         cmd = ctx.invoked_with
         cmds = [cmd.name for cmd in bot.commands]
         matches = get_close_matches(cmd, cmds)
+        slash_cmds = [cmd.qualified_name for cmd in bot.application_commands]
+        slash_matches = get_close_matches(cmd, slash_cmds)
 
         if len(matches) > 0:
             return await ctx.send(
                 f'Command "{cmd}" not found, maybe you meant "{matches[0]}"?'
             )
+        elif len(slash_matches) > 0:
+            return await ctx.send(
+                f'Command "{cmd}" not found, command: {slash_matches[0]} is now a slash command! '
+                f'Please check https://timmy.schoolsimplified.org/#slash-command-port for more updates!'
+            )
         else:
             return await ctx.send(
-                f'Command "{cmd}" not found, use the help command to know what commands are available'
+                f'Command "{cmd}" not found, use the help command to know what commands are available. '
+                f'Some commands have moved over to slash commands, please check '
+                f'https://timmy.schoolsimplified.org/#slash-command-port '
+                f'for more updates! '
             )
 
     elif isinstance(
-        error, (commands.MissingRequiredArgument, commands.TooManyArguments)
+            error, (commands.MissingRequiredArgument, commands.TooManyArguments)
     ):
         signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
 
         if ctx.command.name == "schedule":
             em = discord.Embed(
                 title="Missing/Extra Required Arguments Passed In!",
-                description=f"Looks like you messed up an argument somewhere here!\n\n**Check the following:**\nUsage:\n`{signature}`\n\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
+                description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
+                            f"following:**\nUsage:\n`{signature}`\n\n-> If you seperated the time and the AM/PM. (Eg; "
+                            f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
+                            f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
+                            f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
                 color=hexColors.red_error,
             )
             em.set_thumbnail(url=Others.error_png)
@@ -489,8 +499,8 @@ async def on_command_error(ctx: commands.Context, error: Exception):
             em = discord.Embed(
                 title="Missing/Extra Required Arguments Passed In!",
                 description="You have missed one or several arguments in this command"
-                "\n\nUsage:"
-                f"\n`{signature}`",
+                            "\n\nUsage:"
+                            f"\n`{signature}`",
                 color=hexColors.red_error,
             )
             em.set_thumbnail(url=Others.error_png)
@@ -500,19 +510,19 @@ async def on_command_error(ctx: commands.Context, error: Exception):
             return await ctx.send(embed=em)
 
     elif isinstance(
-        error,
-        (
-            commands.MissingAnyRole,
-            commands.MissingRole,
-            commands.MissingPermissions,
-            commands.errors.MissingAnyRole,
-            commands.errors.MissingRole,
-            commands.errors.MissingPermissions,
-        ),
+            error,
+            (commands.MissingAnyRole,
+             commands.MissingRole,
+             commands.MissingPermissions,
+             commands.errors.MissingAnyRole,
+             commands.errors.MissingRole,
+             commands.errors.MissingPermissions,
+             ),
     ):
         em = discord.Embed(
             title="Invalid Permissions!",
-            description="You do not have the associated role in order to successfully invoke this command! Contact an administrator/developer if you believe this is invalid.",
+            description="You do not have the associated role in order to successfully invoke this command! Contact an "
+                        "administrator/developer if you believe this is invalid.",
             color=hexColors.red_error,
         )
         em.set_thumbnail(url=Others.error_png)
@@ -527,7 +537,11 @@ async def on_command_error(ctx: commands.Context, error: Exception):
         if ctx.command.name == "schedule":
             em = discord.Embed(
                 title="Bad Argument!",
-                description=f"Looks like you messed up an argument somewhere here!\n\n**Check the following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; 5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
+                description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
+                            f"following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; "
+                            f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
+                            f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
+                            f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
                 color=hexColors.red_error,
             )
             em.set_thumbnail(url=Others.error_png)
@@ -548,7 +562,7 @@ async def on_command_error(ctx: commands.Context, error: Exception):
             return await ctx.send(embed=em)
 
     elif isinstance(
-        error, (commands.CommandOnCooldown, commands.errors.CommandOnCooldown)
+            error, (commands.CommandOnCooldown, commands.errors.CommandOnCooldown)
     ):
         m, s = divmod(error.retry_after, 60)
         h, m = divmod(m, 60)

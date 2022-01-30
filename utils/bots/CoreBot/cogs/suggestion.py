@@ -17,11 +17,11 @@ class SuggestionCMD(commands.Cog):
             description="Are you sure you want to submit this suggestion? Creating irrelevant "
             "suggestions will warrant a blacklist and you will be subject to a "
             "warning/mute.",
-            color=discord.Colour.cyan(),
+            color=discord.Colour.teal(),
         )
         embed.add_field(name="Suggestion Collected", value=suggestion)
         embed.set_footer(
-            "Double check this suggestion || MAKE SURE THIS SUGGESTION IS RELATED TO THE BOT, NOT THE DISCORD SERVER!"
+            text="Double check this suggestion || MAKE SURE THIS SUGGESTION IS RELATED TO THE BOT, NOT THE DISCORD SERVER!"
         )
 
         message = await ctx.send(embed=embed)
@@ -50,7 +50,7 @@ class SuggestionCMD(commands.Cog):
                 embed = discord.Embed(
                     title="New Suggestion!",
                     description=f"User: {ctx.author.mention}\nChannel: {ctx.channel.mention}",
-                    color=discord.Colour.cyan(),
+                    color=discord.Colour.teal(),
                 )
                 embed.add_field(name="Suggestion", value=suggestion)
 
