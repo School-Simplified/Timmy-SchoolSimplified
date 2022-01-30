@@ -432,6 +432,12 @@ async def before_invoke(ctx: commands.Context):
 
 
 @bot.event
+async def on_application_command_error(interaction: discord.Interaction, error: Exception):
+    ctx: discord.ApplicationContext = await bot.get_application_context(interaction)
+    pass  # TODO implement something here
+
+
+@bot.event
 async def on_command_error(ctx: commands.Context, error: Exception):
     tb = error.__traceback__
     etype = type(error)
