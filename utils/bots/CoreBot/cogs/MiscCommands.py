@@ -8,6 +8,7 @@ from datetime import timedelta
 
 import discord
 import psutil
+import sentry_sdk
 from core import database
 from core.checks import is_botAdmin, is_botAdmin2
 from core.common import (
