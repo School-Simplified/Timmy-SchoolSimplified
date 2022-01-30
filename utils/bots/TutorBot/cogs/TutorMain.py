@@ -5,6 +5,7 @@ from core import database
 from core.common import Others
 from discord.ext import commands
 from datetime import datetime
+from discord import slash_command, permissions
 
 
 class TutorMain(commands.Cog):
@@ -12,7 +13,7 @@ class TutorMain(commands.Cog):
         self.bot = bot
         self.RepeatEmoji = {False: "\U00002b1b", True: "🔁"}
 
-    @commands.command()
+    @slash_command(name="view",)
     async def view(self, ctx, id=None):
         if id is None:
             query: database.TutorBot_Sessions = (
@@ -48,7 +49,7 @@ class TutorMain(commands.Cog):
 
                 embed.add_field(name="List:", value="\n".join(ListTen), inline=False)
             embed.set_thumbnail(url=Others.timmyTeacher_png)
-            await ctx.send(embed=embed)
+            await ctx.respond(embed=embed)
 
         else:
             entry = database.TutorBot_Sessions.select().where(
@@ -60,7 +61,6 @@ class TutorMain(commands.Cog):
                 studentUser = await self.bot.fetch_user(entry.StudentID)
 
                 date = entry.Date.strftime("%m/%d/%Y")
-                amORpm = entry.Date.strftime("%p")
 
                 embed = discord.Embed(
                     title="Tutor Session Query",
@@ -69,40 +69,47 @@ class TutorMain(commands.Cog):
                 embed.add_field(
                     name="Values",
                     value=f"**Session ID:** `{entry.SessionID}`"
-                    f"\n**Student:** `{studentUser.name}`"
-                    f"\n**Tutor:** `{ctx.author.name}`"
-                    f"\n**Date:** `{date}`"
-                    f"\n**Time:** `{entry.Time}`"
-                    f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
+                          f"\n**Student:** `{studentUser.name}`"
+                          f"\n**Tutor:** `{ctx.author.name}`"
+                          f"\n**Date:** `{date}`"
+                          f"\n**Time:** `{entry.Time}`"
+                          f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
                 )
                 embed.set_footer(text=f"Subject: {entry.Subject}")
-                await ctx.send(embed=embed)
+                await ctx.respond(embed=embed)
             else:
                 embed = discord.Embed(
                     title="Invalid Session",
                     description="This session does not exist, please check the ID you've provided!",
                     color=discord.Color.red(),
                 )
-                await ctx.send(embed=embed)
+                await ctx.respond(embed=embed)
 
-    @commands.command()
-    @commands.has_any_role("Senior Tutor", "Tutoring Manager", "Tutoring Director")
+    @slash_command(
+        name="mview",  # TODO find better name later
+        description="View someone else's tutor sessions"
+    )
+    @permissions.has_any_role(
+        "Senior Tutor",
+        "Tutoring Manager",
+        "Tutoring Director"
+    )
     async def mview(self, ctx, user: discord.User):
-        """
-        View someone else's tutor sessions
-        """
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.TutorID == user.id
         )
 
         embed = discord.Embed(
-            title="Scheduled Tutor Sessions", color=discord.Color.dark_blue()
+            title="Scheduled Tutor Sessions",
+            color=discord.Color.dark_blue()
         )
         embed.add_field(name="Schedule:", value=f"{user.name}'s Schedule:")
 
         if query.count() == 0:
             embed.add_field(
-                name="List:", value="This user has no tutor sessions yet!", inline=False
+                name="List:",
+                value="This user has no tutor sessions yet!",
+                inline=False
             )
 
         else:
@@ -122,7 +129,7 @@ class TutorMain(commands.Cog):
 
             embed.add_field(name="List:", value="\n".join(ListTen), inline=False)
         embed.set_thumbnail(url=Others.timmyTeacher_png)
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
 
 
 def setup(bot):
