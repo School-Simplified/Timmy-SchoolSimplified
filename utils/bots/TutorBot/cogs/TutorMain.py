@@ -6,6 +6,7 @@ from core.common import Others
 from discord.ext import commands
 from datetime import datetime
 from discord import slash_command, permissions
+from core.common import MAIN_ID, TUT_ID
 
 
 class TutorMain(commands.Cog):
@@ -14,7 +15,10 @@ class TutorMain(commands.Cog):
         self.RepeatEmoji = {False: "\U00002b1b", True: "🔁"}
         self.ExpireEmoji = {False: "", True: "| ⚠️"}
 
-    @slash_command(name="view",)
+    @slash_command(
+        name="view",
+        guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
+    )
     async def view(self, ctx, id=None):
         if id is None:
             query: database.TutorBot_Sessions = (
@@ -51,7 +55,7 @@ class TutorMain(commands.Cog):
                 embed.add_field(name="List:", value="\n".join(ListTen), inline=False)
             embed.set_thumbnail(url=Others.timmyTeacher_png)
             embed.set_footer(text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
-                                  "these sessions with a warning sign next to them.") 
+                                  "these sessions with a warning sign next to them.")
             await ctx.respond(embed=embed)
 
         else:
@@ -90,7 +94,8 @@ class TutorMain(commands.Cog):
 
     @slash_command(
         name="mview",  # TODO find better name later
-        description="View someone else's tutor sessions"
+        description="View someone else's tutor sessions",
+        guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
     )
     @permissions.has_any_role(
         "Senior Tutor",
@@ -134,9 +139,8 @@ class TutorMain(commands.Cog):
         embed.set_thumbnail(url=Others.timmyTeacher_png)
 
         embed.set_footer(text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
-                              "these sessions with a warning sign next to them.") 
+                              "these sessions with a warning sign next to them.")
         await ctx.respond(embed=embed)
-
 
 
 def setup(bot):
