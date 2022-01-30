@@ -3,6 +3,7 @@ import io
 import discord
 from core import database
 from core.common import rulesDict
+from discord import Option, slash_command
 from discord.ext import commands
 from core.common import MAIN_ID
 
@@ -45,27 +46,19 @@ class CommandsOnly(commands.Cog):
                     message.author.mention, embed=embed, delete_after=5.0
                 )
 
-    @commands.command()
+    @slash_command()
     @commands.cooldown(1, 15, commands.BucketType.user)
-    async def rule(self, ctx, num):
-        try:
-            num = int(num)
-        except ValueError:
-            await ctx.message.add_reaction("❌")
-        else:
-            if num > 14 or num <= 0:
-                await ctx.message.add_reaction("❌")
-            else:
-                RuleNumber = str(num)
-                RuleTitle, RuleDesc = self.rules[int(num)].split(" && ")
+    async def rule(self, ctx, num: Option(int, max_value=14, min_value=1)):
+        RuleNumber = str(num)
+        RuleTitle, RuleDesc = self.rules[int(num)].split(" && ")
 
-                embed = discord.Embed(
-                    title=f"Rule {RuleNumber}: {RuleTitle}",
-                    description=RuleDesc,
-                    color=discord.Colour.green(),
-                )
-                embed.set_footer(text="Have a question? Feel free to DM a Moderator!")
-                await ctx.send(embed=embed)
+        embed = discord.Embed(
+            title=f"Rule {RuleNumber}: {RuleTitle}",
+            description=RuleDesc,
+            color=discord.Colour.green(),
+        )
+        embed.set_footer(text="Have a question? Feel free to DM a Moderator!")
+        await ctx.respond(embed=embed)
 
 
 def setup(bot):
