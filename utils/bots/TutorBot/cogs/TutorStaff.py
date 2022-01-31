@@ -48,7 +48,7 @@ class TutorBotStaffCMD(commands.Cog):
             description="Created session.",
             color=discord.Color.green(),
         )
-        now = datetime.now()
+        now = datetime.now(tz=pytz.timezone('US/Eastern'))
         year = now.strftime("%Y")
 
         datetime_session = datetime.strptime(
@@ -111,7 +111,7 @@ class TutorBotStaffCMD(commands.Cog):
             description="Created session.",
             color=discord.Color.green(),
         )
-        now = datetime.utcnow()
+        now = datetime.now(tz=pytz.timezone('US/Eastern'))
 
         year = now.strftime("%Y")
 
