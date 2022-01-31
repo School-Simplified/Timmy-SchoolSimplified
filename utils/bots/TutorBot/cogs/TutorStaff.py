@@ -1,6 +1,7 @@
 import random
 import string
 from datetime import datetime, timedelta
+import pytz
 
 import discord
 from core import database
@@ -36,7 +37,7 @@ class TutorBotStaffCMD(commands.Cog):
             self,
             ctx,
             date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),
-            time: Option(str, "Enter a time in HH:MM format. EX: 3:00"),
+            time: Option(str, "Enter a time in HH:MM format in EST. EX: 3:00"),
             ampm: Option(str, "AM or PM", choices=["AM", "PM"]),
             student: Option(discord.User, "Enter the student you'll be tutoring for this session."),
             subject: Option(str, "Tutoring Subject"),
@@ -53,6 +54,7 @@ class TutorBotStaffCMD(commands.Cog):
         datetime_session = datetime.strptime(
             f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p"
         )
+        datetime_session = datetime.astimezone(datetime_session, tz=pytz.timezone('US/Eastern'))
         timestamp = int(datetime.timestamp(datetime_session))
 
         if datetime_session >= now:
@@ -98,7 +100,7 @@ class TutorBotStaffCMD(commands.Cog):
             self,
             ctx,
             date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),
-            time: Option(str, "Enter a time in HH:MM format. EX: 3:00"),
+            time: Option(str, "Enter a time in HH:MM format in EST. EX: 3:00"),
             ampm: Option(str, "AM or PM", choices=["AM", "PM"]),
             student: Option(int, "Enter the student ID you'll be tutoring for this session."),
             subject: Option(str, "Tutoring Subject"),
@@ -114,8 +116,10 @@ class TutorBotStaffCMD(commands.Cog):
         year = now.strftime("%Y")
 
         datetime_session = datetime.strptime(
-            f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p"
+            f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p",
         )
+
+        datetime_session = datetime.astimezone(datetime_session, tz=pytz.timezone('US/Eastern'))
 
         if datetime_session >= now:
             session_id = await id_generator()
@@ -204,7 +208,7 @@ class TutorBotStaffCMD(commands.Cog):
             embed.add_field(
                 name="Session Removed:",
                 value=f"**Session ID:** `{query.SessionID}`"
-                f"\n**Student ID:** `{query.StudentID}`",
+                      f"\n**Student ID:** `{query.StudentID}`",
             )
             await ctx.respond(embed=embed)
 
