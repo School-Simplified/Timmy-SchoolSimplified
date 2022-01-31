@@ -74,8 +74,8 @@ class TutorMain(commands.Cog):
                     value=f"**Session ID:** `{entry.SessionID}`"
                           f"\n**Student:** `{student_user.name}`"
                           f"\n**Tutor:** `{ctx.author.name}`"
-                          f"\n**Date:** <t:{timestamp}:F>"
-                          f"\n**Time:** `{entry.Time}`"
+                          f"\n**Date:** <t:{timestamp}:d>"
+                          f"\n**Time:** <t:{timestamp}:t>"
                           f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
                 )
                 embed.set_footer(text=f"Subject: {entry.Subject}")
