@@ -102,7 +102,7 @@ class TutorBotStaffCMD(commands.Cog):
             date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),
             time: Option(str, "Enter a time in HH:MM format in EST. EX: 3:00"),
             ampm: Option(str, "AM or PM", choices=["AM", "PM"]),
-            student: Option(int, "Enter the student ID you'll be tutoring for this session."),
+            student: Option(str, "Enter the student ID you'll be tutoring for this session."),
             subject: Option(str, "Tutoring Subject"),
             repeats: Option(bool, "Does your Tutoring Session repeat?"),
     ):
@@ -121,6 +121,8 @@ class TutorBotStaffCMD(commands.Cog):
 
         datetime_session = pytz.timezone("America/New_York").localize(datetime_session)
         timestamp = int(datetime.timestamp(datetime_session))
+
+        student = self.bot.get_user(int(student))
 
         if datetime_session >= now:
             session_id = await id_generator()
