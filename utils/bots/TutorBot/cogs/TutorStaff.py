@@ -54,7 +54,7 @@ class TutorBotStaffCMD(commands.Cog):
         datetime_session = datetime.strptime(
             f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p"
         )
-        datetime_session = datetime.astimezone(datetime_session, tz=pytz.timezone('US/Eastern'))
+        datetime_session = pytz.timezone("America/New_York").localize(datetime_session)
         timestamp = int(datetime.timestamp(datetime_session))
 
         if datetime_session >= now:
@@ -119,11 +119,11 @@ class TutorBotStaffCMD(commands.Cog):
             f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p",
         )
 
-        datetime_session = datetime.astimezone(datetime_session, tz=pytz.timezone('US/Eastern'))
+        datetime_session = pytz.timezone("America/New_York").localize(datetime_session)
+        timestamp = int(datetime.timestamp(datetime_session))
 
         if datetime_session >= now:
             session_id = await id_generator()
-            timestamp = int(datetime.timestamp(datetime_session))
 
             embed.add_field(
                 name="Values",
@@ -161,7 +161,7 @@ class TutorBotStaffCMD(commands.Cog):
         description="Skip a tutoring session",
         guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
     )
-    async def skip(self, ctx, id):
+    async def skip(self, ctx, id: str):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
         )
