@@ -201,7 +201,7 @@ class TutorBotStaffCMD(commands.Cog):
                 SessionID=session_id,
                 Date=datetime_session,
                 Time=time,
-                StudentID=student,
+                StudentID=student.id,
                 TutorID=ctx.author.id,
                 Repeat=repeats,
                 Subject=subject,
