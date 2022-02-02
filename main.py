@@ -9,12 +9,10 @@ from datetime import datetime
 from difflib import get_close_matches
 from pathlib import Path
 
-import chat_exporter
 import discord
-import pytz
 import requests
 import sentry_sdk
-from discord.commands import Option, permissions
+from discord.commands import Option
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
@@ -23,10 +21,10 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
-from core.common import (MAIN_ID, TECH_ID, TUT_ID, CheckDB_CC, Emoji,
+from core.common import (MAIN_ID, TECH_ID, CheckDB_CC, Emoji,
                          GSuiteVerify, LockButton, Others, bcolors,
-                         get_extensions, hexColors, id_generator)
-from utils.bots.CoreBot.cogs.tictactoe import TicTacToe, TicTacToeButton
+                         get_extensions, hexColors)
+from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
 from utils.events.VerificationStaff import VerifyButton
 
 LogTail = LogtailHandler(source_token=os.getenv("LOGTAIL"))
@@ -42,29 +40,208 @@ print("Starting Timmy...")
 
 
 class Timmy(commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.all()
+        super().__init__(
+            command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
+            intents=intents,
+            case_insensitive=True,
+            activity=discord.Activity(type=discord.ActivityType.watching, name="+help | timmy.schoolsimplified.org")
+        )
+
+    async def before_invoke(self, ctx: commands.Context):
+        sentry_sdk.set_user(None)
+        sentry_sdk.set_user({"id": ctx.author.id, "username": ctx.author.name})
+        sentry_sdk.set_tag("username", f"{ctx.author.name}#{ctx.author.discriminator}")
+        if ctx.command is None:
+            sentry_sdk.set_context("user", {
+                "name": ctx.author.name,
+                "id": ctx.author.id,
+                "command": ctx.command,
+                "guild": ctx.guild.name,
+                "guild_id": ctx.guild.id,
+                "channel": ctx.channel.name,
+                "channel_id": ctx.channel.id,
+            })
+        else:
+            sentry_sdk.set_context("user", {
+                "name": ctx.author.name,
+                "id": ctx.author.id,
+                "command": "Unknown",
+                "guild": ctx.guild.name,
+                "guild_id": ctx.guild.id,
+                "channel": ctx.channel.name,
+                "channel_id": ctx.channel.id,
+            })
+
+    async def on_ready(self):
+        now = datetime.now()
+        query: database.CheckInformation = (
+            database.CheckInformation.select()
+                .where(database.CheckInformation.id == 1)
+                .get()
+        )
+
+        if not query.PersistantChange:
+            bot.add_view(LockButton(bot))
+            bot.add_view(VerifyButton())
+            bot.add_view(GSuiteVerify())
+            query.PersistantChange = True
+            query.save()
+
+        if not os.getenv("USEREAL"):
+            IP = os.getenv("IP")
+            databaseField = (
+                f"{bcolors.OKGREEN}Selected Database: External ({IP}){bcolors.ENDC}"
+            )
+        else:
+            databaseField = f"{bcolors.FAIL}Selected Database: localhost{bcolors.ENDC}\n{bcolors.WARNING}WARNING: Not " \
+                            f"recommended to use SQLite.{bcolors.ENDC} "
+
+        try:
+            p = subprocess.run(
+                "git describe --always",
+                shell=True,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            output = p.stdout
+        except subprocess.CalledProcessError:
+            output = "ERROR"
+
+        # chat_exporter.init_exporter(bot)
+
+        print(
+            f"""
+        ╭━━┳╮
+        ╰╮╭╋╋━━┳━━┳┳╮
+        ╱┃┃┃┃┃┃┃┃┃┃┃┃
+        ╱╰╯╰┻┻┻┻┻┻╋╮┃
+        ╱╱╱╱╱╱╱╱╱╱╰━╯
+
+        Bot Account: {bot.user.name} | {bot.user.id}
+        {bcolors.OKCYAN}Discord API Wrapper Version: {discord.__version__}{bcolors.ENDC}
+        {bcolors.WARNING}TimmyOS Version: {output}{bcolors.ENDC}
+        {databaseField}
+
+        {bcolors.OKCYAN}Current Time: {now}{bcolors.ENDC}
+        {bcolors.OKGREEN}Cogs, libraries, and views have successfully been initalized.{bcolors.ENDC}
+        ==================================================
+        {bcolors.WARNING}Statistics{bcolors.ENDC}
+
+        Guilds: {len(bot.guilds)}
+        Members: {len(bot.users)}
+        """
+        )
+
+    async def on_application_command_error(self, interaction: discord.Interaction, error: Exception):
+        tb = error.__traceback__
+        etype = type(error)
+        exception = traceback.format_exception(etype, error, tb, chain=True)
+        exception_msg = ""
+        for line in exception:
+            exception_msg += line
+
+        error = getattr(error, "original", error)
+
+        ctx: discord.ApplicationContext = await bot.get_application_context(interaction)
+        if ctx.response.is_done():
+            await ctx.send_followup(f"Sorry an Error Occurred: {error}. This error has been sent "
+                                    f"to the bot development team")
+        else:
+            await ctx.respond(f"Sorry an Error Occurred: {error}. This error has been sent "
+                              f"to the bot development team")
+        error_file = Path("error.txt")
+        error_file.touch()
+        with error_file.open("w") as f:
+            f.write(exception_msg)
+        with error_file.open("r") as f:
+            # config, _ = core.common.load_config()
+            data = "\n".join([l.strip() for l in f])
+
+            GITHUB_API = "https://api.github.com"
+            API_TOKEN = os.getenv("GIST")
+            url = GITHUB_API + "/gists"
+            print(f"Request URL: {url}")
+            headers = {"Authorization": "token %s" % API_TOKEN}
+            params = {"scope": "gist"}
+            payload = {
+                "description": "Timmy encountered a Traceback!",
+                "public": True,
+                "files": {"error": {"content": f"{data}"}},
+            }
+            res = requests.post(
+                url, headers=headers, params=params, data=json.dumps(payload)
+            )
+            j = json.loads(res.text)
+            ID = j["id"]
+            gis_turl = f"https://gist.github.com/{ID}"
+            print(gis_turl)
+
+            permitlist = []
+            query = database.Administrators.select().where(
+                database.Administrators.TierLevel >= 3
+            )
+            for user in query:
+                permitlist.append(user.discordID)
+
+            if ctx.interaction.user.id not in permitlist:
+                embed = discord.Embed(
+                    title="Traceback Detected!",
+                    description="Timmy here has ran into an error!\nPlease check what you sent and/or check out the "
+                                "help command!",
+                    color=hexColors.orange_error,
+                )
+                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_footer(text=f"Error: {str(error)}")
+                await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(
+                    title="Traceback Detected!",
+                    description="Timmy here has ran into an error!\nTraceback has been attached below.",
+                    color=hexColors.orange_error,
+                )
+                embed.add_field(name="GIST URL", value=gis_turl)
+                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_footer(text=f"Error: {str(error)}")
+                await ctx.send(embed=embed)
+
+            guild = bot.get_guild(Me.TechGuild)
+            channel = guild.get_channel(Me.TracebackChannel)
+
+            embed2 = discord.Embed(
+                title="Traceback Detected!",
+                description=f"**Information**\n"
+                            f"**Server:** {ctx.message.guild.name}\n"
+                            f"**User:** {ctx.message.author.mention}\n"
+                            f"**Command:** {ctx.command.qualified_name}",
+                color=hexColors.orange_error,
+            )
+            embed2.add_field(
+                name="Gist URL",
+                value=f"[Uploaded Traceback to GIST](https://gist.github.com/{ID})",
+            )
+            await channel.send(embed=embed2)
+
+            error_file.unlink()
+
     async def is_owner(self, user: discord.User):
-        adminIDs = []
+        admin_ids = []
 
         query = database.Administrators.select().where(
             database.Administrators.TierLevel >= 3
         )
         for admin in query:
-            adminIDs.append(admin.discordID)
+            admin_ids.append(admin.discordID)
 
-        if user.id in adminIDs:
+        if user.id in admin_ids:
             return True
 
         return await super().is_owner(user)
 
 
-bot = Timmy(
-    command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
-    intents=discord.Intents.all(),
-    case_insensitive=True,
-    activity=discord.Activity(
-        type=discord.ActivityType.watching, name="+help | timmy.schoolsimplified.org"
-    ),
-)
+bot = Timmy()
 bot.remove_command("help")
 
 
@@ -212,68 +389,6 @@ for ext in get_extensions():
         raise discord.ExtensionNotFound(ext)
 
 
-@bot.event
-async def on_ready():
-    now = datetime.now()
-    query: database.CheckInformation = (
-        database.CheckInformation.select()
-            .where(database.CheckInformation.id == 1)
-            .get()
-    )
-
-    if not query.PersistantChange:
-        bot.add_view(LockButton(bot))
-        bot.add_view(VerifyButton())
-        bot.add_view(GSuiteVerify())
-        query.PersistantChange = True
-        query.save()
-
-    if not os.getenv("USEREAL"):
-        IP = os.getenv("IP")
-        databaseField = (
-            f"{bcolors.OKGREEN}Selected Database: External ({IP}){bcolors.ENDC}"
-        )
-    else:
-        databaseField = f"{bcolors.FAIL}Selected Database: localhost{bcolors.ENDC}\n{bcolors.WARNING}WARNING: Not recommended to use SQLite.{bcolors.ENDC}"
-
-    try:
-        p = subprocess.run(
-            "git describe --always",
-            shell=True,
-            text=True,
-            capture_output=True,
-            check=True,
-        )
-        output = p.stdout
-    except subprocess.CalledProcessError:
-        output = "ERROR"
-
-    # chat_exporter.init_exporter(bot)
-
-    print(
-        f"""
-    ╭━━┳╮
-    ╰╮╭╋╋━━┳━━┳┳╮
-    ╱┃┃┃┃┃┃┃┃┃┃┃┃
-    ╱╰╯╰┻┻┻┻┻┻╋╮┃
-    ╱╱╱╱╱╱╱╱╱╱╰━╯
-    
-    Bot Account: {bot.user.name} | {bot.user.id}
-    {bcolors.OKCYAN}Discord API Wrapper Version: {discord.__version__}{bcolors.ENDC}
-    {bcolors.WARNING}TimmyOS Version: {output}{bcolors.ENDC}
-    {databaseField}
-
-    {bcolors.OKCYAN}Current Time: {now}{bcolors.ENDC}
-    {bcolors.OKGREEN}Cogs, libraries, and views have successfully been initalized.{bcolors.ENDC}
-    ==================================================
-    {bcolors.WARNING}Statistics{bcolors.ENDC}
-
-    Guilds: {len(bot.guilds)}
-    Members: {len(bot.users)}
-    """
-    )
-
-
 @bot.check
 async def mainModeCheck(ctx: commands.Context):
     MT = discord.utils.get(ctx.guild.roles, name="Moderator")
@@ -342,39 +457,6 @@ async def mainModeCheck(ctx: commands.Context):
     # Else...
     else:
         return CheckDB_CC.elseSituation
-
-
-@bot.before_invoke
-async def before_invoke(ctx: commands.Context):
-    sentry_sdk.set_user(None)
-    sentry_sdk.set_user({"id": ctx.author.id, "username": ctx.author.name})
-    sentry_sdk.set_tag("username", f"{ctx.author.name}#{ctx.author.discriminator}")
-    if ctx.command == None:
-        sentry_sdk.set_context("user", {
-            "name": ctx.author.name,
-            "id": ctx.author.id,
-            "command": ctx.command.name,
-            "guild": ctx.guild.name,
-            "guild_id": ctx.guild.id,
-            "channel": ctx.channel.name,
-            "channel_id": ctx.channel.id,
-        })
-    else:
-        sentry_sdk.set_context("user", {
-            "name": ctx.author.name,
-            "id": ctx.author.id,
-            "command": "Unknown",
-            "guild": ctx.guild.name,
-            "guild_id": ctx.guild.id,
-            "channel": ctx.channel.name,
-            "channel_id": ctx.channel.id,
-        })
-
-
-@bot.event
-async def on_application_command_error(interaction: discord.Interaction, error: Exception):
-    ctx: discord.ApplicationContext = await bot.get_application_context(interaction)
-    pass  # TODO implement something here
 
 
 @bot.event
@@ -560,7 +642,8 @@ async def on_command_error(ctx: commands.Context, error: Exception):
             if ctx.author.id not in permitlist:
                 embed = discord.Embed(
                     title="Traceback Detected!",
-                    description="Timmy here has ran into an error!\nPlease check what you sent and/or check out the help command!",
+                    description="Timmy here has ran into an error!\nPlease check what you sent and/or check out the "
+                                "help command!",
                     color=hexColors.orange_error,
                 )
                 embed.set_thumbnail(url=Others.timmyDog_png)
@@ -582,7 +665,10 @@ async def on_command_error(ctx: commands.Context, error: Exception):
 
             embed2 = discord.Embed(
                 title="Traceback Detected!",
-                description=f"**Information**\n**Server:** {ctx.message.guild.name}\n**User:** {ctx.message.author.mention}\n**Command:** {ctx.command.name}",
+                description=f"**Information**\n"
+                            f"**Server:** {ctx.message.guild.name}\n"
+                            f"**User:** {ctx.message.author.mention}\n"
+                            f"**Command:** {ctx.command.name}",
                 color=hexColors.orange_error,
             )
             embed2.add_field(
