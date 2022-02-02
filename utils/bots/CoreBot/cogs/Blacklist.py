@@ -64,7 +64,7 @@ class BlacklistCMD(commands.Cog):
 
     @blacklist.command()
     async def remove(self, ctx, user: str):
-        if not is_botAdmin4(ctx):
+        if not predicate_LV4(ctx):
             return await ctx.respond("You do not have the required permissions to run this command!")
 
         user = self.bot.get_user(int(user))
