@@ -91,6 +91,66 @@ class TutorBotStaffCMD(commands.Cog):
             )
             await ctx.respond(embed=embed)
 
+    @commands.command()
+    @commands.has_any_role("Tutor")
+    async def schedule_(
+            self,
+            ctx,
+            date: str,
+            time: str,
+            ampm: str,
+            student: discord.User,
+            subject: str,
+            repeats: bool,
+    ):
+        embed = discord.Embed(
+            title="Schedule Confirmed",
+            description="Created session.",
+            color=discord.Color.green(),
+        )
+        now = datetime.now(tz=pytz.timezone('US/Eastern'))
+        year = now.strftime("%Y")
+
+        datetime_session = datetime.strptime(
+            f"{date}/{year} {time} {ampm.upper()}", "%m/%d/%Y %I:%M %p"
+        )
+        datetime_session = pytz.timezone("America/New_York").localize(datetime_session)
+        timestamp = int(datetime.timestamp(datetime_session))
+
+        if datetime_session >= now:
+            session_id = await id_generator()
+
+            embed.add_field(
+                name="Values",
+                value=f"**Session ID:** `{session_id}`"
+                      f"\n**Student:** `{student.name}`"
+                      f"\n**Tutor:** `{ctx.author.name}`"
+                      f"\n**Date:** <t:{timestamp}:d>"
+                      f"\n**Time:** <t:{timestamp}:t>"
+                      f"\n**Repeat?:** `{repeats}`",
+            )
+            embed.set_footer(text=f"Subject: {subject}")
+            query = database.TutorBot_Sessions.create(
+                SessionID=session_id,
+                Date=datetime_session,
+                Time=time,
+                StudentID=student.id,
+                TutorID=ctx.author.id,
+                Repeat=repeats,
+                Subject=subject,
+                ReminderSet=False,
+            )
+            query.save()
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(
+                title="Failed to Generate Session",
+                description=f"Unfortunately this session appears to be in the past and Timmy does not support expired "
+                            f"sessions.",
+                color=discord.Color.red(),
+            )
+            await ctx.send(embed=embed)
+
     @slash_command(
         name="schedule",
         description="Create a Tutor Session",
