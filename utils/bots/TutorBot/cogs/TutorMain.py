@@ -1,6 +1,4 @@
-import time
 import discord
-import pytz
 from core import database
 from core.common import Others
 from discord.ext import commands
@@ -38,21 +36,20 @@ class TutorMain(commands.Cog):
                 )
 
             else:
-                ListTen = []
+                list_ten = []
                 i = 0
                 for entry in query:
-                    entry: database.TutorBot_Sessions = entry
-                    DateOBJ = pytz.timezone("America/New_York").localize(entry.Date)
-                    if not isinstance(DateOBJ, datetime):
-                        DateOBJ = datetime.fromisoformat(DateOBJ)
+                    if not isinstance(entry.Date, datetime):
+                        entry.Date = datetime.fromisoformat(entry.Date)
+                    timestamp = int(datetime.timestamp(entry.Date))
 
-                    result = datetime.strftime(DateOBJ, "%B %d, %Y | %I:%M %p EST")
-                    studentUser = await self.bot.fetch_user(entry.StudentID)
-                    ListTen.append(
-                        f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {result} -> {studentUser.name} {self.ExpireEmoji[entry.GracePeriod_Status]} "
+                    student_user = await self.bot.fetch_user(entry.StudentID)
+                    list_ten.append(
+                        f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{timestamp}:F> -> "
+                        f"{student_user.name} {self.ExpireEmoji[entry.GracePeriod_Status]} "
                     )
 
-                embed.add_field(name="List:", value="\n".join(ListTen), inline=False)
+                embed.add_field(name="List:", value="\n".join(list_ten), inline=False)
             embed.set_thumbnail(url=Others.timmyTeacher_png)
             embed.set_footer(text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
                                   "these sessions with a warning sign next to them.")
@@ -65,9 +62,8 @@ class TutorMain(commands.Cog):
             if entry.exists():
                 entry = entry.get()
 
-                studentUser = await self.bot.fetch_user(entry.StudentID)
-
-                date = entry.Date.strftime("%m/%d/%Y")
+                student_user = await self.bot.fetch_user(entry.StudentID)
+                timestamp = int(datetime.timestamp(entry.Date))
 
                 embed = discord.Embed(
                     title="Tutor Session Query",
@@ -76,10 +72,10 @@ class TutorMain(commands.Cog):
                 embed.add_field(
                     name="Values",
                     value=f"**Session ID:** `{entry.SessionID}`"
-                          f"\n**Student:** `{studentUser.name}`"
+                          f"\n**Student:** `{student_user.name}`"
                           f"\n**Tutor:** `{ctx.author.name}`"
-                          f"\n**Date:** `{date}`"
-                          f"\n**Time:** `{entry.Time}`"
+                          f"\n**Date:** <t:{timestamp}:d>"
+                          f"\n**Time:** <t:{timestamp}:t>"
                           f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
                 )
                 embed.set_footer(text=f"Subject: {entry.Subject}")
@@ -121,21 +117,21 @@ class TutorMain(commands.Cog):
             )
 
         else:
-            ListTen = []
+            list_ten = []
             i = 0
             for entry in query:
-                entry: database.TutorBot_Sessions = entry
-                DateOBJ = pytz.timezone("America/New_York").localize(entry.Date)
-                if not isinstance(DateOBJ, datetime):
-                    DateOBJ = datetime.fromisoformat(DateOBJ)
 
-                result = datetime.strftime(DateOBJ, "%B %d, %Y | %I:%M %p EST")
-                studentUser = await self.bot.fetch_user(entry.StudentID)
-                ListTen.append(
-                    f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - {result} -> {studentUser.name} {self.ExpireEmoji[entry.GracePeriod_Status]}"
+                if not isinstance(entry.Date, datetime):
+                    entry.Date = datetime.fromisoformat(entry.Date)
+                timestamp = int(datetime.timestamp(entry.Date))
+
+                student_user = await self.bot.fetch_user(entry.StudentID)
+                list_ten.append(
+                    f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{timestamp}:F> -> {student_user.name} "
+                    f"{self.ExpireEmoji[entry.GracePeriod_Status]}"
                 )
 
-            embed.add_field(name="List:", value="\n".join(ListTen), inline=False)
+            embed.add_field(name="List:", value="\n".join(list_ten), inline=False)
         embed.set_thumbnail(url=Others.timmyTeacher_png)
 
         embed.set_footer(text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
