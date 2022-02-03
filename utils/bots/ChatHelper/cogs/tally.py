@@ -7,6 +7,7 @@ import discord
 from discord import permissions, slash_command
 from discord.ext import commands
 from core.common import Emoji, hexColors
+from discord.commands import permissions
 
 subjects = [
     "CS",

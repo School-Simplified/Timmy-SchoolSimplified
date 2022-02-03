@@ -5,7 +5,8 @@ from core.common import Others, hexColors, MAIN_ID
 from core.checks import is_botAdmin, predicate_LV1
 from core.gmailapi import auth, create_message
 from discord.ext import commands
-from discord import Option, slash_command, permissions
+from discord import Option, slash_command
+from discord.commands import permissions
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 
