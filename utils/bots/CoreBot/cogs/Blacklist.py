@@ -21,17 +21,20 @@ class BlacklistCMD(commands.Cog):
         permissions=[
             CommandPermission(
                 id=866373953001619507,  # STAFF ROLE IN MAIN
-                type=1,  # FOR ROLES
+                type=1,
+                permission=True,
                 guild_id=763119924385939498  # MAIN SERVER ID
             ),
             CommandPermission(
                 id=891521033700540457,  # BOT DEV TEAM ROLE IN IT
                 type=1,
+                permission=True,
                 guild_id=932066545117585428,  # IT SERVER
             ),
             CommandPermission(
                 id=891521034333880410,  # IT DEPARTMENT ROLE
                 type=1,
+                permission=True,
                 guild_id=891521033700540457  # SS STAFF SERVER
             )
         ],
