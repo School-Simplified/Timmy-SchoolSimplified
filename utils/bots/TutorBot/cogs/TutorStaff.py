@@ -32,7 +32,7 @@ class TutorBotStaffCMD(commands.Cog):
         description="Create a Tutor Session",
         guild_ids=[MAIN_ID.g_main],
     )  # SLASH CMD FOR MAIN SERVER
-    @permissions.has_any_role("Tutor")
+    @permissions.has_any_role(MAIN_ID.r_tutor, guild_id=MAIN_ID.g_main)
     async def schedule(
             self,
             ctx,
@@ -91,7 +91,7 @@ class TutorBotStaffCMD(commands.Cog):
             )
             await ctx.respond(embed=embed)
 
-    @commands.command()
+    @commands.command(name="schedule")
     @commands.has_any_role("Tutor")
     async def schedule_(
             self,
@@ -223,6 +223,7 @@ class TutorBotStaffCMD(commands.Cog):
         description="Skip a tutoring session",
         guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
     )
+    @permissions.has_any_role(MAIN_ID.r_tutor, guild_id=MAIN_ID.g_main)
     async def skip(self, ctx, id: str):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
@@ -254,6 +255,7 @@ class TutorBotStaffCMD(commands.Cog):
         description="Remove a tutoring session",
         guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
     )
+    @permissions.has_any_role(MAIN_ID.r_tutor, guild_id=MAIN_ID.g_main)
     async def remove(self, ctx, id):
         query = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
