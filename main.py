@@ -16,7 +16,6 @@ from discord.commands import Option
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
-from logtail import LogtailHandler
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -27,13 +26,12 @@ from core.common import (MAIN_ID, TECH_ID, CheckDB_CC, Emoji,
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
 from utils.events.VerificationStaff import VerifyButton
 
-LogTail = LogtailHandler(source_token=os.getenv("LOGTAIL"))
+
 load_dotenv()
 faulthandler.enable()
 
 logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
-logger.addHandler(LogTail)
 
 logger.warning("Started Timmy");
 print("Starting Timmy...")
@@ -213,8 +211,8 @@ class Timmy(commands.Bot):
             embed2 = discord.Embed(
                 title="Traceback Detected!",
                 description=f"**Information**\n"
-                            f"**Server:** {ctx.message.guild.name}\n"
-                            f"**User:** {ctx.message.author.mention}\n"
+                            f"**Server:** {ctx.guild.name}\n"
+                            f"**User:** {ctx.author.mention}\n"
                             f"**Command:** {ctx.command.qualified_name}",
                 color=hexColors.orange_error,
             )

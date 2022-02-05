@@ -4,7 +4,7 @@ from datetime import datetime
 from core.common import MAIN_ID
 
 import discord
-from discord import permissions, slash_command
+from discord import Option, permissions, slash_command
 from discord.ext import commands
 from core.common import Emoji, hexColors
 from discord.commands import permissions
@@ -69,11 +69,8 @@ class TallyCMD(commands.Cog):
 
     @slash_command(guild_ids=[MAIN_ID.g_main])
     @permissions.has_any_role(
-        "Moderator",
-        "Lead Helper",
-        "Academics Manager"
-    )
-    async def ticketban(self, ctx, member: discord.Member, *, reason=None):
+        833891065974226975)
+    async def ticketban(self, ctx, member: Option(discord.User, "Enter the user you want to TicketBan"), reason: Option(str, "Enter the reason for the TicketBan")):
         ticketBan = discord.utils.get(ctx.guild.roles, name="NoTickets")
         helper = discord.utils.get(ctx.guild.roles, name="Lead Helper")
         manager = discord.utils.get(ctx.guild.roles, name="Academics Manager")

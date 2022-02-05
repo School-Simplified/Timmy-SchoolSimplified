@@ -40,8 +40,8 @@ class TutorBotStaffCMD(commands.Cog):
             time: Option(str, "Enter a time in HH:MM format in EST. EX: 3:00"),
             ampm: Option(str, "AM or PM", choices=["AM", "PM"]),
             student: Option(discord.User, "Enter the student you'll be tutoring for this session."),
-            subject: Option(str, "Tutoring Subject"),
             repeats: Option(bool, "Does your Tutoring Session repeat?"),
+            subject: Option(str, "Tutoring Subject"),
     ):
         embed = discord.Embed(
             title="Schedule Confirmed",
@@ -100,8 +100,8 @@ class TutorBotStaffCMD(commands.Cog):
             time: str,
             ampm: str,
             student: discord.User,
-            subject: str,
             repeats: bool,
+            *, subject: str,
     ):
         embed = discord.Embed(
             title="Schedule Confirmed",
@@ -163,8 +163,8 @@ class TutorBotStaffCMD(commands.Cog):
             time: Option(str, "Enter a time in HH:MM format in EST. EX: 3:00"),
             ampm: Option(str, "AM or PM", choices=["AM", "PM"]),
             student: Option(str, "Enter the student ID you'll be tutoring for this session."),
-            subject: Option(str, "Tutoring Subject"),
             repeats: Option(bool, "Does your Tutoring Session repeat?"),
+            subject: Option(str, "Tutoring Subject"),
     ):
         embed = discord.Embed(
             title="Schedule Confirmed",
