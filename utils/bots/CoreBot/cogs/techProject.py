@@ -77,7 +77,8 @@ class TechProjectCMD(commands.Cog):
         )
         embed.add_field(
             name="Developer Commissions",
-            value="If you'd like to start a Developer Commission, please fill out the form via `+request` and a ticket will autoamtically be created for you!",
+            value="If you'd like to start a Developer Commission, please fill out the form via `+request` and a "
+                  "ticket will automatically be created for you!",
         )
         await ctx.send(embed=embed)
 
@@ -150,7 +151,8 @@ class TechProjectCMD(commands.Cog):
         if answer2 == "Website Team":
             embed = discord.Embed(
                 title="Website Team Commissions",
-                description="Hey there! Website Team Commissions are to be created on **School Simplified's GitHub Page**."
+                description="Hey there! Website Team Commissions are to be created on **School Simplified's GitHub "
+                            "Page**. "
                 "\n> You can create one here: https://github.com/HazimAr/School-Simplified/issues/new/choose",
                 color=discord.Colour.red(),
             )

@@ -26,6 +26,7 @@ load_dotenv()
 # global variables
 coroutineType = Callable[[Any, Any], Awaitable[Any]]
 
+
 class ConfigcatClient:
     MAIN_ID_CC = configcatclient.create_client(
         os.getenv("MAINID_CC")
@@ -65,8 +66,8 @@ async def rawExport(self, channel, response, user: discord.User):
     embed = discord.Embed(
         title="Channel Transcript",
         description=f"**Channel:** {channel.name}"
-        f"\n**User Invoked:** {user.name}*"
-        f"\nTranscript Attached Below*",
+                    f"\n**User Invoked:** {user.name}*"
+                    f"\nTranscript Attached Below*",
         color=discord.Colour.green(),
     )
     transcript_file = discord.File(
@@ -78,13 +79,13 @@ async def rawExport(self, channel, response, user: discord.User):
 
 
 async def paginate_embed(
-    bot: discord.Client,
-    ctx,
-    embed: discord.Embed,
-    population_func,
-    end: int,
-    begin: int = 1,
-    page=1,
+        bot: discord.Client,
+        ctx,
+        embed: discord.Embed,
+        population_func,
+        end: int,
+        begin: int = 1,
+        page=1,
 ):
     emotes = ["◀️", "▶️"]
 
@@ -120,6 +121,7 @@ async def paginate_embed(
             await message.clear_reactions()
             break
 
+
 def get_extensions():
     extensions = []
     extensions.append("jishaku")
@@ -133,7 +135,8 @@ def get_extensions():
             continue
         extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
     return extensions
-    
+
+
 def load_config(name) -> Tuple[dict, Path]:
     config_file = Path(f"utils/bots/RoleSync/{name}.json")
     config_file.touch(exist_ok=True)
@@ -263,6 +266,8 @@ class MAIN_ID:
     r_chatHelper = int(ConfigcatClient.MAIN_ID_CC.get_value("r_chathelper", 811416051144458250))
     r_leadHelper = int(ConfigcatClient.MAIN_ID_CC.get_value("r_leadhelper", 810684359765393419))
     r_essayReviser = int(ConfigcatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369))
+
+    r_tutor = 778453090956738580
 
     # *** Messages ***
     # Tutoring
@@ -473,32 +478,34 @@ class CheckDB_CC:
 
 
 def get_value(
-    classType: Union[
-        MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, ACAD_ID, HR_ID
-    ],
-    value: str,
+        class_type: Union[
+            MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, ACAD_ID, HR_ID
+        ],
+        value: str,
 ) -> int:
     """
     Get a value of a ID class within ConfigCat.
 
     Parameters:
-        classType: The class of the ID which should be returned
+        class_type: The class of the ID which should be returned
         value: The variable name (name of the ID)
     """
 
     if ConfigcatClient.get_value(value, None) is None:
         raise ValueError(f"Cannot find {value} within ConfigCat!")
 
-    if value in classType.ID_DICT:
-        return int(ConfigcatClient.get_value(value, classType.ID_DICT[value]))
+    if value in class_type.ID_DICT:
+        return int(ConfigcatClient.get_value(value, class_type.ID_DICT[value]))
     else:
         return int(ConfigcatClient.get_value(value, None))
+
 
 class ErrorCodes:
     {
         "TOE-": [discord.errors, DiscordException, ApplicationCommandError],
         "TOE-": [KeyError, TypeError, ]
     }
+
 
 class Emoji:
     """
@@ -622,7 +629,6 @@ CHHelperRoles = {
     "SAT/ACT": 862159736384258048,
 }
 
-
 rulesDict = {
     1: f"All Terms of Service and Community Guidelines apply. && {Emoji.barrow} https://discord.com/terms\n{Emoji.barrow} https://discord.com/guidelines",
     2: f"Keep chats and conversations mainly in English. && {Emoji.barrow} Full-blown conversations in a different language that disrupt the environment are not allowed.\n{Emoji.barrow} Disrupting an existing conversation in English in voice chat is not allowed.",
@@ -697,19 +703,19 @@ class SelectMenuHandler(ui.Select):
     """
 
     def __init__(
-        self,
-        options: typing.List[SelectOption],
-        custom_id: typing.Union[str, None] = None,
-        place_holder: typing.Union[str, None] = None,
-        max_values: int = 1,
-        min_values: int = 1,
-        disabled: bool = False,
-        select_user: typing.Union[discord.Member, discord.User, None] = None,
-        roles: List[discord.Role] = None,
-        interaction_message: typing.Union[str, None] = None,
-        ephemeral: bool = True,
-        coroutine: coroutineType = None,
-        view_response=None,
+            self,
+            options: typing.List[SelectOption],
+            custom_id: typing.Union[str, None] = None,
+            place_holder: typing.Union[str, None] = None,
+            max_values: int = 1,
+            min_values: int = 1,
+            disabled: bool = False,
+            select_user: typing.Union[discord.Member, discord.User, None] = None,
+            roles: List[discord.Role] = None,
+            interaction_message: typing.Union[str, None] = None,
+            ephemeral: bool = True,
+            coroutine: coroutineType = None,
+            view_response=None,
     ):
         """
         Parameters:
@@ -757,7 +763,7 @@ class SelectMenuHandler(ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         if self.select_user in [None, interaction.user] or any(
-            role in interaction.user.roles for role in self.roles
+                role in interaction.user.roles for role in self.roles
         ):
             if self.custom_id_ is None:
                 self.view.value = self.values[0]
@@ -791,18 +797,18 @@ class ButtonHandler(ui.Button):
     """
 
     def __init__(
-        self,
-        style: ButtonStyle,
-        label: str,
-        custom_id: typing.Union[str, None] = None,
-        emoji: typing.Union[str, None] = None,
-        url: typing.Union[str, None] = None,
-        disabled: bool = False,
-        button_user: typing.Union[discord.Member, discord.User, None] = None,
-        roles: List[discord.Role] = None,
-        interaction_message: typing.Union[str, None] = None,
-        ephemeral: bool = True,
-        coroutine: coroutineType = None,
+            self,
+            style: ButtonStyle,
+            label: str,
+            custom_id: typing.Union[str, None] = None,
+            emoji: typing.Union[str, None] = None,
+            url: typing.Union[str, None] = None,
+            disabled: bool = False,
+            button_user: typing.Union[discord.Member, discord.User, None] = None,
+            roles: List[discord.Role] = None,
+            interaction_message: typing.Union[str, None] = None,
+            ephemeral: bool = True,
+            coroutine: coroutineType = None,
     ):
         """
         Parameters:
@@ -850,7 +856,7 @@ class ButtonHandler(ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         if self.button_user in [None, interaction.user] or any(
-            role in interaction.user.roles for role in self.roles
+                role in interaction.user.roles for role in self.roles
         ):
             if self.custom_id_ is None:
                 self.view.value = None
@@ -895,7 +901,7 @@ class TechnicalCommissionConfirm(discord.ui.View):
         custom_id="persistent_view:tempconfirm",
     )
     async def confirm(
-        self, button: discord.ui.Button, interaction: discord.Interaction
+            self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         TranscriptLOG = self.bot.get_channel(TECH_ID.ch_ticketLog)
         ch = await self.bot.fetch_channel(interaction.channel_id)
@@ -935,12 +941,10 @@ class LockButton(discord.ui.View):
         )
 
 
-
 class GSuiteVerify(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
         self.value = None
-    
 
     @discord.ui.button(
         label="Verify with GSuite",
@@ -950,7 +954,6 @@ class GSuiteVerify(discord.ui.View):
     )
     async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.value = True
-
 
 
 class TempConfirm(discord.ui.View):
@@ -965,7 +968,7 @@ class TempConfirm(discord.ui.View):
         custom_id="persistent_view:tempconfirm",
     )
     async def confirm(
-        self, button: discord.ui.Button, interaction: discord.Interaction
+            self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         self.value = True
         self.stop()
@@ -1035,7 +1038,7 @@ class TicketTempConfirm(discord.ui.View):
         custom_id="persistent_view:tempconfirm",
     )
     async def confirm(
-        self, button: discord.ui.Button, interaction: discord.Interaction
+            self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         self.value = True
         self.stop()
@@ -1045,8 +1048,6 @@ class TicketTempConfirm(discord.ui.View):
         await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
-
-
 
 
 async def id_generator(size=3, chars=string.ascii_uppercase):

@@ -6,7 +6,7 @@ from datetime import datetime
 from discord import slash_command
 from discord.commands import permissions
 from core.common import MAIN_ID, TUT_ID
-
+import pytz
 
 class TutorMain(commands.Cog):
     def __init__(self, bot):
@@ -42,7 +42,8 @@ class TutorMain(commands.Cog):
                 for entry in query:
                     if not isinstance(entry.Date, datetime):
                         entry.Date = datetime.fromisoformat(entry.Date)
-                    timestamp = int(datetime.timestamp(entry.Date))
+                    datetime_session = pytz.timezone("America/New_York").localize(entry.Date)
+                    timestamp = int(datetime.timestamp(datetime_session))
 
                     student_user = await self.bot.fetch_user(entry.StudentID)
                     list_ten.append(
@@ -64,7 +65,8 @@ class TutorMain(commands.Cog):
                 entry = entry.get()
 
                 student_user = await self.bot.fetch_user(entry.StudentID)
-                timestamp = int(datetime.timestamp(entry.Date))
+                datetime_session = pytz.timezone("America/New_York").localize(entry.Date)
+                timestamp = int(datetime.timestamp(datetime_session))
 
                 embed = discord.Embed(
                     title="Tutor Session Query",
@@ -124,7 +126,8 @@ class TutorMain(commands.Cog):
 
                 if not isinstance(entry.Date, datetime):
                     entry.Date = datetime.fromisoformat(entry.Date)
-                timestamp = int(datetime.timestamp(entry.Date))
+                datetime_session = pytz.timezone("America/New_York").localize(entry.Date)
+                timestamp = int(datetime.timestamp(datetime_session))
 
                 student_user = await self.bot.fetch_user(entry.StudentID)
                 list_ten.append(
