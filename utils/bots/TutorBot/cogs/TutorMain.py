@@ -3,7 +3,8 @@ from core import database
 from core.common import Others
 from discord.ext import commands
 from datetime import datetime
-from discord import slash_command, permissions
+from discord import slash_command
+from discord.commands import permissions
 from core.common import MAIN_ID, TUT_ID
 import pytz
 

@@ -370,9 +370,7 @@ class DropdownTickets(commands.Cog):
                 return await DMChannel.send("Timed out, try again later.")
 
             ViewResponse = str(MasterSubjectView)
-            print(ViewResponse)
             TypeSubject, CategoryID, OptList = decodeDict(self, f"['{ViewResponse}']")
-            print(f"CATID: {CategoryID}")
             c = discord.utils.get(guild.categories, id=int(CategoryID))
 
             if not TypeSubject == OptList:
@@ -500,7 +498,6 @@ class DropdownTickets(commands.Cog):
                     else:
                         return await DMChannel.send("No attachments found.")
 
-            print(attachmentlist)
             CounterNum = (
                 database.BaseTickerInfo.select()
                 .where(database.BaseTickerInfo.id == 1)
@@ -551,7 +548,6 @@ class DropdownTickets(commands.Cog):
             ]
             for role in roles:
                 RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
-                print(role, RoleOBJ)
                 await channel.set_permissions(
                     RoleOBJ,
                     read_messages=True,
@@ -1023,7 +1019,7 @@ class DropdownTickets(commands.Cog):
                 )
             except Exception as e:
                 print(entry.ChannelID, e)
-                # entry.delete_instance()
+                entry.delete_instance()
                 continue
             fetchMessage = await channel.history(limit=1).flatten()
             TicketOwner = await self.bot.fetch_user(entry.authorID)

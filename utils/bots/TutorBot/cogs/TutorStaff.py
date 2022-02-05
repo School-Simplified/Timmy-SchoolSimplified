@@ -7,8 +7,8 @@ import discord
 from core import database
 from core.common import MAIN_ID, TUT_ID
 from discord.ext import commands
-from discord import Option, slash_command, permissions
-
+from discord import Option, slash_command
+from discord.commands import permissions
 
 async def id_generator(size=3, chars=string.ascii_uppercase):
     while True:
@@ -93,7 +93,7 @@ class TutorBotStaffCMD(commands.Cog):
 
     @commands.command(name="schedule")
     @commands.has_any_role("Tutor")
-    async def schedule_(
+    async def schedule(
             self,
             ctx,
             date: str,
@@ -152,11 +152,11 @@ class TutorBotStaffCMD(commands.Cog):
             await ctx.send(embed=embed)
 
     @slash_command(
-        name="schedule",
+        name="schedule_t",
         description="Create a Tutor Session",
         guild_ids=[TUT_ID.g_tut],
     )  # SLASH CMD FOR TUTOR SERVER
-    async def _schedule__(
+    async def schedule_t(
             self,
             ctx,
             date: Option(str, "Enter a date in MM/DD format. EX: 02/02"),
