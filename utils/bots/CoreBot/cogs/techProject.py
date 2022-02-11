@@ -5,11 +5,11 @@ from core.common import SelectMenuHandler, TempConfirm, LockButton, TECH_ID, Emo
 
 
 async def createChannel(
-    self,
-    ctx: commands.Context,
-    type: str,
-    member: discord.Member,
-    discordEmbed: discord.Embed,
+        self,
+        ctx: commands.Context,
+        type: str,
+        member: discord.Member,
+        discordEmbed: discord.Embed,
 ):
     if type == "Bot Developer Team":
         DDM = ctx.guild.get_role(TECH_ID.r_developerManager)
@@ -62,6 +62,87 @@ async def createChannel(
     return channel
 
 
+class BotRequestModal(discord.ui.Modal):
+    def __init__(self) -> None:
+        super().__init__("Bot Development Request")
+
+        self.add_item(
+            discord.ui.InputText(
+                label="What is a descriptive title for your project?",
+                style=discord.InputTextStyle.long,
+            )
+        )
+        self.add_item(
+            discord.ui.InputText(
+                label="Which team is this project for?",
+                style=discord.InputTextStyle.short,
+            )
+        )
+        self.add_item(
+            discord.ui.InputText(
+                label="Please write a brief description of the project.",
+                style=discord.InputTextStyle.long,
+            )
+        )
+        self.add_item(
+            discord.ui.InputText(
+                label="Have you received approval from a manager for this project (or are you a manager yourself)?",
+                style=discord.InputTextStyle.long,
+            )
+        )
+        self.add_item(
+            discord.ui.InputText(
+                label="Anything else?",
+                style=discord.InputTextStyle.long,
+                required=False
+            )
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message(content="Submitted")
+        # TODO MAKE THIS SEND TO COMMISION CHANNEL
+
+
+class RequestOptions(discord.ui.Select):
+    def __init__(self):
+        super().__init__(
+            options=[
+                discord.SelectOption(
+                    label="Bot Developer Team",
+                    description="If you need a Discord Bot or a modification to one, click here!",
+                    emoji="🤖",
+                    value="bot_dev"
+                ),
+                discord.SelectOption(
+                    label="Website Team",
+                    description="If you need changes done to the website, click here!",
+                    emoji="👨‍💻",
+                    value="web"
+                ),
+            ],
+            placeholder="Select a category that relates to your commission!",
+            custom_id="RequestOptionsSelect",
+            max_values=1,
+            min_values=1
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        if self.values[0] == "web":
+            embed = discord.Embed(
+                title="Website Team Commissions",
+                description="Hey there! Website Team Commissions are to be created on **School Simplified's GitHub "
+                            "Page**. "
+                            "\n> You can create one here: https://github.com/HazimAr/School-Simplified/issues/new"
+                            "/choose",
+                color=discord.Colour.red(),
+            )
+            embed.set_footer(text="Canceling Commission Request...")
+            return await interaction.response.send_message(embed=embed)
+        elif self.values[0] == "bot_dev":
+            modal = BotRequestModal()
+            return await interaction.response.send_modal(modal)
+
+
 class TechProjectCMD(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
@@ -94,17 +175,17 @@ class TechProjectCMD(commands.Cog):
 
         def check(m):
             return (
-                m.content is not None
-                and m.channel == channel
-                and m.author.id is ctx.author.id
+                    m.content is not None
+                    and m.channel == channel
+                    and m.author.id is ctx.author.id
             )
 
         embed = discord.Embed(
             title="Reminders",
             description="1) Please remember that you need to have prior permission "
-            "(if you aren't a manager) before requesting a tech team project!"
-            "\n\n2) Make sure the responses you provide are **short** and **to the point!**"
-            "\n3) **If you have any questions, DM a Technical VP!**",
+                        "(if you aren't a manager) before requesting a tech team project!"
+                        "\n\n2) Make sure the responses you provide are **short** and **to the point!**"
+                        "\n3) **If you have any questions, DM a Technical VP!**",
             color=discord.Colour.red(),
         )
         await channel.send(embed=embed)
@@ -153,10 +234,10 @@ class TechProjectCMD(commands.Cog):
                 title="Website Team Commissions",
                 description="Hey there! Website Team Commissions are to be created on **School Simplified's GitHub "
                             "Page**. "
-                "\n> You can create one here: https://github.com/HazimAr/School-Simplified/issues/new/choose",
+                            "\n> You can create one here: https://github.com/HazimAr/School-Simplified/issues/new/choose",
                 color=discord.Colour.red(),
             )
-            embed.set_footer(text="Canceliing Commission Request...")
+            embed.set_footer(text="Canceling Commission Request...")
             await channel.send(embed=embed)
             return
 
@@ -254,8 +335,8 @@ class TechProjectCMD(commands.Cog):
         embed.add_field(
             name="Status",
             value=f"Project Status: `{type}`"
-            f"\n-> Project: {projectname}"
-            f"\n-> Project Assignee: {ctx.author.mention}",
+                  f"\n-> Project: {projectname}"
+                  f"\n-> Project Assignee: {ctx.author.mention}",
         )
         embed.set_footer(
             text="DM's are not monitored, DM your Project Requester for more information."
