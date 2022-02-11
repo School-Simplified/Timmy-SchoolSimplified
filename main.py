@@ -25,7 +25,7 @@ from core.common import (MAIN_ID, TECH_ID, CheckDB_CC, Emoji,
                          get_extensions, hexColors)
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
 from utils.events.VerificationStaff import VerifyButton
-
+from utils.bots.CoreBot.cogs.techproject import CommissionTechButton
 
 load_dotenv()
 faulthandler.enable()
@@ -84,6 +84,7 @@ class Timmy(commands.Bot):
             bot.add_view(LockButton(bot))
             bot.add_view(VerifyButton())
             bot.add_view(GSuiteVerify())
+            bot.add_view(CommissionTechButton(bot))
             query.PersistantChange = True
             query.save()
 
