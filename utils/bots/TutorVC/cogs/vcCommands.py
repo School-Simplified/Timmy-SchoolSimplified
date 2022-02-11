@@ -182,7 +182,7 @@ class TutorVCCMD(commands.Cog):
                         & (database.VCChannelInfo.GuildID == ctx.guild.id)
                     ).get()
                 )
-                channel: discord.VoiceChannel = self.bot.get_channel(query.ChannelID)
+                channel: discord.VoiceChannel = await self.bot.fetch_channel(int(query.ChannelID))
                 view = discord.ui.View()
                 var = SelectMenuHandler(
                     VCGamesList,
