@@ -25,7 +25,7 @@ from core.common import (MAIN_ID, TECH_ID, CheckDB_CC, Emoji,
                          get_extensions, hexColors)
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
 from utils.events.VerificationStaff import VerifyButton
-from utils.bots.CoreBot.cogs.techproject import CommissionTechButton
+from utils.bots.CoreBot.cogs.techProject import CommissionTechButton
 
 load_dotenv()
 faulthandler.enable()
