@@ -4,6 +4,7 @@ from discord.ext import commands
 from core.common import SelectMenuHandler, TempConfirm, LockButton, TECH_ID, Emoji
 from core.checks import is_botAdmin
 
+
 class BotRequestModal(discord.ui.Modal):
     def __init__(self, bot) -> None:
         super().__init__("Bot Development Request")
@@ -13,6 +14,7 @@ class BotRequestModal(discord.ui.Modal):
             discord.ui.InputText(
                 label="What is a descriptive title for your project?",
                 style=discord.InputTextStyle.long,
+                max_length=1024
             )
         )
         self.add_item(
@@ -25,24 +27,28 @@ class BotRequestModal(discord.ui.Modal):
             discord.ui.InputText(
                 label="Write a brief description of the project.",
                 style=discord.InputTextStyle.long,
+                max_length=1024
             )
         )
         self.add_item(
             discord.ui.InputText(
                 label="Do you have approval for this commission?",
                 style=discord.InputTextStyle.long,
+                max_length=1024
             )
         )
         self.add_item(
             discord.ui.InputText(
                 label="Anything else?",
                 style=discord.InputTextStyle.long,
-                required=False
+                required=False,
+                max_length=1024
             )
         )
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.send_message(content="Got it! Please wait while I create your ticket.", ephemeral=True)
+        await interaction.response.send_message(content="Got it! Please wait while I create your ticket.",
+                                                ephemeral=True)
 
         embed = discord.Embed(title="Bot Developer Commission", color=discord.Color.blurple())
         embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar.url)
@@ -52,14 +58,13 @@ class BotRequestModal(discord.ui.Modal):
         embed.add_field(name="Approval", value=self.children[3].value, inline=False)
         embed.add_field(name="Anything else?", value=self.children[4].value, inline=False)
         embed.set_footer(text="Bot Developer Commission")
-        
-        C_CH: discord.TextChannel = await self.bot.fetch_channel(933181562885914724)
-        msg: discord.Message = await C_CH.send(interaction.user.mention, embed=embed)
+
+        c_ch: discord.TextChannel = await self.bot.fetch_channel(933181562885914724)
+        msg: discord.Message = await c_ch.send(interaction.user.mention, embed=embed)
         thread = await msg.create_thread(name=self.children[0].value)
 
-        await thread.send(f"{interaction.user.mention} has requested a bot development project.\n<@&{TECH_ID.r_botDeveloper}>")
-
-
+        await thread.send(
+            f"{interaction.user.mention} has requested a bot development project.\n<@&{TECH_ID.r_botDeveloper}>")
 
 
 class CommissionTechButton(discord.ui.View):
@@ -94,10 +99,13 @@ class TechProjectCMD(commands.Cog):
             value="To get started, click the button below!\n*Please make sure you are authorized to make commissions!*",
         )
         embed.set_footer(
-            text="The Bot Development Team has the right to cancel and ignore any commissions if deemed appropriate. We also have the right to cancel and ignore any commissions if an improper deadline is given, please make sure you create a commission ahead of time and not right before a due date",
+            text="The Bot Development Team has the right to cancel and ignore any commissions if deemed appropriate. "
+                 "We also have the right to cancel and ignore any commissions if an improper deadline is given, "
+                 "please make sure you create a commission ahead of time and not right before a due date",
         )
         view = CommissionTechButton(self.bot)
         await ctx.send(embed=embed, view=view)
+
 
 def setup(bot):
     bot.add_cog(TechProjectCMD(bot))

@@ -152,7 +152,7 @@ class TutorBotStaffCMD(commands.Cog):
             await ctx.send(embed=embed)
 
     @slash_command(
-        name="schedule_t",
+        name="schedule",
         description="Create a Tutor Session",
         guild_ids=[TUT_ID.g_tut],
     )  # SLASH CMD FOR TUTOR SERVER
@@ -224,6 +224,7 @@ class TutorBotStaffCMD(commands.Cog):
         guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
     )
     @permissions.has_any_role(MAIN_ID.r_tutor, guild_id=MAIN_ID.g_main)
+    @permissions.has_any_role(860932484206952468, guild_id=TUT_ID.g_tut)
     async def skip(self, ctx, id: str):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
@@ -256,6 +257,7 @@ class TutorBotStaffCMD(commands.Cog):
         guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
     )
     @permissions.has_any_role(MAIN_ID.r_tutor, guild_id=MAIN_ID.g_main)
+    @permissions.has_any_role(860932484206952468, guild_id=TUT_ID.g_tut)
     async def remove(self, ctx, id):
         query = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
@@ -289,6 +291,8 @@ class TutorBotStaffCMD(commands.Cog):
         description="Clear a tutoring session",
         guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
     )
+    @permissions.has_any_role(MAIN_ID.r_tutor, guild_id=MAIN_ID.g_main)
+    @permissions.has_any_role(860932484206952468, guild_id=TUT_ID.g_tut)
     async def clear(self, ctx):
         query = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.TutorID == ctx.author.id
