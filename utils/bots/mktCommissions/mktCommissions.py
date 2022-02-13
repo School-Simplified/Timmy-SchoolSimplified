@@ -1,3 +1,9 @@
+"""
+NOTE: this system is currently not in use, since the Marketing Department has his own bot ('why?', you ask? I don't know man)
+
+12th of Feb. 2022, Puncher
+"""
+
 import asyncio
 import io
 import random
