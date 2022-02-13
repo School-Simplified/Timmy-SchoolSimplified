@@ -30,7 +30,7 @@ def get_random_string(length=8):
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(length)) 
 
-gc = service_account.Credentials.from_service_account_file(filename='gsheetsadmin/credentialsA.json')
+gc = service_account.Credentials.from_service_account_file(filename='gsheetsadmin/docs_credentials.json')
 scopedCreds = gc.with_scopes(scope)
 client = gspread.Client(auth=scopedCreds)
 client.session = AuthorizedSession(scopedCreds)
