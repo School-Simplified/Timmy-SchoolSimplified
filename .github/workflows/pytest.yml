@@ -7,10 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Run PyTest
-      run: |
-        python3 -m venv TimmyPyTest
-        source ~/TimmyPyTest/bin/activate
-        pip install --upgrade -r requirements.txt
-        pip uninstall discord.py -y
-        python3 -m pytest
-
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd Timmy-SchoolSimplified
+          source ~/TimmyEnv/bin/activate
+          git fetch --all
+          git reset --hard origin/main
+          pip install --upgrade -r requirements.txt
+          pip uninstall discord.py -y
+          pip install py-cord==2.0.0b4
+          pytest
