@@ -22,7 +22,7 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 from core import database
 from core.common import (MAIN_ID, TECH_ID, CheckDB_CC, Emoji,
                          GSuiteVerify, LockButton, Others, bcolors,
-                         get_extensions, hexColors)
+                         get_extensions, hexColors, FeedbackButton)
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
 from utils.events.VerificationStaff import VerifyButton
 from utils.bots.CoreBot.cogs.techProject import CommissionTechButton
@@ -38,6 +38,11 @@ print("Starting Timmy...")
 
 
 class Timmy(commands.Bot):
+    """Generates a Timmy Instance.
+
+    Args:
+        Accepts no arguments.
+    """
     def __init__(self):
         intents = discord.Intents.all()
         super().__init__(
@@ -615,7 +620,6 @@ async def on_command_error(ctx: commands.Context, error: Exception):
             GITHUB_API = "https://api.github.com"
             API_TOKEN = os.getenv("GIST")
             url = GITHUB_API + "/gists"
-            print(f"Request URL: {url}")
             headers = {"Authorization": "token %s" % API_TOKEN}
             params = {"scope": "gist"}
             payload = {
@@ -630,6 +634,7 @@ async def on_command_error(ctx: commands.Context, error: Exception):
             ID = j["id"]
             gisturl = f"https://gist.github.com/{ID}"
             print(gisturl)
+
 
             permitlist = []
             query = database.Administrators.select().where(
@@ -676,9 +681,10 @@ async def on_command_error(ctx: commands.Context, error: Exception):
             )
             await channel.send(embed=embed2)
 
+            view = FeedbackButton()
+            await ctx.send("Want to help even more? Click here to submit feedback!", view=view)
             error_file.unlink()
 
     raise error
-
 
 bot.run(os.getenv("TOKEN"))

@@ -240,9 +240,10 @@ class TutorVCCMD(commands.Cog):
                     )
                         .get()
                 )
-                channel: discord.VoiceChannel = self.bot.get_channel(
+                channel: discord.VoiceChannel = await self.bot.fetch_channel(
                     q.ChannelID
                 )
+
                 view = discord.ui.View()
                 var = SelectMenuHandler(
                     VCGamesList,
@@ -769,6 +770,7 @@ class TutorVCCMD(commands.Cog):
         SE = discord.utils.get(ctx.guild.roles, name="Senior Executive")
         BM = discord.utils.get(ctx.guild.roles, name="Board Member")
         E = discord.utils.get(ctx.guild.roles, name="Executive")
+        roles = [BM, SE, E, OWNER]
 
         voice_state = member.voice
 
@@ -817,34 +819,15 @@ class TutorVCCMD(commands.Cog):
                     await member.voice.channel.set_permissions(
                         ctx.guild.default_role, connect=False, view_channel=False
                     )
-                    await member.voice.channel.set_permissions(
-                        BM,
-                        connect=True,
-                        manage_channels=True,
-                        manage_permissions=True,
-                        view_channel=True,
-                    )
-                    await member.voice.channel.set_permissions(
-                        SE,
-                        connect=True,
-                        manage_channels=True,
-                        manage_permissions=True,
-                        view_channel=True,
-                    )
-                    await member.voice.channel.set_permissions(
-                        E,
-                        connect=True,
-                        manage_channels=True,
-                        manage_permissions=True,
-                        view_channel=True,
-                    )
-                    await member.voice.channel.set_permissions(
-                        OWNER,
-                        connect=True,
-                        manage_channels=True,
-                        manage_permissions=True,
-                        view_channel=True,
-                    )
+                    for role in roles:
+                        if role is not None:
+                            await member.voice.channel.set_permissions(
+                                role,
+                                connect=True,
+                                manage_channels=True,
+                                manage_permissions=True,
+                                view_channel=True,
+                            )
 
                     embed = discord.Embed(
                         title=f"{Emoji.lock} Locked Voice Channel",

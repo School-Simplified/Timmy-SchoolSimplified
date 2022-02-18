@@ -5,7 +5,7 @@ import os
 import discord
 import pytz
 from core.checks import is_botAdmin
-from core.common import ButtonHandler, Emoji, GSuiteVerify
+from core.common import ButtonHandler, Emoji, GSuiteVerify, access_secret
 from discord.ext import commands
 from google_auth_oauthlib.flow import Flow
 
@@ -15,12 +15,13 @@ os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 class GSuiteLogin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.flow = Flow.from_client_secrets_file(
+        self.flow = access_secret("svc_c", True, 1, ['https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/userinfo.profile'], 'urn:ietf:wg:oauth:2.0:oob')
+        """self.flow = Flow.from_client_secrets_file(
             'gsheetsadmin/staff_verifyClient.json',
             scopes=['https://www.googleapis.com/auth/userinfo.email',
                     'https://www.googleapis.com/auth/userinfo.profile'],
             redirect_uri='urn:ietf:wg:oauth:2.0:oob'
-        )
+        )"""
         self.staffrole = 932066545117585430
         self.logchannel = 932066545885134904
         self.est = pytz.timezone("US/Eastern")

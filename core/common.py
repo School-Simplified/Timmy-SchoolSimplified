@@ -15,11 +15,18 @@ import boto3
 import chat_exporter
 import configcatclient
 import discord
+import requests
+import sentry_sdk
 from botocore.exceptions import ClientError
-from discord import ApplicationCommandError, Button, ButtonStyle, DiscordException, SelectOption, ui
+from discord import (ApplicationCommandError, Button, ButtonStyle,
+                     DiscordException, SelectOption, ui)
 from discord.ext import commands
 from dotenv import load_dotenv
-
+from google.cloud import secretmanager
+from google_auth_oauthlib.flow import Flow
+from google.oauth2.credentials import Credentials
+from google.oauth2 import service_account
+from oauth2client.service_account import ServiceAccountCredentials
 from core import database
 
 load_dotenv()
@@ -161,6 +168,55 @@ def prompt_config2(msg, key):
     with config_file.open("w+") as f:
         json.dump(config, f, indent=4)
 
+def access_secret(secret_id, google_auth_load_mode=False, type_auth=None, scopes=None, redirect_uri=None):
+    """Access credentials and secrets from Google.
+
+    Args:
+        secret_id (str): The secret ID to access. (Options: doc_t, doc_c, tts_c, tsa_c, svc_c)
+        
+        google_auth_load_mode (bool, optional): If marked as True, the function will return a specific credential class for you to authenticate with an API. Defaults to False.
+        
+        type_auth (int, optional): Type of credential class to return. 
+        (0: oauth2.credentials.Credentials, 1: oauthlib.flow.Flow, 2: oauth2.service_account.Credentials, 3: service_account.ServiceAccountCredentials) Defaults to None.
+
+        scopes (list[str], optional): Scopes to access, this is required when using google_auth_load_mode. Defaults to None.
+        
+        redirect_uri (str, optional): Redirect URL to configure, required when using authentication mode 1. Defaults to None.
+
+    Returns:
+        Credential Object: Returns a credential object that allows you to authenticate with APIs.
+    """
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'gsheetsadmin/sstimmy.json'
+    client = secretmanager.SecretManagerServiceClient()
+
+    name = f"projects/ss-timmy/secrets/{secret_id}/versions/latest"
+    response = client.access_secret_version(request={"name": name})
+    payload = response.payload.data.decode("UTF-8")
+
+    if not google_auth_load_mode:
+        return payload
+    else:
+        with open("cred_file.json", 'w') as payload_file:
+            payload_file.write(payload.replace("'", '"'))
+        
+        if type_auth == 0:
+            creds = Credentials.from_authorized_user_file("cred_file.json", scopes)
+            os.remove("cred_file.json")
+        elif type_auth == 1:
+            creds = Flow.from_client_secrets_file("cred_file.json", scopes=scopes, redirect_uri=redirect_uri)
+            os.remove("cred_file.json")
+        elif type_auth == 2:
+            creds = service_account.Credentials.from_service_account_file('cred_file.json')
+            os.remove("cred_file.json")
+        elif type_auth == 3:
+            payload: dict = json.loads(payload)
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(payload, scopes)
+        try:
+            os.remove("cred_file.json")
+        except:
+            pass
+
+        return creds
 
 def S3_upload_file(file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket
@@ -1048,6 +1104,72 @@ class TicketTempConfirm(discord.ui.View):
         await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
+
+class FeedbackModel(discord.ui.Modal):
+    def __init__(self) -> None:
+        super().__init__("Submit Feedback")
+        self.add_item(
+            discord.ui.InputText(
+                label="What did you try to do?",
+                style=discord.InputTextStyle.long,
+            )
+        )
+        self.add_item(
+            discord.ui.InputText(
+                label="Describe the steps to reproduce the issue",
+                style=discord.InputTextStyle.short,
+            )
+        )
+        self.add_item(
+            discord.ui.InputText(
+                label="What happened?",
+                style=discord.InputTextStyle.long,
+            )
+        )
+        self.add_item(
+            discord.ui.InputText(
+                label="What was supposed to happen?",
+                style=discord.InputTextStyle.long,
+            )
+        )
+        self.add_item(
+            discord.ui.InputText(
+                label="Anything else?",
+                style=discord.InputTextStyle.long,
+                required=False
+            )
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        response = f"User Action: {self.children[0].value}\nSteps to reproduce the issue: {self.children[1].value}\nWhat happened: {self.children[2].value}\nExpected Result: {self.children[3].value}\nAnything else: {self.children[4].value}"
+        url = f'https://sentry.io/api/0/projects/schoolsimplified/timmy/user-feedback/'
+        headers = {
+            'Authorization': f'Bearer {os.getenv("FDB_SENTRY")}'
+        }
+
+        data = {
+            "event_id": sentry_sdk.last_event_id(),
+            "name": interaction.user.name,
+            "id": interaction.user.id,
+            "comments": response
+        }
+
+        response = requests.post(url, headers=headers, data=str(data))
+
+class FeedbackButton(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=500.0)
+        self.value = None
+
+    @discord.ui.button(
+        label="Submit Feedback",
+        style=discord.ButtonStyle.blurple,
+        custom_id="persistent_view:feedback_button",
+        emoji="📝",
+    )
+    async def feedback_button(self, button: discord.ui.Button, interaction: discord.Interaction):
+        modal = FeedbackModel()
+        return await interaction.response.send_modal(modal)
 
 
 async def id_generator(size=3, chars=string.ascii_uppercase):

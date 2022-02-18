@@ -26,9 +26,11 @@ from core.common import (
     S3_upload_file,
     SelectMenuHandler,
     CHHelperRoles,
+    access_secret,
 )
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
+from core.checks import is_botAdmin
 
 load_dotenv()
 
@@ -40,25 +42,10 @@ scope = [
 ]
 essayTicketLog_key = "1pB5xpsBGKIES5vmEY4hjluFg7-FYolOmN_w3s20yzr0"
 
-sa_creds = json.loads(os.getenv("GSPREADSJSON"))
-creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, scope)
+creds = access_secret("gsheets_c", True, 3, scope)
 gspread_client = gspread.authorize(creds)
 print("Connected to Gspread.")
 
-
-class TicketButton(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.value = None
-
-    @discord.ui.button(
-        label="Create Ticket",
-        style=discord.ButtonStyle.blurple,
-        custom_id="persistent_view:ticketdrop",
-        emoji="📝",
-    )
-    async def verify(self, button: discord.ui.Button, interaction: discord.Interaction):
-        self.value = True
 
 
 """
@@ -294,38 +281,34 @@ def getRole(guild: discord.Guild, mainSubject: str, subject: str) -> discord.Rol
 
     return role
 
-
-class DropdownTickets(commands.Cog):
+class TicketBT(discord.ui.Button):
     def __init__(self, bot):
+        """
+        A button for one role. `custom_id` is needed for persistent views.
+        """
         self.bot = bot
         self.mainserver = MAIN_ID.g_main
         self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
         self.CHID_DEFAULT = Others.CHID_DEFAULT
         self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
-        self.TicketInactive.start()
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
+        super().__init__(
+            label="Create Ticket",
+            style=discord.enums.ButtonStyle.blurple,
+            custom_id="persistent_view:ticketdrop",
+            emoji="📝",
+        )
 
-    def cog_unload(self):
-        self.TicketInactive.cancel()
-
-    @commands.Cog.listener("on_interaction")
-    async def TicketDropdown(self, interaction: discord.Interaction):
-        InteractionResponse = interaction.data
-
-        if interaction.message is None:
-            return
-
-        try:
-            val = InteractionResponse["custom_id"]
-        except KeyError:
-            return
-
-        if (
-            interaction.guild_id == self.mainserver
-            # and interaction.message.id == int(self.CHID_DEFAULT)
-            and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
-        ):
+    async def callback(self, interaction: discord.Interaction):
+        print("hi")
+        bucket = self.view.cd_mapping.get_bucket(interaction.message)
+        retry_after = bucket.update_rate_limit()
+        print(retry_after)
+        if retry_after:
+            await interaction.response.send_message("Sorry, you are being rate limited.", ephemeral=True)
+            return interaction.stop()
+        else:
             channel = await self.bot.fetch_channel(interaction.channel_id)
             guild = interaction.message.guild
             author = interaction.user
@@ -677,6 +660,60 @@ class DropdownTickets(commands.Cog):
 
             await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
 
+class TicketButton(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.value = None
+        self.bot = bot
+
+        self.add_item(TicketBT(self.bot))
+        self.cookie = 0
+        self.cd_mapping = commands.CooldownMapping.from_cooldown(1, 30, commands.BucketType.member)
+
+    """@discord.ui.button(label="Create Ticket", style=discord.ButtonStyle.blurple, emoji="📝", custom_id="persistent_view:ticketdrop")
+    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+        print("hi")
+        bucket = self.view.cd_mapping.get_bucket(interaction.message)
+        retry_after = bucket.update_rate_limit()
+        print(retry_after)
+        if retry_after:
+            await interaction.response.send_message("Sorry, you are being rate limited.", ephemeral=True)
+            return self.stop()
+        else:
+            pass"""
+
+class DropdownTickets(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.mainserver = MAIN_ID.g_main
+        self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
+        self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
+        self.CHID_DEFAULT = Others.CHID_DEFAULT
+        self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
+        self.TicketInactive.start()
+        self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
+
+    def cog_unload(self):
+        self.TicketInactive.cancel()
+
+    @commands.Cog.listener("on_interaction")
+    async def TicketDropdown(self, interaction: discord.Interaction):
+        InteractionResponse = interaction.data
+
+        if interaction.message is None:
+            return
+
+        try:
+            val = InteractionResponse["custom_id"]
+        except KeyError:
+            return
+
+        if (
+            interaction.guild_id == self.mainserver
+            # and interaction.message.id == int(self.CHID_DEFAULT)
+            and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
+        ):
+            return
         elif val == "ch_lock":
             channel = interaction.message.channel
             guild = interaction.message.guild
@@ -1101,6 +1138,7 @@ class DropdownTickets(commands.Cog):
                 entry.delete_instance()"""
 
     @commands.command()
+    @is_botAdmin
     async def sendCHTKTView(self, ctx):
         MasterSubjectView = discord.ui.View()
         MasterSubjectView.add_item(
@@ -1121,7 +1159,7 @@ class DropdownTickets(commands.Cog):
             > <:SS:865715703545069568> In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
             > <:SS:865715703545069568> Send the question in your direct messages as per the bot instructions.
             > <:SS:865715703545069568> Send a picture of your assignment title in your direct messages as per the bot instructions.""",
-            view=TicketButton(),
+            view=TicketButton(self.bot),
         )
 
 
