@@ -14,7 +14,7 @@ class BotRequestModal(discord.ui.Modal):
             discord.ui.InputText(
                 label="What is a descriptive title for your project?",
                 style=discord.InputTextStyle.long,
-                max_length=1024
+                max_length=1024,
             )
         )
         self.add_item(
@@ -27,14 +27,14 @@ class BotRequestModal(discord.ui.Modal):
             discord.ui.InputText(
                 label="Write a brief description of the project.",
                 style=discord.InputTextStyle.long,
-                max_length=1024
+                max_length=1024,
             )
         )
         self.add_item(
             discord.ui.InputText(
                 label="Do you have approval for this commission?",
                 style=discord.InputTextStyle.long,
-                max_length=1024
+                max_length=1024,
             )
         )
         self.add_item(
@@ -42,21 +42,34 @@ class BotRequestModal(discord.ui.Modal):
                 label="Anything else?",
                 style=discord.InputTextStyle.long,
                 required=False,
-                max_length=1024
+                max_length=1024,
             )
         )
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.send_message(content="Got it! Please wait while I create your ticket.",
-                                                ephemeral=True)
+        await interaction.response.send_message(
+            content="Got it! Please wait while I create your ticket.", ephemeral=True
+        )
 
-        embed = discord.Embed(title="Bot Developer Commission", color=discord.Color.blurple())
-        embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar.url)
-        embed.add_field(name="Project Title", value=self.children[0].value, inline=False)
-        embed.add_field(name="Team Requester", value=self.children[1].value, inline=False)
-        embed.add_field(name="Project Description", value=self.children[2].value, inline=False)
+        embed = discord.Embed(
+            title="Bot Developer Commission", color=discord.Color.blurple()
+        )
+        embed.set_author(
+            name=interaction.user.name, icon_url=interaction.user.avatar.url
+        )
+        embed.add_field(
+            name="Project Title", value=self.children[0].value, inline=False
+        )
+        embed.add_field(
+            name="Team Requester", value=self.children[1].value, inline=False
+        )
+        embed.add_field(
+            name="Project Description", value=self.children[2].value, inline=False
+        )
         embed.add_field(name="Approval", value=self.children[3].value, inline=False)
-        embed.add_field(name="Anything else?", value=self.children[4].value, inline=False)
+        embed.add_field(
+            name="Anything else?", value=self.children[4].value, inline=False
+        )
         embed.set_footer(text="Bot Developer Commission")
 
         c_ch: discord.TextChannel = await self.bot.fetch_channel(933181562885914724)
@@ -64,7 +77,8 @@ class BotRequestModal(discord.ui.Modal):
         thread = await msg.create_thread(name=self.children[0].value)
 
         await thread.send(
-            f"{interaction.user.mention} has requested a bot development project.\n<@&{TECH_ID.r_botDeveloper}>")
+            f"{interaction.user.mention} has requested a bot development project.\n<@&{TECH_ID.r_botDeveloper}>"
+        )
 
 
 class CommissionTechButton(discord.ui.View):
@@ -100,8 +114,8 @@ class TechProjectCMD(commands.Cog):
         )
         embed.set_footer(
             text="The Bot Development Team has the right to cancel and ignore any commissions if deemed appropriate. "
-                 "We also have the right to cancel and ignore any commissions if an improper deadline is given, "
-                 "please make sure you create a commission ahead of time and not right before a due date",
+            "We also have the right to cancel and ignore any commissions if an improper deadline is given, "
+            "please make sure you create a commission ahead of time and not right before a due date",
         )
         view = CommissionTechButton(self.bot)
         await ctx.send(embed=embed, view=view)

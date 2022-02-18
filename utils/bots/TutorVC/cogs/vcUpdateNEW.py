@@ -88,10 +88,10 @@ class TutorVCUpdate(commands.Cog):
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
         }
-        #self.PRIVVC_DELETION_QUEUE.start()
+        # self.PRIVVC_DELETION_QUEUE.start()
 
-    #def cog_unload(self):
-        #self.PRIVVC_DELETION_QUEUE.cancel()
+    # def cog_unload(self):
+    # self.PRIVVC_DELETION_QUEUE.cancel()
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before, after):

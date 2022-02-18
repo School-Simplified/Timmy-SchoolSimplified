@@ -8,16 +8,14 @@ from discord.commands import permissions
 from core.common import MAIN_ID, TUT_ID
 import pytz
 
+
 class TutorMain(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.RepeatEmoji = {False: "\U00002b1b", True: "🔁"}
         self.ExpireEmoji = {False: "", True: "| ⚠️"}
 
-    @slash_command(
-        name="view",
-        guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
-    )
+    @slash_command(name="view", guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut])
     async def view(self, ctx, id=None):
         if id is None:
             query: database.TutorBot_Sessions = (
@@ -42,7 +40,9 @@ class TutorMain(commands.Cog):
                 for entry in query:
                     if not isinstance(entry.Date, datetime):
                         entry.Date = datetime.fromisoformat(entry.Date)
-                    datetime_session = pytz.timezone("America/New_York").localize(entry.Date)
+                    datetime_session = pytz.timezone("America/New_York").localize(
+                        entry.Date
+                    )
                     timestamp = int(datetime.timestamp(datetime_session))
 
                     student_user = await self.bot.fetch_user(entry.StudentID)
@@ -53,8 +53,10 @@ class TutorMain(commands.Cog):
 
                 embed.add_field(name="List:", value="\n".join(list_ten), inline=False)
             embed.set_thumbnail(url=Others.timmyTeacher_png)
-            embed.set_footer(text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
-                                  "these sessions with a warning sign next to them.")
+            embed.set_footer(
+                text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
+                "these sessions with a warning sign next to them."
+            )
             await ctx.respond(embed=embed)
 
         else:
@@ -65,7 +67,9 @@ class TutorMain(commands.Cog):
                 entry = entry.get()
 
                 student_user = await self.bot.fetch_user(entry.StudentID)
-                datetime_session = pytz.timezone("America/New_York").localize(entry.Date)
+                datetime_session = pytz.timezone("America/New_York").localize(
+                    entry.Date
+                )
                 timestamp = int(datetime.timestamp(datetime_session))
 
                 embed = discord.Embed(
@@ -75,11 +79,11 @@ class TutorMain(commands.Cog):
                 embed.add_field(
                     name="Values",
                     value=f"**Session ID:** `{entry.SessionID}`"
-                          f"\n**Student:** `{student_user.name}`"
-                          f"\n**Tutor:** `{ctx.author.name}`"
-                          f"\n**Date:** <t:{timestamp}:d>"
-                          f"\n**Time:** <t:{timestamp}:t>"
-                          f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
+                    f"\n**Student:** `{student_user.name}`"
+                    f"\n**Tutor:** `{ctx.author.name}`"
+                    f"\n**Date:** <t:{timestamp}:d>"
+                    f"\n**Time:** <t:{timestamp}:t>"
+                    f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
                 )
                 embed.set_footer(text=f"Subject: {entry.Subject}")
                 await ctx.respond(embed=embed)
@@ -94,29 +98,22 @@ class TutorMain(commands.Cog):
     @slash_command(
         name="mview",  # TODO find better name later
         description="View someone else's tutor sessions",
-        guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut]
+        guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut],
     )
-    @permissions.has_any_role(
-        "Senior Tutor",
-        "Tutoring Manager",
-        "Tutoring Director"
-    )
+    @permissions.has_any_role("Senior Tutor", "Tutoring Manager", "Tutoring Director")
     async def mview(self, ctx, user: discord.User):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.TutorID == user.id
         )
 
         embed = discord.Embed(
-            title="Scheduled Tutor Sessions",
-            color=discord.Color.dark_blue()
+            title="Scheduled Tutor Sessions", color=discord.Color.dark_blue()
         )
         embed.add_field(name="Schedule:", value=f"{user.name}'s Schedule:")
 
         if query.count() == 0:
             embed.add_field(
-                name="List:",
-                value="This user has no tutor sessions yet!",
-                inline=False
+                name="List:", value="This user has no tutor sessions yet!", inline=False
             )
 
         else:
@@ -126,7 +123,9 @@ class TutorMain(commands.Cog):
 
                 if not isinstance(entry.Date, datetime):
                     entry.Date = datetime.fromisoformat(entry.Date)
-                datetime_session = pytz.timezone("America/New_York").localize(entry.Date)
+                datetime_session = pytz.timezone("America/New_York").localize(
+                    entry.Date
+                )
                 timestamp = int(datetime.timestamp(datetime_session))
 
                 student_user = await self.bot.fetch_user(entry.StudentID)
@@ -138,8 +137,10 @@ class TutorMain(commands.Cog):
             embed.add_field(name="List:", value="\n".join(list_ten), inline=False)
         embed.set_thumbnail(url=Others.timmyTeacher_png)
 
-        embed.set_footer(text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
-                              "these sessions with a warning sign next to them.")
+        embed.set_footer(
+            text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
+            "these sessions with a warning sign next to them."
+        )
         await ctx.respond(embed=embed)
 
 

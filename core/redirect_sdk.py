@@ -23,7 +23,6 @@ from urllib.parse import urlparse
 load_dotenv()
 
 
-
 def cleanup_url(url: str) -> str:
     """Cleans up the text to be a valid URL.
 
@@ -36,8 +35,11 @@ def cleanup_url(url: str) -> str:
     else:
         return f"https://{url}"
 
+
 class RedirectPizza:
-    def __init__(self, id: int, domain: str, source: str, destination: str, created_at: datetime) -> None:
+    def __init__(
+        self, id: int, domain: str, source: str, destination: str, created_at: datetime
+    ) -> None:
         self.id = id
         self.domain = domain
         self.source = source
@@ -82,13 +84,21 @@ class RedirectClient:
         data = data["data"]
         ListData = []
         for object in range(len(data) - 1):
-            #object = object
+            # object = object
             FullURL = data[object]["sources"][object]["url"]
             ParsedDomain = urlparse(FullURL)
             Domain = ParsedDomain.netloc
             Path = ParsedDomain.path
-            
-            ListData.append(RedirectPizza(r.json()["data"][object]["id"], Domain, Path, r.json()["data"][object]["destination"], r.json()["data"][object]["created_at"]))
+
+            ListData.append(
+                RedirectPizza(
+                    r.json()["data"][object]["id"],
+                    Domain,
+                    Path,
+                    r.json()["data"][object]["destination"],
+                    r.json()["data"][object]["created_at"],
+                )
+            )
         return ListData
 
     def fetch_redirect(self, r_id: str) -> RedirectPizza:
@@ -107,7 +117,7 @@ class RedirectClient:
 
         r = requests.get(
             f"https://redirect.pizza/api/v1/redirects/{r_id}",
-            auth=("bearer", self.token)
+            auth=("bearer", self.token),
         )
         if r.status_code == 422:
             raise InvalidAuth(r.status_code)
@@ -118,9 +128,17 @@ class RedirectClient:
         Domain = ParsedDomain.netloc
         Path = ParsedDomain.path
 
-        return RedirectPizza(r.json()["data"]["id"], Domain, Path, r.json()["data"]["destination"], r.json()["data"]["created_at"])
+        return RedirectPizza(
+            r.json()["data"]["id"],
+            Domain,
+            Path,
+            r.json()["data"]["destination"],
+            r.json()["data"]["created_at"],
+        )
 
-    def add_redirect(self, redirect_url: str, destination: str, domain: str = None) -> RedirectPizza:
+    def add_redirect(
+        self, redirect_url: str, destination: str, domain: str = None
+    ) -> RedirectPizza:
         """Adds a redirect.
 
         Args:
@@ -155,7 +173,7 @@ class RedirectClient:
         if r.status_code == 422:
             raise InvalidAuth(r.status_code)
         print(r.status_code)
-        object = range(len(r.json()['data']))
+        object = range(len(r.json()["data"]))
         pprint.pprint(r.json())
 
         FullURL = r.json()["data"]["sources"][0]["url"]
@@ -163,7 +181,13 @@ class RedirectClient:
         Domain = ParsedDomain.netloc
         Path = ParsedDomain.path
 
-        return RedirectPizza(r.json()["data"]["id"], Domain, Path, r.json()["data"]["destination"], r.json()["data"]["created_at"])
+        return RedirectPizza(
+            r.json()["data"]["id"],
+            Domain,
+            Path,
+            r.json()["data"]["destination"],
+            r.json()["data"]["created_at"],
+        )
 
     def del_redirect(self, r_id: str) -> typing.Union[dict, int]:
         """Deletes a redirect.
@@ -181,12 +205,9 @@ class RedirectClient:
 
         r = requests.delete(
             f"https://redirect.pizza/api/v1/redirects/{r_id}",
-            auth=("bearer", self.token)
+            auth=("bearer", self.token),
         )
         print(r.status_code)
         if r.status_code == 422:
             raise InvalidAuth(r.status_code)
         return r.status_code
-
-
-

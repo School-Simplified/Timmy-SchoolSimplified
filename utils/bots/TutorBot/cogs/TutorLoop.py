@@ -90,9 +90,16 @@ class TutorBotLoop(commands.Cog):
 
                 GP_DATE = old + new
 
-                gp_en: database.TutorSession_GracePeriod = database.TutorSession_GracePeriod.create(SessionID = geten.SessionID, authorID = geten.TutorID, ext_ID = geten.id, GP_DATE = GP_DATE)
+                gp_en: database.TutorSession_GracePeriod = (
+                    database.TutorSession_GracePeriod.create(
+                        SessionID=geten.SessionID,
+                        authorID=geten.TutorID,
+                        ext_ID=geten.id,
+                        GP_DATE=GP_DATE,
+                    )
+                )
                 gp_en.save()
-                #geten.delete_instance()
+                # geten.delete_instance()
 
             elif val < 0 and entry.Repeat:
                 query: database.TutorBot_Sessions = (
@@ -109,7 +116,6 @@ class TutorBotLoop(commands.Cog):
 
                 query.Date = nextweek
                 query.save()
-
 
     @tasks.loop(seconds=60.0)
     async def tutorsession_graceperiod(self):
@@ -141,8 +147,6 @@ class TutorBotLoop(commands.Cog):
     async def before_printer(self):
         print("Starting TutorGP Loop")
         await self.bot.wait_until_ready()
-
-
 
 
 def setup(bot):

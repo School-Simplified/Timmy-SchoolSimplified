@@ -13,10 +13,10 @@ from google.cloud import storage
 from core.common import access_secret
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/drive']
+SCOPES = ["https://www.googleapis.com/auth/drive"]
 
 # The ID of a template document.
-DOCUMENT_ID = '1u_Ab5ZkKxHLlkOWAAXW8Ht_vgv9T-3PBA_Lj-KWc-G0'
+DOCUMENT_ID = "1u_Ab5ZkKxHLlkOWAAXW8Ht_vgv9T-3PBA_Lj-KWc-G0"
 
 # Default Bucket Name
 bucket_name = "ss-transcript-archive"
@@ -26,20 +26,23 @@ speech_client = speech.SpeechClient(credentials=access_secret("tsa_c", True, 2))
 # GOOG1EJ5H3XJY3JWVZDXT7S2GEIZ2E73EGDD2PNEVXKSOWOPTB7QZB6YYBCWA
 # 8LVFSONX2aLQCg1CkVjWvf3k37yeiHe5bMEcIlBS
 
+
 def callback(request_id, response, exception):
     if exception:
         print(exception)
     else:
-        print("Permission Id: %s" % response.get('id'))
+        print("Permission Id: %s" % response.get("id"))
 
 
 def auth():
     creds = None
-    creds = Credentials.from_authorized_user_file(access_secret("docs_t", True, 0, SCOPES))
+    creds = Credentials.from_authorized_user_file(
+        access_secret("docs_t", True, 0, SCOPES)
+    )
 
     try:
-        service = build('drive', 'v3', credentials=creds)
-        dc_service = build('docs', 'v1', credentials=creds)
+        service = build("drive", "v3", credentials=creds)
+        dc_service = build("docs", "v1", credentials=creds)
         return service, dc_service
 
     except Exception as e:
@@ -60,18 +63,13 @@ def upload_blob(source_file_name, destination_blob_name):
 
     blob.upload_from_filename(source_file_name)
 
-    print(
-        "File {} uploaded to {}.".format(
-            source_file_name, destination_blob_name
-        )
-    )
+    print("File {} uploaded to {}.".format(source_file_name, destination_blob_name))
 
 
 def delete_blob(blob_name):
     """Deletes a blob from the bucket."""
     # bucket_name = "your-bucket-name"
     # blob_name = "your-object-name"
-
 
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
@@ -80,7 +78,14 @@ def delete_blob(blob_name):
     print("Blob {} deleted.".format(blob_name))
 
 
-def transcribe(drive_service, docs_service, name: str, audio_f, total_users: int, primary_email: str):
+def transcribe(
+    drive_service,
+    docs_service,
+    name: str,
+    audio_f,
+    total_users: int,
+    primary_email: str,
+):
     with open(audio_f, "rb") as audio_file:
         content = audio_file.read()
     audio = speech.RecognitionAudio(content=content)
@@ -112,20 +117,20 @@ def transcribe(drive_service, docs_service, name: str, audio_f, total_users: int
 
     tag = 1
     speaker = ""
-    transcript = ''
+    transcript = ""
 
     for word_info in words_info:  # Changed
         if word_info.speaker_tag == tag:  # Changed
             speaker = speaker + " " + word_info.word  # Changed
         else:  # Changed
-            transcript += "speaker {}: {}".format(tag, speaker) + '\n'  # Changed
+            transcript += "speaker {}: {}".format(tag, speaker) + "\n"  # Changed
             tag = word_info.speaker_tag  # Changed
             speaker = "" + word_info.word  # Changed
 
     transcript += "speaker {}: {}".format(tag, speaker)
     print(transcript)
 
-    '''
+    """
     # END TRANSCRIBE MODULE
     # BEGIN UPDATE DOCUMENT MODULE
 
@@ -162,8 +167,15 @@ def transcribe(drive_service, docs_service, name: str, audio_f, total_users: int
             fields='id',
     ))
     batch.execute()
-    '''
+    """
 
 
 service, dc_service = auth()
-transcribe(service, dc_service, "Transcript Test", "tts-test.mp3", 2, "rohit.penta@schoolsimplified.org")
+transcribe(
+    service,
+    dc_service,
+    "Transcript Test",
+    "tts-test.mp3",
+    2,
+    "rohit.penta@schoolsimplified.org",
+)

@@ -47,7 +47,6 @@ gspread_client = gspread.authorize(creds)
 print("Connected to Gspread.")
 
 
-
 """
 if not (RoleOBJ.id == MAIN_ID.r_chatHelper or RoleOBJ.id == MAIN_ID.r_leadHelper) and not channel.category.id == MAIN_ID.cat_essayTicket:
                     if RoleOBJ.id == MAIN_ID.r_essayReviser:
@@ -281,6 +280,7 @@ def getRole(guild: discord.Guild, mainSubject: str, subject: str) -> discord.Rol
 
     return role
 
+
 class TicketBT(discord.ui.Button):
     def __init__(self, bot):
         """
@@ -306,7 +306,9 @@ class TicketBT(discord.ui.Button):
         retry_after = bucket.update_rate_limit()
         print(retry_after)
         if retry_after:
-            await interaction.response.send_message("Sorry, you are being rate limited.", ephemeral=True)
+            await interaction.response.send_message(
+                "Sorry, you are being rate limited.", ephemeral=True
+            )
             return interaction.stop()
         else:
             channel = await self.bot.fetch_channel(interaction.channel_id)
@@ -498,7 +500,10 @@ class TicketBT(discord.ui.Button):
                 mainSubject = "languages"
             else:
                 mainSubject = (
-                    c.name.replace("═", "").replace("⁃", "").replace("Ticket", "").strip()
+                    c.name.replace("═", "")
+                    .replace("⁃", "")
+                    .replace("Ticket", "")
+                    .strip()
                 )
 
             if selection_str == "Other":
@@ -513,9 +518,11 @@ class TicketBT(discord.ui.Button):
             await channel.set_permissions(
                 guild.default_role, read_messages=False, reason="Ticket Perms"
             )
-            tz = timezone('EST')
+            tz = timezone("EST")
             opened_at = datetime.now(tz)
-            query = database.TicketInfo.create(ChannelID=channel.id, authorID=author.id, createdAt=opened_at)
+            query = database.TicketInfo.create(
+                ChannelID=channel.id, authorID=author.id, createdAt=opened_at
+            )
             query.save()
 
             roles = [
@@ -539,9 +546,18 @@ class TicketBT(discord.ui.Button):
                     reason="Ticket Perms",
                 )
                 RoleOBJ = discord.utils.get(guild.roles, name=role)
-                if not (RoleOBJ.id == MAIN_ID.r_chatHelper or RoleOBJ.id == MAIN_ID.r_leadHelper) and not channel.category.id == MAIN_ID.cat_essayTicket:
+                if (
+                    not (
+                        RoleOBJ.id == MAIN_ID.r_chatHelper
+                        or RoleOBJ.id == MAIN_ID.r_leadHelper
+                    )
+                    and not channel.category.id == MAIN_ID.cat_essayTicket
+                ):
                     if RoleOBJ.id == MAIN_ID.r_essayReviser:
-                        if channel.category.id == MAIN_ID.cat_essayTicket or channel.category.id == MAIN_ID.cat_englishTicket:
+                        if (
+                            channel.category.id == MAIN_ID.cat_essayTicket
+                            or channel.category.id == MAIN_ID.cat_englishTicket
+                        ):
                             await channel.set_permissions(
                                 RoleOBJ,
                                 read_messages=True,
@@ -550,8 +566,8 @@ class TicketBT(discord.ui.Button):
                             )
                         else:
                             continue
-                else: 
-                    await channel.set_permissions( 
+                else:
+                    await channel.set_permissions(
                         RoleOBJ,
                         read_messages=True,
                         send_messages=True,
@@ -660,6 +676,7 @@ class TicketBT(discord.ui.Button):
 
             await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
 
+
 class TicketButton(discord.ui.View):
     def __init__(self, bot):
         super().__init__(timeout=None)
@@ -668,7 +685,9 @@ class TicketButton(discord.ui.View):
 
         self.add_item(TicketBT(self.bot))
         self.cookie = 0
-        self.cd_mapping = commands.CooldownMapping.from_cooldown(1, 30, commands.BucketType.member)
+        self.cd_mapping = commands.CooldownMapping.from_cooldown(
+            1, 30, commands.BucketType.member
+        )
 
     """@discord.ui.button(label="Create Ticket", style=discord.ButtonStyle.blurple, emoji="📝", custom_id="persistent_view:ticketdrop")
     async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -681,6 +700,7 @@ class TicketButton(discord.ui.View):
             return self.stop()
         else:
             pass"""
+
 
 class DropdownTickets(commands.Cog):
     def __init__(self, bot):
@@ -907,14 +927,14 @@ class DropdownTickets(commands.Cog):
 
                     query = (
                         database.TicketInfo.select()
-                            .where(database.TicketInfo.ChannelID == interaction.channel_id)
-                            .get()
+                        .where(database.TicketInfo.ChannelID == interaction.channel_id)
+                        .get()
                     )
 
-                    tz = timezone('EST')
+                    tz = timezone("EST")
                     closed_at_raw = datetime.now(tz)
                     opened_at_raw = query.createdAt
-                    
+
                     opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
                     closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
 
@@ -928,7 +948,6 @@ class DropdownTickets(commands.Cog):
                     row.insert(7, closed_at)
                     self.sheet.append_row(row)
                     self.sheet.sort((8, "des"))
-
 
             await msg.delete()
             await interaction.channel.send(
@@ -975,7 +994,7 @@ class DropdownTickets(commands.Cog):
                         ):
                             row.append(f"{message.author} ({message.author.id})")
 
-                    tz = timezone('EST')
+                    tz = timezone("EST")
                     closed_at_raw = datetime.now(tz)
                     opened_at_raw = query.createdAt
 

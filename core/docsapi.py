@@ -18,33 +18,31 @@ from oauth2client.service_account import ServiceAccountCredentials
 from core.common import access_secret
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/documents.modify']
+SCOPES = ["https://www.googleapis.com/auth/documents.modify"]
 
 # The ID of a template document.
-DOCUMENT_ID = '1u_Ab5ZkKxHLlkOWAAXW8Ht_vgv9T-3PBA_Lj-KWc-G0'
+DOCUMENT_ID = "1u_Ab5ZkKxHLlkOWAAXW8Ht_vgv9T-3PBA_Lj-KWc-G0"
 
 # Default Bucket Name
 bucket_name = "ss-transcript-archive"
-
 
 
 def callback(request_id, response, exception):
     if exception:
         print(exception)
     else:
-        print("Permission Id: %s" % response.get('id'))
+        print("Permission Id: %s" % response.get("id"))
+
 
 def auth():
     creds = access_secret("docs_t", True, 0)
-    #creds = Credentials.from_authorized_user_file(jsonFile, SCOPES)
+    # creds = Credentials.from_authorized_user_file(jsonFile, SCOPES)
     try:
-        service = build('docs', 'v1', credentials=creds)
+        service = build("docs", "v1", credentials=creds)
         return service
-    
+
     except Exception as e:
-        print('An error occurred: %s' % e)
-
-
+        print("An error occurred: %s" % e)
 
 
 def upload_blob(source_file_name, destination_blob_name):
@@ -62,11 +60,8 @@ def upload_blob(source_file_name, destination_blob_name):
 
     blob.upload_from_filename(source_file_name)
 
-    print(
-        "File {} uploaded to {}.".format(
-            source_file_name, destination_blob_name
-        )
-    )
+    print("File {} uploaded to {}.".format(source_file_name, destination_blob_name))
+
 
 def delete_blob(blob_name):
     """Deletes a blob from the bucket."""
@@ -116,37 +111,34 @@ def transcribe(drive_service, name: str, audio_f, total_users: int, primary_emai
     # END TRANSCRIBE MODULE
     # BEGIN UPDATE DOCUMENT MODULE
 
-    body = {
-        'name': name
-    }
-    drive_response = drive_service.files().copy(
-        fileId=DOCUMENT_ID, body=body).execute()
-    document_copy_id = drive_response.get('id')
+    body = {"name": name}
+    drive_response = drive_service.files().copy(fileId=DOCUMENT_ID, body=body).execute()
+    document_copy_id = drive_response.get("id")
 
     requests = [
         {
-            'insertText': {
-                'location': {
-                    'index': 25,
+            "insertText": {
+                "location": {
+                    "index": 25,
                 },
-                'text': transcript_list,
+                "text": transcript_list,
             }
         }
     ]
-    
-    result = drive_service.documents().batchUpdate(
-        documentId=document_copy_id, body={'requests': requests}).execute()
-    
+
+    result = (
+        drive_service.documents()
+        .batchUpdate(documentId=document_copy_id, body={"requests": requests})
+        .execute()
+    )
+
     batch = drive_service.new_batch_http_request(callback=callback)
-    user_permission = {
-        'type': 'user',
-        'role': 'writer',
-        'emailAddress': primary_email
-    }
-    batch.add(drive_service.permissions().create(
+    user_permission = {"type": "user", "role": "writer", "emailAddress": primary_email}
+    batch.add(
+        drive_service.permissions().create(
             fileId=document_copy_id,
             body=user_permission,
-            fields='id',
-    ))
+            fields="id",
+        )
+    )
     batch.execute()
-

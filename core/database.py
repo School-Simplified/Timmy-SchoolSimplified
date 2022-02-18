@@ -13,7 +13,9 @@ load_dotenv()
 useDB = True
 
 if not os.getenv("PyTestMODE"):
-    useDB = input(f"{bcolors.WARNING}Do you want to use MySQL? (y/n)\nThis option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications.{bcolors.ENDC}")
+    useDB = input(
+        f"{bcolors.WARNING}Do you want to use MySQL? (y/n)\nThis option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications.{bcolors.ENDC}"
+    )
     useDB = strtobool(useDB)
 
 
@@ -23,11 +25,13 @@ If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove
 """
 
 if os.getenv("IP") is None:
-    print(f"{bcolors.OKBLUE}Successfully connected to the SQLite Database{bcolors.ENDC}")
+    print(
+        f"{bcolors.OKBLUE}Successfully connected to the SQLite Database{bcolors.ENDC}"
+    )
     db = SqliteDatabase("data.db")
 
 elif os.getenv("IP") is not None:
-    #useDB = bool(input(f"{bcolors.WARNING}Do you want to use MySQL? (y/n)\n    > This option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications.{bcolors.ENDC}"))
+    # useDB = bool(input(f"{bcolors.WARNING}Do you want to use MySQL? (y/n)\n    > This option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications.{bcolors.ENDC}"))
     if useDB:
         try:
             db = MySQLDatabase(
@@ -35,19 +39,26 @@ elif os.getenv("IP") is not None:
                 user=os.getenv("Username"),
                 password=os.getenv("Password"),
                 host=os.getenv("IP"),
-                port=int(os.getenv("PORT"))
+                port=int(os.getenv("PORT")),
             )
-            print(f"{bcolors.OKBLUE}Successfully connected to the MySQL Database{bcolors.ENDC}")
+            print(
+                f"{bcolors.OKBLUE}Successfully connected to the MySQL Database{bcolors.ENDC}"
+            )
         except Exception as e:
-            print(f"{bcolors.FAIL}Unable to connect to the MySQL Database:\n    > {e}\n\nSwitching to SQLite...{bcolors.ENDC}")
+            print(
+                f"{bcolors.FAIL}Unable to connect to the MySQL Database:\n    > {e}\n\nSwitching to SQLite...{bcolors.ENDC}"
+            )
             db = SqliteDatabase("data.db")
     else:
         db = SqliteDatabase("data.db")
         if not os.getenv("PyTestMODE"):
-            print(f"{bcolors.OKBLUE}Successfully connected to the SQLite Database{bcolors.ENDC}")
+            print(
+                f"{bcolors.OKBLUE}Successfully connected to the SQLite Database{bcolors.ENDC}"
+            )
         else:
-            print(f"{bcolors.OKBLUE}Created a SQLite Database for testing...{bcolors.ENDC}")
-
+            print(
+                f"{bcolors.OKBLUE}Created a SQLite Database for testing...{bcolors.ENDC}"
+            )
 
 
 def iter_table(model_dict: dict):
@@ -63,7 +74,6 @@ def iter_table(model_dict: dict):
                 if not db.column_exists(key, column.name):
                     db.create_column(key, column.name)
             db.close()
-
 
 
 """
@@ -150,6 +160,7 @@ class IgnoreThis(BaseModel):
     authorID = TextField()
     GuildID = BigIntegerField()
 
+
 class TutorSession_GracePeriod(BaseModel):
     """
     # IgnoreThis
@@ -170,12 +181,13 @@ class TutorSession_GracePeriod(BaseModel):
     `GP_DATE` = DateTimeField()
     DateTime Object with built-in grace period of 10 minutes.
     """
-    
+
     id = AutoField()
     SessionID = TextField()
     authorID = TextField()
     ext_ID = IntegerField()
     GP_DATE = DateTimeField()
+
 
 class PunishmentTag(BaseModel):
     """
@@ -573,7 +585,7 @@ tables = {
     "CTag:": CTag,
     "BaseTickerInfo": BaseTickerInfo,
     "VCDeletionQueue": VCDeletionQueue,
-    "TutorSession_GracePeriod": TutorSession_GracePeriod
+    "TutorSession_GracePeriod": TutorSession_GracePeriod,
 }
 
 iter_table(tables)
