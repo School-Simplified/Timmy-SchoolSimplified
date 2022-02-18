@@ -1,5 +1,8 @@
 name: SSH & PyTest
-on: [pull_request]
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,11 +17,11 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-          source ~/timmyos/bin/activate
           cd Timmy-SchoolSimplified
+          source ~/TimmyEnv/bin/activate
           git fetch --all
           git reset --hard origin/main
           pip install --upgrade -r requirements.txt
           pip uninstall discord.py -y
-          python3 -m pytest
-
+          pip install py-cord==2.0.0b4
+          pytest
