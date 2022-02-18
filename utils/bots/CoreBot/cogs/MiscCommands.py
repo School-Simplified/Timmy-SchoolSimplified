@@ -104,7 +104,7 @@ class MiscCMD(commands.Cog):
             await ctx.send(masa.mention + f" {msg}")
         else:
             await ctx.send(masa.mention)
-    
+
     @commands.command()
     @commands.has_any_role("Moderator")
     async def debateban(self, ctx, member: discord.Member, *, reason=None):
@@ -163,7 +163,6 @@ class MiscCMD(commands.Cog):
                     color=hexColors.yellow_ticketBan,
                 )
                 await ctx.send(embed=embed)
-
 
     @commands.command()
     async def obama(self, ctx):

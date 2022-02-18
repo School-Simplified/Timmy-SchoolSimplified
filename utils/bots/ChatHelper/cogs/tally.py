@@ -68,9 +68,13 @@ class TallyCMD(commands.Cog):
         self.bot = bot
 
     @slash_command(guild_ids=[MAIN_ID.g_main])
-    @permissions.has_any_role(
-        833891065974226975)
-    async def ticketban(self, ctx, member: Option(discord.User, "Enter the user you want to TicketBan"), reason: Option(str, "Enter the reason for the TicketBan")):
+    @permissions.has_any_role(833891065974226975)
+    async def ticketban(
+        self,
+        ctx,
+        member: Option(discord.User, "Enter the user you want to TicketBan"),
+        reason: Option(str, "Enter the reason for the TicketBan"),
+    ):
         ticketBan = discord.utils.get(ctx.guild.roles, name="NoTickets")
         helper = discord.utils.get(ctx.guild.roles, name="Lead Helper")
         manager = discord.utils.get(ctx.guild.roles, name="Academics Manager")
@@ -108,7 +112,9 @@ class TallyCMD(commands.Cog):
         if ticketBan not in member.roles:
             try:
                 if reason is None:
-                    return await ctx.respond("Please specify a reason for this ticket ban!")
+                    return await ctx.respond(
+                        "Please specify a reason for this ticket ban!"
+                    )
 
                 update_reason = f"Ticket Ban requested by {ctx.author.display_name} | Reason: {reason}"
                 await member.add_roles(ticketBan, reason=update_reason)

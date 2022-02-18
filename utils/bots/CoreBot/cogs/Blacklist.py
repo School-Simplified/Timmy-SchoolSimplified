@@ -23,7 +23,7 @@ class BlacklistCMD(commands.Cog):
                 id=866373953001619507,  # STAFF ROLE IN MAIN
                 type=1,
                 permission=True,
-                guild_id=763119924385939498  # MAIN SERVER ID
+                guild_id=763119924385939498,  # MAIN SERVER ID
             ),
             CommandPermission(
                 id=891521033700540457,  # BOT DEV TEAM ROLE IN IT
@@ -35,21 +35,22 @@ class BlacklistCMD(commands.Cog):
                 id=891521034333880410,  # IT DEPARTMENT ROLE
                 type=1,
                 permission=True,
-                guild_id=891521033700540457  # SS STAFF SERVER
-            )
+                guild_id=891521033700540457,  # SS STAFF SERVER
+            ),
         ],
         guild_ids=[
             763119924385939498,  # MAIN
             932066545117585428,  # IT
-            891521033700540457  # SS STAFF
-        ]
-
+            891521033700540457,  # SS STAFF
+        ],
     )
 
     @blacklist.command()
     async def add(self, ctx, user: str):
         if not predicate_LV4(ctx):
-            return await ctx.respond("You do not have the required permissions to run this command!")
+            return await ctx.respond(
+                "You do not have the required permissions to run this command!"
+            )
         user = self.bot.get_user(int(user))
 
         database.db.connect(reuse_if_open=True)
@@ -68,7 +69,9 @@ class BlacklistCMD(commands.Cog):
     @blacklist.command()
     async def remove(self, ctx, user: str):
         if not predicate_LV4(ctx):
-            return await ctx.respond("You do not have the required permissions to run this command!")
+            return await ctx.respond(
+                "You do not have the required permissions to run this command!"
+            )
 
         user = self.bot.get_user(int(user))
         database.db.connect(reuse_if_open=True)
@@ -101,14 +104,16 @@ class BlacklistCMD(commands.Cog):
     async def list(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         if not predicate_LV3(ctx):
-            return await ctx.respond("You do not have the required permissions to run this command!")
+            return await ctx.respond(
+                "You do not have the required permissions to run this command!"
+            )
         empty_list = []
         for p in database.Blacklist:
             try:
                 user = self.bot.get_user(p.id)
                 empty_list.append(f"`{user.name}` -> `{user.id}`")
             except:
-                empty_list.append(f'`{p}`')
+                empty_list.append(f"`{p}`")
 
         blacklist_list = "\n".join(empty_list)
 

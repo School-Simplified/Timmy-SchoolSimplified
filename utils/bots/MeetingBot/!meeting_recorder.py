@@ -4,19 +4,21 @@ from core.checks import is_botAdmin
 from google.cloud import speech_v1p1beta1 as speech
 
 doc_id = "1u_Ab5ZkKxHLlkOWAAXW8Ht_vgv9T-3PBA_Lj-KWc-G0"
-SCOPES = ['https://www.googleapis.com/auth/documents.readonly']
+SCOPES = ["https://www.googleapis.com/auth/documents.readonly"]
 
 
 async def finished_callback(sink, channel: discord.TextChannel, *args):
     client = speech.SpeechClient()
-    recorded_users = [
-        f"<@{user_id}>"
-        for user_id, audio in sink.audio_data.items()
-    ]
+    recorded_users = [f"<@{user_id}>" for user_id, audio in sink.audio_data.items()]
     await sink.vc.disconnect()
 
-    files = [discord.File(audio.file, f"{user_id}.{sink.encoding}") for user_id, audio in sink.audio_data.items()]
-    await channel.send(f"Finished! Recorded audio for {', '.join(recorded_users)}.", files=files)
+    files = [
+        discord.File(audio.file, f"{user_id}.{sink.encoding}")
+        for user_id, audio in sink.audio_data.items()
+    ]
+    await channel.send(
+        f"Finished! Recorded audio for {', '.join(recorded_users)}.", files=files
+    )
 
 
 class MTGBOT(commands.Cog):
