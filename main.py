@@ -34,6 +34,7 @@ from core.common import (
     FeedbackButton,
 )
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
+from utils.events.TicketDropdown import TicketButton
 from utils.events.VerificationStaff import VerifyButton
 from utils.bots.CoreBot.cogs.techProject import CommissionTechButton
 
@@ -110,6 +111,7 @@ class Timmy(commands.Bot):
             bot.add_view(VerifyButton())
             bot.add_view(GSuiteVerify())
             bot.add_view(CommissionTechButton(bot))
+            bot.add_view(TicketButton(bot))
             query.PersistantChange = True
             query.save()
 

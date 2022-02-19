@@ -306,10 +306,9 @@ class TicketBT(discord.ui.Button):
         retry_after = bucket.update_rate_limit()
         print(retry_after)
         if retry_after:
-            await interaction.response.send_message(
+            return await interaction.response.send_message(
                 "Sorry, you are being rate limited.", ephemeral=True
             )
-            return interaction.stop()
         else:
             channel = await self.bot.fetch_channel(interaction.channel_id)
             guild = interaction.message.guild
@@ -733,7 +732,7 @@ class DropdownTickets(commands.Cog):
             # and interaction.message.id == int(self.CHID_DEFAULT)
             and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
         ):
-            return
+            pass
         elif val == "ch_lock":
             channel = interaction.message.channel
             guild = interaction.message.guild
