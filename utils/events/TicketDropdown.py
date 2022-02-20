@@ -15,7 +15,8 @@ import discord
 import pytz
 from core import database
 from core.common import (
-    ACAD_ID,
+    CH_ID,
+    TUT_ID,
     HR_ID,
     MAIN_ID,
     MKT_ID,
@@ -288,10 +289,10 @@ class TicketBT(discord.ui.Button):
         """
         self.bot = bot
         self.mainserver = MAIN_ID.g_main
-        self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
+        self.ServerIDs = [TECH_ID.g_tech, CH_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
         self.CHID_DEFAULT = Others.CHID_DEFAULT
-        self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
+        self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
         super().__init__(
             label="Create Ticket",
@@ -705,10 +706,10 @@ class DropdownTickets(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.mainserver = MAIN_ID.g_main
-        self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
+        self.ServerIDs = [TECH_ID.g_tech, CH_ID.g_ch, TUT_ID.g_tut, MKT_ID.g_mkt, HR_ID.g_hr]
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
         self.CHID_DEFAULT = Others.CHID_DEFAULT
-        self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
+        self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
         self.TicketInactive.start()
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
 

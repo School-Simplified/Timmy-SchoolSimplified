@@ -47,7 +47,7 @@ class ConfigcatClient:
     TECH_ID_CC = configcatclient.create_client(os.getenv("TECHID_CC"))
     MKT_ID_CC = configcatclient.create_client(os.getenv("MKTID_CC"))
     TUT_ID_CC = configcatclient.create_client(os.getenv("TUTID_CC"))
-    ACAD_ID_CC = configcatclient.create_client(os.getenv("ACADID_CC"))
+    CH_ID_CC = configcatclient.create_client(os.getenv("CHID_CC"))
     HR_ID_CC = configcatclient.create_client(os.getenv("HRID_CC"))
     CHECK_DB_CC = configcatclient.create_client(os.getenv("CHECKDB_CC"))
 
@@ -513,6 +513,26 @@ class TECH_ID:
         ConfigcatClient.TECH_ID_CC.get_value("r_botdeveloper", 805610985594814475)
     )
 
+class CH_ID:
+    """
+    IDs of the SS Academics Department server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_ch = int(ConfigcatClient.CH_ID_CC.get_value("g_ch", 801974357395636254))
+    cat_essay = int(
+        ConfigcatClient.CH_ID_CC.get_value("cat_essay", 854945037875806220)
+    )
+    cat_english = int(
+        ConfigcatClient.CH_ID_CC.get_value("cat_english", 800475854353596469)
+    )
 
 class MKT_ID:
     """
