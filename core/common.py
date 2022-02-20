@@ -633,7 +633,7 @@ class CheckDB_CC:
 
 def get_value(
     class_type: Union[
-        MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, ACAD_ID, HR_ID
+        MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
     ],
     value: str,
 ) -> int:
