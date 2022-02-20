@@ -2,7 +2,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from core.common import hexColors as hex
-from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, ACAD_ID, HR_ID
+from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
 
 
 class VotingBot(commands.Cog):
