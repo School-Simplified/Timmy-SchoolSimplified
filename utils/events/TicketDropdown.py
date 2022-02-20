@@ -15,7 +15,6 @@ import discord
 import pytz
 from core import database
 from core.common import (
-    ACAD_ID,
     HR_ID,
     MAIN_ID,
     MKT_ID,
