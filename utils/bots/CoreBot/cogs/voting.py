@@ -9,7 +9,7 @@ class VotingBot(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.acceptedGuilds = [MAIN_ID.g_main, STAFF_ID.g_staff, DIGITAL_ID.g_digital, TECH_ID.g_tech, MKT_ID.g_mkt, TUT_ID.g_tut, HR_ID.g_hr]
+        self.acceptedGuilds = [MAIN_ID.g_main, STAFF_ID.g_staff, DIGITAL_ID.g_digital, TECH_ID.g_tech, MKT_ID.g_mkt, TUT_ID.g_tut, ACAD_ID.g_acad, HR_ID.g_hr]
 
     """
     vote create: creates a voting
