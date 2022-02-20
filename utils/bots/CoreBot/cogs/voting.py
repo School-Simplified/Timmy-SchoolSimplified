@@ -56,6 +56,8 @@ class VotingBot(commands.Cog):
         acceptedGuildsStr = ""
         for guildID in self.acceptedGuilds:
             acceptedGuild = self.bot.get_guild(guildID)
+            print(f"{guildID}: {acceptedGuild}")
+
             acceptedGuildsStr += f"- {acceptedGuild.name} (`{acceptedGuild.id}`)\n"
 
         embedServer = discord.Embed(
