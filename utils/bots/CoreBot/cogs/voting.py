@@ -63,14 +63,14 @@ class VotingBot(commands.Cog):
         embedServer = discord.Embed(
             color=hex.ss_blurple,
             title="Create voting",
-            description="Please provide the server/s (name or ID) in which the voting should get sent. Use commas `,` to "
+            description="Please provide the server/s (name or ID) in which the voting should get sent. Use commas (`,`) to "
                         "send it to multiple servers."
                         "\n**Accepted servers:**"
                         f"\n{acceptedGuildsStr}"
                         "\n\n**NOTE**: it will automatically send the voting into the general announcement channel of "
                         "the server."
         )
-        embedServer.set_author(name=f"{ctx.author}", url=ctx.author.avatar.url)
+        embedServer.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
         embedServer.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
         msgServer = await ctx.send(embed=embedServer)
 

@@ -21,6 +21,7 @@ from core.common import (
     MAIN_ID,
     MKT_ID,
     TECH_ID,
+    ACAD_ID,
     ButtonHandler,
     Emoji,
     Others,

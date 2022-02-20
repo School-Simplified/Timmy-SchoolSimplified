@@ -614,6 +614,28 @@ class TUT_ID:
     )
 
 
+class ACAD_ID:
+    """
+    IDs of the SS Academics Department server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_acad = int(ConfigcatClient.ACAD_ID_CC.get_value("g_acad", 801974357395636254))
+    cat_essay = int(
+        ConfigcatClient.ACAD_ID_CC.get_value("cat_essay", 854945037875806220)
+    )
+    cat_english = int(
+        ConfigcatClient.ACAD_ID_CC.get_value("cat_english", 800475854353596469)
+    )
+
+
 class HR_ID:
     """
     IDs of the SS HR Department server.
