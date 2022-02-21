@@ -137,6 +137,7 @@ class VotingBot(commands.Cog):
                             msgNotFound = await ctx.send(embed=embedNotFound)
                             await msgNotFound.delete(delay=5)
                             continue
+                        print(guilds)
 
                     else:
                         guildStr = msgContent.strip()
@@ -157,7 +158,7 @@ class VotingBot(commands.Cog):
                             msgNotFound = await ctx.send(embed=embedNotFound)
                             await msgNotFound.delete(delay=5)
                             continue
-
+                        print(guild)
                     index += 1
 
 
