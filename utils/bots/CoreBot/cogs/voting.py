@@ -64,8 +64,8 @@ class VotingBot(commands.Cog):
         embedServer = discord.Embed(
             color=hex.ss_blurple,
             title="Create voting",
-            description="Please provide the server/s (name or ID) in which the voting should get sent. Use commas (`,`) to "
-                        "send it to multiple servers."
+            description="Please provide the server/s (name or ID) in which the voting should get sent. You can send "
+                        "it to multiple servers by separating the servers with commas (`,`)."
                         "\n**Accepted servers:**"
                         f"\n{acceptedGuildsStr}"
                         "\n\n**NOTE**: it will automatically send the voting into the __general announcement channel__ of "
@@ -78,6 +78,10 @@ class VotingBot(commands.Cog):
 
         def check(messageCheck: discord.Message):
             return messageCheck.channel == ctx.channel and messageCheck.author == ctx.author
+
+        guilds = []
+        text = None
+        options = []
 
         index = 0
         while True:
@@ -119,7 +123,6 @@ class VotingBot(commands.Cog):
                     embedNotFound.set_footer(text="Use 'vote create' to start again")
 
                     if "," in msgContent:
-                        guilds = []
 
                         guildsStrList = msgContent.split(",")
                         for guildStr in guildsStrList:
@@ -157,7 +160,7 @@ class VotingBot(commands.Cog):
                             await msgNotFound.delete(delay=7)
                             continue
 
-                        print(guild)
+                        guilds.append(guild)
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
@@ -176,7 +179,30 @@ class VotingBot(commands.Cog):
                     index += 1
 
                 elif index == 1:
-                    print(msgContent)
+                    text = msgContent
+                    print(text)
+
+                    embedText = discord.Embed(
+                        color=hex.ss_blurple,
+                        title="Create voting",
+                        description="Please provide the options for the voting by separating the options with commas (`,`). "
+                                    "They will shown as buttons."
+                                    f"\n\nFrom the example on the last message, the options would be: "
+                                    f"{e.pythonLogo} Python, {e.javascriptLogo} JavaScript"
+                    )
+                    embedText.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedText.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
+                    await msgSetup.edit(embed=embedText)
+
+                    index += 1
+
+                elif index == 2:
+                    optionsStrList = msgContent.split(",")
+                    for optionStr in optionsStrList:
+                        options.append(optionStr.strip())
+
+                    print(options)
+
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
