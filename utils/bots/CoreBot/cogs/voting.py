@@ -76,7 +76,7 @@ class VotingBot(commands.Cog):
 
 
         def check(messageCheck: discord.Message):
-            return messageCheck.channel == msgSetup.channel and messageCheck.author == msgSetup.author
+            return messageCheck.channel == ctx.channel and messageCheck.author == ctx.author
 
         index = 0
         while True:
