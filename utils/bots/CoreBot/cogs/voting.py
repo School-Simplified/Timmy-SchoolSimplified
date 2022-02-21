@@ -166,12 +166,12 @@ class VotingBot(commands.Cog):
                                     "\n\n**Example:**"
                                     "\nHey everyone,"
                                     "\nWhich programming language is better? Please vote now!"
-                                    f"\n{e.pythonLogo}: Python | {e.javascriptLogo}: JavaScript"
-                                    f"\n\n(In the example below you would choose Python of course {e.blobamused})"
+                                    f"\n{e.pythonLogo} Python | {e.javascriptLogo} JavaScript"
+                                    f"\n\n(In the example above you would choose Python of course {e.blobamused})"
                     )
                     embedText.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     embedText.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
-                    await ctx.send(embed=embedText)
+                    await msgSetup.edit(embed=embedText)
 
                     index += 1
 
