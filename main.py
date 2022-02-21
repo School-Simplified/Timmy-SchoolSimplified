@@ -419,8 +419,8 @@ async def tictactoeCTX(ctx, member: discord.Member):
 
 for ext in get_extensions():
     try:
-        bot.unload_extension(ext)
         bot.load_extension(ext)
+        bot.unload_extension(ext)
     except discord.ExtensionAlreadyLoaded:
         bot.unload_extension(ext)
         bot.load_extension(ext)
