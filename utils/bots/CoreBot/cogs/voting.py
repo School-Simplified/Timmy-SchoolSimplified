@@ -2,8 +2,8 @@ import asyncio
 import discord
 from discord.ext import commands
 from core.common import hexColors as hex
+from core.common import Emoji as e
 from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
-
 
 class VotingBot(commands.Cog):
 
@@ -14,9 +14,10 @@ class VotingBot(commands.Cog):
     """
     vote create: creates a voting
         1. Server (it will automatically get send in announcement channel)
-        2. Duration
-        3. Text
-        4. Options (would be buttons)
+        2. Text
+        3. Options (would be buttons)
+        4. Durations
+
 
         - Embed displays a timestamp and notes that the vote can't get undo
         - When someone voted, he gets a ephemeral message, that the person has voted on X
@@ -109,6 +110,14 @@ class VotingBot(commands.Cog):
 
                 if index == 0:
 
+                    embedNotFound = discord.Embed(
+                        color=hex.red_error,
+                        title="Create voting",
+                        description=f"Couldn't find one or more of the given guilds, please try again."
+                    )
+                    embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedNotFound.set_footer(text="Use 'vote create' to start again")
+
                     if "," in msgContent:
                         guilds = []
 
@@ -128,16 +137,11 @@ class VotingBot(commands.Cog):
                             guilds.append(guild)
 
                         if any(guildInList is None for guildInList in guilds):
-                            embedNotFound = discord.Embed(
-                                color=hex.red_error,
-                                title="Create voting",
-                                description=f"Couldn't find one or more of the given guilds, please try again."
-                            )
-                            embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-                            embedNotFound.set_footer(text="Use 'vote create' to start again")
+
                             msgNotFound = await ctx.send(embed=embedNotFound)
-                            await msgNotFound.delete(delay=5)
+                            await msgNotFound.delete(delay=7)
                             continue
+
                         print(guilds)
 
                     else:
@@ -149,20 +153,30 @@ class VotingBot(commands.Cog):
                             guild = discord.utils.get(self.bot.guilds, name=guildStr)
 
                         if guild is None:
-                            embedNotFound = discord.Embed(
-                                color=hex.red_error,
-                                title="Create voting",
-                                description=f"Couldn't found one or more of the given guilds, please try again."
-                            )
-                            embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-                            embedNotFound.set_footer(text="Use 'vote create' to start again")
                             msgNotFound = await ctx.send(embed=embedNotFound)
-                            await msgNotFound.delete(delay=5)
+                            await msgNotFound.delete(delay=7)
                             continue
+
                         print(guild)
+
+                    embedText = discord.Embed(
+                        color=hex.ss_blurple,
+                        title="Create voting",
+                        description="Please provide the text you want to add to the voting."
+                                    "\n\n**Example:**"
+                                    "\nHey everyone,"
+                                    "\nWhich programming language is better? Please vote now!"
+                                    f"\n{e.pythonLogo}: Python | {e.javascriptLogo}: JavaScript"
+                                    f"\n\n(In the example below you would choose Python of course {e.blobamused})"
+                    )
+                    embedText.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedText.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
+                    await ctx.send(embed=embedText)
+
                     index += 1
 
-
+                elif index == 1:
+                    print(msgContent)
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
