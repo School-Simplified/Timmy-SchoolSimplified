@@ -114,15 +114,16 @@ class VotingBot(commands.Cog):
 
                         guildsStrList = msgContent.split(",")
                         for guildStr in guildsStrList:
-                            guildStr = guildStr.strip()
-                            guildsStrList[guildsStrList.index(guildStr)] = guildStr
 
-                            if guildStr.isdigit():
-                                guild = self.bot.get_guild(int(guildStr))
+                            stripGuildStr = guildStr.strip()
+                            guildsStrList[guildsStrList.index(guildStr)] = stripGuildStr
+
+                            if stripGuildStr.isdigit():
+                                guild = self.bot.get_guild(int(stripGuildStr))
                                 guilds.append(guild)
 
                             else:
-                                guild = discord.utils.get(self.bot.guilds, name=guildStr)
+                                guild = discord.utils.get(self.bot.guilds, name=stripGuildStr)
 
                             guilds.append(guild)
 
