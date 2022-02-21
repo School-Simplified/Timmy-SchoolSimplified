@@ -130,7 +130,7 @@ class VotingBot(commands.Cog):
                             embedNotFound = discord.Embed(
                                 color=hex.red_error,
                                 title="Create voting",
-                                description=f"Couldn't found one or more of the given guilds, please try again."
+                                description=f"Couldn't find one or more of the given guilds, please try again."
                             )
                             embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                             embedNotFound.set_footer(text="Use 'vote create' to start again")
