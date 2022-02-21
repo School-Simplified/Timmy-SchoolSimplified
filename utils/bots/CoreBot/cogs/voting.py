@@ -2,8 +2,8 @@ import asyncio
 import discord
 from discord.ext import commands
 from core.common import hexColors as hex
+from core.common import Emoji as e
 from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
-
 
 class VotingBot(commands.Cog):
 
@@ -14,9 +14,10 @@ class VotingBot(commands.Cog):
     """
     vote create: creates a voting
         1. Server (it will automatically get send in announcement channel)
-        2. Duration
-        3. Text
-        4. Options (would be buttons)
+        2. Text
+        3. Options (would be buttons)
+        4. Durations
+
 
         - Embed displays a timestamp and notes that the vote can't get undo
         - When someone voted, he gets a ephemeral message, that the person has voted on X
@@ -63,52 +64,145 @@ class VotingBot(commands.Cog):
         embedServer = discord.Embed(
             color=hex.ss_blurple,
             title="Create voting",
-            description="Please provide the server/s (name or ID) in which the voting should get sent. Use commas (`,`) to "
-                        "send it to multiple servers."
+            description="Please provide the server/s (name or ID) in which the voting should get sent. You can send "
+                        "it to multiple servers by separating the servers with commas (`,`)."
                         "\n**Accepted servers:**"
                         f"\n{acceptedGuildsStr}"
-                        "\n\n**NOTE**: it will automatically send the voting into the general announcement channel of "
+                        "\n\n**NOTE**: it will automatically send the voting into the __general announcement channel__ of "
                         "the server."
         )
         embedServer.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
         embedServer.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
-        msgServer = await ctx.send(embed=embedServer)
+        msgSetup = await ctx.send(embed=embedServer)
 
-        # def check(messageCheck: discord.Message):
-        #     return messageCheck.channel == msgServer.channel and messageCheck.author == msgServer.author
-        #
-        # while True:
-        #     try:
-        #         msgServer: discord.Message = await self.bot.wait_for('message', check=check, timeout=60)
-        #     except asyncio.TimeoutError:
-        #         embedTimeout = discord.Embed(
-        #             color=hex.red_error,
-        #             title="Create voting",
-        #             description="Canceled due to timeout.",
-        #
-        #         )
-        #         embedTimeout.set_author(name=f"{ctx.author}", url=ctx.author.avatar.url)
-        #         embedTimeout.set_footer(text="Use 'vote create' to start again")
-        #         await msgServer.edit(embed=embedTimeout)
-        #
-        #     else:
-        #         msgServerContent = msgServer.content
-        #
-        #         guilds = []
-        #         if "," in msgServerContent:
-        #             guildsStr = msgServerContent.split(",")
-        #             for guildStr in guildsStr:
-        #                 guildStr = guildStr.strip()
-        #                 guildsStr[guildsStr.index(guildStr)] = guildStr
-        #
-        #                 if guildStr.isdigit():
-        #                     guild = self.bot.get_guild(int(guildStr))
-        #                     guilds.append(guild)
-        #
-        #                 else:
-        #                     discord.utils.get(self.bot.guilds, name=guildStr)
-        #
-        #         if msgServerContent.isdigit():
+
+        def check(messageCheck: discord.Message):
+            return messageCheck.channel == ctx.channel and messageCheck.author == ctx.author
+
+        guilds = []
+        text = None
+        options = []
+
+        index = 0
+        while True:
+            try:
+                msgResponse: discord.Message = await self.bot.wait_for('message', check=check, timeout=60)
+            except asyncio.TimeoutError:
+                embedTimeout = discord.Embed(
+                    color=hex.red_error,
+                    title="Create voting",
+                    description="Setup canceled due to timeout.",
+
+                )
+                embedTimeout.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                embedTimeout.set_footer(text="Use 'vote create' to start again")
+                await msgSetup.edit(embed=embedTimeout)
+
+            else:
+                msgContent = msgResponse.content
+
+                if msgContent.lower() == "cancel":
+                    embedCancel = discord.Embed(
+                        color=hex.red_cancel,
+                        title="Create voting",
+                        description="Setup canceled."
+                    )
+                    embedCancel.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedCancel.set_footer(text="Use 'vote create' to start again")
+                    await msgSetup.edit(embed=embedCancel)
+                    break
+
+                if index == 0:
+
+                    embedNotFound = discord.Embed(
+                        color=hex.red_error,
+                        title="Create voting",
+                        description=f"Couldn't find one or more of the given guilds, please try again."
+                    )
+                    embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedNotFound.set_footer(text="Use 'vote create' to start again")
+
+                    if "," in msgContent:
+
+                        guildsStrList = msgContent.split(",")
+                        for guildStr in guildsStrList:
+
+                            stripGuildStr = guildStr.strip()
+                            guildsStrList[guildsStrList.index(guildStr)] = stripGuildStr
+
+                            if stripGuildStr.isdigit():
+                                guild = self.bot.get_guild(int(stripGuildStr))
+                                guilds.append(guild)
+
+                            else:
+                                guild = discord.utils.get(self.bot.guilds, name=stripGuildStr)
+
+                            guilds.append(guild)
+
+                        if any(guildInList is None for guildInList in guilds):
+
+                            msgNotFound = await ctx.send(embed=embedNotFound)
+                            await msgNotFound.delete(delay=7)
+                            continue
+
+                        print(guilds)
+
+                    else:
+                        guildStr = msgContent.strip()
+
+                        if guildStr.isdigit():
+                            guild = self.bot.get_guild(int(msgContent))
+                        else:
+                            guild = discord.utils.get(self.bot.guilds, name=guildStr)
+
+                        if guild is None:
+                            msgNotFound = await ctx.send(embed=embedNotFound)
+                            await msgNotFound.delete(delay=7)
+                            continue
+
+                        guilds.append(guild)
+
+                    embedText = discord.Embed(
+                        color=hex.ss_blurple,
+                        title="Create voting",
+                        description="Please provide the text you want to add to the voting."
+                                    "\n\n**Example:**"
+                                    "\nHey everyone,"
+                                    "\nWhich programming language is better? Please vote now!"
+                                    f"\n{e.pythonLogo} Python | {e.javascriptLogo} JavaScript"
+                                    f"\n\n(In the example above you would choose Python of course {e.blobamused})"
+                    )
+                    embedText.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedText.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
+                    await msgSetup.edit(embed=embedText)
+
+                    index += 1
+
+                elif index == 1:
+                    text = msgContent
+                    print(text)
+
+                    embedText = discord.Embed(
+                        color=hex.ss_blurple,
+                        title="Create voting",
+                        description="Please provide the options for the voting by separating the options with commas (`,`). "
+                                    "They will shown as buttons."
+                                    f"\n\nFrom the example on the last message, the options would be: "
+                                    f"{e.pythonLogo} Python, {e.javascriptLogo} JavaScript"
+                    )
+                    embedText.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedText.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
+                    await msgSetup.edit(embed=embedText)
+
+                    index += 1
+
+                elif index == 2:
+                    optionsStrList = msgContent.split(",")
+                    for optionStr in optionsStrList:
+                        options.append(optionStr.strip())
+
+                    print(options)
+
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))

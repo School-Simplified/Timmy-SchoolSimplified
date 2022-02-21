@@ -723,6 +723,9 @@ class Emoji:
     date = "<:thewickthing:835213229294223400>"
     discordLogo = "<:discord:812757175465934899>"
     discordLoad = "<a:Discord:866408537503694869>"
+    pythonLogo = "<:python:945410067887435846>"
+    javascriptLogo = "<:javascript:945410211752054816>"
+    blobamused = "<:blobamused:895125015719194655>"
 
     timmyBook = "<:timmy_book:880875405962264667>"
     loadingGIF = "<a:Loading:904192577094426626>"
