@@ -67,48 +67,100 @@ class VotingBot(commands.Cog):
                         "send it to multiple servers."
                         "\n**Accepted servers:**"
                         f"\n{acceptedGuildsStr}"
-                        "\n\n**NOTE**: it will automatically send the voting into the general announcement channel of "
+                        "\n\n**NOTE**: it will automatically send the voting into the __general announcement channel__ of "
                         "the server."
         )
         embedServer.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
         embedServer.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
-        msgServer = await ctx.send(embed=embedServer)
+        msgSetup = await ctx.send(embed=embedServer)
 
-        # def check(messageCheck: discord.Message):
-        #     return messageCheck.channel == msgServer.channel and messageCheck.author == msgServer.author
-        #
-        # while True:
-        #     try:
-        #         msgServer: discord.Message = await self.bot.wait_for('message', check=check, timeout=60)
-        #     except asyncio.TimeoutError:
-        #         embedTimeout = discord.Embed(
-        #             color=hex.red_error,
-        #             title="Create voting",
-        #             description="Canceled due to timeout.",
-        #
-        #         )
-        #         embedTimeout.set_author(name=f"{ctx.author}", url=ctx.author.avatar.url)
-        #         embedTimeout.set_footer(text="Use 'vote create' to start again")
-        #         await msgServer.edit(embed=embedTimeout)
-        #
-        #     else:
-        #         msgServerContent = msgServer.content
-        #
-        #         guilds = []
-        #         if "," in msgServerContent:
-        #             guildsStr = msgServerContent.split(",")
-        #             for guildStr in guildsStr:
-        #                 guildStr = guildStr.strip()
-        #                 guildsStr[guildsStr.index(guildStr)] = guildStr
-        #
-        #                 if guildStr.isdigit():
-        #                     guild = self.bot.get_guild(int(guildStr))
-        #                     guilds.append(guild)
-        #
-        #                 else:
-        #                     discord.utils.get(self.bot.guilds, name=guildStr)
-        #
-        #         if msgServerContent.isdigit():
+
+        def check(messageCheck: discord.Message):
+            return messageCheck.channel == msgSetup.channel and messageCheck.author == msgSetup.author
+
+        index = 0
+        while True:
+            try:
+                msgResponse: discord.Message = await self.bot.wait_for('message', check=check, timeout=60)
+            except asyncio.TimeoutError:
+                embedTimeout = discord.Embed(
+                    color=hex.red_error,
+                    title="Create voting",
+                    description="Setup canceled due to timeout.",
+
+                )
+                embedTimeout.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                embedTimeout.set_footer(text="Use 'vote create' to start again")
+                await msgSetup.edit(embed=embedTimeout)
+
+            else:
+                msgContent = msgResponse.content
+
+                if msgContent.lower() == "cancel":
+                    embedCancel = discord.Embed(
+                        color=hex.red_cancel,
+                        title="Create voting",
+                        description="Setup canceled."
+                    )
+                    embedCancel.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedCancel.set_footer(text="Use 'vote create' to start again")
+                    await msgSetup.edit(embed=embedCancel)
+                    break
+
+                if index == 0:
+
+                    if "," in msgContent:
+                        guilds = []
+
+                        guildsStrList = msgContent.split(",")
+                        for guildStr in guildsStrList:
+                            guildStr = guildStr.strip()
+                            guildsStrList[guildsStrList.index(guildStr)] = guildStr
+
+                            if guildStr.isdigit():
+                                guild = self.bot.get_guild(int(guildStr))
+                                guilds.append(guild)
+
+                            else:
+                                guild = discord.utils.get(self.bot.guilds, name=guildStr)
+
+                            guilds.append(guild)
+
+                        if any(guildInList is None for guildInList in guilds):
+                            embedNotFound = discord.Embed(
+                                color=hex.red_error,
+                                title="Create voting",
+                                description=f"Couldn't found one or more of the given guilds, please try again."
+                            )
+                            embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                            embedNotFound.set_footer(text="Use 'vote create' to start again")
+                            msgNotFound = await ctx.send(embed=embedNotFound)
+                            await msgNotFound.delete(delay=5)
+                            continue
+
+                    else:
+                        guildStr = msgContent.strip()
+
+                        if guildStr.isdigit():
+                            guild = self.bot.get_guild(int(msgContent))
+                        else:
+                            guild = discord.utils.get(self.bot.guilds, name=guildStr)
+
+                        if guild is None:
+                            embedNotFound = discord.Embed(
+                                color=hex.red_error,
+                                title="Create voting",
+                                description=f"Couldn't found one or more of the given guilds, please try again."
+                            )
+                            embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                            embedNotFound.set_footer(text="Use 'vote create' to start again")
+                            msgNotFound = await ctx.send(embed=embedNotFound)
+                            await msgNotFound.delete(delay=5)
+                            continue
+
+                    index += 1
+
+
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
