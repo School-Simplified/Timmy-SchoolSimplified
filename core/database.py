@@ -543,6 +543,19 @@ class VCDeletionQueue(BaseModel):
     GuildID = BigIntegerField()
     DTF = DateTimeField()
 
+class TechCommissionArchiveLog(BaseModel):
+    """
+    #TechCommissionArchiveLog
+
+    `id`: AutoField()
+    Database Entry
+
+    `ThreadID`: BigIntegerField()
+    ID of the thread.
+    """
+
+    id = AutoField()
+    ThreadID = BigIntegerField()
 
 app = Flask(__name__)
 
@@ -584,6 +597,7 @@ tables = {
     "BaseTickerInfo": BaseTickerInfo,
     "VCDeletionQueue": VCDeletionQueue,
     "TutorSession_GracePeriod": TutorSession_GracePeriod,
+    "TechCommissionArchiveLog": TechCommissionArchiveLog
 }
 
 iter_table(tables)

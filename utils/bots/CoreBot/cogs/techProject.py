@@ -1,9 +1,9 @@
 import discord
 from core.checks import is_botAdmin3
-from discord.ext import commands
+from discord.ext import commands, tasks
 from core.common import SelectMenuHandler, TempConfirm, LockButton, TECH_ID, Emoji
 from core.checks import is_botAdmin
-
+from core import database
 
 class BotRequestModal(discord.ui.Modal):
     def __init__(self, bot) -> None:
@@ -101,6 +101,10 @@ class CommissionTechButton(discord.ui.View):
 class TechProjectCMD(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
+        self.AUTO_UNARHCIVE.start()
+    
+    def cog_unload(self):
+        self.AUTO_UNARHCIVE.cancel()
 
     @commands.command()
     @is_botAdmin
@@ -119,6 +123,46 @@ class TechProjectCMD(commands.Cog):
         )
         view = CommissionTechButton(self.bot)
         await ctx.send(embed=embed, view=view)
+
+    @commands.command()
+    async def closethread(self, ctx: commands.Context):
+        channel: discord.TextChannel = await self.bot.fetch_channel(TECH_ID.ch_botreq)
+        thread: discord.Thread = ctx.channel
+        if thread in channel.threads:
+            await ctx.send("Closed thread!")
+            query = database.TechCommissionArchiveLog.create(ThreadID = thread.id)
+            query.save()
+            thread.archive()
+        else:
+            await ctx.send("Not a valid thread.")
+
+    @commands.command()
+    async def openthread(self, ctx: commands.Context):
+        channel: discord.TextChannel = await self.bot.fetch_channel(TECH_ID.ch_botreq)
+        thread: discord.Thread = ctx.channel
+        if thread in channel.threads:
+            query = database.TechCommissionArchiveLog.select().where(database.ThreadID == thread.id)
+            if query.exists():
+                query.delete_instance()
+                thread.unarchive()
+                await ctx.send("Re-opened thread!")
+            else:
+                await ctx.send("Unknown Error")
+        else:
+            await ctx.send("Not a valid thread.")
+
+
+    @tasks.loop(hours=1.0)
+    async def AUTO_UNARHCIVE(self):
+        """
+        Create a task loop to make sure threads don't automatically archive due to inactivity.
+        """
+        channel: discord.TextChannel = await self.bot.fetch_channel(TECH_ID.ch_botreq)
+        for thread in channel.threads:
+            if thread.archived and not database.TechCommissionArchiveLog.select().where(database.ThreadID == thread.id).exists():
+                await thread.unarchive()
+
+
 
 
 def setup(bot):

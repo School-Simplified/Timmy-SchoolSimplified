@@ -494,6 +494,9 @@ class TECH_ID:
     ch_ticketLog = int(
         ConfigcatClient.TECH_ID_CC.get_value("ch_ticketlog", 872915565600182282)
     )
+    ch_botreq = int(
+        ConfigcatClient.TECH_ID_CC.get_value("ch_botreq", 933181562885914724)
+    )
 
     # *** Categories ***
     cat_developerComms = int(
