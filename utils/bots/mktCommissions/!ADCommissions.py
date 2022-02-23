@@ -90,7 +90,7 @@ class CommissionTechButton(discord.ui.View):
     @discord.ui.button(
         label="Start Commission",
         style=discord.ButtonStyle.blurple,
-        custom_id="persistent_view:tech_pjt",
+        custom_id="persistent_view:mkt_ad_commission_start",
         emoji="📝",
     )
     async def verify(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -98,17 +98,13 @@ class CommissionTechButton(discord.ui.View):
         return await interaction.response.send_modal(modal)
 
 
-class TechProjectCMD(commands.Cog):
+class MKTProject(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
-        self.AUTO_UNARHCIVE.start()
-    
-    def cog_unload(self):
-        self.AUTO_UNARHCIVE.cancel()
 
     @commands.command()
     @is_botAdmin
-    async def techembedc(self, ctx):
+    async def mktembedc(self, ctx):
         embed = discord.Embed(
             title="Bot Developer Commissions", color=discord.Color.green()
         )
@@ -125,7 +121,7 @@ class TechProjectCMD(commands.Cog):
         await ctx.send(embed=embed, view=view)
 
     @commands.command()
-    async def closethread(self, ctx: commands.Context):
+    async def closethreadmkt(self, ctx: commands.Context):
         channel: discord.TextChannel = await self.bot.fetch_channel(TECH_ID.ch_botreq)
         thread: discord.Thread = ctx.channel
         if thread in channel.threads:
@@ -136,34 +132,7 @@ class TechProjectCMD(commands.Cog):
         else:
             await ctx.send("Not a valid thread.")
 
-    @commands.command()
-    async def openthread(self, ctx: commands.Context):
-        channel: discord.TextChannel = await self.bot.fetch_channel(TECH_ID.ch_botreq)
-        thread: discord.Thread = ctx.channel
-        if thread in channel.threads:
-            query = database.TechCommissionArchiveLog.select().where(database.ThreadID == thread.id)
-            if query.exists():
-                query.delete_instance()
-                thread.unarchive()
-                await ctx.send("Re-opened thread!")
-            else:
-                await ctx.send("Unknown Error")
-        else:
-            await ctx.send("Not a valid thread.")
-
-
-    @tasks.loop(hours=1.0)
-    async def AUTO_UNARHCIVE(self):
-        """
-        Create a task loop to make sure threads don't automatically archive due to inactivity.
-        """
-        channel: discord.TextChannel = await self.bot.fetch_channel(TECH_ID.ch_botreq)
-        for thread in channel.threads:
-            if thread.archived and not database.TechCommissionArchiveLog.select().where(database.ThreadID == thread.id).exists():
-                await thread.unarchive()
-
-
 
 
 def setup(bot):
-    bot.add_cog(TechProjectCMD(bot))
+    bot.add_cog(MKTProject(bot))

@@ -15,7 +15,8 @@ import discord
 import pytz
 from core import database
 from core.common import (
-    ACAD_ID,
+    CH_ID,
+    TUT_ID,
     HR_ID,
     MAIN_ID,
     MKT_ID,
@@ -26,9 +27,11 @@ from core.common import (
     S3_upload_file,
     SelectMenuHandler,
     CHHelperRoles,
+    access_secret,
 )
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
+from core.checks import is_botAdmin
 
 load_dotenv()
 
@@ -40,25 +43,9 @@ scope = [
 ]
 essayTicketLog_key = "1pB5xpsBGKIES5vmEY4hjluFg7-FYolOmN_w3s20yzr0"
 
-sa_creds = json.loads(os.getenv("GSPREADSJSON"))
-creds = ServiceAccountCredentials.from_json_keyfile_dict(sa_creds, scope)
+creds = access_secret("gsheets_c", True, 3, scope)
 gspread_client = gspread.authorize(creds)
 print("Connected to Gspread.")
-
-
-class TicketButton(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.value = None
-
-    @discord.ui.button(
-        label="Create Ticket",
-        style=discord.ButtonStyle.blurple,
-        custom_id="persistent_view:ticketdrop",
-        emoji="📝",
-    )
-    async def verify(self, button: discord.ui.Button, interaction: discord.Interaction):
-        self.value = True
 
 
 """
@@ -295,37 +282,35 @@ def getRole(guild: discord.Guild, mainSubject: str, subject: str) -> discord.Rol
     return role
 
 
-class DropdownTickets(commands.Cog):
+class TicketBT(discord.ui.Button):
     def __init__(self, bot):
+        """
+        A button for one role. `custom_id` is needed for persistent views.
+        """
         self.bot = bot
         self.mainserver = MAIN_ID.g_main
         self.ServerIDs = [TECH_ID.g_tech, CH_ID.g_ch, TUT_ID.g_tut, MKT_ID.g_mkt, HR_ID.g_hr]
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
         self.CHID_DEFAULT = Others.CHID_DEFAULT
-        self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
-        self.TicketInactive.start()
+        self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
+        super().__init__(
+            label="Create Ticket",
+            style=discord.enums.ButtonStyle.blurple,
+            custom_id="persistent_view:ticketdrop",
+            emoji="📝",
+        )
 
-    def cog_unload(self):
-        self.TicketInactive.cancel()
-
-    @commands.Cog.listener("on_interaction")
-    async def TicketDropdown(self, interaction: discord.Interaction):
-        InteractionResponse = interaction.data
-
-        if interaction.message is None:
-            return
-
-        try:
-            val = InteractionResponse["custom_id"]
-        except KeyError:
-            return
-
-        if (
-            interaction.guild_id == self.mainserver
-            # and interaction.message.id == int(self.CHID_DEFAULT)
-            and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
-        ):
+    async def callback(self, interaction: discord.Interaction):
+        print("hi")
+        bucket = self.view.cd_mapping.get_bucket(interaction.message)
+        retry_after = bucket.update_rate_limit()
+        print(retry_after)
+        if retry_after:
+            return await interaction.response.send_message(
+                "Sorry, you are being rate limited.", ephemeral=True
+            )
+        else:
             channel = await self.bot.fetch_channel(interaction.channel_id)
             guild = interaction.message.guild
             author = interaction.user
@@ -515,7 +500,10 @@ class DropdownTickets(commands.Cog):
                 mainSubject = "languages"
             else:
                 mainSubject = (
-                    c.name.replace("═", "").replace("⁃", "").replace("Ticket", "").strip()
+                    c.name.replace("═", "")
+                    .replace("⁃", "")
+                    .replace("Ticket", "")
+                    .strip()
                 )
 
             if selection_str == "Other":
@@ -530,9 +518,11 @@ class DropdownTickets(commands.Cog):
             await channel.set_permissions(
                 guild.default_role, read_messages=False, reason="Ticket Perms"
             )
-            tz = timezone('EST')
+            tz = timezone("EST")
             opened_at = datetime.now(tz)
-            query = database.TicketInfo.create(ChannelID=channel.id, authorID=author.id, createdAt=opened_at)
+            query = database.TicketInfo.create(
+                ChannelID=channel.id, authorID=author.id, createdAt=opened_at
+            )
             query.save()
 
             roles = [
@@ -556,9 +546,18 @@ class DropdownTickets(commands.Cog):
                     reason="Ticket Perms",
                 )
                 RoleOBJ = discord.utils.get(guild.roles, name=role)
-                if not (RoleOBJ.id == MAIN_ID.r_chatHelper or RoleOBJ.id == MAIN_ID.r_leadHelper) and not channel.category.id == MAIN_ID.cat_essayTicket:
+                if (
+                    not (
+                        RoleOBJ.id == MAIN_ID.r_chatHelper
+                        or RoleOBJ.id == MAIN_ID.r_leadHelper
+                    )
+                    and not channel.category.id == MAIN_ID.cat_essayTicket
+                ):
                     if RoleOBJ.id == MAIN_ID.r_essayReviser:
-                        if channel.category.id == MAIN_ID.cat_essayTicket or channel.category.id == MAIN_ID.cat_englishTicket:
+                        if (
+                            channel.category.id == MAIN_ID.cat_essayTicket
+                            or channel.category.id == MAIN_ID.cat_englishTicket
+                        ):
                             await channel.set_permissions(
                                 RoleOBJ,
                                 read_messages=True,
@@ -567,8 +566,8 @@ class DropdownTickets(commands.Cog):
                             )
                         else:
                             continue
-                else: 
-                    await channel.set_permissions( 
+                else:
+                    await channel.set_permissions(
                         RoleOBJ,
                         read_messages=True,
                         send_messages=True,
@@ -677,6 +676,64 @@ class DropdownTickets(commands.Cog):
 
             await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
 
+
+class TicketButton(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.value = None
+        self.bot = bot
+
+        self.add_item(TicketBT(self.bot))
+        self.cookie = 0
+        self.cd_mapping = commands.CooldownMapping.from_cooldown(
+            1, 30, commands.BucketType.member
+        )
+
+    """@discord.ui.button(label="Create Ticket", style=discord.ButtonStyle.blurple, emoji="📝", custom_id="persistent_view:ticketdrop")
+    async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+        print("hi")
+        bucket = self.view.cd_mapping.get_bucket(interaction.message)
+        retry_after = bucket.update_rate_limit()
+        print(retry_after)
+        if retry_after:
+            await interaction.response.send_message("Sorry, you are being rate limited.", ephemeral=True)
+            return self.stop()
+        else:
+            pass"""
+
+
+class DropdownTickets(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.mainserver = MAIN_ID.g_main
+        self.ServerIDs = [TECH_ID.g_tech, CH_ID.g_ch, TUT_ID.g_tut, MKT_ID.g_mkt, HR_ID.g_hr]
+        self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
+        self.CHID_DEFAULT = Others.CHID_DEFAULT
+        self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
+        self.TicketInactive.start()
+        self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
+
+    def cog_unload(self):
+        self.TicketInactive.cancel()
+
+    @commands.Cog.listener("on_interaction")
+    async def TicketDropdown(self, interaction: discord.Interaction):
+        InteractionResponse = interaction.data
+
+        if interaction.message is None:
+            return
+
+        try:
+            val = InteractionResponse["custom_id"]
+        except KeyError:
+            return
+
+        if (
+            interaction.guild_id == self.mainserver
+            # and interaction.message.id == int(self.CHID_DEFAULT)
+            and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
+        ):
+            pass
         elif val == "ch_lock":
             channel = interaction.message.channel
             guild = interaction.message.guild
@@ -870,14 +927,14 @@ class DropdownTickets(commands.Cog):
 
                     query = (
                         database.TicketInfo.select()
-                            .where(database.TicketInfo.ChannelID == interaction.channel_id)
-                            .get()
+                        .where(database.TicketInfo.ChannelID == interaction.channel_id)
+                        .get()
                     )
 
-                    tz = timezone('EST')
+                    tz = timezone("EST")
                     closed_at_raw = datetime.now(tz)
                     opened_at_raw = query.createdAt
-                    
+
                     opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
                     closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
 
@@ -891,7 +948,6 @@ class DropdownTickets(commands.Cog):
                     row.insert(7, closed_at)
                     self.sheet.append_row(row)
                     self.sheet.sort((8, "des"))
-
 
             await msg.delete()
             await interaction.channel.send(
@@ -938,7 +994,7 @@ class DropdownTickets(commands.Cog):
                         ):
                             row.append(f"{message.author} ({message.author.id})")
 
-                    tz = timezone('EST')
+                    tz = timezone("EST")
                     closed_at_raw = datetime.now(tz)
                     opened_at_raw = query.createdAt
 
@@ -1018,8 +1074,6 @@ class DropdownTickets(commands.Cog):
                     entry.ChannelID
                 )
             except Exception as e:
-                print(entry.ChannelID, e)
-                entry.delete_instance()
                 continue
             fetchMessage = await channel.history(limit=1).flatten()
             TicketOwner = await self.bot.fetch_user(entry.authorID)
@@ -1103,6 +1157,7 @@ class DropdownTickets(commands.Cog):
                 entry.delete_instance()"""
 
     @commands.command()
+    @is_botAdmin
     async def sendCHTKTView(self, ctx):
         MasterSubjectView = discord.ui.View()
         MasterSubjectView.add_item(
@@ -1123,7 +1178,7 @@ class DropdownTickets(commands.Cog):
             > <:SS:865715703545069568> In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
             > <:SS:865715703545069568> Send the question in your direct messages as per the bot instructions.
             > <:SS:865715703545069568> Send a picture of your assignment title in your direct messages as per the bot instructions.""",
-            view=TicketButton(),
+            view=TicketButton(self.bot),
         )
 
 

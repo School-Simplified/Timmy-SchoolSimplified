@@ -6,25 +6,27 @@ from core.common import hexColors
 
 
 class StudyToDo(commands.Cog):
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
 
     @commands.group(aliaseS=["study-todo"])
     async def studytodo(self, ctx: commands.Context):
         if ctx.message.content == "+studytodo":
-            subcommands = "/".join(sorted(subcommand.name for subcommand in self.studytodo.commands))
+            subcommands = "/".join(
+                sorted(subcommand.name for subcommand in self.studytodo.commands)
+            )
             signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
 
             embed = discord.Embed(
                 color=hexColors.red_error,
                 title="Missing/Extra Required Arguments Passed In!",
                 description=f"You have missed one or several arguments in this command"
-                            f"\n\nUsage:"
-                            f"\n`{signature}`"
+                f"\n\nUsage:"
+                f"\n`{signature}`",
             )
-            embed.set_footer(text="Consult the Help Command if you are having trouble or call over a Bot Manager!")
+            embed.set_footer(
+                text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
+            )
             await ctx.send(embed=embed)
 
     @studytodo.command()
@@ -33,7 +35,9 @@ class StudyToDo(commands.Cog):
         Adds an item to the study to-do list of the author/owner.
         """
 
-        query: database.StudyToDo = database.StudyToDo.create(discordID=ctx.author.id, item=item)
+        query: database.StudyToDo = database.StudyToDo.create(
+            discordID=ctx.author.id, item=item
+        )
         query.save()
 
         embed = discord.Embed(
@@ -76,20 +80,25 @@ class StudyToDo(commands.Cog):
     @studytodo.command()
     async def list(self, ctx):
         todoList = []
-        query = database.StudyToDo.select().where(database.StudyToDo.discordID == ctx.author.id)
+        query = database.StudyToDo.select().where(
+            database.StudyToDo.discordID == ctx.author.id
+        )
         for todo in query:
             todoList.append(f"{str(todo.id)}) {todo.item}")
 
         todoFinal = "\n".join(todoList)
 
         embed = discord.Embed(
-            title="Your Study-ToDo List!", description=todoFinal, color=discord.Color.green()
+            title="Your Study-ToDo List!",
+            description=todoFinal,
+            color=discord.Color.green(),
         )
         embed.set_footer(
             text="You can use +studytodo add (item)/+studytodo remove (item id) to modify this!"
         )
 
         await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(StudyToDo(bot))

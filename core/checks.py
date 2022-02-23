@@ -14,7 +14,7 @@ from core import database
 from core.common import MKT_ID
 
 
-def predicate_LV1(ctx):
+def predicate_LV1(ctx) -> bool:
     adminIDs = []
 
     query = database.Administrators.select().where(
