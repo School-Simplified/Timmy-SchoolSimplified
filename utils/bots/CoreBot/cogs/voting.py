@@ -90,7 +90,7 @@ class VotingBot(commands.Cog):
             except asyncio.TimeoutError:
                 embedTimeout = discord.Embed(
                     color=hex.red_error,
-                    title="Create voting",
+                    title="Create Voting",
                     description="Setup canceled due to timeout.",
 
                 )
@@ -104,7 +104,7 @@ class VotingBot(commands.Cog):
                 if msgContent.lower() == "cancel":
                     embedCancel = discord.Embed(
                         color=hex.red_cancel,
-                        title="Create voting",
+                        title="Create Voting",
                         description="Setup canceled."
                     )
                     embedCancel.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
@@ -116,7 +116,7 @@ class VotingBot(commands.Cog):
 
                     embedNotFound = discord.Embed(
                         color=hex.red_error,
-                        title="Create voting",
+                        title="Create Voting",
                         description=f"Couldn't find one or more of the given guilds, please try again."
                     )
                     embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
@@ -164,7 +164,7 @@ class VotingBot(commands.Cog):
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
-                        title="Create voting",
+                        title="Create Voting",
                         description="Please provide the text you want to add to the voting."
                                     "\n\n**Example:**"
                                     "\nHey everyone,"
@@ -184,7 +184,7 @@ class VotingBot(commands.Cog):
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
-                        title="Create voting",
+                        title="Create Voting",
                         description="Please provide the options for the voting by separating the options with commas (`,`). "
                                     "They will shown as buttons."
                                     f"\n\nFrom the example on the last message, the options would be: "
@@ -202,6 +202,13 @@ class VotingBot(commands.Cog):
                         options.append(optionStr.strip())
 
                     print(options)
+
+                    embedDuration = discord.Embed(
+                        color=hex.ss_blurple,
+                        title="Create Voting",
+                        description="Please provide the duration of the voting."
+                                    "\n"
+                    )
 
 
 def setup(bot):
