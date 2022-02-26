@@ -11,6 +11,7 @@ import sys
 import typing
 from pathlib import Path
 from typing import Any, Awaitable, Callable, List, Tuple, Union
+from threading import Thread
 
 import boto3
 import chat_exporter
@@ -1355,13 +1356,15 @@ async def force_restart(ctx):
 
     msg = await ctx.send(embed=embed)
     try:
-        result = subprocess.run(
-            "cd && cd Timmy-SchoolSimplified && nohup python3.8 main.py &",
-            shell=True,
-            text=True,
-            capture_output=True,
-            check=True,
+        runThread = Thread(target=subprocess.run, kwargs={
+            'input': "cd && cd Timmy-SchoolSimplified && nohup python3.8 main.py &",
+            'shell': True,
+            'text': True,
+            'capture_output': True,
+            'check': True
+            }
         )
+        runThread.start()
 
         embed.add_field(
             name="Started Environment and Additional Process (2/3)",
