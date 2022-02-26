@@ -4,7 +4,7 @@ from discord.ext import commands
 from core.checks import isnot_hostTimmyA
 from core.common import hexColors as hex
 from core.common import Emoji as e
-from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
+from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, CH_ID, HR_ID
 
 
 class VotingBot(commands.Cog):
@@ -17,6 +17,7 @@ class VotingBot(commands.Cog):
             TECH_ID.g_tech,
             MKT_ID.g_mkt,
             TUT_ID.g_tut,
+            CH_ID,
             HR_ID.g_hr,
         ]
 
@@ -61,7 +62,7 @@ class VotingBot(commands.Cog):
         pass
 
     @vote.command()
-    @isnot_hostTimmyA()
+    @isnot_hostTimmyA
     async def create(self, ctx: commands.Context):
 
         acceptedGuildsStr = ""
