@@ -472,7 +472,7 @@ class DIGITAL_ID:
 
 class TECH_ID:
     """
-    IDs of the SS Technical & Information Department server.
+    IDs of the 'The Department of Information & Technology' server.
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
@@ -545,7 +545,7 @@ class SandboxConfig:
 
 class CH_ID:
     """
-    IDs of the SS Academics Department server.
+    IDs of the Chat Helper server.
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
