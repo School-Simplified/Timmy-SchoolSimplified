@@ -33,6 +33,7 @@ async def force_restart2(ctx):  # Forces REPL to apply changes to everything
         subprocess.run(
             "python3.8 main.py", shell=True, text=True, capture_output=True, check=True
         )
+        print("finally")
     except Exception as e:
         await ctx.send(
             f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}"
