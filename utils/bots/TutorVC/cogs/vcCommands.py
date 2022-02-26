@@ -481,25 +481,24 @@ class TutorVCCMD(commands.Cog):
 
         member = ctx.guild.get_member(ctx.author.id)
 
-        if ctx.author.id != 415629932798935040:
-            if (
-                not any(role in ctx.author.roles for role in roleList)
-                and ctx.guild.id == 763119924385939498
-            ):
-                embed = discord.Embed(
-                    title=f"{Emoji.deny} Insufficient Rank",
-                    description="Sorry! But only the following people who have these roles can rename their channel!"
-                    "\n\n- **Moderators**"
-                    "\n- **Marketing Team**"
-                    "\n- **Technical Team**"
-                    "\n- **Academics Team**"
-                    "\n- **VP**\n- **CO**"
-                    "\n- **Legends**"
-                    "\n- **Simplified Boosters**"
-                    "\n- **Level 40+**",
-                    color=discord.Colour.blurple(),
-                )
-                return await ctx.send(embed=embed)
+        if (
+            not any(role in ctx.author.roles for role in roleList)
+            and ctx.guild.id == 763119924385939498
+        ):
+            embed = discord.Embed(
+                title=f"{Emoji.deny} Insufficient Rank",
+                description="Sorry! But only the following people who have these roles can rename their channel!"
+                "\n\n- **Moderators**"
+                "\n- **Marketing Team**"
+                "\n- **Technical Team**"
+                "\n- **Academics Team**"
+                "\n- **VP**\n- **CO**"
+                "\n- **Legends**"
+                "\n- **Simplified Boosters**"
+                "\n- **Level 40+**",
+                color=discord.Colour.blurple(),
+            )
+            return await ctx.send(embed=embed)
 
         voice_state = member.voice
 

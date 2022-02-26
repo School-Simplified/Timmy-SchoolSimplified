@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 import discord
 from core import database
-from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID
+from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID, TECH_ID, SandboxConfig
 from discord.ext import commands, tasks
 import pytz
 
@@ -79,14 +79,20 @@ class TutorVCUpdate(commands.Cog):
 
         self.TutorRole = "Tutor"
 
-        self.categoryIDs = [MAIN_ID.cat_privateVC, STAFF_ID.cat_privateVC]
+        self.categoryIDs = [
+            MAIN_ID.cat_privateVC,
+            STAFF_ID.cat_privateVC,
+            SandboxConfig.cat_sandbox,
+        ]
         self.CcategoryIDs = {
             MAIN_ID.g_main: MAIN_ID.cat_privateVC,
             STAFF_ID.g_staff: STAFF_ID.cat_privateVC,
+            TECH_ID.g_tech: SandboxConfig.cat_sandbox,
         }
         self.LobbyStartIDs = {
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
+            TECH_ID.g_tech: SandboxConfig.ch_TV_console,
         }
         # self.PRIVVC_DELETION_QUEUE.start()
 
@@ -94,7 +100,12 @@ class TutorVCUpdate(commands.Cog):
     # self.PRIVVC_DELETION_QUEUE.cancel()
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member: discord.Member, before, after):
+    async def on_voice_state_update(
+        self,
+        member: discord.Member,
+        before: discord.VoiceState,
+        after: discord.VoiceState,
+    ):
         database.db.connect(reuse_if_open=True)
         try:
             lobbyStart = await self.bot.fetch_channel(

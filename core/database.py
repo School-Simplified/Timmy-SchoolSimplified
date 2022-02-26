@@ -23,9 +23,7 @@ If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove
 """
 
 if os.getenv("IP") is None:
-    print(
-        f"Successfully connected to the SQLite Database"
-    )
+    print(f"Successfully connected to the SQLite Database")
     db = SqliteDatabase("data.db")
 
 elif os.getenv("IP") is not None:
@@ -39,9 +37,7 @@ elif os.getenv("IP") is not None:
                 host=os.getenv("IP"),
                 port=int(os.getenv("PORT")),
             )
-            print(
-                "Successfully connected to the MySQL Database"
-            )
+            print("Successfully connected to the MySQL Database")
         except Exception as e:
             print(
                 f"Unable to connect to the MySQL Database:\n    > {e}\n\nSwitching to SQLite..."
@@ -50,13 +46,9 @@ elif os.getenv("IP") is not None:
     else:
         db = SqliteDatabase("data.db")
         if not os.getenv("PyTestMODE"):
-            print(
-                f"Successfully connected to the SQLite Database"
-            )
+            print(f"Successfully connected to the SQLite Database")
         else:
-            print(
-                f"Created a SQLite Database for testing..."
-            )
+            print(f"Created a SQLite Database for testing...")
 
 
 def iter_table(model_dict: dict):
@@ -543,6 +535,7 @@ class VCDeletionQueue(BaseModel):
     GuildID = BigIntegerField()
     DTF = DateTimeField()
 
+
 class TechCommissionArchiveLog(BaseModel):
     """
     #TechCommissionArchiveLog
@@ -556,6 +549,7 @@ class TechCommissionArchiveLog(BaseModel):
 
     id = AutoField()
     ThreadID = BigIntegerField()
+
 
 app = Flask(__name__)
 
@@ -597,7 +591,7 @@ tables = {
     "BaseTickerInfo": BaseTickerInfo,
     "VCDeletionQueue": VCDeletionQueue,
     "TutorSession_GracePeriod": TutorSession_GracePeriod,
-    "TechCommissionArchiveLog": TechCommissionArchiveLog
+    "TechCommissionArchiveLog": TechCommissionArchiveLog,
 }
 
 iter_table(tables)

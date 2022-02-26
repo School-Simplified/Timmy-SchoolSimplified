@@ -5,11 +5,19 @@ from core.common import hexColors as hex
 from core.common import Emoji as e
 from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
 
-class VotingBot(commands.Cog):
 
+class VotingBot(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.acceptedGuilds = [MAIN_ID.g_main, STAFF_ID.g_staff, DIGITAL_ID.g_digital, TECH_ID.g_tech, MKT_ID.g_mkt, TUT_ID.g_tut, HR_ID.g_hr]
+        self.acceptedGuilds = [
+            MAIN_ID.g_main,
+            STAFF_ID.g_staff,
+            DIGITAL_ID.g_digital,
+            TECH_ID.g_tech,
+            MKT_ID.g_mkt,
+            TUT_ID.g_tut,
+            HR_ID.g_hr,
+        ]
 
     """
     vote create: creates a voting
@@ -65,19 +73,21 @@ class VotingBot(commands.Cog):
             color=hex.ss_blurple,
             title="Create voting",
             description="Please provide the server/s (name or ID) in which the voting should get sent. You can send "
-                        "it to multiple servers by separating the servers with commas (`,`)."
-                        "\n**Accepted servers:**"
-                        f"\n{acceptedGuildsStr}"
-                        "\n\n**NOTE**: it will automatically send the voting into the __general announcement channel__ of "
-                        "the server."
+            "it to multiple servers by separating the servers with commas (`,`)."
+            "\n**Accepted servers:**"
+            f"\n{acceptedGuildsStr}"
+            "\n\n**NOTE**: it will automatically send the voting into the __general announcement channel__ of "
+            "the server.",
         )
         embedServer.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
         embedServer.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
         msgSetup = await ctx.send(embed=embedServer)
 
-
         def check(messageCheck: discord.Message):
-            return messageCheck.channel == ctx.channel and messageCheck.author == ctx.author
+            return (
+                messageCheck.channel == ctx.channel
+                and messageCheck.author == ctx.author
+            )
 
         guilds = []
         text = None
@@ -86,15 +96,18 @@ class VotingBot(commands.Cog):
         index = 0
         while True:
             try:
-                msgResponse: discord.Message = await self.bot.wait_for('message', check=check, timeout=60)
+                msgResponse: discord.Message = await self.bot.wait_for(
+                    "message", check=check, timeout=60
+                )
             except asyncio.TimeoutError:
                 embedTimeout = discord.Embed(
                     color=hex.red_error,
                     title="Create voting",
                     description="Setup canceled due to timeout.",
-
                 )
-                embedTimeout.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                embedTimeout.set_author(
+                    name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                )
                 embedTimeout.set_footer(text="Use 'vote create' to start again")
                 await msgSetup.edit(embed=embedTimeout)
 
@@ -105,9 +118,11 @@ class VotingBot(commands.Cog):
                     embedCancel = discord.Embed(
                         color=hex.red_cancel,
                         title="Create voting",
-                        description="Setup canceled."
+                        description="Setup canceled.",
                     )
-                    embedCancel.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedCancel.set_author(
+                        name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                    )
                     embedCancel.set_footer(text="Use 'vote create' to start again")
                     await msgSetup.edit(embed=embedCancel)
                     break
@@ -117,9 +132,11 @@ class VotingBot(commands.Cog):
                     embedNotFound = discord.Embed(
                         color=hex.red_error,
                         title="Create voting",
-                        description=f"Couldn't find one or more of the given guilds, please try again."
+                        description=f"Couldn't find one or more of the given guilds, please try again.",
                     )
-                    embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedNotFound.set_author(
+                        name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                    )
                     embedNotFound.set_footer(text="Use 'vote create' to start again")
 
                     if "," in msgContent:
@@ -135,7 +152,9 @@ class VotingBot(commands.Cog):
                                 guilds.append(guild)
 
                             else:
-                                guild = discord.utils.get(self.bot.guilds, name=stripGuildStr)
+                                guild = discord.utils.get(
+                                    self.bot.guilds, name=stripGuildStr
+                                )
 
                             guilds.append(guild)
 
@@ -166,14 +185,18 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Create voting",
                         description="Please provide the text you want to add to the voting."
-                                    "\n\n**Example:**"
-                                    "\nHey everyone,"
-                                    "\nWhich programming language is better? Please vote now!"
-                                    f"\n{e.pythonLogo} Python | {e.javascriptLogo} JavaScript"
-                                    f"\n\n(In the example above you would choose Python of course {e.blobamused})"
+                        "\n\n**Example:**"
+                        "\nHey everyone,"
+                        "\nWhich programming language is better? Please vote now!"
+                        f"\n{e.pythonLogo} Python | {e.javascriptLogo} JavaScript"
+                        f"\n\n(In the example above you would choose Python of course {e.blobamused})",
                     )
-                    embedText.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-                    embedText.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
+                    embedText.set_author(
+                        name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                    )
+                    embedText.set_footer(
+                        text="Type 'cancel' to cancel | Timeout after 60s"
+                    )
                     await msgSetup.edit(embed=embedText)
 
                     index += 1
@@ -186,12 +209,16 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Create voting",
                         description="Please provide the options for the voting by separating the options with commas (`,`). "
-                                    "They will shown as buttons."
-                                    f"\n\nFrom the example on the last message, the options would be: "
-                                    f"{e.pythonLogo} Python, {e.javascriptLogo} JavaScript"
+                        "They will shown as buttons."
+                        f"\n\nFrom the example on the last message, the options would be: "
+                        f"{e.pythonLogo} Python, {e.javascriptLogo} JavaScript",
                     )
-                    embedText.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-                    embedText.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
+                    embedText.set_author(
+                        name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                    )
+                    embedText.set_footer(
+                        text="Type 'cancel' to cancel | Timeout after 60s"
+                    )
                     await msgSetup.edit(embed=embedText)
 
                     index += 1

@@ -50,6 +50,7 @@ class ConfigcatClient:
     CH_ID_CC = configcatclient.create_client(os.getenv("CHID_CC"))
     HR_ID_CC = configcatclient.create_client(os.getenv("HRID_CC"))
     CHECK_DB_CC = configcatclient.create_client(os.getenv("CHECKDB_CC"))
+    SANDBOX_CONFIG_CC = configcatclient.create_client(os.getenv("SANDBOX_CONFIG_CC"))
 
 
 async def rawExport(self, channel, response, user: discord.User):
@@ -516,6 +517,32 @@ class TECH_ID:
         ConfigcatClient.TECH_ID_CC.get_value("r_botdeveloper", 805610985594814475)
     )
 
+
+class SandboxConfig:
+    """
+    IDs for the Sandbox Configuration.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    cat_sandbox = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("cat_sandbox", 945459539967348787)
+    )
+
+    # *** TutorVC ***
+    ch_TV_console = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_console", 404)
+    )
+    ch_TV_startVC = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_startvc", 404)
+    )
+
+
 class CH_ID:
     """
     IDs of the SS Academics Department server.
@@ -530,12 +557,11 @@ class CH_ID:
 
     # *** Guilds ***
     g_ch = int(ConfigcatClient.CH_ID_CC.get_value("g_ch", 801974357395636254))
-    cat_essay = int(
-        ConfigcatClient.CH_ID_CC.get_value("cat_essay", 854945037875806220)
-    )
+    cat_essay = int(ConfigcatClient.CH_ID_CC.get_value("cat_essay", 854945037875806220))
     cat_english = int(
         ConfigcatClient.CH_ID_CC.get_value("cat_english", 800475854353596469)
     )
+
 
 class MKT_ID:
     """
@@ -617,7 +643,6 @@ class TUT_ID:
     )
 
 
-
 class HR_ID:
     """
     IDs of the SS HR Department server.
@@ -656,9 +681,7 @@ class CheckDB_CC:
 
 
 def get_value(
-    class_type: Union[
-        MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
-    ],
+    class_type: Union[MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID],
     value: str,
 ) -> int:
     """
