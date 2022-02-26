@@ -102,7 +102,7 @@ class VotingBot(commands.Cog):
             except asyncio.TimeoutError:
                 embedTimeout = discord.Embed(
                     color=hex.red_error,
-                    title="Create voting",
+                    title="Create Voting",
                     description="Setup canceled due to timeout.",
                 )
                 embedTimeout.set_author(
@@ -117,8 +117,8 @@ class VotingBot(commands.Cog):
                 if msgContent.lower() == "cancel":
                     embedCancel = discord.Embed(
                         color=hex.red_cancel,
-                        title="Create voting",
-                        description="Setup canceled.",
+                        title="Create Voting",
+                        description="Setup canceled."
                     )
                     embedCancel.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -132,11 +132,9 @@ class VotingBot(commands.Cog):
                     embedNotFound = discord.Embed(
                         color=hex.red_error,
                         title="Create voting",
-                        description=f"Couldn't find one or more of the given guilds, please try again.",
+                        description=f"Couldn't find one or more of the given guilds, please try again."
                     )
-                    embedNotFound.set_author(
-                        name=f"{ctx.author}", icon_url=ctx.author.avatar.url
-                    )
+                    embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     embedNotFound.set_footer(text="Use 'vote create' to start again")
 
                     if "," in msgContent:
@@ -183,7 +181,7 @@ class VotingBot(commands.Cog):
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
-                        title="Create voting",
+                        title="Create Voting",
                         description="Please provide the text you want to add to the voting."
                         "\n\n**Example:**"
                         "\nHey everyone,"
@@ -207,7 +205,7 @@ class VotingBot(commands.Cog):
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
-                        title="Create voting",
+                        title="Create Voting",
                         description="Please provide the options for the voting by separating the options with commas (`,`). "
                         "They will shown as buttons."
                         f"\n\nFrom the example on the last message, the options would be: "
@@ -230,6 +228,22 @@ class VotingBot(commands.Cog):
 
                     print(options)
 
+                    embedDuration = discord.Embed(
+                        color=hex.ss_blurple,
+                        title="Create Voting",
+                        description="Please provide the duration of the voting."
+                                    "\n**Example:**"
+                                    "\n`2d4h5m50s` -> would be 2 days, 4 hours, 5m and 50 seconds."
+                    )
+                    embedDuration.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedDuration.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
+                    await msgSetup.edit(embed=embedDuration)
+
+                    index += 1
+
+                elif index == 3:
+                    pass
+                    # TODO
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
