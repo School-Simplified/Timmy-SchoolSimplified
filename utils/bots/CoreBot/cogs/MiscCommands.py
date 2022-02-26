@@ -20,6 +20,7 @@ from core.common import (
     Others,
     MAIN_ID,
 )
+from core.common import getHostDir
 from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk import Hub
@@ -389,6 +390,15 @@ class MiscCMD(commands.Cog):
     async def gitpull(self, ctx, mode="-a"):
         output = ""
 
+        hostDir = getHostDir()
+        if hostDir == "/home/timmya/":
+            branch = "origin/main"
+        elif hostDir == "/home/timmy-beta":
+            branch = "origin/beta"
+        else:
+            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
+
+
         try:
             p = subprocess.run(
                 "git fetch --all",
@@ -403,7 +413,7 @@ class MiscCMD(commands.Cog):
             await ctx.send(f"**Error:**\n{e}")
         try:
             p = subprocess.run(
-                "git reset --hard origin/main",
+                f"git reset --hard {branch}",
                 shell=True,
                 text=True,
                 capture_output=True,
@@ -416,7 +426,7 @@ class MiscCMD(commands.Cog):
 
         embed = discord.Embed(
             title="GitHub Local Reset",
-            description="Local Files changed to match Timmy/main",
+            description=f"Local Files changed to match {branch}",
             color=hexColors.green_general,
         )
         embed.add_field(name="Shell Output", value=f"```shell\n$ {output}\n```")

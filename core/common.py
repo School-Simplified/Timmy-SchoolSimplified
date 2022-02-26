@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import random
+import re
 import string
 import subprocess
 import sys
@@ -1385,3 +1386,25 @@ async def force_restart(ctx):
         )
         await msg.edit(embed=embed)
         sys.exit(0)
+
+def getHostDir():
+
+    """
+    Get the directory of the current host.
+
+    Format: /home/<HOST>/
+    -> which 'HOST' is either 'timmya` or 'timmy-beta'
+
+    NOTE: THIS ONLY WORKS ON THE VPS.
+
+    """
+
+    runPath = os.path.realpath(__file__)
+    runDir = re.search("/home/(\w)+/", runPath)
+
+    if runDir is not None:
+        runDir = runDir.group(0)
+    else:
+        runDir = None
+
+    return runDir
