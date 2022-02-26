@@ -31,7 +31,7 @@ load_dotenv()
 async def force_restart2(ctx):  # Forces REPL to apply changes to everything
     try:
         subprocess.run(
-            "python main.py", shell=True, text=True, capture_output=True, check=True
+            "python3.8 main.py", shell=True, text=True, capture_output=True, check=True
         )
     except Exception as e:
         await ctx.send(
