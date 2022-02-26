@@ -2,6 +2,7 @@ import faulthandler
 import json
 import logging
 import os
+import random
 import subprocess
 import time
 import traceback
@@ -34,6 +35,7 @@ from core.common import (
     FeedbackButton,
 )
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
+from utils.bots.mktCommissions.ADCommissions import CommissionADButton
 from utils.events.TicketDropdown import TicketButton
 from utils.events.VerificationStaff import VerifyButton
 from utils.bots.CoreBot.cogs.techProject import CommissionTechButton
@@ -112,6 +114,7 @@ class Timmy(commands.Bot):
             bot.add_view(GSuiteVerify())
             bot.add_view(CommissionTechButton(bot))
             bot.add_view(TicketButton(bot))
+            bot.add_view(CommissionADButton(bot))
             query.PersistantChange = True
             query.save()
 
@@ -378,11 +381,7 @@ async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you wan
 
 @bot.user_command(name="Are they short?")
 async def short(ctx, member: discord.Member):
-    if (
-        member.id == 736765405728735232
-        or member.id == 518581570152693771
-        or member.id == 544724467709116457
-    ):
+    if random.randint(0, 1) == 1:
         await ctx.respond(f"{member.mention} is short!")
     else:
         await ctx.respond(f"{member.mention} is tall!")
