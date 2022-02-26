@@ -24,16 +24,16 @@ from core.common import getHostDir
 from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk import Hub
+from threading import Thread
 
 load_dotenv()
 
 
 async def force_restart2(ctx):  # Forces REPL to apply changes to everything
     try:
-        subprocess.run(
-            "python3.8 main.py", shell=True, text=True, capture_output=True, check=True
-        )
-        print("finally")
+        runThread = Thread(target=subprocess.run, kwargs={'input': "python3.8 main.py", 'shell': True, 'text': True, 'capture_output': True, 'check': True})
+        runThread.start()
+
     except Exception as e:
         await ctx.send(
             f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}"
