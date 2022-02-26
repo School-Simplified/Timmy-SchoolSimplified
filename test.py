@@ -1,4 +1,5 @@
 import re
+import sys
 
 def timeStringConvert(string: str):
     """
@@ -41,3 +42,4 @@ def timeStringConvert(string: str):
 string = "213d 4h 123m"
 timeDict: dict = timeStringConvert(string)
 print(timeDict)
+print(sys.argv[0])
