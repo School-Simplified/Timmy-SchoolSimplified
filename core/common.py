@@ -1399,12 +1399,11 @@ def getHostDir():
     """
 
     runPath = os.path.realpath(__file__)
-    runDir = re.search("/home/(\w)+/", runPath)
+    runDir = re.search("/home/[^]+/", runPath)
     print(runPath)
-    print(runDir.group(0))
     if runDir is not None:
         runDir = runDir.group(0)
     else:
         runDir = None
-
+    print(runDir)
     return runDir
