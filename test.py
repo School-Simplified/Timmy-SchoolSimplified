@@ -1,5 +1,5 @@
 import re
-import sys
+import os
 
 def timeStringConvert(string: str):
     """
@@ -42,4 +42,4 @@ def timeStringConvert(string: str):
 string = "213d 4h 123m"
 timeDict: dict = timeStringConvert(string)
 print(timeDict)
-print(sys.argv[0])
+print(os.path.realpath(__file__))
