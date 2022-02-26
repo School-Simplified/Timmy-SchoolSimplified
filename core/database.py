@@ -550,6 +550,18 @@ class TechCommissionArchiveLog(BaseModel):
     id = AutoField()
     ThreadID = BigIntegerField()
 
+class SandboxConfig(BaseModel):
+    """
+    #SandboxConfig
+
+    `id`: AutoField()
+    Database Entry
+
+    `mode`: TextField()
+    Current Mode of the Sandbox.
+    """
+    id = AutoField()
+    mode = TextField()
 
 app = Flask(__name__)
 
@@ -592,6 +604,7 @@ tables = {
     "VCDeletionQueue": VCDeletionQueue,
     "TutorSession_GracePeriod": TutorSession_GracePeriod,
     "TechCommissionArchiveLog": TechCommissionArchiveLog,
+    "SandboxConfig": SandboxConfig
 }
 
 iter_table(tables)

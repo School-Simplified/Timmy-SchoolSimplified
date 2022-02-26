@@ -1,6 +1,7 @@
 import re
 import os
 
+
 def timeStringConvert(string: str):
     """
 
@@ -18,26 +19,27 @@ def timeStringConvert(string: str):
     seconds = re.search("\d+s", string)
 
     if days is not None:
-        timeDict['days'] = int(days.group(0).strip('d'))
+        timeDict["days"] = int(days.group(0).strip("d"))
     else:
-        timeDict['days'] = None
+        timeDict["days"] = None
 
     if hours is not None:
-        timeDict['hours'] = int(hours.group(0).strip('h'))
+        timeDict["hours"] = int(hours.group(0).strip("h"))
     else:
-        timeDict['hours'] = None
+        timeDict["hours"] = None
 
     if minutes is not None:
-        timeDict['minutes'] = int(minutes.group(0).strip('m'))
+        timeDict["minutes"] = int(minutes.group(0).strip("m"))
     else:
-        timeDict['minutes'] = None
+        timeDict["minutes"] = None
 
     if seconds is not None:
-        timeDict['seconds'] = int(seconds.group(0).strip('s'))
+        timeDict["seconds"] = int(seconds.group(0).strip("s"))
     else:
-        timeDict['seconds'] = None
+        timeDict["seconds"] = None
 
     return timeDict
+
 
 string = "213d 4h 123m"
 timeDict: dict = timeStringConvert(string)

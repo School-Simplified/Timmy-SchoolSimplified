@@ -102,5 +102,5 @@ def notHostTimmyA(ctx):
 
     return not runDir == "/home/timmya"
 
-isnot_hostTimmyA = commands.check(notHostTimmyA)
 
+isnot_hostTimmyA = commands.check(notHostTimmyA)

@@ -33,7 +33,7 @@ class TutorBotStaffCMD(commands.Cog):
         description="Create a Tutor Session",
         guild_ids=[MAIN_ID.g_main],
     )  # SLASH CMD FOR MAIN SERVER
-    @permissions.has_any_role(MAIN_ID.r_tutor, guild_id=MAIN_ID.g_main)
+    @permissions.has_any_role("Tutor")
     async def schedule(
         self,
         ctx,
@@ -230,25 +230,31 @@ class TutorBotStaffCMD(commands.Cog):
         description="Skip a tutoring session",
         guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut],
     )
-    @permissions.has_any_role(MAIN_ID.r_tutor, guild_id=MAIN_ID.g_main)
-    @permissions.has_any_role(860932484206952468, guild_id=TUT_ID.g_tut)
     async def skip(self, ctx, id: str):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
         )
         if query.exists():
             query = query.get()
+            if query.TutorID == ctx.author.id:
 
-            old = query.Date
-            new = timedelta(days=7)
-            nextweek = old + new
+                old = query.Date
+                new = timedelta(days=7)
+                nextweek = old + new
 
-            nw = nextweek.strftime("%m/%d/%Y")
+                nw = nextweek.strftime("%m/%d/%Y")
 
-            query.Date = nextweek
-            query.save()
+                query.Date = nextweek
+                query.save()
 
-            await ctx.respond(f"Re-scheduled Session to `{nw}`")
+                await ctx.respond(f"Re-scheduled Session to `{nw}`")
+            else:
+                embed = discord.Embed(
+                title="Invalid Permissions",
+                description="This session does exist, but you are not the owner of it!",
+                color=discord.Color.red(),
+            )
+            await ctx.respond(embed=embed)
 
         else:
             embed = discord.Embed(
@@ -263,28 +269,33 @@ class TutorBotStaffCMD(commands.Cog):
         description="Remove a tutoring session",
         guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut],
     )
-    @permissions.has_any_role(MAIN_ID.r_tutor, guild_id=MAIN_ID.g_main)
-    @permissions.has_any_role(860932484206952468, guild_id=TUT_ID.g_tut)
     async def remove(self, ctx, id):
         query = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
         )
         if query.exists():
             query = query.get()
-            query.delete_instance()
+            if query.TutorID == ctx.author.id:
+                query.delete_instance()
 
-            embed = discord.Embed(
-                title="Removed Session",
-                description="Deleted Session Successfully",
+                embed = discord.Embed(
+                    title="Removed Session",
+                    description="Deleted Session Successfully",
+                    color=discord.Color.red(),
+                )
+                embed.add_field(
+                    name="Session Removed:",
+                    value=f"**Session ID:** `{query.SessionID}`"
+                    f"\n**Student ID:** `{query.StudentID}`",
+                )
+                await ctx.respond(embed=embed)
+            else:
+                embed = discord.Embed(
+                title="Invalid Permissions",
+                description="This session does exist, but you are not the owner of it!",
                 color=discord.Color.red(),
             )
-            embed.add_field(
-                name="Session Removed:",
-                value=f"**Session ID:** `{query.SessionID}`"
-                f"\n**Student ID:** `{query.StudentID}`",
-            )
             await ctx.respond(embed=embed)
-
         else:
             embed = discord.Embed(
                 title="Invalid Session",
@@ -298,8 +309,6 @@ class TutorBotStaffCMD(commands.Cog):
         description="Clear a tutoring session",
         guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut],
     )
-    @permissions.has_any_role(MAIN_ID.r_tutor, guild_id=MAIN_ID.g_main)
-    @permissions.has_any_role(860932484206952468, guild_id=TUT_ID.g_tut)
     async def clear(self, ctx):
         query = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.TutorID == ctx.author.id

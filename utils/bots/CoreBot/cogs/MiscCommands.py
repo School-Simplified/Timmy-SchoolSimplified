@@ -385,7 +385,6 @@ class MiscCMD(commands.Cog):
         else:
             raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
 
-
         try:
             p = subprocess.run(
                 "git fetch --all",

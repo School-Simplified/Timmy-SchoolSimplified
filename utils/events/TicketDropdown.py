@@ -24,6 +24,7 @@ from core.common import (
     ButtonHandler,
     Emoji,
     Others,
+    SandboxConfig,
     S3_upload_file,
     SelectMenuHandler,
     CHHelperRoles,
@@ -240,15 +241,27 @@ def decodeDict(self, value: str, sandbox: bool = False) -> typing.Union[str, int
         "['Other Helpers']": OtherOptions,
     }
 
-    decodeID = {
-        "['Math Helpers']": MAIN_ID.cat_mathTicket,
-        "['Science Helpers']": MAIN_ID.cat_scienceTicket,
-        "['Social Studies Helpers']": MAIN_ID.cat_socialStudiesTicket,
-        "['English Helpers']": MAIN_ID.cat_englishTicket,
-        "['Essay Helpers']": MAIN_ID.cat_essayTicket,
-        "['Language Helpers']": MAIN_ID.cat_otherTicket,
-        "['Other Helpers']": MAIN_ID.cat_otherTicket,
-    }
+    if sandbox:
+        decodeID = {
+            "['Math Helpers']": SandboxConfig.cat_mathTicket,
+            "['Science Helpers']": SandboxConfig.cat_scienceTicket,
+            "['Social Studies Helpers']": SandboxConfig.cat_socialStudiesTicket,
+            "['English Helpers']": SandboxConfig.cat_englishTicket,
+            "['Essay Helpers']": SandboxConfig.cat_essayTicket,
+            "['Language Helpers']": SandboxConfig.cat_otherTicket,
+            "['Other Helpers']": SandboxConfig.cat_otherTicket,
+        }
+    else:
+        decodeID = {
+            "['Math Helpers']": MAIN_ID.cat_mathTicket,
+            "['Science Helpers']": MAIN_ID.cat_scienceTicket,
+            "['Social Studies Helpers']": MAIN_ID.cat_socialStudiesTicket,
+            "['English Helpers']": MAIN_ID.cat_englishTicket,
+            "['Essay Helpers']": MAIN_ID.cat_essayTicket,
+            "['Language Helpers']": MAIN_ID.cat_otherTicket,
+            "['Other Helpers']": MAIN_ID.cat_otherTicket,
+        }
+
     name = decodeName[value]
     CategoryID = decodeID[value]
     if type(decodeOptList[value]) == int:
@@ -302,6 +315,7 @@ class TicketBT(discord.ui.Button):
         self.CHID_DEFAULT = Others.CHID_DEFAULT
         self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
+
         super().__init__(
             label="Create Ticket",
             style=discord.enums.ButtonStyle.blurple,
@@ -310,7 +324,10 @@ class TicketBT(discord.ui.Button):
         )
 
     async def callback(self, interaction: discord.Interaction):
-        print("hi")
+        Sandbox = False
+        if interaction.message.guild.id == TECH_ID.g_tech:
+            Sandbox = True
+
         bucket = self.view.cd_mapping.get_bucket(interaction.message)
         retry_after = bucket.update_rate_limit()
         print(retry_after)
@@ -329,10 +346,6 @@ class TicketBT(discord.ui.Button):
                 )
             except Exception:
                 await interaction.followup.send("Check your DM's!", ephemeral=True)
-            except Exception:
-                await interaction.channel.send(
-                    f"{interaction.user.mention} Check your DM's!", delete_after=5.0
-                )
 
             def check(m):
                 return (
@@ -363,7 +376,9 @@ class TicketBT(discord.ui.Button):
                 return await DMChannel.send("Timed out, try again later.")
 
             ViewResponse = str(MasterSubjectView)
-            TypeSubject, CategoryID, OptList = decodeDict(self, f"['{ViewResponse}']")
+            TypeSubject, CategoryID, OptList = decodeDict(
+                self, f"['{ViewResponse}']", Sandbox
+            )
             c = discord.utils.get(guild.categories, id=int(CategoryID))
 
             if not TypeSubject == OptList:
@@ -533,85 +548,94 @@ class TicketBT(discord.ui.Button):
             )
             query.save()
 
-            roles = [
-                # "Board Member",
-                # "Senior Executive",
-                # "Executive",
-                "Head Moderator",
-                "Moderator",
-                "Lead Helper",
-                "Chat Helper",
-                "Bot: TeXit",
-                "Academics Director",
-            ]
-            for role in roles:
-                RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
-                await channel.set_permissions(
-                    RoleOBJ,
-                    read_messages=True,
-                    send_messages=True,
-                    manage_messages=True,
-                    reason="Ticket Perms",
-                )
-                RoleOBJ = discord.utils.get(guild.roles, name=role)
-                if (
-                    not (
-                        RoleOBJ.id == MAIN_ID.r_chatHelper
-                        or RoleOBJ.id == MAIN_ID.r_leadHelper
+            if not Sandbox:
+                roles = [
+                    # "Board Member",
+                    # "Senior Executive",
+                    # "Executive",
+                    "Head Moderator",
+                    "Moderator",
+                    "Lead Helper",
+                    "Chat Helper",
+                    "Bot: TeXit",
+                    "Academics Director",
+                ]
+                for role in roles:
+                    RoleOBJ = discord.utils.get(
+                        interaction.message.guild.roles, name=role
                     )
-                    and not channel.category.id == MAIN_ID.cat_essayTicket
-                ):
-                    if RoleOBJ.id == MAIN_ID.r_essayReviser:
-                        if (
-                            channel.category.id == MAIN_ID.cat_essayTicket
-                            or channel.category.id == MAIN_ID.cat_englishTicket
-                        ):
-                            await channel.set_permissions(
-                                RoleOBJ,
-                                read_messages=True,
-                                send_messages=True,
-                                reason="Ticket Perms",
-                            )
-                        else:
-                            continue
-                else:
                     await channel.set_permissions(
                         RoleOBJ,
                         read_messages=True,
                         send_messages=True,
+                        manage_messages=True,
                         reason="Ticket Perms",
                     )
+                    RoleOBJ = discord.utils.get(guild.roles, name=role)
+                    if (
+                        not (
+                            RoleOBJ.id == MAIN_ID.r_chatHelper
+                            or RoleOBJ.id == MAIN_ID.r_leadHelper
+                        )
+                        and not channel.category.id == MAIN_ID.cat_essayTicket
+                    ):
+                        if RoleOBJ.id == MAIN_ID.r_essayReviser:
+                            if (
+                                channel.category.id == MAIN_ID.cat_essayTicket
+                                or channel.category.id == MAIN_ID.cat_englishTicket
+                            ):
+                                await channel.set_permissions(
+                                    RoleOBJ,
+                                    read_messages=True,
+                                    send_messages=True,
+                                    reason="Ticket Perms",
+                                )
+                            else:
+                                continue
+                    else:
+                        await channel.set_permissions(
+                            RoleOBJ,
+                            read_messages=True,
+                            send_messages=True,
+                            reason="Ticket Perms",
+                        )
+
+                if channel.category_id in self.EssayCategory:
+                    roles = ["Essay Reviser"]
+                    for role in roles:
+                        RoleOBJ = discord.utils.get(
+                            interaction.message.guild.roles, name=role
+                        )
+                        await channel.set_permissions(
+                            RoleOBJ,
+                            read_messages=True,
+                            send_messages=True,
+                            reason="Ticket Perms",
+                        )
+                else:
+                    roles = ["Chat Helper", "Lead Helper"]
+                    for role in roles:
+                        RoleOBJ = discord.utils.get(
+                            interaction.message.guild.roles, name=role
+                        )
+                        await channel.set_permissions(
+                            RoleOBJ,
+                            read_messages=True,
+                            send_messages=True,
+                            reason="Ticket Perms",
+                        )
             await channel.set_permissions(
                 interaction.user,
                 read_messages=True,
                 send_messages=True,
                 reason="Ticket Perms (User)",
             )
-
-            if channel.category_id in self.EssayCategory:
-                roles = ["Essay Reviser"]
-                for role in roles:
-                    RoleOBJ = discord.utils.get(
-                        interaction.message.guild.roles, name=role
-                    )
-                    await channel.set_permissions(
-                        RoleOBJ,
-                        read_messages=True,
-                        send_messages=True,
-                        reason="Ticket Perms",
-                    )
-            else:
-                roles = ["Chat Helper", "Lead Helper"]
-                for role in roles:
-                    RoleOBJ = discord.utils.get(
-                        interaction.message.guild.roles, name=role
-                    )
-                    await channel.set_permissions(
-                        RoleOBJ,
-                        read_messages=True,
-                        send_messages=True,
-                        reason="Ticket Perms",
-                    )
+            await channel.set_permissions(
+                interaction.guild.default_role,
+                read_messages=False,
+                send_messages=False,
+                reason="Ticket Perms (User)",
+            )
 
             controlTicket = discord.Embed(
                 title="Control Panel",

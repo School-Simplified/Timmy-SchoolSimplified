@@ -52,8 +52,7 @@ class ConfigcatClient:
     CH_ID_CC = configcatclient.create_client(os.getenv("CHID_CC"))
     HR_ID_CC = configcatclient.create_client(os.getenv("HRID_CC"))
     CHECK_DB_CC = configcatclient.create_client(os.getenv("CHECKDB_CC"))
-    SANDBOX_CONFIG_CC = configcatclient.create_client(os.getenv("SANDBOX_CONFIG_CC"))
-
+    SANDBOX_CONFIG_CC = configcatclient.create_client_with_auto_poll(os.getenv("SANDBOX_CONFIG_CC"), poll_interval_seconds=10)
 
 async def rawExport(self, channel, response, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
@@ -531,6 +530,7 @@ class SandboxConfig:
         r: discord.Role
         msg: discord.Message
     """
+    mode = str(ConfigcatClient.SANDBOX_CONFIG_CC.get_value("mode", "404"))
 
     cat_sandbox = int(
         ConfigcatClient.SANDBOX_CONFIG_CC.get_value("cat_sandbox", 945459539967348787)
@@ -542,6 +542,34 @@ class SandboxConfig:
     )
     ch_TV_startVC = int(
         ConfigcatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_startvc", 404)
+    )
+
+    # *** Category ***
+    cat_scienceTicket = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("cat_scienceticket", 800479815471333406)
+    )
+    cat_fineArtsTicket = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("cat_fineartsticket", 833210452758364210)
+    )
+    cat_mathTicket = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("cat_mathticket", 800472371973980181)
+    )
+    cat_socialStudiesTicket = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value(
+            "cat_socialstudiesticket", 800481237608824882
+        )
+    )
+    cat_englishTicket = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("cat_englishticket", 800475854353596469)
+    )
+    cat_essayTicket = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("cat_essayticket", 854945037875806220)
+    )
+    cat_languageTicket = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("cat_languageticket", 800477414361792562)
+    )
+    cat_otherTicket = int(
+        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("cat_otherticket", 825917349558747166)
     )
 
 
@@ -701,6 +729,32 @@ def get_value(
         return int(ConfigcatClient.get_value(value, class_type.ID_DICT[value]))
     else:
         return int(ConfigcatClient.get_value(value, None))
+
+
+def config_patch(key, value):
+    """Makes a PATCH request to ConfigCat to change a Sandbox Configuration.
+    **NOTE:** This only supports changing the Sandbox category, anything else will not work.
+
+    Args:
+        key (str): Key to modify.
+        value (str): Value to apply.
+
+    Returns:
+        requests.Response: requests.Response object representing the HTTP request.
+    """
+    url = f"https://api.configcat.com/v1/settings/{key}/value?settingKeyOrId={key}"
+    user = os.getenv("CONFIG_CC_USER")
+    password = os.getenv("CONFIG_CC_PASSWORD")
+    jsonPayload = [{"op": "replace", "path": "/value", "value": str(value)}]
+
+    r = requests.patch(
+        url,
+        auth=(user, password),
+        headers={"X-CONFIGCAT-SDKKEY": os.getenv("SANDBOX_CONFIG_CC")},
+        json=jsonPayload,
+    )
+    print(r.status_code)
+    return r
 
 
 class ErrorCodes:
@@ -1399,6 +1453,7 @@ async def force_restart(ctx):
         await msg.edit(embed=embed)
         sys.exit(0)
 
+
 def getHostDir():
     """
     Get the directory of the current host.
@@ -1411,7 +1466,7 @@ def getHostDir():
     """
 
     runPath = os.path.realpath(__file__)
-    runDir = re.search('/home/[^/]*', runPath)
+    runDir = re.search("/home/[^/]*", runPath)
     print(runPath)
     if runDir is not None:
         runDir = runDir.group(0)
