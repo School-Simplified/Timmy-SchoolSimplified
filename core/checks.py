@@ -95,6 +95,11 @@ def notHostTimmyA(ctx):
     runPath = os.path.realpath(__file__)
     runDir = re.search("/home/(\w)+/", runPath)
 
+    if runDir is not None:
+        runDir = runDir.group(0)
+    else:
+        runDir = None
+
     return not runDir == "/home/timmya/"
 
 isnot_hostTimmyA = commands.check(notHostTimmyA)
