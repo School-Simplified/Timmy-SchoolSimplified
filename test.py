@@ -43,7 +43,7 @@ string = "213d 4h 123m"
 timeDict: dict = timeStringConvert(string)
 print(timeDict)
 print(os.path.realpath(__file__))
-runDir = re.search("/home/[a-zA-Z]+", os.path.realpath(__file__))
+runDir = re.search("/home/(\w)+/(\w)+/(\w)+.py", os.path.realpath(__file__))
 
 if runDir is not None:
     print(runDir.group(0))
