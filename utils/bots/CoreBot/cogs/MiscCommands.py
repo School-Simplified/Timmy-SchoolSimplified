@@ -20,26 +20,13 @@ from core.common import (
     Others,
     MAIN_ID,
 )
-from core.common import getHostDir
+from core.common import getHostDir, force_restart
 from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk import Hub
 from threading import Thread
 
 load_dotenv()
-
-
-async def force_restart2(ctx: commands.Context):  # Forces REPL to apply changes to everything
-    try:
-        runThread = Thread(target=subprocess.run, kwargs={'input': "python3.8 main.py", 'shell': True, 'text': True, 'capture_output': True, 'check': True})
-        runThread.start()
-
-    except Exception as e:
-        await ctx.send(
-            f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}"
-        )
-    finally:
-        await ctx.bot.close()
 
 
 class MiscCMD(commands.Cog):
@@ -439,7 +426,7 @@ class MiscCMD(commands.Cog):
         await ctx.send(embed=embed)
 
         if mode == "-a":
-            await force_restart2(ctx)
+            await force_restart(ctx)
         elif mode == "-c":
             await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
 
