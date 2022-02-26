@@ -1388,7 +1388,6 @@ async def force_restart(ctx):
         sys.exit(0)
 
 def getHostDir():
-
     """
     Get the directory of the current host.
 
@@ -1401,7 +1400,7 @@ def getHostDir():
 
     runPath = os.path.realpath(__file__)
     runDir = re.search("/home/(\w)+/", runPath)
-
+    print(runDir.group(0))
     if runDir is not None:
         runDir = runDir.group(0)
     else:
