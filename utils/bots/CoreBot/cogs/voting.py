@@ -17,7 +17,7 @@ class VotingBot(commands.Cog):
             TECH_ID.g_tech,
             MKT_ID.g_mkt,
             TUT_ID.g_tut,
-            CH_ID,
+            CH_ID.g_ch,
             HR_ID.g_hr,
         ]
 
