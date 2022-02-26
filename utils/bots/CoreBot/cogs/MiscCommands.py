@@ -391,7 +391,7 @@ class MiscCMD(commands.Cog):
         output = ""
 
         hostDir = getHostDir()
-        if hostDir == "/home/timmya/":
+        if hostDir == "/home/timmya":
             branch = "origin/main"
         elif hostDir == "/home/timmy-beta":
             branch = "origin/beta"
@@ -430,7 +430,11 @@ class MiscCMD(commands.Cog):
             color=hexColors.green_general,
         )
         embed.add_field(name="Shell Output", value=f"```shell\n$ {output}\n```")
-        embed.set_footer(text="Attempting to restart the bot...")
+        if mode == "-a":
+            embed.set_footer(text="Attempting to restart the bot...")
+        elif mode == "-c":
+            embed.set_footer(text="Attempting to reloading cogs...")
+
         await ctx.send(embed=embed)
 
         if mode == "-a":
