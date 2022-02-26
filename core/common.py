@@ -1356,7 +1356,7 @@ async def force_restart(ctx):
     msg = await ctx.send(embed=embed)
     try:
         result = subprocess.run(
-            "cd && cd Timmy-SchoolSimplified && nohup python3 main.py &",
+            "cd && cd Timmy-SchoolSimplified && nohup python3.8 main.py &",
             shell=True,
             text=True,
             capture_output=True,

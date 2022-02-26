@@ -24,7 +24,6 @@ from core.common import getHostDir, force_restart
 from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk import Hub
-from threading import Thread
 
 load_dotenv()
 
