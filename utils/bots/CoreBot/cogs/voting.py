@@ -217,7 +217,8 @@ class VotingBot(commands.Cog):
                     index += 1
 
                 elif index == 3:
-
+                    pass
+                    # TODO
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
