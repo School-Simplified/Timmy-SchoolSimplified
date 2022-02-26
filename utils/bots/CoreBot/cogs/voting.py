@@ -1,6 +1,7 @@
 import asyncio
 import discord
 from discord.ext import commands
+from core.checks import isnot_hostTimmyA
 from core.common import hexColors as hex
 from core.common import Emoji as e
 from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
@@ -47,11 +48,12 @@ class VotingBot(commands.Cog):
     """
 
     @commands.group(invoke_without_command=True)
-    @commands.has_any_role()
+    @commands.has_any_role() # TODO
     async def vote(self, ctx):
         pass
 
     @vote.command()
+    @isnot_hostTimmyA()
     async def create(self, ctx: commands.Context):
 
         acceptedGuildsStr = ""
