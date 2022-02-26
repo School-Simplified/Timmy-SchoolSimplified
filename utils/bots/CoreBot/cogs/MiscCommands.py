@@ -29,7 +29,7 @@ from threading import Thread
 load_dotenv()
 
 
-async def force_restart2(ctx):  # Forces REPL to apply changes to everything
+async def force_restart2(ctx: commands.Context):  # Forces REPL to apply changes to everything
     try:
         runThread = Thread(target=subprocess.run, kwargs={'input': "python3.8 main.py", 'shell': True, 'text': True, 'capture_output': True, 'check': True})
         runThread.start()
@@ -39,7 +39,7 @@ async def force_restart2(ctx):  # Forces REPL to apply changes to everything
             f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}"
         )
     finally:
-        sys.exit(0)
+        await ctx.bot.close()
 
 
 class MiscCMD(commands.Cog):
