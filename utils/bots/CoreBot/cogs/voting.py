@@ -279,8 +279,19 @@ class VotingBot(commands.Cog):
                     if seconds is None:
                         seconds = 0
 
-                    print(f"datetimeNow: {datetimeNow}")
-                    datetimeExpiration = datetimeNow + datetime.timedelta(days=days) + datetime.timedelta(hours=hours) + datetime.timedelta(minutes=minutes) + datetime.timedelta(seconds=seconds)
+                    try:
+                        datetimeExpiration = datetimeNow + datetime.timedelta(days=days) + datetime.timedelta(hours=hours) + datetime.timedelta(minutes=minutes) + datetime.timedelta(seconds=seconds)
+                    except OverflowError as e:
+                        embedOverflow = discord.Embed(
+                            color=hex.red_error,
+                            title="Create Voting",
+                            description="Couldn't convert it to a datetime due of too big expiration date. Please try again."
+                                        f"\n\n**Error:** `{e.__class__.__name__}: {e}`"
+                        )
+                        embedOverflow.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedOverflow.set_footer(text="Use 'cancel' to cancel")
+                        await ctx.send(embed=embedOverflow)
+                        continue
 
                     await ctx.send(f"Expires at: {datetimeExpiration}")
 
