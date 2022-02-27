@@ -1,4 +1,6 @@
 import asyncio
+import datetime
+
 import discord
 from discord.ext import commands
 from core.checks import isnot_hostTimmyA
@@ -246,8 +248,34 @@ class VotingBot(commands.Cog):
 
                 elif index == 3:
                     timeDict: dict = stringTimeConvert(msgContent)
-                    print(timeDict)
+                    days = timeDict["days"]
+                    hours = timeDict["hours"]
+                    minutes = timeDict["minutes"]
+                    seconds = timeDict["seconds"]
 
+                    datetimeNow = datetime.datetime.now()
+
+                    if days is None and hours is None and minutes is None and seconds is None:
+                        embedError = discord.Embed(
+                            color=hex.red_error,
+                            title="Create Voting",
+                            description="Couldn't found something matching to the time units. Please try again."
+                        )
+                        embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedError.set_footer(text="Use 'cancel' to cancel")
+                        await ctx.send(embed=embedError)
+                        continue
+
+                    if days is not None:
+                        datetimeExpiration = datetimeNow + datetime.timedelta(days=days)
+                    if hours is not None:
+                        datetimeExpiration = datetimeNow + datetime.timedelta(hours=hours)
+                    if minutes is not None:
+                        datetimeExpiration = datetimeNow + datetime.timedelta(minutes=minutes)
+                    if seconds is not None:
+                        datetimeExpiration = datetimeNow + datetime.timedelta(seconds=seconds)
+
+                    await ctx.send(f"Expires at: {datetimeExpiration}")
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
