@@ -299,7 +299,9 @@ class VotingBot(commands.Cog):
                         description="Almost done... Please overview the embed below and confirm it."
                     )
                     embedFinish.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-                    await msgSetup.edit(embed=embedFinish)
+                    await ctx.send(embed=embedFinish)
+                    
+                    await msgSetup.delete()
 
                     expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
                     expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
