@@ -301,11 +301,15 @@ class VotingBot(commands.Cog):
                     embedFinish.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     await msgSetup.edit(embed=embedFinish)
 
+                    expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
+                    expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
+
+
                     embedPseudo = discord.Embed(
                         color=hex.ss_blurple,
                         title="Voting",
                         description=f"{text}"
-                                    f"\n\n**Expires <t:{datetimeExpiration}>**"
+                                    f"\n\n**Expires** {expLongDateTimeTP} ({expRelativeTimeTP})"
                     )
                     embedPseudo.set_footer(text="Please vote anonymously below | You can't undo your vote!")
 
