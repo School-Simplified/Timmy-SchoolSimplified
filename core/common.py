@@ -1411,16 +1411,6 @@ async def force_restart(ctx):
     msg = await ctx.send(embed=embed)
     try:
 
-        # runThread = Thread(target=subprocess.run, kwargs={
-        #     'input': "cd && cd Timmy-SchoolSimplified && nohup python3.8 main.py &",
-        #     'shell': True,
-        #     'text': True,
-        #     'capture_output': True,
-        #     'check': True
-        # }
-        #                    )
-        # runThread.start()
-
         result = subprocess.run(
             "cd && cd Timmy-SchoolSimplified",
             shell=True,
