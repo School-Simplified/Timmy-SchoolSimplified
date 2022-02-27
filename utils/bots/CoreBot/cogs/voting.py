@@ -235,8 +235,8 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Create Voting",
                         description="Please provide the duration of the voting."
-                                    "\n**Example:**"
-                                    "\n`2d4h5m50s` -> would be 2 days, 4 hours, 5m and 50 seconds."
+                                    "\n\n**Example:**"
+                                    "\n`2d 4h 5m 50s` -> would be 2 days, 4 hours, 5m and 50 seconds."
                     )
                     embedDuration.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     embedDuration.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
