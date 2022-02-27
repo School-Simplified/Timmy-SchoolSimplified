@@ -323,7 +323,7 @@ class VotingBot(commands.Cog):
 
                         view.add_item(
                             ButtonHandler(
-                                style=discord.ButtonStyle.blurple,
+                                style=discord.ButtonStyle.gray,
                                 disabled=False,
                                 label=option,
                                 emoji=customEmoji
