@@ -1537,7 +1537,7 @@ def stringTimeConvert(string: str):
     Filters out the different time units from a string (e.g. from '2d 4h 6m 7s') and returns a ``dict``.
     NOTE: The sequence of the time units doesn't matter. Could also be '6m 2d 7s 4h'.
 
-    Parameters:
+    Params:
         string: The string which should get converted to the time units. (e.g. '2d 4h 6m 7s')
 
     Returns: A ``dict`` which the keys are 'days', 'hours', 'minutes', 'seconds' and the value is either a ``int`` or ``None``.
@@ -1571,3 +1571,25 @@ def stringTimeConvert(string: str):
         timeDict["seconds"] = None
 
     return timeDict
+
+
+def searchCustomEmoji(string: str):
+    """
+    Searches for a custom emoji in a specific ``str`` and returns it or None if nothing found.
+    The custom emoji could be animated or not.
+
+    Params:
+        string: The string which should get searched for a custom emoji.
+
+    Returns: The custom emoji (``str``)or None if nothing found.
+    """
+
+
+    customEmoji = re.search("<[^:]*:[^:]*:(\d)+>", string)
+
+    if customEmoji is not None:
+        customEmoji = customEmoji.group(0)
+    else:
+        customEmoji = None
+
+    return customEmoji
