@@ -1581,7 +1581,7 @@ def searchCustomEmoji(string: str):
     Params:
         string: The string which should get searched for a custom emoji.
 
-    Returns: The custom emoji (``str``)or None if nothing found.
+    Returns: The custom emoji (``str``) or None if nothing found.
     """
 
 
