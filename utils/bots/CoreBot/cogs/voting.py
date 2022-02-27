@@ -267,19 +267,20 @@ class VotingBot(commands.Cog):
                         await ctx.send(embed=embedError)
                         continue
 
+                    if days is None:
+                        days = 0
+
+                    if hours is None:
+                        hours = 0
+
+                    if minutes is None:
+                        minutes = 0
+
+                    if seconds is None:
+                        seconds = 0
+
                     print(f"datetimeNow: {datetimeNow}")
-                    if days is not None:
-                        print("days")
-                        datetimeExpiration = datetimeNow + datetime.timedelta(days=days)
-                    if hours is not None:
-                        print("hours")
-                        datetimeExpiration = datetimeNow + datetime.timedelta(hours=hours)
-                    if minutes is not None:
-                        print("minutes")
-                        datetimeExpiration = datetimeNow + datetime.timedelta(minutes=minutes)
-                    if seconds is not None:
-                        print("seconds")
-                        datetimeExpiration = datetimeNow + datetime.timedelta(seconds=seconds)
+                    datetimeExpiration = datetimeNow + datetime.timedelta(days=days) + datetime.timedelta(hours=hours) + datetime.timedelta(minutes=minutes) + datetime.timedelta(seconds=seconds)
 
                     await ctx.send(f"Expires at: {datetimeExpiration}")
 
