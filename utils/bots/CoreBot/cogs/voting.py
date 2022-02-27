@@ -1,10 +1,13 @@
 import asyncio
+import datetime
+
 import discord
 from discord.ext import commands
 from core.checks import isnot_hostTimmyA
 from core.common import hexColors as hex
 from core.common import Emoji as e
-from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, CH_ID, HR_ID
+from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
+from core.common import stringTimeConvert
 
 
 class VotingBot(commands.Cog):
@@ -17,7 +20,6 @@ class VotingBot(commands.Cog):
             TECH_ID.g_tech,
             MKT_ID.g_mkt,
             TUT_ID.g_tut,
-            CH_ID.g_ch,
             HR_ID.g_hr,
         ]
 
@@ -113,6 +115,7 @@ class VotingBot(commands.Cog):
                 )
                 embedTimeout.set_footer(text="Use 'vote create' to start again")
                 await msgSetup.edit(embed=embedTimeout)
+                break
 
             else:
                 msgContent = msgResponse.content
@@ -138,7 +141,7 @@ class VotingBot(commands.Cog):
                         description=f"Couldn't find one or more of the given guilds, please try again."
                     )
                     embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-                    embedNotFound.set_footer(text="Use 'vote create' to start again")
+                    embedNotFound.set_footer(text="Use 'cancel' to cancel")
 
                     if "," in msgContent:
 
@@ -235,8 +238,8 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Create Voting",
                         description="Please provide the duration of the voting."
-                                    "\n**Example:**"
-                                    "\n`2d4h5m50s` -> would be 2 days, 4 hours, 5m and 50 seconds."
+                                    "\n\n**Example:**"
+                                    "\n`2d 4h 5m 50s` -> would be 2 days, 4 hours, 5m and 50 seconds."
                     )
                     embedDuration.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     embedDuration.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
@@ -245,8 +248,52 @@ class VotingBot(commands.Cog):
                     index += 1
 
                 elif index == 3:
-                    pass
-                    # TODO
+                    timeDict: dict = stringTimeConvert(msgContent)
+                    days = timeDict["days"]
+                    hours = timeDict["hours"]
+                    minutes = timeDict["minutes"]
+                    seconds = timeDict["seconds"]
+
+                    datetimeNow = datetime.datetime.now()
+
+                    if days is None and hours is None and minutes is None and seconds is None:
+                        embedError = discord.Embed(
+                            color=hex.red_error,
+                            title="Create Voting",
+                            description="Couldn't found something matching to the time units. Please try again."
+                        )
+                        embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedError.set_footer(text="Use 'cancel' to cancel")
+                        await ctx.send(embed=embedError)
+                        continue
+
+                    if days is None:
+                        days = 0
+
+                    if hours is None:
+                        hours = 0
+
+                    if minutes is None:
+                        minutes = 0
+
+                    if seconds is None:
+                        seconds = 0
+
+                    try:
+                        datetimeExpiration = datetimeNow + datetime.timedelta(days=days) + datetime.timedelta(hours=hours) + datetime.timedelta(minutes=minutes) + datetime.timedelta(seconds=seconds)
+                    except OverflowError as _error:
+                        embedOverflow = discord.Embed(
+                            color=hex.red_error,
+                            title="Create Voting",
+                            description="Couldn't convert it to a datetime due of too big expiration date. Please try again."
+                                        f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`"
+                        )
+                        embedOverflow.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedOverflow.set_footer(text="Use 'cancel' to cancel")
+                        await ctx.send(embed=embedOverflow)
+                        continue
+
+                    await ctx.send(f"Expires at: {datetimeExpiration}")
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))

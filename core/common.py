@@ -444,6 +444,68 @@ class STAFF_ID:
         ConfigcatClient.STAFF_ID_CC.get_value("cat_privatevc", 895041016057446411)
     )
 
+    # *** Roles ***
+    r_director = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_director", 891521034333880416)
+    )
+    r_SSDigitalCommittee = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_ssdigitalcommittee", 898772246808637541)
+    )
+    r_chairpersonSSDCommittee = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_chairpersonssdcommittee", 934971902781431869)
+    )
+    r_executiveAssistant = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_executiveassistant", 892535575574372372)
+    )
+    r_chapterPresident = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_chapterpresident", 892532950019735602)
+    )
+    r_organizationPresident = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_organizationpresident", 892532907078475816)
+    )
+    r_vicePresident = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_vicepresident", 891521034371608671)
+    )
+    r_president = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_president", 932861531224428555)
+    )
+    r_editorInChief = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_editorinchief", 910269854592950352)
+    )
+    r_corporateOfficer = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_corporateofficer", 932861485917540402)
+    )
+    r_CHRO = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_chro", 892530791005978624)
+    )
+    r_CIO = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_cio", 892530239996059728)
+    )
+    r_CFO = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_cfo", 892530080029503608)
+    )
+    r_CMO = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_cmo", 892529974303686726)
+    )
+    r_CAO = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_cao", 892530033430790165)
+    )
+    r_COO = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_coo", 892530902528307271)
+    )
+    r_CEOandPresident = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_ceoandpresident", 892529865247580160)
+    )
+    r_boardMember = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_boardmember", 891521034371608675)
+    )
+    r_administrativeExecutive = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_administrativeexecutive", 946873101956841473)
+    )
+    r_informationTechnology = int(
+        ConfigcatClient.STAFF_ID_CC.get_value("r_informationtechnology", 891521034333880410)
+    )
+
 
 class DIGITAL_ID:
     """
@@ -1411,23 +1473,17 @@ async def force_restart(ctx):
     msg = await ctx.send(embed=embed)
     try:
 
-        # runThread = Thread(target=subprocess.run, kwargs={
-        #     'input': "cd && cd Timmy-SchoolSimplified && nohup python3.8 main.py &",
-        #     'shell': True,
-        #     'text': True,
-        #     'capture_output': True,
-        #     'check': True
-        # }
-        #                    )
-        # runThread.start()
-
         result = subprocess.run(
-            "cd && cd Timmy-SchoolSimplified && nohup python3.8 main.py &",
+            "cd && cd Timmy-SchoolSimplified",
             shell=True,
             text=True,
             capture_output=True,
             check=True,
         )
+        theproc = subprocess.Popen([sys.executable, "main.py"])
+
+        runThread = Thread(target=theproc.communicate)
+        runThread.start()
 
         embed.add_field(
             name="Started Environment and Additional Process (2/3)",
@@ -1474,3 +1530,44 @@ def getHostDir():
         runDir = None
     print(runDir)
     return runDir
+
+
+def stringTimeConvert(string: str):
+    """
+    Filters out the different time units from a string (e.g. from '2d 4h 6m 7s') and returns a ``dict``.
+    NOTE: The sequence of the time units doesn't matter. Could also be '6m 2d 7s 4h'.
+
+    Parameters:
+        string: The string which should get converted to the time units. (e.g. '2d 4h 6m 7s')
+
+    Returns: A ``dict`` which the keys are 'days', 'hours', 'minutes', 'seconds' and the value is either a ``int`` or ``None``.
+    """
+
+    timeDict: dict = {}
+
+    days = re.search("\d+d", string)
+    hours = re.search("\d+h", string)
+    minutes = re.search("\d+m", string)
+    seconds = re.search("\d+s", string)
+
+    if days is not None:
+        timeDict["days"] = int(days.group(0).strip("d"))
+    else:
+        timeDict["days"] = None
+
+    if hours is not None:
+        timeDict["hours"] = int(hours.group(0).strip("h"))
+    else:
+        timeDict["hours"] = None
+
+    if minutes is not None:
+        timeDict["minutes"] = int(minutes.group(0).strip("m"))
+    else:
+        timeDict["minutes"] = None
+
+    if seconds is not None:
+        timeDict["seconds"] = int(seconds.group(0).strip("s"))
+    else:
+        timeDict["seconds"] = None
+
+    return timeDict
