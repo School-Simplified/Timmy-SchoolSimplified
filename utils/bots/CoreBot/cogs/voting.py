@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import re
 
 import discord
 from discord.ext import commands
@@ -7,7 +8,7 @@ from core.checks import isnot_hostTimmyA
 from core.common import hexColors as hex
 from core.common import Emoji as e
 from core.common import STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
-from core.common import stringTimeConvert, ButtonHandler
+from core.common import stringTimeConvert, ButtonHandler, searchCustomEmoji
 
 
 class VotingBot(commands.Cog):
@@ -207,7 +208,6 @@ class VotingBot(commands.Cog):
 
                 elif index == 1:
                     text = msgContent
-                    print(text)
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
@@ -316,13 +316,18 @@ class VotingBot(commands.Cog):
                     view = discord.ui.View()
 
                     for option in options:
-                        print(option)
+
+                        customEmoji = searchCustomEmoji(option)
+                        if option is not None:
+                            option.replace(customEmoji, "")
+
 
                         view.add_item(
                             ButtonHandler(
                                 style=discord.ButtonStyle.blurple,
                                 disabled=False,
                                 label=option,
+                                emoji=customEmoji
                             )
                         )
 
