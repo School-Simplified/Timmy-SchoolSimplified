@@ -265,14 +265,18 @@ class VotingBot(commands.Cog):
                         embedError.set_footer(text="Use 'cancel' to cancel")
                         await ctx.send(embed=embedError)
                         continue
-
+                    print(f"datetimeNow: {datetimeNow}")
                     if days is not None:
+                        print("days")
                         datetimeExpiration = datetimeNow + datetime.timedelta(days=days)
                     if hours is not None:
+                        print("hours")
                         datetimeExpiration = datetimeNow + datetime.timedelta(hours=hours)
                     if minutes is not None:
+                        print("minutes")
                         datetimeExpiration = datetimeNow + datetime.timedelta(minutes=minutes)
                     if seconds is not None:
+                        print("seconds")
                         datetimeExpiration = datetimeNow + datetime.timedelta(seconds=seconds)
 
                     await ctx.send(f"Expires at: {datetimeExpiration}")
