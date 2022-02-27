@@ -318,9 +318,9 @@ class VotingBot(commands.Cog):
                     for option in options:
 
                         customEmoji = searchCustomEmoji(option)
-                        if option is not None:
+                        if customEmoji is not None:
                             option.replace(customEmoji, "")
-
+                        print(customEmoji, customEmoji.__class__.__name__)
 
                         view.add_item(
                             ButtonHandler(
