@@ -1429,7 +1429,9 @@ async def force_restart(ctx):
             check=True,
         )
         theproc = subprocess.Popen([sys.executable, "main.py"])
-        theproc.communicate()
+
+        runThread = Thread(target=theproc.communicate)
+        runThread.start()
 
         embed.add_field(
             name="Started Environment and Additional Process (2/3)",
