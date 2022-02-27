@@ -115,6 +115,7 @@ class VotingBot(commands.Cog):
                 )
                 embedTimeout.set_footer(text="Use 'vote create' to start again")
                 await msgSetup.edit(embed=embedTimeout)
+                break
 
             else:
                 msgContent = msgResponse.content
@@ -265,6 +266,7 @@ class VotingBot(commands.Cog):
                         embedError.set_footer(text="Use 'cancel' to cancel")
                         await ctx.send(embed=embedError)
                         continue
+
                     print(f"datetimeNow: {datetimeNow}")
                     if days is not None:
                         print("days")
