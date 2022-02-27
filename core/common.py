@@ -1576,7 +1576,7 @@ def stringTimeConvert(string: str):
 def searchCustomEmoji(string: str):
     """
     Searches for a custom emoji in a specific ``str`` and returns it or None if nothing found.
-    The custom emoji could be animated or not.
+    The custom emoji can either be animated or not.
 
     Params:
         string: The string which should get searched for a custom emoji.
