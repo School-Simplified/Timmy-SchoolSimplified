@@ -1445,7 +1445,6 @@ async def force_restart(ctx):
             inline=False,
         )
         await msg.edit(embed=embed)
-        print(1)
         sys.exit(0)
 
 
