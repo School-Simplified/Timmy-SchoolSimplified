@@ -6,15 +6,14 @@ from discord.ext import commands
 from core.checks import isnot_hostTimmyA
 from core.common import hexColors as hex
 from core.common import Emoji as e
-from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
-from core.common import stringTimeConvert
+from core.common import STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
+from core.common import stringTimeConvert, ButtonHandler
 
 
 class VotingBot(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.acceptedGuilds = [
-            MAIN_ID.g_main,
             STAFF_ID.g_staff,
             DIGITAL_ID.g_digital,
             TECH_ID.g_tech,
@@ -97,6 +96,7 @@ class VotingBot(commands.Cog):
         guilds = []
         text = None
         options = []
+        datetimeExpiration = None
 
         index = 0
         while True:
@@ -254,7 +254,6 @@ class VotingBot(commands.Cog):
                     minutes = timeDict["minutes"]
                     seconds = timeDict["seconds"]
 
-                    datetimeNow = datetime.datetime.now()
 
                     if days is None and hours is None and minutes is None and seconds is None:
                         embedError = discord.Embed(
@@ -279,13 +278,14 @@ class VotingBot(commands.Cog):
                     if seconds is None:
                         seconds = 0
 
+                    datetimeNow = datetime.datetime.now()
                     try:
                         datetimeExpiration = datetimeNow + datetime.timedelta(days=days) + datetime.timedelta(hours=hours) + datetime.timedelta(minutes=minutes) + datetime.timedelta(seconds=seconds)
                     except OverflowError as _error:
                         embedOverflow = discord.Embed(
                             color=hex.red_error,
                             title="Create Voting",
-                            description="Couldn't convert it to a datetime due of too big expiration date. Please try again."
+                            description="Couldn't convert it to a datetime due of a too big expiration date. Please try again."
                                         f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`"
                         )
                         embedOverflow.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
@@ -293,7 +293,35 @@ class VotingBot(commands.Cog):
                         await ctx.send(embed=embedOverflow)
                         continue
 
-                    await ctx.send(f"Expires at: {datetimeExpiration}")
+                    embedFinish = discord.Embed(
+                        color=hex.ss_blurple,
+                        title="Create Voting",
+                        description="Almost done... Please overview the embed below and confirm it."
+                    )
+                    embedFinish.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    await msgSetup.edit(embed=embedFinish)
+
+                    embedPseudo = discord.Embed(
+                        color=hex.ss_blurple,
+                        title="Voting",
+                        description=f"{text}"
+                                    f"\n\n**Expires <t:{datetimeExpiration}>**"
+                    )
+                    embedPseudo.set_footer(text="Please vote anonymously below | You can't undo your vote!")
+
+                    view = discord.ui.View()
+
+                    for option in options:
+                        view.add_item(
+                            ButtonHandler(
+                                style=discord.ButtonStyle.blurple,
+                                disabled=False,
+                                label=option,
+                            )
+                        )
+
+                    await ctx.send(embed=embedPseudo, view=view)
+                    break
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
