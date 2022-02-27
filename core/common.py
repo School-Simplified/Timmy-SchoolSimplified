@@ -449,61 +449,61 @@ class STAFF_ID:
         ConfigcatClient.STAFF_ID_CC.get_value("r_director", 891521034333880416)
     )
     r_SSDigitalCommittee = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_SSDigitalCommittee", 898772246808637541)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_ssdigitalcommittee", 898772246808637541)
     )
     r_chairpersonSSDCommittee = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_chairpersonSSDCommittee", 934971902781431869)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_chairpersonssdcommittee", 934971902781431869)
     )
     r_executiveAssistant = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_executiveAssistant", 892535575574372372)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_executiveassistant", 892535575574372372)
     )
     r_chapterPresident = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_chapterPresident", 892532950019735602)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_chapterpresident", 892532950019735602)
     )
     r_organizationPresident = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_organizationPresident", 892532907078475816)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_organizationpresident", 892532907078475816)
     )
     r_vicePresident = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_vicePresident", 891521034371608671)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_vicepresident", 891521034371608671)
     )
     r_president = int(
         ConfigcatClient.STAFF_ID_CC.get_value("r_president", 932861531224428555)
     )
     r_editorInChief = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_editorInChief", 910269854592950352)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_editorinchief", 910269854592950352)
     )
     r_corporateOfficer = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_corporateOfficer", 932861485917540402)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_corporateofficer", 932861485917540402)
     )
     r_CHRO = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_CHRO", 892530791005978624)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_chro", 892530791005978624)
     )
     r_CIO = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_CIO", 892530239996059728)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_cio", 892530239996059728)
     )
     r_CFO = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_CFO", 892530080029503608)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_cfo", 892530080029503608)
     )
     r_CMO = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_CMO", 892529974303686726)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_cmo", 892529974303686726)
     )
     r_CAO = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_CAO", 892530033430790165)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_cao", 892530033430790165)
     )
     r_COO = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_COO", 892530902528307271)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_coo", 892530902528307271)
     )
     r_CEOandPresident = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_CEOandPresident", 892529865247580160)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_ceoandpresident", 892529865247580160)
     )
     r_boardMember = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_boardMember", 891521034371608675)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_boardmember", 891521034371608675)
     )
     r_administrativeExecutive = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_administrativeExecutive", 946873101956841473)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_administrativeexecutive", 946873101956841473)
     )
     r_informationTechnology = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_informationTechnology", 891521034333880410)
+        ConfigcatClient.STAFF_ID_CC.get_value("r_informationtechnology", 891521034333880410)
     )
 
 
