@@ -5,6 +5,7 @@ from core.checks import isnot_hostTimmyA
 from core.common import hexColors as hex
 from core.common import Emoji as e
 from core.common import MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
+from core.common import stringTimeConvert
 
 
 class VotingBot(commands.Cog):
@@ -244,8 +245,9 @@ class VotingBot(commands.Cog):
                     index += 1
 
                 elif index == 3:
-                    pass
-                    # TODO
+                    timeDict: dict = stringTimeConvert(msgContent)
+                    print(timeDict)
+
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
