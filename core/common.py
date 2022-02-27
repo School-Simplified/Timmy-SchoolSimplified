@@ -1422,7 +1422,7 @@ async def force_restart(ctx):
         # runThread.start()
 
         result = subprocess.run(
-            "cd && cd Timmy-SchoolSimplified && nohup python3.8 main.py &",
+            "cd && cd Timmy-SchoolSimplified && python3.8 main.py &",
             shell=True,
             text=True,
             capture_output=True,
