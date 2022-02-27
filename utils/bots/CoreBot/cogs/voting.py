@@ -232,8 +232,6 @@ class VotingBot(commands.Cog):
                     for optionStr in optionsStrList:
                         options.append(optionStr.strip())
 
-                    print(options)
-
                     embedDuration = discord.Embed(
                         color=hex.ss_blurple,
                         title="Create Voting",
@@ -300,7 +298,7 @@ class VotingBot(commands.Cog):
                     )
                     embedFinish.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     await ctx.send(embed=embedFinish)
-                    
+
                     await msgSetup.delete()
 
                     expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
@@ -311,13 +309,15 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Voting",
                         description=f"{text}"
-                                    f"\n\n**Expires** {expLongDateTimeTP} ({expRelativeTimeTP})"
+                                    f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})"
                     )
                     embedPseudo.set_footer(text="Please vote anonymously below | You can't undo your vote!")
 
                     view = discord.ui.View()
 
                     for option in options:
+                        print(option)
+
                         view.add_item(
                             ButtonHandler(
                                 style=discord.ButtonStyle.blurple,
