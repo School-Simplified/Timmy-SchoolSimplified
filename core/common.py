@@ -1422,12 +1422,14 @@ async def force_restart(ctx):
         # runThread.start()
 
         result = subprocess.run(
-            "cd && cd Timmy-SchoolSimplified && python3.8 main.py &",
+            "cd && cd Timmy-SchoolSimplified",
             shell=True,
             text=True,
             capture_output=True,
             check=True,
         )
+        theproc = subprocess.Popen([sys.executable, "main.py"])
+        theproc.communicate()
 
         embed.add_field(
             name="Started Environment and Additional Process (2/3)",
