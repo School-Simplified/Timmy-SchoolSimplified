@@ -185,10 +185,17 @@ class Timmy(commands.Bot):
                 f"to the bot development team"
             )
         else:
-            await ctx.respond(
-                f"Sorry an Error Occurred: {error}. This error has been sent "
-                f"to the bot development team"
-            )
+            try:
+                await ctx.respond(
+                    f"Sorry an Error Occurred: {error}. This error has been sent "
+                    f"to the bot development team"
+                )
+            except:
+                await ctx.send(
+                    f"Sorry an Error Occurred: {error}. This error has been sent "
+                    f"to the bot development team"
+                )
+            
         error_file = Path("error.txt")
         error_file.touch()
         with error_file.open("w") as f:
@@ -435,10 +442,10 @@ for ext in get_extensions():
 
 @bot.check
 async def mainModeCheck(ctx: commands.Context):
-    MT = discord.utils.get(ctx.guild.roles, name="Moderator")
+    """MT = discord.utils.get(ctx.guild.roles, name="Moderator")
     VP = discord.utils.get(ctx.guild.roles, name="VP")
     CO = discord.utils.get(ctx.guild.roles, name="CO")
-    SS = discord.utils.get(ctx.guild.roles, name="Secret Service")
+    SS = discord.utils.get(ctx.guild.roles, name="Secret Service")"""
 
     blacklistedUsers = []
     for p in database.Blacklist:
@@ -475,20 +482,12 @@ async def mainModeCheck(ctx: commands.Context):
 
     # DM Check
     elif ctx.guild is None:
+        return True
         return CheckDB_CC.guildNone
 
     # External Server Check
     elif ctx.guild.id != MAIN_ID.g_main:
         return CheckDB_CC.externalGuild
-
-    # Mod Role Check
-    elif (
-        MT in ctx.author.roles
-        or VP in ctx.author.roles
-        or CO in ctx.author.roles
-        or SS in ctx.author.roles
-    ):
-        return CheckDB_CC.ModRoleBypass
 
     # Rule Command Check
     elif ctx.command.name == "rule":

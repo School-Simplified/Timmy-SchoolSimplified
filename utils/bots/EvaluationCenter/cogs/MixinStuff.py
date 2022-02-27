@@ -13,46 +13,48 @@ class SimulatorProfile:
     @classmethod
     async def create_TicketSys(self, botself, ctx: commands.Context):
         category = discord.utils.get(ctx.guild.categories, id=TECH_ID.cat_sandbox)
-        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
-        q.mode = "TickeySys"
-        q.save()
+        query: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+        query.mode = "TickeySys"
 
         await ctx.guild.create_text_channel("🧧┃chat-help")
         ListofCat = [
-            ["Math Tickets", "cat_mathticket"],
-            ["Science Tickets", "cat_scienceticket"],
-            ["Social Studies Tickets", "cat_socialstudiesticket"],
-            ["Essay Tickets", "cat_essayticket"],
-            ["English Tickets", "cat_englishticket"],
-            ["Other Tickets", "cat_otherticket"],
+            ["Math Tickets", query.cat_mathticket],
+            ["Science Tickets", query.cat_scienceticket],
+            ["Social Studies Tickets", query.cat_socialstudiesticket],
+            ["Essay Tickets", query.cat_essayticket],
+            ["English Tickets", query.cat_englishticket],
+            ["Language Tickets", query.cat_languageticket],
+            ["Other Tickets", query.cat_otherticket],
         ]
         for cat in ListofCat:
             pos = 7
             category = ctx.guild.create_category(cat[0], position=pos)
-            config_patch(cat[1], category.id)
-            if cat[0] == "cat_otherticket":
-                config_patch("cat_fineartsticket", category.id)
+            cat[1] = category.id
+            if cat[0] == "Other Tickets":
+                query.cat_fineartsticket = category.id
             pos += 1
+        query.save()
 
     @classmethod
     async def cleanup_TicketSys(self, botself, ctx: commands.Context):
-        catIDs = [
-            SandboxConfig.cat_mathTicket,
-            SandboxConfig.cat_scienceTicket,
-            SandboxConfig.cat_socialStudiesTicket,
-            SandboxConfig.cat_englishTicket,
-            SandboxConfig.cat_essayTicket,
-            SandboxConfig.cat_otherTicket,
-            SandboxConfig.cat_otherTicket,
+        query: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+        ListofCat = [
+            ["Math Tickets", query.cat_mathticket],
+            ["Science Tickets", query.cat_scienceticket],
+            ["Social Studies Tickets", query.cat_socialstudiesticket],
+            ["Essay Tickets", query.cat_essayticket],
+            ["English Tickets", query.cat_englishticket],
+            ["Language Tickets", query.cat_languageticket],
+            ["Other Tickets", query.cat_otherticket],
         ]
-        for cat in catIDs:
+        for cat in ListofCat:
+            cat[1] = None
             category = discord.utils.get(ctx.guild.categories, id=cat)
             for channel in category.channels:
                 await channel.delete()
             await category.delete()
-        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
-        q.mode = "None"
-        q.save()
+        query.mode = "None"
+        query.save()
 
 
     @classmethod
@@ -60,22 +62,24 @@ class SimulatorProfile:
         category = discord.utils.get(ctx.guild.categories, id=SandboxConfig.cat_sandbox)
         q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
         q.mode = "TutorVC"
-        q.save()
 
         cp = await ctx.guild.create_text_channel("control-panel", category=category)
         spv = await ctx.guild.create_voice_channel("Start Private VC", category=category)
-        r=config_patch("ch_tv_console", cp.id)
-        r2=config_patch("ch_tv_startvc", spv.id)
+        q.ch_tv_console = cp.id
+        q.ch_tv_startvc = spv.id
+        q.save()
 
     @classmethod
     async def cleanup_PrivVCSys(self, botself, ctx: commands.Context):
-        channels = [SandboxConfig.ch_TV_console, SandboxConfig.ch_TV_startVC]
+        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+        channels = [q.ch_tv_console, q.ch_tv_startvc]
         for channel in channels:
             ch = await botself.bot.fetch_channel(channel)
             await ch.delete()
 
-        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
         q.mode = "None"
+        q.ch_tv_console = None
+        q.ch_tv_startvc = None
         q.save()
         
 

@@ -563,6 +563,19 @@ class SandboxConfig(BaseModel):
     id = AutoField()
     mode = TextField()
 
+    cat_mathticket = BigIntegerField()
+    cat_scienceticket = BigIntegerField()
+    cat_socialstudiesticket = BigIntegerField()
+    cat_essayticket = BigIntegerField()
+    cat_englishticket = BigIntegerField()
+    cat_otherticket = BigIntegerField()
+    cat_fineartsticket = BigIntegerField()
+    cat_languageticket = BigIntegerField()
+
+    ch_tv_console = BigIntegerField()
+    ch_tv_startvc = BigIntegerField()
+
+
 app = Flask(__name__)
 
 

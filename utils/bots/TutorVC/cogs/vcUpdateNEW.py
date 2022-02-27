@@ -49,17 +49,20 @@ def showTotalMinutes(dateObj: datetime):
 class TutorVCUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
         self.channel_id = {
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
+            TECH_ID.g_tech: q.ch_tv_console,
         }
-        self.staticChannels = [MAIN_ID.ch_startPrivateVC, STAFF_ID.ch_startPrivateVC]
+        self.staticChannels = [MAIN_ID.ch_startPrivateVC, STAFF_ID.ch_startPrivateVC, q.ch_tv_console]
         self.presetChannels = [
             MAIN_ID.ch_controlPanel,
             MAIN_ID.ch_startPrivateVC,
             STAFF_ID.ch_console,
             STAFF_ID.ch_startPrivateVC,
+            q.ch_tv_console,
+            q.ch_tv_startvc
         ]
 
         self.TutorLogID = TUT_ID.ch_hourLogs
@@ -78,11 +81,10 @@ class TutorVCUpdate(commands.Cog):
         self.TT = "Technical Team"
 
         self.TutorRole = "Tutor"
-
         self.categoryIDs = [
             MAIN_ID.cat_privateVC,
             STAFF_ID.cat_privateVC,
-            SandboxConfig.cat_sandbox,
+            SandboxConfig.cat_sandbox
         ]
         self.CcategoryIDs = {
             MAIN_ID.g_main: MAIN_ID.cat_privateVC,
@@ -92,7 +94,7 @@ class TutorVCUpdate(commands.Cog):
         self.LobbyStartIDs = {
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
-            TECH_ID.g_tech: SandboxConfig.ch_TV_console,
+            TECH_ID.g_tech: q.ch_tv_console,
         }
         # self.PRIVVC_DELETION_QUEUE.start()
 

@@ -60,7 +60,7 @@ class AD_MDL_1(discord.ui.Modal):
 
     async def callback(self, interaction: discord.Interaction):
         embed = discord.Embed(
-            title="Advertisement Request", color=discord.Color.blurple()
+            title="{} Request", color=discord.Color.blurple()
         )
         embed.set_author(
             name=interaction.user.name, icon_url=interaction.user.avatar.url
@@ -110,13 +110,13 @@ class CommissionADButton(discord.ui.View):
         return await interaction.response.send_modal(modal)
 
 
-class MKTProject(commands.Cog):
+class MKTProject2(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
 
     @commands.command()
     @is_botAdmin
-    async def mktembedc(self, ctx):
+    async def mktembedc2(self, ctx):
         view = CommissionADButton(self.bot)
         await ctx.send(
             "https://cdn.discordapp.com/attachments/892290621249847406/945506790253158440/Copy_of_Multiuse_Banner_1.png"
@@ -128,7 +128,7 @@ class MKTProject(commands.Cog):
 
     @commands.command()
     # @commands.has_role(945533984740343859)
-    async def closemkt(self, ctx: commands.Context):
+    async def closemkt22(self, ctx: commands.Context):
         thread: discord.Thread = ctx.channel
         if thread.parent_id == 945757098686414858:
             messages = await thread.history(limit=2, oldest_first=True).flatten()
@@ -146,4 +146,4 @@ class MKTProject(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(MKTProject(bot))
+    bot.add_cog(MKTProject2(bot))

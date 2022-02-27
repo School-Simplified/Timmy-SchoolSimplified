@@ -5,7 +5,7 @@ import discord
 import pytz
 from core import database
 from core.checks import is_botAdmin
-from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID, SelectMenuHandler
+from core.common import TECH_ID, Emoji, MAIN_ID, STAFF_ID, TUT_ID, SandboxConfig, SelectMenuHandler
 from discord.ext import commands
 
 # global variables
@@ -84,10 +84,12 @@ GameDict = {
 class TutorVCCMD(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+
         self.channel_id = MAIN_ID.ch_controlPanel
-        self.categoryID = [MAIN_ID.cat_privateVC, STAFF_ID.cat_privateVC]
-        self.staticChannels = [MAIN_ID.ch_startPrivateVC]
-        self.presetChannels = [MAIN_ID.ch_controlPanel, MAIN_ID.ch_startPrivateVC]
+        self.categoryID = [MAIN_ID.cat_privateVC, STAFF_ID.cat_privateVC, SandboxConfig.cat_sandbox]
+        self.staticChannels = [MAIN_ID.ch_startPrivateVC, q.ch_tv_startvc]
+        self.presetChannels = [MAIN_ID.ch_controlPanel, MAIN_ID.ch_startPrivateVC, q.ch_tv_startvc, q.ch_tv_console]
 
         self.ownerID = 409152798609899530
         # self.botID = bot.user.id
@@ -159,10 +161,12 @@ class TutorVCCMD(commands.Cog):
         self.LobbyStartIDs = {
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
+            TECH_ID.g_tech: q.ch_tv_console,
         }
         self.StartVCIDs = {
             MAIN_ID.g_main: MAIN_ID.ch_startPrivateVC,
-            STAFF_ID.g_staff: STAFF_ID.g_staff,
+            STAFF_ID.g_staff: STAFF_ID.ch_startPrivateVC,
+            TECH_ID.g_tech: q.ch_tv_startvc,
         }
 
     @commands.command()
