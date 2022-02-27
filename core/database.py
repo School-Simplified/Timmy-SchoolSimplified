@@ -503,10 +503,14 @@ class BaseTickerInfo(BaseModel):
 
     `counter`: BigIntegerField()
     Counter for the total amount of channels.
+
+    `guildID`: BigIntegerField()
+    Guild ID.
     """
 
     id = AutoField()
     counter = BigIntegerField()
+    guildID = BigIntegerField()
 
 
 class VCDeletionQueue(BaseModel):

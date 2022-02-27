@@ -242,14 +242,15 @@ def decodeDict(self, value: str, sandbox: bool = False) -> typing.Union[str, int
     }
 
     if sandbox:
+        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
         decodeID = {
-            "['Math Helpers']": SandboxConfig.cat_mathTicket,
-            "['Science Helpers']": SandboxConfig.cat_scienceTicket,
-            "['Social Studies Helpers']": SandboxConfig.cat_socialStudiesTicket,
-            "['English Helpers']": SandboxConfig.cat_englishTicket,
-            "['Essay Helpers']": SandboxConfig.cat_essayTicket,
-            "['Language Helpers']": SandboxConfig.cat_otherTicket,
-            "['Other Helpers']": SandboxConfig.cat_otherTicket,
+            "['Math Helpers']": q.cat_mathticket,
+            "['Science Helpers']": q.cat_scienceticket,
+            "['Social Studies Helpers']": q.cat_socialstudiesticket,
+            "['English Helpers']": q.cat_englishticket,
+            "['Essay Helpers']": q.cat_essayticket,
+            "['Language Helpers']": q.cat_otherticket,
+            "['Other Helpers']": q.cat_otherticket,
         }
     else:
         decodeID = {
@@ -508,7 +509,7 @@ class TicketBT(discord.ui.Button):
 
             CounterNum = (
                 database.BaseTickerInfo.select()
-                .where(database.BaseTickerInfo.id == 1)
+                .where(database.BaseTickerInfo.guildID == guild.id)
                 .get()
             )
             TNUM = CounterNum.counter
@@ -938,9 +939,14 @@ class DropdownTickets(commands.Cog):
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":
             channel = interaction.channel
-            ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
-                MAIN_ID.ch_transcriptLogs
-            )
+            if interaction.guild.id == MAIN_ID.g_main:
+                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                    MAIN_ID.ch_transcriptLogs
+                )
+            else:
+                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                    TECH_ID.ch_ticketLog
+                )
             author = interaction.user
             msg = await interaction.channel.send(
                 f"Please wait, creating your transcript {Emoji.loadingGIF2}\n**THIS MAY TAKE SOME TIME**"
@@ -995,7 +1001,14 @@ class DropdownTickets(commands.Cog):
         elif InteractionResponse["custom_id"] == "ch_lock_C&D":
             channel = await self.bot.fetch_channel(interaction.channel_id)
             author = interaction.user
-            ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
+            if interaction.guild.id == MAIN_ID.g_main:
+                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                    MAIN_ID.ch_transcriptLogs
+                )
+            else:
+                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                    TECH_ID.ch_ticketLog
+                )
             query = (
                 database.TicketInfo.select()
                 .where(database.TicketInfo.ChannelID == interaction.channel_id)

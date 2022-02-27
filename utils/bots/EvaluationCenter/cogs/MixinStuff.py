@@ -48,7 +48,7 @@ class SimulatorProfile:
             ["Other Tickets", query.cat_otherticket],
         ]
         for cat in ListofCat:
-            cat[1] = None
+            cat[1] = "None"
             category = discord.utils.get(ctx.guild.categories, id=cat)
             for channel in category.channels:
                 await channel.delete()
