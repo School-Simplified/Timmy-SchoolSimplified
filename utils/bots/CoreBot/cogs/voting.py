@@ -7,25 +7,61 @@ from discord.ext import commands
 from core.checks import isnot_hostTimmyA
 from core.common import hexColors as hex
 from core.common import Emoji as e
-from core.common import STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID
+from core.common import MAIN_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID, LEADER_ID, STAFF_ID
 from core.common import stringTimeConvert, ButtonHandler, searchCustomEmoji
 
 
 class VotingBot(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.acceptedGuilds = [
-            STAFF_ID.g_staff,
-            DIGITAL_ID.g_digital,
-            TECH_ID.g_tech,
-            MKT_ID.g_mkt,
-            TUT_ID.g_tut,
-            HR_ID.g_hr,
+        self.acceptedAnnouncementCHs = [
+            MAIN_ID.ch_announcements,
+            MAIN_ID.ch_modAnnouncements,
+            DIGITAL_ID.ch_announcements,
+            DIGITAL_ID.ch_acadAnnouncements,
+            DIGITAL_ID.ch_clubAnnouncements,
+            DIGITAL_ID.ch_coAnnouncements,
+            DIGITAL_ID.ch_mktAnnouncements,
+            DIGITAL_ID.ch_notesAnnouncements,
+            DIGITAL_ID.ch_techAnnouncements,
+            TECH_ID.ch_announcements,
+            TECH_ID.ch_botAnnouncements,
+            TECH_ID.ch_itAnnouncements,
+            TECH_ID.ch_webAnnouncements,
+            MKT_ID.ch_announcements,
+            MKT_ID.ch_modAnnouncements,
+            MKT_ID.ch_bpAnnouncements,
+            MKT_ID.ch_mediaAnnouncements,
+            MKT_ID.ch_designAnnouncements,
+            MKT_ID.ch_eventsAnnouncements,
+            TUT_ID.ch_announcements,
+            TUT_ID.ch_csAnnouncements,
+            TUT_ID.ch_mathAnnouncements,
+            TUT_ID.ch_miscAnnouncements,
+            TUT_ID.ch_englishAnnouncements,
+            TUT_ID.ch_leadershipAnnouncements,
+            TUT_ID.ch_scienceAnnouncements,
+            TUT_ID.ch_ssAnnouncements,
+            HR_ID.ch_announcements,
+            HR_ID.ch_leadershipAnnouncements,
+            HR_ID.ch_techAnnouncements,
+            HR_ID.ch_mktAnnouncements,
+            HR_ID.ch_acadAnnouncements,
+            LEADER_ID.ch_mktAnnouncements,
+            LEADER_ID.ch_mainAnnouncements,
+            LEADER_ID.ch_envAnnouncements,
+            LEADER_ID.ch_ssdAnnouncements,
+            LEADER_ID.ch_workonlyAnnouncements,
+            LEADER_ID.ch_financeAnnouncements,
+            LEADER_ID.ch_rebrandAnnouncements,
+            LEADER_ID.ch_staffAnnouncements,
+            STAFF_ID.ch_announcements,
+            STAFF_ID.ch_leadershipAnnouncements
         ]
 
     """
     vote create: creates a voting
-        1. Server (it will automatically get send in announcement channel)
+        1. Announcement channel
         2. Text
         3. Options (would be buttons)
         4. Durations
@@ -59,7 +95,15 @@ class VotingBot(commands.Cog):
     """
 
     @commands.group(invoke_without_command=True)
-    @commands.has_any_role() # TODO
+    @commands.has_any_role(
+        LEADER_ID.r_corporateOfficer,
+        LEADER_ID.r_director,
+        LEADER_ID.r_president,
+        LEADER_ID.r_vicePresident,
+        LEADER_ID.r_boardMember,
+        LEADER_ID.r_informationTechnologyManager,
+        LEADER_ID.r_ssDigitalCommittee
+    )
     async def vote(self, ctx):
         pass
 
@@ -67,34 +111,33 @@ class VotingBot(commands.Cog):
     @isnot_hostTimmyA
     async def create(self, ctx: commands.Context):
 
-        acceptedGuildsStr = ""
-        for guildID in self.acceptedGuilds:
-            acceptedGuild = self.bot.get_guild(guildID)
-            print(f"{guildID}: {acceptedGuild}")
+        acceptedChannelsStr = ""
+        for channelID in self.acceptedAnnouncementCHs:
+            acceptedChannel = self.bot.get_channel(channelID)
 
-            acceptedGuildsStr += f"- {acceptedGuild.name} (`{acceptedGuild.id}`)\n"
+            acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name}(`{acceptedChannel.id}`)\n"
 
         embedServer = discord.Embed(
             color=hex.ss_blurple,
             title="Create voting",
-            description="Please provide the server/s (name or ID) in which the voting should get sent. You can send "
-            "it to multiple servers by separating the servers with commas (`,`)."
-            "\n**Accepted servers:**"
-            f"\n{acceptedGuildsStr}"
+            description="Please provide the announcement-channel/s ID in which the voting should get sent. To send it to "
+                        "multiple channels, separate the channels with commas (`,`)."
+            "\n**Accepted channels:**"
+            f"\n{acceptedChannelsStr}"
             "\n\n**NOTE**: it will automatically send the voting into the __general announcement channel__ of "
             "the server.",
         )
         embedServer.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
         embedServer.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
         msgSetup = await ctx.send(embed=embedServer)
-
-        def check(messageCheck: discord.Message):
+        # TODO
+        def msgInputCheck(messageCheck: discord.Message):
             return (
                 messageCheck.channel == ctx.channel
                 and messageCheck.author == ctx.author
             )
 
-        guilds = []
+        channels = []
         text = None
         options = []
         datetimeExpiration = None
@@ -103,7 +146,7 @@ class VotingBot(commands.Cog):
         while True:
             try:
                 msgResponse: discord.Message = await self.bot.wait_for(
-                    "message", check=check, timeout=60
+                    "message", check=msgInputCheck, timeout=60
                 )
             except asyncio.TimeoutError:
                 embedTimeout = discord.Embed(
@@ -332,6 +375,19 @@ class VotingBot(commands.Cog):
 
                     await ctx.send(embed=embedPseudo, view=view)
                     break
+
+        channels = []
+
+        embedConfirm = discord.Embed(
+            color=hex.yellow,
+            title="Confirm",
+            description=f"Please confirm that you overviewed the voting message and that this message will ping @everyone "
+                        "in the following channel of the **: "
+        )
+
+        def confirmCheck(reactionCheck, userCheck):
+            return userCheck.id == ctx.author.id and reactionCheck.message.id ==
+
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
