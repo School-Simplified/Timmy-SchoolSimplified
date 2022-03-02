@@ -51,6 +51,7 @@ class ConfigcatClient:
     TUT_ID_CC = configcatclient.create_client(os.getenv("TUTID_CC"))
     CH_ID_CC = configcatclient.create_client(os.getenv("CHID_CC"))
     HR_ID_CC = configcatclient.create_client(os.getenv("HRID_CC"))
+    LEADER_ID_CC = configcatclient.create_client(os.getenv("LEADERID_CC"))
     CHECK_DB_CC = configcatclient.create_client(os.getenv("CHECKDB_CC"))
     SANDBOX_CONFIG_CC = configcatclient.create_client_with_auto_poll(os.getenv("SANDBOX_CONFIG_CC"), poll_interval_seconds=10)
 
@@ -259,7 +260,7 @@ class MAIN_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -301,7 +302,7 @@ class MAIN_ID:
     ch_startPrivateVC = int(
         ConfigcatClient.MAIN_ID_CC.get_value("ch_startprivatevc", 784556875487248394)
     )
-
+    
     # *** Categories ***
     cat_casual = int(
         ConfigcatClient.MAIN_ID_CC.get_value("cat_casual", 763121170324783146)
@@ -416,7 +417,7 @@ class STAFF_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -513,7 +514,7 @@ class DIGITAL_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -539,7 +540,7 @@ class TECH_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -587,7 +588,7 @@ class SandboxConfig:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -641,7 +642,7 @@ class CH_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -661,7 +662,7 @@ class MKT_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -717,7 +718,7 @@ class TUT_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -741,7 +742,7 @@ class HR_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -750,6 +751,31 @@ class HR_ID:
     # *** Guilds ***
     g_hr = int(ConfigcatClient.HR_ID_CC.get_value("g_hr", 815753072742891532))
 
+
+class LEADER_ID:
+    """
+    IDs of the Leadership Lounge server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_leader = int(ConfigcatClient.HR_ID_CC.get_value("g_leader", 888929996033368154))
+
+
+    # *** Roles ***
+    r_corporateOfficer = int(ConfigcatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444))
+    r_president = int(ConfigcatClient.LEADER_ID_CC.get_value("r_president", 900940957783056444))
+    r_vicePresident = int(ConfigcatClient.LEADER_ID_CC.get_value("r_vicepresident", 888929996175978508))
+    r_boardMember = int(ConfigcatClient.LEADER_ID_CC.get_value("r_boardmember", 888929996188549189))
+    r_director = int(ConfigcatClient.LEADER_ID_CC.get_value("r_director", 892531463482900480))
+    r_ssDigitalCommittee = int(ConfigcatClient.LEADER_ID_CC.get_value("r_ssdigitalcommittee", 912472488594771968))
+    r_informationTechnologyManager = int(ConfigcatClient.LEADER_ID_CC.get_value("r_informationtechnologymanager", 943942441357172758))
 
 class CheckDB_CC:
     """
@@ -773,7 +799,7 @@ class CheckDB_CC:
 
 
 def get_value(
-    class_type: Union[MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID],
+    class_type: Union[MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID, LEADER_ID],
     value: str,
 ) -> int:
     """
