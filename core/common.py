@@ -582,7 +582,8 @@ class TECH_ID:
     ch_itAnnouncements = int(ConfigcatClient.TECH_ID_CC.get_value("ch_itannouncements", 932066545587327000))
     ch_webAnnouncements = int(ConfigcatClient.TECH_ID_CC.get_value("ch_webannouncements", 932487991958577152))
     ch_botAnnouncements = int(ConfigcatClient.TECH_ID_CC.get_value("ch_botannouncements", 932725755115368478))
-
+    ch_snakePit = int(ConfigcatClient.TECH_ID_CC.get_value("ch_snakepit", 942076483290161203))
+    
     # *** Categories ***
     cat_developerComms = int(
         ConfigcatClient.TECH_ID_CC.get_value("cat_developercomms", 873261268495106119)
