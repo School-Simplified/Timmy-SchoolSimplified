@@ -120,16 +120,23 @@ class VotingBot(commands.Cog):
             acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name}(`{acceptedChannel.id}`)\n"
 
         randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        print(1)
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
+        print(2)
+        print(tempVoteCHsPath)
         tempVoteCHsFileWrite = open(tempVoteCHsPath, "w+")
+        print(3)
         tempVoteCHsFileWrite.write(acceptedChannelsStr)
+        print(4)
 
         tempVoteCHsFile = discord.File(tempVoteCHsPath, filename=f"TEMP_voteCHS_{randomID}.txt")
+        print(5)
 
         ch_snakePit = self.bot.get_channel(TECH_ID.ch_snakePit)
         msgVoteCHsFile = await ch_snakePit.send(file=tempVoteCHsFile)
+        print(6)
         voteCHsFileURL = msgVoteCHsFile.attachments[0].url
-
+        print(7)
         embedServer = discord.Embed(
             color=hex.ss_blurple,
             title="Create Voting",
