@@ -235,11 +235,10 @@ class VotingBot(commands.Cog):
                                 channel = self.bot.get_channel(int(stripChannelStr))
                                 channels.append(channel)
 
-
                             else:
                                 msgNotFound = await ctx.send(embed=embedNotFound)
                                 await msgNotFound.delete(delay=7)
-                                break
+                                continue
 
                         if any(channelInList is None for channelInList in channels) or \
                             any(type(channelInList) is not discord.TextChannel for channelInList in channels):
@@ -259,7 +258,7 @@ class VotingBot(commands.Cog):
                         else:
                             msgNotFound = await ctx.send(embed=embedNotFound)
                             await msgNotFound.delete(delay=7)
-                            break
+                            continue
 
                         if channel is None or type(channel) is not discord.TextChannel:
                             msgNotFound = await ctx.send(embed=embedNotFound)
