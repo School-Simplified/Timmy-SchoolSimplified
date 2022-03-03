@@ -137,6 +137,7 @@ class VotingBot(commands.Cog):
         print(6)
         voteCHsFileURL = msgVoteCHsFile.attachments[0].url
         print(7)
+        await msgVoteCHsFile.delete()
         embedServer = discord.Embed(
             color=hex.ss_blurple,
             title="Create Voting",
@@ -155,8 +156,9 @@ class VotingBot(commands.Cog):
                 label="Accepted Channels"
             )
         )
-
+        print(8)
         msgSetup = await ctx.send(embed=embedServer, view=viewAcceptedCHs)
+        print(9)
 
         def msgInputCheck(messageCheck: discord.Message):
             return (
