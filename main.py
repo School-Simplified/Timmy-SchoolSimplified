@@ -270,7 +270,7 @@ class Timmy(commands.Bot):
 
             error_file.unlink()
 
-    async def on_command_error(ctx: commands.Context, error: Exception):
+    async def on_command_error(self, ctx: commands.Context, error: Exception):
         tb = error.__traceback__
         etype = type(error)
         exception = traceback.format_exception(etype, error, tb, chain=True)
