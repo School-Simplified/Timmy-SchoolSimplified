@@ -51,6 +51,7 @@ class ConfigcatClient:
     TUT_ID_CC = configcatclient.create_client(os.getenv("TUTID_CC"))
     CH_ID_CC = configcatclient.create_client(os.getenv("CHID_CC"))
     HR_ID_CC = configcatclient.create_client(os.getenv("HRID_CC"))
+    LEADER_ID_CC = configcatclient.create_client(os.getenv("LEADERID_CC"))
     CHECK_DB_CC = configcatclient.create_client(os.getenv("CHECKDB_CC"))
     SANDBOX_CONFIG_CC = configcatclient.create_client_with_auto_poll(os.getenv("SANDBOX_CONFIG_CC"), poll_interval_seconds=10)
 
@@ -259,7 +260,7 @@ class MAIN_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -300,6 +301,12 @@ class MAIN_ID:
     )
     ch_startPrivateVC = int(
         ConfigcatClient.MAIN_ID_CC.get_value("ch_startprivatevc", 784556875487248394)
+    )
+    ch_announcements = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("ch_announcements", 763121175764926464)
+    )
+    ch_modAnnouncements = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("ch_modannouncements", 887780215789617202)
     )
 
     # *** Categories ***
@@ -416,7 +423,7 @@ class STAFF_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -438,6 +445,8 @@ class STAFF_ID:
     ch_startPrivateVC = int(
         ConfigcatClient.STAFF_ID_CC.get_value("ch_startprivatevc", 895041070956675082)
     )
+    ch_announcements = int(ConfigcatClient.STAFF_ID_CC.get_value("ch_announcements", 891920066550059028))
+    ch_leadershipAnnouncements = int(ConfigcatClient.STAFF_ID_CC.get_value("ch_leadershipannouncements", 910357129972551710))
 
     # *** Categories ***
     cat_privateVC = int(
@@ -513,7 +522,7 @@ class DIGITAL_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -532,6 +541,14 @@ class DIGITAL_ID:
         ConfigcatClient.DIGITAL_ID_CC.get_value("ch_waitingroom", 878679747255750696)
     )
 
+    ch_announcements = int(ConfigcatClient.DIGITAL_ID_CC.get_value("ch_announcements", 898798323828396052))
+    ch_notesAnnouncements = int(ConfigcatClient.DIGITAL_ID_CC.get_value("ch_notesannouncements", 934951188149981234))
+    ch_acadAnnouncements = int(ConfigcatClient.DIGITAL_ID_CC.get_value("ch_acadannouncements", 863615526440534036))
+    ch_coAnnouncements = int(ConfigcatClient.DIGITAL_ID_CC.get_value("ch_coannouncements", 884256534756991017))
+    ch_clubAnnouncements = int(ConfigcatClient.DIGITAL_ID_CC.get_value("ch_clubannouncements", 887776723654045696))
+    ch_mktAnnouncements = int(ConfigcatClient.DIGITAL_ID_CC.get_value("ch_mktannouncements", 863613857116454912))
+    ch_techAnnouncements = int(ConfigcatClient.DIGITAL_ID_CC.get_value("ch_techannouncements", 863615693597835274))
+
 
 class TECH_ID:
     """
@@ -539,7 +556,7 @@ class TECH_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -561,6 +578,10 @@ class TECH_ID:
     ch_botreq = int(
         ConfigcatClient.TECH_ID_CC.get_value("ch_botreq", 933181562885914724)
     )
+    ch_announcements = int(ConfigcatClient.TECH_ID_CC.get_value("ch_announcements", 934109939373314068))
+    ch_itAnnouncements = int(ConfigcatClient.TECH_ID_CC.get_value("ch_itannouncements", 932066545587327000))
+    ch_webAnnouncements = int(ConfigcatClient.TECH_ID_CC.get_value("ch_webannouncements", 932487991958577152))
+    ch_botAnnouncements = int(ConfigcatClient.TECH_ID_CC.get_value("ch_botannouncements", 932725755115368478))
 
     # *** Categories ***
     cat_developerComms = int(
@@ -587,7 +608,7 @@ class SandboxConfig:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -641,7 +662,7 @@ class CH_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -661,7 +682,7 @@ class MKT_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -679,6 +700,13 @@ class MKT_ID:
             "ch_commissiontranscripts", 820843692385632287
         )
     )
+    ch_announcements = int(ConfigcatClient.MKT_ID_CC.get_value("ch_announcements", 799855854244855847))
+    ch_designAnnouncements = int(ConfigcatClient.MKT_ID_CC.get_value("ch_designannouncements", 891926914258829323))
+    ch_mediaAnnouncements = int(ConfigcatClient.MKT_ID_CC.get_value("ch_mediaannouncements", 864050588023259196))
+    ch_bpAnnouncements = int(ConfigcatClient.MKT_ID_CC.get_value("ch_bpannouncements", 852371717744885760))
+    ch_eventsAnnouncements = int(ConfigcatClient.MKT_ID_CC.get_value("ch_eventsannouncements", 820508373791277067))
+    ch_modAnnouncements = int(ConfigcatClient.MKT_ID_CC.get_value("ch_modannouncements", 820532007620575282))
+
 
     # *** Categories ***
     cat_design = int(
@@ -717,7 +745,7 @@ class TUT_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -733,6 +761,14 @@ class TUT_ID:
     ch_hourLogs = int(
         ConfigcatClient.TUT_ID_CC.get_value("ch_hourlogs", 873326994220265482)
     )
+    ch_announcements = int(ConfigcatClient.TUT_ID_CC.get_value("ch_announcements", 861711851330994247))
+    ch_leadershipAnnouncements = int(ConfigcatClient.TUT_ID_CC.get_value("ch_leadershipannouncements", 861712109757530112))
+    ch_mathAnnouncements = int(ConfigcatClient.TUT_ID_CC.get_value("ch_mathannouncements", 860929479961739274))
+    ch_scienceAnnouncements = int(ConfigcatClient.TUT_ID_CC.get_value("ch_scienceannouncements", 860929498782629948))
+    ch_englishAnnouncements = int(ConfigcatClient.TUT_ID_CC.get_value("ch_englishannouncements", 860929517102039050))
+    ch_ssAnnouncements = int(ConfigcatClient.TUT_ID_CC.get_value("ch_ssannouncements", 860929548639797258))
+    ch_csAnnouncements = int(ConfigcatClient.TUT_ID_CC.get_value("ch_csannouncements", 860929585355948042))
+    ch_miscAnnouncements = int(ConfigcatClient.TUT_ID_CC.get_value("ch_miscannouncements", 860929567132221481))
 
 
 class HR_ID:
@@ -741,7 +777,7 @@ class HR_ID:
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
-        ch: discord.TextChannel, discordVoiceChannel, discordStageChannel
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
         cat: discord.CategoryChannel
         r: discord.Role
         msg: discord.Message
@@ -750,8 +786,51 @@ class HR_ID:
     # *** Guilds ***
     g_hr = int(ConfigcatClient.HR_ID_CC.get_value("g_hr", 815753072742891532))
 
+
     # *** Roles **
     r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+
+
+    # *** Channels ***
+    ch_announcements = int(ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362))
+    ch_mktAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_mktannouncements", 816733579660754944))
+    ch_acadAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557))
+    ch_techAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
+    ch_leadershipAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_leadershipannouncements", 819009569979629569))
+
+class LEADER_ID:
+    """
+    IDs of the Leadership Lounge server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_leader = int(ConfigcatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154))
+
+    # *** Channels ***
+    ch_staffAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_staffannouncements", 936134263777148949))
+    ch_envAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_envannouncements", 942572395640782909))
+    ch_rebrandAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_rebrandannouncements", 946180039630782474))
+    ch_workonlyAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_workonlyannouncements", 890993285940789299))
+    ch_financeAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_financeannouncements", 919341240280023060))
+    ch_mktAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_mktannouncements", 942792208841588837))
+    ch_ssdAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_ssdannouncements", 947656507162525698))
+    ch_mainAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_mainannouncements", 936464173687259226))
+
+    # *** Roles ***
+    r_corporateOfficer = int(ConfigcatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444))
+    r_president = int(ConfigcatClient.LEADER_ID_CC.get_value("r_president", 900940957783056444))
+    r_vicePresident = int(ConfigcatClient.LEADER_ID_CC.get_value("r_vicepresident", 888929996175978508))
+    r_boardMember = int(ConfigcatClient.LEADER_ID_CC.get_value("r_boardmember", 888929996188549189))
+    r_director = int(ConfigcatClient.LEADER_ID_CC.get_value("r_director", 892531463482900480))
+    r_ssDigitalCommittee = int(ConfigcatClient.LEADER_ID_CC.get_value("r_ssdigitalcommittee", 912472488594771968))
+    r_informationTechnologyManager = int(ConfigcatClient.LEADER_ID_CC.get_value("r_informationtechnologymanager", 943942441357172758))
 
 
 class CheckDB_CC:
@@ -776,7 +855,7 @@ class CheckDB_CC:
 
 
 def get_value(
-    class_type: Union[MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID],
+    class_type: Union[MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID, LEADER_ID],
     value: str,
 ) -> int:
     """
