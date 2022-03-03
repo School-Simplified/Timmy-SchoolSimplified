@@ -19,10 +19,14 @@ from oauth2client.service_account import ServiceAccountCredentials
 from core.common import HR_ID, access_secret, bcolors
 
 
-def get_random_string(length=8):
+def get_random_string(length=13):
     # choose from all lowercase letter
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length)) 
+    chars = string.ascii_letters + string.digits + '!@#$%^&*()'
+
+    rnd = random.SystemRandom()
+    return (''.join(rnd.choice(chars) for i in range(length)))
+
+
 
 
 # ADMIN API NOW
@@ -53,7 +57,7 @@ class AdminAPI(commands.Cog):
         description="Create a GSuite Account",
         guild_ids=[HR_ID.g_hr],
     )
-    async def create_gsuite(self, ctx: commands.Context, firstname, lastname, organizationunit: discord.Option(str, "AM or PM", choices=["Personal Account", "Team Account"]),):
+    async def create_gsuite(self, ctx: commands.Context, firstname, lastname, organizationunit: discord.Option(str, "Choose an account type.", choices=["Personal Account", "Team Account"]),):
         HR_Role = discord.utils.get(ctx.guild.roles, id=HR_ID.r_hrStaff)
         if HR_Role not in ctx.author.roles:
             return await ctx.respond(
@@ -79,7 +83,7 @@ class AdminAPI(commands.Cog):
             f"**Organization Unit:** {orgUnit[organizationunit]}",
             ephemeral=False
         )
-        await ctx.respond(f"Password: {temppass}", ephemeral=True)
+        await ctx.respond(f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ", ephemeral=True)
 
 def setup(bot):
     bot.add_cog(AdminAPI(bot))

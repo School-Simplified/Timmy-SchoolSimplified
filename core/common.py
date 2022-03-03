@@ -794,6 +794,9 @@ class HR_ID:
     ch_techAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
     ch_leadershipAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_leadershipannouncements", 819009569979629569))
 
+    # *** Roles ***
+    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+
 class LEADER_ID:
     """
     IDs of the Leadership Lounge server.

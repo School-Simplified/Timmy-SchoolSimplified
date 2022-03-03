@@ -128,7 +128,7 @@ class MKTProject2(commands.Cog):
 
     @commands.command()
     # @commands.has_role(945533984740343859)
-    async def closemkt22(self, ctx: commands.Context):
+    async def closemkt(self, ctx: commands.Context):
         thread: discord.Thread = ctx.channel
         if thread.parent_id == 945757098686414858:
             messages = await thread.history(limit=2, oldest_first=True).flatten()
