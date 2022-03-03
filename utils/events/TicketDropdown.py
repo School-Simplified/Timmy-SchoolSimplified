@@ -150,8 +150,10 @@ async def TicketExport(
                 await user.send(embed=embed)
             except Exception:
                 pass
-
-    os.remove(f"transcript-{channel.name}.html")
+    try:
+        os.remove(f"transcript-{channel.name}.html")
+    except:
+        pass
 
     if response == None:
         msg = S3_URL

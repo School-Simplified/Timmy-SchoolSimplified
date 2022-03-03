@@ -154,23 +154,32 @@ class TechProjectCMD(commands.Cog):
         else:
             await ctx.send("Not a valid thread.")
 
-    @tasks.loop(hours=1.0)
+    @tasks.loop(seconds=60.0)
     async def AUTO_UNARHCIVE(self):
         """
         Create a task loop to make sure threads don't automatically archive due to inactivity.
         """
+        return
+        guilds = [
+            [932066545117585428, [933181562885914724]]
+        ]
         channel: discord.TextChannel = await self.bot.fetch_channel(
             int(TECH_ID.ch_botreq)
         )
         print(channel.name, type(channel))
-        for thread in channel.threads:
-            if (
-                thread.archived
-                and not database.TechCommissionArchiveLog.select()
-                .where(database.ThreadID == thread.id)
-                .exists()
-            ):
-                await thread.unarchive()
+        for guild in guilds:
+            guild = await self.bot.fetch_guild(932066545117585428)
+            print("stuff", guild.threads)
+            for thread in guild.threads:
+                print(channel.name, type(channel))
+                query = database.TechCommissionArchiveLog.select().where(database.ThreadID == thread.id).exists()
+                print(thread.archived, query, (thread.parent_id in guild[1]))
+                if (
+                    thread.archived
+                    and query
+                    and thread.parent_id in guild[1]
+                ):
+                    await thread.unarchive()
 
 
 def setup(bot):

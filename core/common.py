@@ -169,7 +169,7 @@ def access_secret(
     """Access credentials and secrets from Google.
 
     Args:
-        secret_id (str): The secret ID to access. (Options: doc_t, doc_c, tts_c, tsa_c, svc_c)
+        secret_id (str): The secret ID to access. (Options: doc_t, doc_c, tts_c, tsa_c, svc_c, adm_t)
 
         google_auth_load_mode (bool, optional): If marked as True, the function will return a specific credential class for you to authenticate with an API. Defaults to False.
 
@@ -749,6 +749,9 @@ class HR_ID:
 
     # *** Guilds ***
     g_hr = int(ConfigcatClient.HR_ID_CC.get_value("g_hr", 815753072742891532))
+
+    # *** Roles **
+    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
 
 
 class CheckDB_CC:

@@ -172,80 +172,11 @@ class TutorVCCMD(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def startmusic(self, ctx: commands.Context):
-        database.db.connect(reuse_if_open=True)
         voice_state = ctx.author.voice
         if voice_state is None:
-            query = database.VCChannelInfo.select().where(
-                (database.VCChannelInfo.authorID == ctx.author.id)
-                & (database.VCChannelInfo.GuildID == ctx.guild.id)
-            )
-            if query.exists():
-                query = (
-                    database.VCChannelInfo.select()
-                    .where(
-                        (database.VCChannelInfo.authorID == ctx.author.id)
-                        & (database.VCChannelInfo.GuildID == ctx.guild.id)
-                    )
-                    .get()
-                )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(
-                    int(query.ChannelID)
-                )
-                GameLink = str(await channel.create_activity_invite(880218394199220334))
-                await ctx.send("Loading...")
-                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
-
-            else:
-                embed = discord.Embed(
-                    title=f"{Emoji.deny} Ownership Check Failed",
-                    description=f"You are not the owner of this voice channel, "
-                    f"please ask the original owner to start a game!",
-                    color=discord.Colour.red(),
-                )
-                return await ctx.send(embed=embed)
-
-        elif voice_state.channel.id in self.presetChannels:
-            embed = discord.Embed(
-                title=f"{Emoji.invalidchannel} UnAuthorized Channel Deletion",
-                description="You are not allowed to delete these channels!"
-                "\n\n**Error Detection:**"
-                "\n**1)** Detected Static Channels",
-                color=discord.Colour.dark_red(),
-            )
-            return await ctx.send(embed=embed)
-
-        elif voice_state.channel.category_id in self.categoryID:
-            query = database.VCChannelInfo.select().where(
-                (database.VCChannelInfo.authorID == ctx.author.id)
-                & (database.VCChannelInfo.ChannelID == voice_state.channel.id)
-                & (database.VCChannelInfo.GuildID == ctx.guild.id)
-            )
-
-            if query.exists():
-                q: database.VCChannelInfo = (
-                    database.VCChannelInfo.select()
-                    .where(
-                        (database.VCChannelInfo.authorID == ctx.author.id)
-                        & (database.VCChannelInfo.ChannelID == voice_state.channel.id)
-                        & (database.VCChannelInfo.GuildID == ctx.guild.id)
-                    )
-                    .get()
-                )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(
-                    q.ChannelID
-                )
-                GameLink = str(await channel.create_activity_invite(880218394199220334))
-                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
-
-            else:
-                embed = discord.Embed(
-                    title=f"{Emoji.deny} Ownership Check Failed",
-                    description=f"You are not the owner of this voice channel, "
-                    f"please ask the original owner to start a game!",
-                    color=discord.Colour.red(),
-                )
-                return await ctx.send(embed=embed)
-        database.db.close()
+            return await ctx.send("You are not in a voice channel.")
+        GameLink = str(await voice_state.channel.create_activity_invite(880218394199220334))
+        await ctx.send(f"**Click the link to get started!**\n{GameLink}")
 
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)

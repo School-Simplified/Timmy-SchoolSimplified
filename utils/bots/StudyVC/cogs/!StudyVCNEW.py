@@ -3,7 +3,7 @@ import requests
 import discord
 from core.checks import is_botAdmin
 from discord.ext import commands
-from core.common import TECH_ID, ConfigcatClient, SandboxConfig, config_patch
+from core.common import TECH_ID, ConfigcatClient, SandboxConfig, config_patch, get_extensions
 from core.checks import is_botAdmin
 from core import database
 
@@ -104,6 +104,15 @@ class SituationCreator(commands.Cog):
             elif profile == "PrivateVC":
                 await SP.create_PrivVCSys(self, ctx)
 
+            for ext in get_extensions():
+                try:
+                    self.bot.load_extension(ext)
+                except discord.ExtensionAlreadyLoaded:
+                    self.bot.unload_extension(ext)
+                    self.bot.load_extension(ext)
+                except discord.ExtensionNotFound:
+                    raise discord.ExtensionNotFound(ext)
+
             await ctx.send("Done!")
         else:
             await ctx.send("Unable to initate simulation, a simulation is already active. Run the cleanup command first!")
@@ -118,6 +127,15 @@ class SituationCreator(commands.Cog):
             await SP.cleanup_PrivVCSys(self, ctx)
         elif q.mode == "TicketSys":
             await SP.cleanup_TicketSys(self, ctx)
+        
+        for ext in get_extensions():
+                try:
+                    self.bot.load_extension(ext)
+                except discord.ExtensionAlreadyLoaded:
+                    self.bot.unload_extension(ext)
+                    self.bot.load_extension(ext)
+                except discord.ExtensionNotFound:
+                    raise discord.ExtensionNotFound(ext)
         
         await ctx.send("Cleared simulation.")
 
