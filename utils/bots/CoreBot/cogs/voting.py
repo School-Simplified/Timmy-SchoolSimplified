@@ -279,7 +279,7 @@ class VotingBot(commands.Cog):
                     embedText.set_footer(
                         text="Type 'cancel' to cancel | Timeout after 60s"
                     )
-                    await msgSetup.edit(embed=embedText)
+                    await msgSetup.edit(embed=embedText, view=viewReset)
 
                     index += 1
 
