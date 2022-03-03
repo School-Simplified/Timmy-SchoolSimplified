@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import re
 from typing import List
+import random, string
 
 import discord
 from discord.ext import commands
@@ -118,17 +119,37 @@ class VotingBot(commands.Cog):
 
             acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name}(`{acceptedChannel.id}`)\n"
 
+        randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
+        tempVoteCHsFileWrite = open(tempVoteCHsPath, "w+")
+        tempVoteCHsFileWrite.write(acceptedChannelsStr)
+
+        tempVoteCHsFile = discord.File(tempVoteCHsPath, filename=f"TEMP_voteCHS_{randomID}.txt")
+
+        ch_snakePit = self.bot.get_channel(TECH_ID.ch_snakePit)
+        msgVoteCHsFile = await ch_snakePit.send(file=tempVoteCHsFile)
+        voteCHsFileURL = msgVoteCHsFile.attachments[0].url
+
         embedServer = discord.Embed(
             color=hex.ss_blurple,
             title="Create Voting",
             description="Please provide the announcement-channel/s ID in which the voting should get sent. To send it to "
                         "multiple channels, separate the channels with commas (`,`)."
-            "\n**Accepted channels:**"
-            f"\n{acceptedChannelsStr}",
+                        "\n**Click on the link below to see a list of the accepted channels.**",
         )
         embedServer.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
         embedServer.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
-        msgSetup = await ctx.send(embed=embedServer)
+
+        viewAcceptedCHs = discord.View()
+        viewAcceptedCHs.add_item(
+            ButtonHandler(
+                style=discord.ButtonStyle.link,
+                url=voteCHsFileURL,
+                label="Accepted Channels"
+            )
+        )
+
+        msgSetup = await ctx.send(embed=embedServer, view=viewAcceptedCHs)
 
         def msgInputCheck(messageCheck: discord.Message):
             return (
@@ -136,10 +157,10 @@ class VotingBot(commands.Cog):
                 and messageCheck.author == ctx.author
             )
 
-        channels = ... # type: List[discord.TextChannel]
-        text = ... # type: str
-        options = ... # type: List[str]
-        datetimeExpiration = ... # type: datetime.datetime
+        channels = ...  # type: List[discord.TextChannel]
+        text = ...  # type: str
+        options = ...  # type: List[str]
+        datetimeExpiration = ...  # type: datetime.datetime
 
         msgNotFound = ... # type: discord.Message       # TODO: delete msgNotFound when timeout or canceled
 
@@ -366,7 +387,7 @@ class VotingBot(commands.Cog):
                     )
                     embedPseudo.set_footer(text="Please vote anonymously below | You can't undo your vote!")
 
-                    view = discord.ui.View()
+                    viewOverview = discord.ui.View()
 
                     for option in options:
 
@@ -374,7 +395,7 @@ class VotingBot(commands.Cog):
                         if customEmoji is not None:
                             option = option.replace(f"{customEmoji}", "")
 
-                        view.add_item(
+                        viewOverview.add_item(
                             ButtonHandler(
                                 style=discord.ButtonStyle.gray,
                                 disabled=False,
@@ -383,7 +404,7 @@ class VotingBot(commands.Cog):
                             )
                         )
 
-                    await ctx.send(embed=embedPseudo, view=view)
+                    await ctx.send(embed=embedPseudo, view=viewOverview)
                     break
 
 
