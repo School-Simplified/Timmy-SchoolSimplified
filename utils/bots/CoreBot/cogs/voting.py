@@ -120,23 +120,17 @@ class VotingBot(commands.Cog):
             acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name}(`{acceptedChannel.id}`)\n"
 
         randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        print(1)
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
-        print(2)
-        print(tempVoteCHsPath)
+
         tempVoteCHsFileWrite = open(tempVoteCHsPath, "w+")
-        print(3)
         tempVoteCHsFileWrite.write(acceptedChannelsStr)
-        print(4)
+        tempVoteCHsFileWrite.close()
 
         tempVoteCHsFile = discord.File(tempVoteCHsPath, filename=f"TEMP_voteCHS_{randomID}.txt")
-        print(5)
 
         ch_snakePit = self.bot.get_channel(TECH_ID.ch_snakePit)
         msgVoteCHsFile = await ch_snakePit.send(file=tempVoteCHsFile)
-        print(6)
         voteCHsFileURL = msgVoteCHsFile.attachments[0].url
-        print(7)
         await msgVoteCHsFile.delete()
         embedServer = discord.Embed(
             color=hex.ss_blurple,
@@ -156,9 +150,7 @@ class VotingBot(commands.Cog):
                 label="Accepted Channels"
             )
         )
-        print(8)
         msgSetup = await ctx.send(embed=embedServer, view=viewAcceptedCHs)
-        print(9)
 
         def msgInputCheck(messageCheck: discord.Message):
             return (
@@ -172,6 +164,7 @@ class VotingBot(commands.Cog):
         datetimeExpiration = ...  # type: datetime.datetime
 
         msgNotFound = ... # type: discord.Message       # TODO: delete msgNotFound when timeout or canceled
+        viewReset = discord.ui.View()
 
         index = 0
         while True:
@@ -189,12 +182,13 @@ class VotingBot(commands.Cog):
                     name=f"{ctx.author}", icon_url=ctx.author.avatar.url
                 )
                 embedTimeout.set_footer(text="Use 'vote create' to start again")
-                await msgSetup.edit(embed=embedTimeout)
+
+                await msgSetup.edit(embed=embedTimeout, view=viewReset)
 
                 try:
                     await msgNotFound.delete()
                 except AttributeError as e:
-                    print(f"{e.__class__.__name__}: {e}")
+                    pass
 
                 break
 
@@ -211,12 +205,12 @@ class VotingBot(commands.Cog):
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
                     )
                     embedCancel.set_footer(text="Use 'vote create' to start again")
-                    await msgSetup.edit(embed=embedCancel)
+                    await msgSetup.edit(embed=embedCancel, view=viewReset)
 
                     try:
                         await msgNotFound.delete()
                     except AttributeError as e:
-                        print(f"{e.__class__.__name__}: {e}")
+                        pass
 
                     break
 
