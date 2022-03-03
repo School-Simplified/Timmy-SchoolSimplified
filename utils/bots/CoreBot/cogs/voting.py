@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import re
+from typing import List
 
 import discord
 from discord.ext import commands
@@ -119,28 +120,28 @@ class VotingBot(commands.Cog):
 
         embedServer = discord.Embed(
             color=hex.ss_blurple,
-            title="Create voting",
+            title="Create Voting",
             description="Please provide the announcement-channel/s ID in which the voting should get sent. To send it to "
                         "multiple channels, separate the channels with commas (`,`)."
             "\n**Accepted channels:**"
-            f"\n{acceptedChannelsStr}"
-            "\n\n**NOTE**: it will automatically send the voting into the __general announcement channel__ of "
-            "the server.",
+            f"\n{acceptedChannelsStr}",
         )
         embedServer.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
         embedServer.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
         msgSetup = await ctx.send(embed=embedServer)
-        # TODO
+
         def msgInputCheck(messageCheck: discord.Message):
             return (
                 messageCheck.channel == ctx.channel
                 and messageCheck.author == ctx.author
             )
 
-        channels = []
-        text = None
-        options = []
-        datetimeExpiration = None
+        channels = ... # type: List[discord.TextChannel]
+        text = ... # type: str
+        options = ... # type: List[str]
+        datetimeExpiration = ... # type: datetime.datetime
+
+        msgNotFound = ... # type: discord.Message       # TODO: delete msgNotFound when timeout or canceled
 
         index = 0
         while True:
@@ -181,30 +182,27 @@ class VotingBot(commands.Cog):
 
                     embedNotFound = discord.Embed(
                         color=hex.red_error,
-                        title="Create voting",
-                        description=f"Couldn't find one or more of the given guilds, please try again."
+                        title="Create Voting",
+                        description=f"Couldn't find one or more of the given channels. Make sure the channel exists and you provide the channel's ID."
                     )
                     embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     embedNotFound.set_footer(text="Use 'cancel' to cancel")
 
                     if "," in msgContent:
 
-                        guildsStrList = msgContent.split(",")
-                        for guildStr in guildsStrList:
+                        channelsStrList = msgContent.split(",")
+                        for channelStr in channelsStrList:
 
-                            stripGuildStr = guildStr.strip()
-                            guildsStrList[guildsStrList.index(guildStr)] = stripGuildStr
+                            stripChannelStr = channelStr.strip()
+                            channelsStrList[channelsStrList.index(channelStr)] = stripChannelStr
 
-                            if stripGuildStr.isdigit():
-                                guild = self.bot.get_guild(int(stripGuildStr))
-                                guilds.append(guild)
+                            if stripChannelStr.isdigit():
+                                channel = self.bot.get_guild(int(stripChannelStr))
+                                channels.append(channel)
 
                             else:
-                                guild = discord.utils.get(
-                                    self.bot.guilds, name=stripGuildStr
-                                )
-
-                            guilds.append(guild)
+                                msgNotFound = await ctx.send(embed=embedNotFound)
+                                await msgNotFound.delete(delay=7)
 
                         if any(guildInList is None for guildInList in guilds):
 
