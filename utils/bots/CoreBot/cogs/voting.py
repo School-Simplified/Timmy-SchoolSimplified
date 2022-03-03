@@ -256,6 +256,11 @@ class VotingBot(commands.Cog):
                         if channelStr.isdigit():
                             channel = self.bot.get_guild(int(msgContent))
 
+                        else:
+                            msgNotFound = await ctx.send(embed=embedNotFound)
+                            await msgNotFound.delete(delay=7)
+                            break
+
                         if channel is None or type(channel) is not discord.TextChannel:
                             msgNotFound = await ctx.send(embed=embedNotFound)
                             await msgNotFound.delete(delay=7)
