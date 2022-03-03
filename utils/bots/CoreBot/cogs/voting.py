@@ -148,7 +148,7 @@ class VotingBot(commands.Cog):
         embedServer.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
         embedServer.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
 
-        viewAcceptedCHs = discord.View()
+        viewAcceptedCHs = discord.ui.View()
         viewAcceptedCHs.add_item(
             ButtonHandler(
                 style=discord.ButtonStyle.link,
