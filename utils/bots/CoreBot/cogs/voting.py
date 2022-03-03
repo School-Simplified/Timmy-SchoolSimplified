@@ -158,9 +158,9 @@ class VotingBot(commands.Cog):
                 and messageCheck.author == ctx.author
             )
 
-        channels = ...  # type: List[discord.TextChannel]
+        channels = []
         text = ...  # type: str
-        options = ...  # type: List[str]
+        options = []
         datetimeExpiration = ...  # type: datetime.datetime
 
         msgNotFound = ... # type: discord.Message       # TODO: delete msgNotFound when timeout or canceled
