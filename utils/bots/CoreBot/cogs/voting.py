@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 from core.checks import isnot_hostTimmyA
 from core.common import hexColors as hex
-from core.common import Emoji as e
+from core.common import Emoji
 from core.common import MAIN_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID, LEADER_ID, STAFF_ID
 from core.common import stringTimeConvert, ButtonHandler, searchCustomEmoji
 
@@ -160,6 +160,12 @@ class VotingBot(commands.Cog):
                 )
                 embedTimeout.set_footer(text="Use 'vote create' to start again")
                 await msgSetup.edit(embed=embedTimeout)
+
+                try:
+                    await msgNotFound.delete()
+                except AttributeError as e:
+                    print(f"{e.__class__.__name__}: {e}")
+
                 break
 
             else:
@@ -176,6 +182,12 @@ class VotingBot(commands.Cog):
                     )
                     embedCancel.set_footer(text="Use 'vote create' to start again")
                     await msgSetup.edit(embed=embedCancel)
+
+                    try:
+                        await msgNotFound.delete()
+                    except AttributeError as e:
+                        print(f"{e.__class__.__name__}: {e}")
+
                     break
 
                 if index == 0:
@@ -183,7 +195,7 @@ class VotingBot(commands.Cog):
                     embedNotFound = discord.Embed(
                         color=hex.red_error,
                         title="Create Voting",
-                        description=f"Couldn't find one or more of the given channels. Make sure the channel exists and you provide the channel's ID."
+                        description=f"Couldn't find one or more of the given text channels. Make sure the channel exists and you provide the channel's ID."
                     )
                     embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     embedNotFound.set_footer(text="Use 'cancel' to cancel")
@@ -192,40 +204,40 @@ class VotingBot(commands.Cog):
 
                         channelsStrList = msgContent.split(",")
                         for channelStr in channelsStrList:
-
                             stripChannelStr = channelStr.strip()
                             channelsStrList[channelsStrList.index(channelStr)] = stripChannelStr
 
                             if stripChannelStr.isdigit():
-                                channel = self.bot.get_guild(int(stripChannelStr))
+                                channel = self.bot.get_channel(int(stripChannelStr))
                                 channels.append(channel)
+
 
                             else:
                                 msgNotFound = await ctx.send(embed=embedNotFound)
                                 await msgNotFound.delete(delay=7)
+                                break
 
-                        if any(guildInList is None for guildInList in guilds):
+                        if any(channelInList is None for channelInList in channels) or \
+                            any(type(channelInList) is not discord.TextChannel for channelInList in channels):
 
                             msgNotFound = await ctx.send(embed=embedNotFound)
                             await msgNotFound.delete(delay=7)
                             continue
 
-                        print(guilds)
+                        print(channels)
 
                     else:
-                        guildStr = msgContent.strip()
+                        channelStr = msgContent.strip()
 
-                        if guildStr.isdigit():
-                            guild = self.bot.get_guild(int(msgContent))
-                        else:
-                            guild = discord.utils.get(self.bot.guilds, name=guildStr)
+                        if channelStr.isdigit():
+                            channel = self.bot.get_guild(int(msgContent))
 
-                        if guild is None:
+                        if channel is None or type(channel) is not discord.TextChannel:
                             msgNotFound = await ctx.send(embed=embedNotFound)
                             await msgNotFound.delete(delay=7)
                             continue
 
-                        guilds.append(guild)
+                        channels.append(channel)
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
@@ -234,8 +246,8 @@ class VotingBot(commands.Cog):
                         "\n\n**Example:**"
                         "\nHey everyone,"
                         "\nWhich programming language is better? Please vote now!"
-                        f"\n{e.pythonLogo} Python | {e.javascriptLogo} JavaScript"
-                        f"\n\n(In the example above you would choose Python of course {e.blobamused})",
+                        f"\n{Emoji.pythonLogo} Python | {Emoji.javascriptLogo} JavaScript"
+                        f"\n\n(In the example above you would choose Python of course {Emoji.blobamused})",
                     )
                     embedText.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -256,7 +268,7 @@ class VotingBot(commands.Cog):
                         description="Please provide the options for the voting by separating the options with commas (`,`). "
                         "They will shown as buttons."
                         f"\n\nFrom the example on the last message, the options would be: "
-                        f"{e.pythonLogo} Python, {e.javascriptLogo} JavaScript",
+                        f"{Emoji.pythonLogo} Python, {Emoji.javascriptLogo} JavaScript",
                     )
                     embedText.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -374,7 +386,6 @@ class VotingBot(commands.Cog):
                     await ctx.send(embed=embedPseudo, view=view)
                     break
 
-        channels = []
 
         embedConfirm = discord.Embed(
             color=hex.yellow,
@@ -383,8 +394,8 @@ class VotingBot(commands.Cog):
                         "in the following channel of the **: "
         )
 
-        def confirmCheck(reactionCheck, userCheck):
-            return userCheck.id == ctx.author.id and reactionCheck.message.id ==
+        # def confirmCheck(reactionCheck, userCheck):
+        #     return userCheck.id == ctx.author.id and reactionCheck.message.id ==
 
 
 def setup(bot):
