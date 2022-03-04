@@ -346,14 +346,15 @@ class VotingBot(commands.Cog):
 
 
                     if days is None and hours is None and minutes is None and seconds is None:
-                        embedError = discord.Embed(
+                        embedNotFound = discord.Embed(
                             color=hex.red_error,
                             title="Create Voting",
-                            description="Couldn't found something matching to the time units. Please try again."
+                            description="Couldn't findd something matching to the time units. Please try again."
                         )
-                        embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-                        embedError.set_footer(text="Use 'cancel' to cancel")
-                        await ctx.send(embed=embedError)
+                        embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedNotFound.set_footer(text="Use 'cancel' to cancel")
+                        msgNotFound = await ctx.send(embed=embedNotFound)
+                        await msgNotFound.delete(delay=7)
                         continue
 
                     if days is None:
@@ -380,7 +381,8 @@ class VotingBot(commands.Cog):
                         )
                         embedOverflow.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                         embedOverflow.set_footer(text="Use 'cancel' to cancel")
-                        await ctx.send(embed=embedOverflow)
+                        msgOverflow = await ctx.send(embed=embedOverflow)
+                        await msgOverflow.delete(delay=7)
                         continue
 
                     embedFinish = discord.Embed(
