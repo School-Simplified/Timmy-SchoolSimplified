@@ -232,6 +232,7 @@ class VotingBot(commands.Cog):
                     embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     embedNotFound.set_footer(text="Use 'cancel' to cancel")
 
+                    tempChannels = []
                     if "," in msgContent:
                         print("commas")
                         channelsStrList = msgContent.split(",")
@@ -248,7 +249,7 @@ class VotingBot(commands.Cog):
                             else:
                                 channel = None
 
-                            channels.append(channel)
+                            tempChannels.append(channel)
                         print(channels)
                         if any(channelInList is None for channelInList in channels) or \
                             any(type(channelInList) is not discord.TextChannel for channelInList in channels):
@@ -283,9 +284,9 @@ class VotingBot(commands.Cog):
 
                             continue
 
-                        channels.append(channel)
+                        tempChannels.append(channel)
+                    channels = tempChannels
 
-                    print(channels)
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
                         title="Create Voting",
