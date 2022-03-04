@@ -221,7 +221,7 @@ class VotingBot(commands.Cog):
                 if index == 0:
                     try:
                         await msgError.delete()
-                    except discord.NotFound or AttributeError:
+                    except:
                         pass
 
                     embedNotFound = discord.Embed(
@@ -256,7 +256,7 @@ class VotingBot(commands.Cog):
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
                                 await msgError.delete(delay=7)
-                            except discord.NotFound or AttributeError:
+                            except:
                                 pass
 
                             continue
@@ -278,7 +278,7 @@ class VotingBot(commands.Cog):
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
                                 await msgError.delete(delay=7)
-                            except discord.NotFound or AttributeError:
+                            except:
                                 pass
 
                             continue
@@ -309,7 +309,7 @@ class VotingBot(commands.Cog):
                 elif index == 1:
                     try:
                         await msgError.delete()
-                    except discord.NotFound or AttributeError:
+                    except:
                         pass
 
                     text = msgContent
@@ -335,7 +335,7 @@ class VotingBot(commands.Cog):
                 elif index == 2:
                     try:
                         await msgError.delete()
-                    except discord.NotFound or AttributeError:
+                    except:
                         pass
 
                     optionsStrList = msgContent.split(",")
@@ -358,7 +358,7 @@ class VotingBot(commands.Cog):
                 elif index == 3:
                     try:
                         await msgError.delete()
-                    except discord.NotFound or AttributeError:
+                    except:
                         pass
 
                     timeDict: dict = stringTimeConvert(msgContent)
@@ -379,7 +379,7 @@ class VotingBot(commands.Cog):
                         msgError = await ctx.send(embed=embedNotFound)
                         try:
                             await msgError.delete(delay=7)
-                        except discord.NotFound or AttributeError:
+                        except:
                             pass
 
                         continue
@@ -411,7 +411,7 @@ class VotingBot(commands.Cog):
                         msgError = await ctx.send(embed=embedOverflow)
                         try:
                             await msgError.delete(delay=7)
-                        except discord.NotFound or AttributeError:
+                        except:
                             pass
 
                         continue
@@ -460,7 +460,7 @@ class VotingBot(commands.Cog):
 
         try:
             await msgError.delete()
-        except discord.NotFound or AttributeError:
+        except:
             pass
 
         embedConfirm = discord.Embed(
