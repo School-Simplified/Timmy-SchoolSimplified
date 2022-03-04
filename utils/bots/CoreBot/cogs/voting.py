@@ -248,15 +248,12 @@ class VotingBot(commands.Cog):
                                 await msgNotFound.delete(delay=7)
                                 continue
 
-                        print(channels)
                         if any(channelInList is None for channelInList in channels) or \
                             any(type(channelInList) is not discord.TextChannel for channelInList in channels):
                             print("2nd error")
                             msgNotFound = await ctx.send(embed=embedNotFound)
                             await msgNotFound.delete(delay=7)
                             continue
-
-                        print(channels)
 
                     else:
                         print("no commas")
@@ -280,7 +277,7 @@ class VotingBot(commands.Cog):
                             continue
 
                         channels.append(channel)
-
+                    print(channels)
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
                         title="Create Voting",
