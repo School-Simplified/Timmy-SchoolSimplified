@@ -118,7 +118,7 @@ class VotingBot(commands.Cog):
         for channelID in self.acceptedAnnouncementCHs:
             acceptedChannel = self.bot.get_channel(channelID)
 
-            acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name}({acceptedChannel.id})\n"
+            acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name} ({acceptedChannel.id})\n"
 
         randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
@@ -131,7 +131,7 @@ class VotingBot(commands.Cog):
         tempVoteCHsFile = discord.File(tempVoteCHsPath, filename=tempVoteCHsFilename)
 
         os.remove(tempVoteCHsPath)
-        
+
         ch_snakePit = self.bot.get_channel(TECH_ID.ch_snakePit)
         msgVoteCHsFile = await ch_snakePit.send(file=tempVoteCHsFile)
         voteCHsFileURL = msgVoteCHsFile.attachments[0].url
