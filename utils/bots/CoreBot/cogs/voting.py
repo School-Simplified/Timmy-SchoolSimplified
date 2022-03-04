@@ -286,6 +286,7 @@ class VotingBot(commands.Cog):
 
                         tempChannels.append(channel)
                     channels = tempChannels
+                    print(channels)
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
