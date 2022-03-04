@@ -231,22 +231,27 @@ class VotingBot(commands.Cog):
                     if "," in msgContent:
 
                         channelsStrList = msgContent.split(",")
+                        print(channelsStrList)
                         for channelStr in channelsStrList:
                             stripChannelStr = channelStr.strip()
+                            print(stripChannelStr)
                             channelsStrList[channelsStrList.index(channelStr)] = stripChannelStr
 
                             if stripChannelStr.isdigit():
+                                print("isdigit")
                                 channel = self.bot.get_channel(int(stripChannelStr))
                                 channels.append(channel)
 
                             else:
+                                print("first error")
                                 msgNotFound = await ctx.send(embed=embedNotFound)
                                 await msgNotFound.delete(delay=7)
                                 continue
+
                         print(channels)
                         if any(channelInList is None for channelInList in channels) or \
                             any(type(channelInList) is not discord.TextChannel for channelInList in channels):
-
+                            print("2nd error")
                             msgNotFound = await ctx.send(embed=embedNotFound)
                             await msgNotFound.delete(delay=7)
                             continue
