@@ -3,6 +3,7 @@ import datetime
 import re
 from typing import List
 import random, string
+import os
 
 import discord
 from discord.ext import commands
@@ -117,17 +118,20 @@ class VotingBot(commands.Cog):
         for channelID in self.acceptedAnnouncementCHs:
             acceptedChannel = self.bot.get_channel(channelID)
 
-            acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name}(`{acceptedChannel.id}`)\n"
+            acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name}({acceptedChannel.id})\n"
 
         randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
+        tempVoteCHsFilename = "TEMP_voteCHS_{randomID}.txt"
 
         tempVoteCHsFileWrite = open(tempVoteCHsPath, "w+")
-        tempVoteCHsFileWrite.write(acceptedChannelsStr)
+        tempVoteCHsFileWrite.write(f"Accepted channels:"
+                                   f"\n{acceptedChannelsStr}")
         tempVoteCHsFileWrite.close()
+        tempVoteCHsFile = discord.File(tempVoteCHsPath, filename=tempVoteCHsFilename)
 
-        tempVoteCHsFile = discord.File(tempVoteCHsPath, filename=f"TEMP_voteCHS_{randomID}.txt")
-
+        os.remove(tempVoteCHsPath)
+        
         ch_snakePit = self.bot.get_channel(TECH_ID.ch_snakePit)
         msgVoteCHsFile = await ch_snakePit.send(file=tempVoteCHsFile)
         voteCHsFileURL = msgVoteCHsFile.attachments[0].url
