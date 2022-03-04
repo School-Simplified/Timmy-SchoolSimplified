@@ -222,7 +222,7 @@ class VotingBot(commands.Cog):
 
                     embedNotFound = discord.Embed(
                         color=hex.red_error,
-                        title="Create Voting",
+                        title="Createasd Voting",
                         description=f"Couldn't find one or more of the given text channels. Make sure the channel exists and you provide the channel's ID."
                     )
                     embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
