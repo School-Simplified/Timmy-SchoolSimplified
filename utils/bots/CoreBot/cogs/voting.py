@@ -244,17 +244,11 @@ class VotingBot(commands.Cog):
                             if stripChannelStr.isdigit():
                                 print("isdigit")
                                 channel = self.bot.get_channel(int(stripChannelStr))
-                                channels.append(channel)
 
                             else:
-                                print("first error")
-                                msgError = await ctx.send(embed=embedNotFound)
-                                try:
-                                    await msgError.delete(delay=7)
-                                except discord.NotFound:
-                                    pass
+                                channel = None
 
-                                continue
+                            channels.append(channel)
 
                         if any(channelInList is None for channelInList in channels) or \
                             any(type(channelInList) is not discord.TextChannel for channelInList in channels):
@@ -276,14 +270,7 @@ class VotingBot(commands.Cog):
                             channel = self.bot.get_channel(int(channelStr))
 
                         else:
-                            print("first error")
-                            msgError = await ctx.send(embed=embedNotFound)
-                            try:
-                                await msgError.delete(delay=7)
-                            except discord.NotFound:
-                                pass
-
-                            continue
+                            channel = None
 
                         print(type(channel))
                         if channel is None or type(channel) is not discord.TextChannel:
@@ -297,6 +284,7 @@ class VotingBot(commands.Cog):
                             continue
 
                         channels.append(channel)
+
                     print(channels)
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
