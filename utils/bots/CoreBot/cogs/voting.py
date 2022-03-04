@@ -178,7 +178,7 @@ class VotingBot(commands.Cog):
                 )
             except asyncio.TimeoutError:
                 embedTimeout = discord.Embed(
-                    color=hex.red_error,
+                    color=hex.red_cancel,
                     title="Create Voting",
                     description="Setup canceled due to timeout.",
                 )
@@ -243,7 +243,7 @@ class VotingBot(commands.Cog):
                                 msgNotFound = await ctx.send(embed=embedNotFound)
                                 await msgNotFound.delete(delay=7)
                                 continue
-
+                        print(type(channelInList))
                         if any(channelInList is None for channelInList in channels) or \
                             any(type(channelInList) is not discord.TextChannel for channelInList in channels):
 
