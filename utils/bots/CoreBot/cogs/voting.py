@@ -167,7 +167,7 @@ class VotingBot(commands.Cog):
         options = []
         datetimeExpiration = ...  # type: datetime.datetime
 
-        msgNotFound = ... # type: discord.Message       # TODO: delete msgNotFound when timeout or canceled
+        msgError = ... # type: discord.Message       # TODO: delete msgNotFound when timeout or canceled
         viewReset = discord.ui.View()
 
         index = 0
@@ -190,7 +190,7 @@ class VotingBot(commands.Cog):
                 await msgSetup.edit(embed=embedTimeout, view=viewReset)
 
                 try:
-                    await msgNotFound.delete()
+                    await msgError.delete()
                 except:
                     pass
 
@@ -212,7 +212,7 @@ class VotingBot(commands.Cog):
                     await msgSetup.edit(embed=embedCancel, view=viewReset)
 
                     try:
-                        await msgNotFound.delete()
+                        await msgError.delete()
                     except:
                         pass
 
@@ -244,15 +244,23 @@ class VotingBot(commands.Cog):
 
                             else:
                                 print("first error")
-                                msgNotFound = await ctx.send(embed=embedNotFound)
-                                await msgNotFound.delete(delay=7)
+                                msgError = await ctx.send(embed=embedNotFound)
+                                try:
+                                    await msgError.delete(delay=7)
+                                except discord.NotFound:
+                                    pass
+
                                 continue
 
                         if any(channelInList is None for channelInList in channels) or \
                             any(type(channelInList) is not discord.TextChannel for channelInList in channels):
                             print("2nd error")
-                            msgNotFound = await ctx.send(embed=embedNotFound)
-                            await msgNotFound.delete(delay=7)
+                            msgError = await ctx.send(embed=embedNotFound)
+                            try:
+                                await msgError.delete(delay=7)
+                            except discord.NotFound:
+                                pass
+
                             continue
 
                     else:
@@ -265,15 +273,23 @@ class VotingBot(commands.Cog):
 
                         else:
                             print("first error")
-                            msgNotFound = await ctx.send(embed=embedNotFound)
-                            await msgNotFound.delete(delay=7)
+                            msgError = await ctx.send(embed=embedNotFound)
+                            try:
+                                await msgError.delete(delay=7)
+                            except discord.NotFound:
+                                pass
+
                             continue
 
                         print(type(channel))
                         if channel is None or type(channel) is not discord.TextChannel:
                             print("2nd error")
-                            msgNotFound = await ctx.send(embed=embedNotFound)
-                            await msgNotFound.delete(delay=7)
+                            msgError = await ctx.send(embed=embedNotFound)
+                            try:
+                                await msgError.delete(delay=7)
+                            except discord.NotFound:
+                                pass
+
                             continue
 
                         channels.append(channel)
@@ -349,12 +365,16 @@ class VotingBot(commands.Cog):
                         embedNotFound = discord.Embed(
                             color=hex.red_error,
                             title="Create Voting",
-                            description="Couldn't findd something matching to the time units. Please try again."
+                            description="Couldn't find something matching to the time units. Please try again."
                         )
                         embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                         embedNotFound.set_footer(text="Use 'cancel' to cancel")
-                        msgNotFound = await ctx.send(embed=embedNotFound)
-                        await msgNotFound.delete(delay=7)
+                        msgError = await ctx.send(embed=embedNotFound)
+                        try:
+                            await msgError.delete(delay=7)
+                        except discord.NotFound:
+                            pass
+
                         continue
 
                     if days is None:
@@ -381,8 +401,12 @@ class VotingBot(commands.Cog):
                         )
                         embedOverflow.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                         embedOverflow.set_footer(text="Use 'cancel' to cancel")
-                        msgOverflow = await ctx.send(embed=embedOverflow)
-                        await msgOverflow.delete(delay=7)
+                        msgError = await ctx.send(embed=embedOverflow)
+                        try:
+                            await msgError.delete(delay=7)
+                        except discord.NotFound:
+                            pass
+
                         continue
 
                     embedFinish = discord.Embed(
