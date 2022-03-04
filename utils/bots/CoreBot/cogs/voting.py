@@ -219,6 +219,10 @@ class VotingBot(commands.Cog):
                     break
 
                 if index == 0:
+                    try:
+                        await msgError.delete()
+                    except discord.NotFound:
+                        pass
 
                     embedNotFound = discord.Embed(
                         color=hex.red_error,
@@ -315,6 +319,11 @@ class VotingBot(commands.Cog):
                     index += 1
 
                 elif index == 1:
+                    try:
+                        await msgError.delete()
+                    except discord.NotFound:
+                        pass
+
                     text = msgContent
 
                     embedText = discord.Embed(
@@ -336,6 +345,11 @@ class VotingBot(commands.Cog):
                     index += 1
 
                 elif index == 2:
+                    try:
+                        await msgError.delete()
+                    except discord.NotFound:
+                        pass
+
                     optionsStrList = msgContent.split(",")
                     for optionStr in optionsStrList:
                         options.append(optionStr.strip())
@@ -354,6 +368,11 @@ class VotingBot(commands.Cog):
                     index += 1
 
                 elif index == 3:
+                    try:
+                        await msgError.delete()
+                    except discord.NotFound:
+                        pass
+
                     timeDict: dict = stringTimeConvert(msgContent)
                     days = timeDict["days"]
                     hours = timeDict["hours"]
@@ -451,6 +470,10 @@ class VotingBot(commands.Cog):
                     await ctx.send(embed=embedPseudo, view=viewOverview)
                     break
 
+        try:
+            await msgError.delete()
+        except discord.NotFound:
+            pass
 
         embedConfirm = discord.Embed(
             color=hex.yellow,
