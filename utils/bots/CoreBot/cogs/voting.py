@@ -191,7 +191,7 @@ class VotingBot(commands.Cog):
 
                 try:
                     await msgNotFound.delete()
-                except AttributeError as e:
+                except:
                     pass
 
                 break
@@ -213,7 +213,7 @@ class VotingBot(commands.Cog):
 
                     try:
                         await msgNotFound.delete()
-                    except AttributeError as e:
+                    except:
                         pass
 
                     break
@@ -243,7 +243,7 @@ class VotingBot(commands.Cog):
                                 msgNotFound = await ctx.send(embed=embedNotFound)
                                 await msgNotFound.delete(delay=7)
                                 continue
-                        print(type(channelInList))
+                        print(channels)
                         if any(channelInList is None for channelInList in channels) or \
                             any(type(channelInList) is not discord.TextChannel for channelInList in channels):
 
