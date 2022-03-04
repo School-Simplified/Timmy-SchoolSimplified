@@ -249,7 +249,7 @@ class VotingBot(commands.Cog):
                                 channel = None
 
                             channels.append(channel)
-
+                        print(channels)
                         if any(channelInList is None for channelInList in channels) or \
                             any(type(channelInList) is not discord.TextChannel for channelInList in channels):
                             print("2nd error")
