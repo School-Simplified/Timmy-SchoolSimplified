@@ -158,8 +158,8 @@ class VotingBot(commands.Cog):
 
         def msgInputCheck(messageCheck: discord.Message):
             return (
-                messageCheck.channel == ctx.channel
-                and messageCheck.author == ctx.author
+                    messageCheck.channel == ctx.channel
+                    and messageCheck.author == ctx.author
             )
 
         channels = []
@@ -167,7 +167,7 @@ class VotingBot(commands.Cog):
         options = []
         datetimeExpiration = ...  # type: datetime.datetime
 
-        msgError = ... # type: discord.Message       # TODO: delete msgNotFound when timeout or canceled
+        msgError = ...  # type: discord.Message       # TODO: delete msgNotFound when timeout or canceled
         viewReset = discord.ui.View()
 
         index = 0
@@ -250,9 +250,9 @@ class VotingBot(commands.Cog):
                                 channel = None
 
                             tempChannels.append(channel)
-                        print(channels)
-                        if any(channelInList is None for channelInList in channels) or \
-                            any(type(channelInList) is not discord.TextChannel for channelInList in channels):
+
+                        if any(channelInList is None for channelInList in tempChannels) or \
+                                any(type(channelInList) is not discord.TextChannel for channelInList in tempChannels):
                             print("2nd error")
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
@@ -263,9 +263,7 @@ class VotingBot(commands.Cog):
                             continue
 
                     else:
-                        print("no commas")
                         channelStr = msgContent.strip()
-                        print(channelStr)
                         if channelStr.isdigit():
                             print("isdigit")
                             channel = self.bot.get_channel(int(channelStr))
@@ -273,7 +271,6 @@ class VotingBot(commands.Cog):
                         else:
                             channel = None
 
-                        print(type(channel))
                         if channel is None or type(channel) is not discord.TextChannel:
                             print("2nd error")
                             msgError = await ctx.send(embed=embedNotFound)
@@ -285,6 +282,7 @@ class VotingBot(commands.Cog):
                             continue
 
                         tempChannels.append(channel)
+
                     channels = tempChannels
                     print(channels)
 
@@ -292,11 +290,11 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Create Voting",
                         description="Please provide the text you want to add to the voting."
-                        "\n\n**Example:**"
-                        "\nHey everyone,"
-                        "\nWhich programming language is better? Please vote now!"
-                        f"\n{Emoji.pythonLogo} Python | {Emoji.javascriptLogo} JavaScript"
-                        f"\n\n(In the example above you would choose Python of course {Emoji.blobamused})",
+                                    "\n\n**Example:**"
+                                    "\nHey everyone,"
+                                    "\nWhich programming language is better? Please vote now!"
+                                    f"\n{Emoji.pythonLogo} Python | {Emoji.javascriptLogo} JavaScript"
+                                    f"\n\n(In the example above you would choose Python of course {Emoji.blobamused})",
                     )
                     embedText.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -320,9 +318,9 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Create Voting",
                         description="Please provide the options for the voting by separating the options with commas (`,`). "
-                        "They will shown as buttons."
-                        f"\n\nFrom the example on the last message, the options would be: "
-                        f"{Emoji.pythonLogo} Python, {Emoji.javascriptLogo} JavaScript",
+                                    "They will shown as buttons."
+                                    f"\n\nFrom the example on the last message, the options would be: "
+                                    f"{Emoji.pythonLogo} Python, {Emoji.javascriptLogo} JavaScript",
                     )
                     embedText.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -369,7 +367,6 @@ class VotingBot(commands.Cog):
                     minutes = timeDict["minutes"]
                     seconds = timeDict["seconds"]
 
-
                     if days is None and hours is None and minutes is None and seconds is None:
                         embedNotFound = discord.Embed(
                             color=hex.red_error,
@@ -400,7 +397,8 @@ class VotingBot(commands.Cog):
 
                     datetimeNow = datetime.datetime.now()
                     try:
-                        datetimeExpiration = datetimeNow + datetime.timedelta(days=days) + datetime.timedelta(hours=hours) + datetime.timedelta(minutes=minutes) + datetime.timedelta(seconds=seconds)
+                        datetimeExpiration = datetimeNow + datetime.timedelta(days=days) + datetime.timedelta(
+                            hours=hours) + datetime.timedelta(minutes=minutes) + datetime.timedelta(seconds=seconds)
                     except OverflowError as _error:
                         embedOverflow = discord.Embed(
                             color=hex.red_error,
@@ -430,7 +428,6 @@ class VotingBot(commands.Cog):
 
                     expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
                     expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
-
 
                     embedPseudo = discord.Embed(
                         color=hex.ss_blurple,
