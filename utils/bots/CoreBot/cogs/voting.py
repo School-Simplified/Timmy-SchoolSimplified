@@ -264,7 +264,7 @@ class VotingBot(commands.Cog):
                         print(channelStr)
                         if channelStr.isdigit():
                             print("isdigit")
-                            channel = self.bot.get_guild(int(msgContent))
+                            channel = self.bot.get_channel(int(channelStr))
 
                         else:
                             print("first error")
