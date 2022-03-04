@@ -222,14 +222,14 @@ class VotingBot(commands.Cog):
 
                     embedNotFound = discord.Embed(
                         color=hex.red_error,
-                        title="Createasd Voting",
+                        title="Create Voting",
                         description=f"Couldn't find one or more of the given text channels. Make sure the channel exists and you provide the channel's ID."
                     )
                     embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     embedNotFound.set_footer(text="Use 'cancel' to cancel")
 
                     if "," in msgContent:
-
+                        print("commas")
                         channelsStrList = msgContent.split(",")
                         print(channelsStrList)
                         for channelStr in channelsStrList:
@@ -259,17 +259,22 @@ class VotingBot(commands.Cog):
                         print(channels)
 
                     else:
+                        print("no commas")
                         channelStr = msgContent.strip()
-
+                        print(channelStr)
                         if channelStr.isdigit():
+                            print("isdigit")
                             channel = self.bot.get_guild(int(msgContent))
 
                         else:
+                            print("first error")
                             msgNotFound = await ctx.send(embed=embedNotFound)
                             await msgNotFound.delete(delay=7)
                             continue
 
+                        print(type(channel))
                         if channel is None or type(channel) is not discord.TextChannel:
+                            print("2nd error")
                             msgNotFound = await ctx.send(embed=embedNotFound)
                             await msgNotFound.delete(delay=7)
                             continue
