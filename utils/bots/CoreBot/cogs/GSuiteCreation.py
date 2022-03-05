@@ -85,5 +85,20 @@ class AdminAPI(commands.Cog):
         )
         await ctx.respond(f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ", ephemeral=True)
 
+    @discord.slash_command(
+        name="gsuite-delete",
+        description="Suspend/Delete a GSuite Account",
+        guild_ids=[HR_ID.g_hr],
+    )
+    async def delete_gsuite(self, ctx: commands.Context, email):
+        HR_Role = discord.utils.get(ctx.guild.roles, id=HR_ID.r_hrStaff)
+        if HR_Role not in ctx.author.roles:
+            return await ctx.respond(
+                f"{ctx.author.mention} You do not have the required permissions to use this command."
+            )
+        
+        service.users().delete(userKey=email).execute()
+        await ctx.respond("Successfully deleted the account.")
+
 def setup(bot):
     bot.add_cog(AdminAPI(bot))

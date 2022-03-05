@@ -159,7 +159,6 @@ class TechProjectCMD(commands.Cog):
         """
         Create a task loop to make sure threads don't automatically archive due to inactivity.
         """
-        return
         guilds = [
             [932066545117585428, [933181562885914724]]
         ]
@@ -176,7 +175,6 @@ class TechProjectCMD(commands.Cog):
                 print(thread.archived, query, (thread.parent_id in guild[1]))
                 if (
                     thread.archived
-                    and query
                     and thread.parent_id in guild[1]
                 ):
                     await thread.unarchive()

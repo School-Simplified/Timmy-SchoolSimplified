@@ -932,6 +932,7 @@ class DropdownTickets(commands.Cog):
                 await channel.set_permissions(
                     TicketOwner,
                     read_messages=True,
+                    send_messages=True,
                     reason="Ticket Perms Re-Open (User)",
                 )
                 await channel.send(
