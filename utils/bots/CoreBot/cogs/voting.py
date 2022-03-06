@@ -3,6 +3,7 @@ import datetime
 import re
 from typing import List
 import random, string
+import os
 
 import discord
 from discord.ext import commands
@@ -117,16 +118,19 @@ class VotingBot(commands.Cog):
         for channelID in self.acceptedAnnouncementCHs:
             acceptedChannel = self.bot.get_channel(channelID)
 
-            acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name}(`{acceptedChannel.id}`)\n"
+            acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name} ({acceptedChannel.id})\n"
 
         randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
+        tempVoteCHsFilename = "TEMP_voteCHS_{randomID}.txt"
 
         tempVoteCHsFileWrite = open(tempVoteCHsPath, "w+")
-        tempVoteCHsFileWrite.write(acceptedChannelsStr)
+        tempVoteCHsFileWrite.write(f"Accepted channels:"
+                                   f"\n{acceptedChannelsStr}")
         tempVoteCHsFileWrite.close()
+        tempVoteCHsFile = discord.File(tempVoteCHsPath, filename=tempVoteCHsFilename)
 
-        tempVoteCHsFile = discord.File(tempVoteCHsPath, filename=f"TEMP_voteCHS_{randomID}.txt")
+        os.remove(tempVoteCHsPath)
 
         ch_snakePit = self.bot.get_channel(TECH_ID.ch_snakePit)
         msgVoteCHsFile = await ch_snakePit.send(file=tempVoteCHsFile)
@@ -152,18 +156,15 @@ class VotingBot(commands.Cog):
         )
         msgSetup = await ctx.send(embed=embedServer, view=viewAcceptedCHs)
 
-        def msgInputCheck(messageCheck: discord.Message):
-            return (
-                messageCheck.channel == ctx.channel
-                and messageCheck.author == ctx.author
-            )
+        def msgInputCheck(message: discord.Message):
+            return message.channel == ctx.channel and message.author == ctx.author
 
         channels = []
         text = ...  # type: str
         options = []
         datetimeExpiration = ...  # type: datetime.datetime
 
-        msgNotFound = ... # type: discord.Message       # TODO: delete msgNotFound when timeout or canceled
+        msgError = ...  # type: discord.Message
         viewReset = discord.ui.View()
 
         index = 0
@@ -174,7 +175,7 @@ class VotingBot(commands.Cog):
                 )
             except asyncio.TimeoutError:
                 embedTimeout = discord.Embed(
-                    color=hex.red_error,
+                    color=hex.red_cancel,
                     title="Create Voting",
                     description="Setup canceled due to timeout.",
                 )
@@ -186,8 +187,8 @@ class VotingBot(commands.Cog):
                 await msgSetup.edit(embed=embedTimeout, view=viewReset)
 
                 try:
-                    await msgNotFound.delete()
-                except AttributeError as e:
+                    await msgError.delete()
+                except:
                     pass
 
                 break
@@ -208,13 +209,17 @@ class VotingBot(commands.Cog):
                     await msgSetup.edit(embed=embedCancel, view=viewReset)
 
                     try:
-                        await msgNotFound.delete()
-                    except AttributeError as e:
+                        await msgError.delete()
+                    except:
                         pass
 
                     break
 
                 if index == 0:
+                    try:
+                        await msgError.delete()
+                    except:
+                        pass
 
                     embedNotFound = discord.Embed(
                         color=hex.red_error,
@@ -224,58 +229,69 @@ class VotingBot(commands.Cog):
                     embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     embedNotFound.set_footer(text="Use 'cancel' to cancel")
 
+                    tempChannels = []
                     if "," in msgContent:
-
+                        print("commas")
                         channelsStrList = msgContent.split(",")
+                        print(channelsStrList)
                         for channelStr in channelsStrList:
                             stripChannelStr = channelStr.strip()
+                            print(stripChannelStr)
                             channelsStrList[channelsStrList.index(channelStr)] = stripChannelStr
 
                             if stripChannelStr.isdigit():
+                                print("isdigit")
                                 channel = self.bot.get_channel(int(stripChannelStr))
-                                channels.append(channel)
 
                             else:
-                                msgNotFound = await ctx.send(embed=embedNotFound)
-                                await msgNotFound.delete(delay=7)
-                                continue
+                                channel = None
 
-                        if any(channelInList is None for channelInList in channels) or \
-                            any(type(channelInList) is not discord.TextChannel for channelInList in channels):
+                            tempChannels.append(channel)
 
-                            msgNotFound = await ctx.send(embed=embedNotFound)
-                            await msgNotFound.delete(delay=7)
+                        if any(channelInList is None for channelInList in tempChannels) or \
+                                any(type(channelInList) is not discord.TextChannel for channelInList in tempChannels):
+                            print("2nd error")
+                            msgError = await ctx.send(embed=embedNotFound)
+                            try:
+                                await msgError.delete(delay=7)
+                            except:
+                                pass
+
                             continue
-
-                        print(channels)
 
                     else:
                         channelStr = msgContent.strip()
-
                         if channelStr.isdigit():
-                            channel = self.bot.get_guild(int(msgContent))
+                            print("isdigit")
+                            channel = self.bot.get_channel(int(channelStr))
 
                         else:
-                            msgNotFound = await ctx.send(embed=embedNotFound)
-                            await msgNotFound.delete(delay=7)
-                            continue
+                            channel = None
 
                         if channel is None or type(channel) is not discord.TextChannel:
-                            msgNotFound = await ctx.send(embed=embedNotFound)
-                            await msgNotFound.delete(delay=7)
+                            print("2nd error")
+                            msgError = await ctx.send(embed=embedNotFound)
+                            try:
+                                await msgError.delete(delay=7)
+                            except:
+                                pass
+
                             continue
 
-                        channels.append(channel)
+                        tempChannels.append(channel)
+
+                    channels = tempChannels
+                    print(channels)
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
                         title="Create Voting",
                         description="Please provide the text you want to add to the voting."
-                        "\n\n**Example:**"
-                        "\nHey everyone,"
-                        "\nWhich programming language is better? Please vote now!"
-                        f"\n{Emoji.pythonLogo} Python | {Emoji.javascriptLogo} JavaScript"
-                        f"\n\n(In the example above you would choose Python of course {Emoji.blobamused})",
+                                    "\n\n**Example:**"
+                                    "\nHey everyone,"
+                                    "\nWhich programming language is better? Please vote now!"
+                                    f"\n{Emoji.pythonLogo} Python | {Emoji.javascriptLogo} JavaScript"
+                                    f"\n\n(In the example above you would choose Python of course {Emoji.blobamused})",
                     )
                     embedText.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -288,15 +304,20 @@ class VotingBot(commands.Cog):
                     index += 1
 
                 elif index == 1:
+                    try:
+                        await msgError.delete()
+                    except:
+                        pass
+
                     text = msgContent
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
                         title="Create Voting",
                         description="Please provide the options for the voting by separating the options with commas (`,`). "
-                        "They will shown as buttons."
-                        f"\n\nFrom the example on the last message, the options would be: "
-                        f"{Emoji.pythonLogo} Python, {Emoji.javascriptLogo} JavaScript",
+                                    "They will shown as buttons."
+                                    f"\n\nFrom the example on the last message, the options would be: "
+                                    f"{Emoji.pythonLogo} Python, {Emoji.javascriptLogo} JavaScript",
                     )
                     embedText.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -309,6 +330,11 @@ class VotingBot(commands.Cog):
                     index += 1
 
                 elif index == 2:
+                    try:
+                        await msgError.delete()
+                    except:
+                        pass
+
                     optionsStrList = msgContent.split(",")
                     for optionStr in optionsStrList:
                         options.append(optionStr.strip())
@@ -327,22 +353,31 @@ class VotingBot(commands.Cog):
                     index += 1
 
                 elif index == 3:
+                    try:
+                        await msgError.delete()
+                    except:
+                        pass
+
                     timeDict: dict = stringTimeConvert(msgContent)
                     days = timeDict["days"]
                     hours = timeDict["hours"]
                     minutes = timeDict["minutes"]
                     seconds = timeDict["seconds"]
 
-
                     if days is None and hours is None and minutes is None and seconds is None:
-                        embedError = discord.Embed(
+                        embedNotFound = discord.Embed(
                             color=hex.red_error,
                             title="Create Voting",
-                            description="Couldn't found something matching to the time units. Please try again."
+                            description="Couldn't find something matching to the time units. Please try again."
                         )
-                        embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-                        embedError.set_footer(text="Use 'cancel' to cancel")
-                        await ctx.send(embed=embedError)
+                        embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedNotFound.set_footer(text="Use 'cancel' to cancel")
+                        msgError = await ctx.send(embed=embedNotFound)
+                        try:
+                            await msgError.delete(delay=7)
+                        except:
+                            pass
+
                         continue
 
                     if days is None:
@@ -359,7 +394,8 @@ class VotingBot(commands.Cog):
 
                     datetimeNow = datetime.datetime.now()
                     try:
-                        datetimeExpiration = datetimeNow + datetime.timedelta(days=days) + datetime.timedelta(hours=hours) + datetime.timedelta(minutes=minutes) + datetime.timedelta(seconds=seconds)
+                        datetimeExpiration = datetimeNow + datetime.timedelta(days=days) + datetime.timedelta(
+                            hours=hours) + datetime.timedelta(minutes=minutes) + datetime.timedelta(seconds=seconds)
                     except OverflowError as _error:
                         embedOverflow = discord.Embed(
                             color=hex.red_error,
@@ -369,7 +405,12 @@ class VotingBot(commands.Cog):
                         )
                         embedOverflow.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                         embedOverflow.set_footer(text="Use 'cancel' to cancel")
-                        await ctx.send(embed=embedOverflow)
+                        msgError = await ctx.send(embed=embedOverflow)
+                        try:
+                            await msgError.delete(delay=7)
+                        except:
+                            pass
+
                         continue
 
                     embedFinish = discord.Embed(
@@ -384,7 +425,6 @@ class VotingBot(commands.Cog):
 
                     expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
                     expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
-
 
                     embedPseudo = discord.Embed(
                         color=hex.ss_blurple,
@@ -414,16 +454,49 @@ class VotingBot(commands.Cog):
                     await ctx.send(embed=embedPseudo, view=viewOverview)
                     break
 
+        try:
+            await msgError.delete()
+        except:
+            pass
+
+        strChannels = ""
+        for channel in channels:
+            strChannels += f"\n- {channel.name} (`{channel.id}`) from {channel.guild.name} (`{channel.guild.id}`)"
 
         embedConfirm = discord.Embed(
             color=hex.yellow,
             title="Confirm",
-            description=f"Please confirm that you overviewed the voting message and that this message will ping @everyone "
-                        "in the following channel of the **: "
+            description=f"Please confirm that you overviewed the voting message and that this message will be sent and ping @everyone "
+                        f"in the following channel/s:"
+                        f"{strChannels}"
         )
+        embedConfirm.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+        embedConfirm.set_footer(text="Abusing this feature has severe consequences! | Timeout after 60s")
+        msgConfirm = await ctx.send(embed=embedConfirm)
+        await msgConfirm.add_reaction("✅")
+        await msgConfirm.add_reaction("❌")
 
-        # def confirmCheck(reactionCheck, userCheck):
-        #     return userCheck.id == ctx.author.id and reactionCheck.message.id ==
+        def confirmCheck(reaction, user):
+            return user.id == ctx.author.id and reaction.message.id == msgConfirm.id and \
+                    str(reaction.emoji) in ["✅", "❌"]
+
+        try:
+            reactionResponse: discord.Reaction = self.bot.wait_for('reaction', check=confirmCheck, timeout=60)
+        except asyncio.TimeoutError:
+            embedTimeout = discord.Embed(
+                color=hex.red_error,
+                title="Confirm",
+                description="Canceled due timeout"
+            )
+            embedTimeout.set_author(
+                name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+            )
+            embedTimeout.set_footer(text="Use 'vote create' to start again")
+            await msgConfirm.edit(embed=embedTimeout)
+            await msgConfirm.clear_reactions()
+
+        else:
+            
 
 
 def setup(bot):
