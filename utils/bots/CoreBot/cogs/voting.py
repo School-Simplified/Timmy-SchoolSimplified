@@ -535,8 +535,9 @@ class VotingBot(commands.Cog):
                             )
                         )
 
+                    channelTest = self.bot.get_channel(932066545738350640)
                     try:
-                        await ctx.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
+                        await channelTest.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
                     except Exception as _error:
                         embedError = discord.Embed(
                             color=hex.red_error,
