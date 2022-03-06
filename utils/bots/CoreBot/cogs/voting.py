@@ -65,13 +65,13 @@ class VotingBot(commands.Cog):
     """
     vote create: creates a voting
         1. Announcement channel
-        2. Text
+        2. Text                                                                             # TODO: not longer than X symbols
         3. Options (would be buttons)
         4. Durations
 
 
-        - Embed displays a timestamp and notes that the vote can't get undo
-        - When someone voted, he gets a ephemeral message, that the person has voted on X
+        - Embed displays a timestamp and notes that the vote can't get undo                 # DONE
+        - When someone voted, he gets a ephemeral message, that the person has voted on X   
         - If the person votes again, he gets an ephemeral message, that he already voted
 
     vote list: lists every voting (finished and ongoing votings)
@@ -167,6 +167,7 @@ class VotingBot(commands.Cog):
         msgError = ...  # type: discord.Message
         viewReset = discord.ui.View()
 
+        setupFinished = False
         index = 0
         while True:
             try:
@@ -224,7 +225,8 @@ class VotingBot(commands.Cog):
                     embedNotFound = discord.Embed(
                         color=hex.red_error,
                         title="Create Voting",
-                        description=f"Couldn't find one or more of the given text channels. Make sure the channel exists and you provide the channel's ID."
+                        description=f"Couldn't find one or more of the given text channels. Make sure the channel exists, "
+                                    f"you provide the channel's ID and it's an accepted channel."
                     )
                     embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     embedNotFound.set_footer(text="Use 'cancel' to cancel")
@@ -245,7 +247,8 @@ class VotingBot(commands.Cog):
                             tempChannels.append(channel)
 
                         if any(channelInList is None for channelInList in tempChannels) or \
-                                any(type(channelInList) is not discord.TextChannel for channelInList in tempChannels):
+                                any(type(channelInList) is not discord.TextChannel for channelInList in tempChannels) or \
+                                any(channelInList not in self.acceptedAnnouncementCHs for channelInList in tempChannels):
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
                                 await msgError.delete(delay=7)
@@ -262,7 +265,7 @@ class VotingBot(commands.Cog):
                         else:
                             channel = None
 
-                        if channel is None or type(channel) is not discord.TextChannel:
+                        if channel is None or type(channel) is not discord.TextChannel or channel not in self.acceptedAnnouncementCHs:
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
                                 await msgError.delete(delay=7)
@@ -445,8 +448,11 @@ class VotingBot(commands.Cog):
                         )
 
                     await ctx.send(embed=embedPseudo, view=viewOverview)
-                    break
 
+                    setupFinished = True
+                    break
+                    
+        # TODO: stop here
         try:
             await msgError.delete()
         except:
