@@ -416,7 +416,7 @@ class VotingBot(commands.Cog):
                     embedFinish = discord.Embed(
                         color=hex.ss_blurple,
                         title="Create Voting",
-                        description="Almost done... Please overview the embed below and confirm it."
+                        description="**Almost done...** Please overview the pseudo voting below and confirm it."
                     )
                     embedFinish.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                     await ctx.send(embed=embedFinish)
@@ -432,6 +432,7 @@ class VotingBot(commands.Cog):
                         description=f"{text}"
                                     f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})"
                     )
+                    embedPseudo.set_author(name="Pseudo voting embed")
                     embedPseudo.set_footer(text="Please vote anonymously below | You can't undo your vote!")
 
                     viewOverview = discord.ui.View()
@@ -468,7 +469,7 @@ class VotingBot(commands.Cog):
             title="Confirm",
             description=f"Please confirm that you overviewed the voting message and that this message will be sent and ping @everyone "
                         f"in the following channel/s:"
-                        f"{strChannels}"
+                        f"\n{strChannels}"
         )
         embedConfirm.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
         embedConfirm.set_footer(text="Abusing this feature has severe consequences! | Timeout after 60s")
@@ -481,7 +482,7 @@ class VotingBot(commands.Cog):
                     str(reaction.emoji) in ["✅", "❌"]
 
         try:
-            reactionResponse: discord.Reaction = await self.bot.wait_for('reaction', check=confirmCheck, timeout=60)
+            reactionResponse, userResponse = await self.bot.wait_for('reaction', check=confirmCheck, timeout=60)
         except asyncio.TimeoutError:
             embedTimeout = discord.Embed(
                 color=hex.red_error,
