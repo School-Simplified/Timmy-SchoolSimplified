@@ -462,7 +462,7 @@ class VotingBot(commands.Cog):
 
         strChannels = ""
         for channel in channels:
-            strChannels += f"\n- {channel.name} (`{channel.id}`) from {channel.guild.name} (`{channel.guild.id}`)"
+            strChannels += f"\n- {channel.name} (`{channel.id}`) from {channel.guild.name}"
 
         embedConfirm = discord.Embed(
             color=hex.yellow,
