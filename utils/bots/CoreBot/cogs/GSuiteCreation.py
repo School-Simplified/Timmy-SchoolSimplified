@@ -97,8 +97,14 @@ class AdminAPI(commands.Cog):
                 f"{ctx.author.mention} You do not have the required permissions to use this command."
             )
         
-        service.users().delete(userKey=email).execute()
-        await ctx.respond("Successfully deleted the account.")
+        try:
+            service.users().delete(userKey=email).execute()
+        except:
+            return await ctx.respond(
+                f"{ctx.author.mention} The account **{email}** does not exist."
+            )
+        else:
+            await ctx.respond("Successfully deleted the account.")
 
 def setup(bot):
     bot.add_cog(AdminAPI(bot))
