@@ -496,7 +496,35 @@ class VotingBot(commands.Cog):
             await msgConfirm.clear_reactions()
 
         else:
-            
+            if str(reactionResponse.emoji) == "✅":
+                embedSending = discord.Embed(
+                    color=hex.yellow,
+                    title="Confirm",
+                    description="Sending message/s..."
+                )
+                await msgConfirm.edit(embed=embedSending)
+
+                print("sending")
+
+                embedSuccess = discord.Embed(
+                    color=hex.green_confirm,
+                    title="Confirm",
+                    description="Successfully sent messages to following channel/s:"
+                                f"{strChannels}"
+                )
+                await msgConfirm.edit(embed=embedSuccess)
+
+            elif str(reactionResponse.emoji) == "❌":
+                embedCancel = discord.Embed(
+                    color=hex.red_cancel,
+                    title="Confirm",
+                    description="Confirmation canceled."
+                )
+                embedCancel.set_author(
+                    name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                )
+                embedCancel.set_footer(text="Use 'vote create' to start again")
+                await msgConfirm.edit(embed=embedCancel)
 
 
 def setup(bot):
