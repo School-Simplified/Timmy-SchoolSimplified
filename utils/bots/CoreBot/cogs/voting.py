@@ -487,7 +487,7 @@ class VotingBot(commands.Cog):
             embedTimeout = discord.Embed(
                 color=hex.red_error,
                 title="Confirm",
-                description="Canceled due timeout"
+                description="Confirmation canceled due to timeout."
             )
             embedTimeout.set_author(
                 name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -497,7 +497,9 @@ class VotingBot(commands.Cog):
             await msgConfirm.clear_reactions()
 
         else:
+            print("else")
             if str(reactionResponse.emoji) == "✅":
+                print("yes")
                 embedSending = discord.Embed(
                     color=hex.yellow,
                     title="Confirm",
@@ -516,6 +518,7 @@ class VotingBot(commands.Cog):
                 await msgConfirm.edit(embed=embedSuccess)
 
             elif str(reactionResponse.emoji) == "❌":
+                print("no")
                 embedCancel = discord.Embed(
                     color=hex.red_cancel,
                     title="Confirm",
@@ -526,7 +529,8 @@ class VotingBot(commands.Cog):
                 )
                 embedCancel.set_footer(text="Use 'vote create' to start again")
                 await msgConfirm.edit(embed=embedCancel)
-
+            else:
+                print("nothing")
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
