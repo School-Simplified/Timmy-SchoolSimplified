@@ -7,14 +7,12 @@ from dotenv import load_dotenv
 from flask import Flask
 from peewee import *
 
-from .common import bcolors
-
 load_dotenv()
 useDB = True
 
 if not os.getenv("PyTestMODE"):
     useDB = input(
-        f"{bcolors.WARNING}Do you want to use MySQL? (y/n)\nThis option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications.{bcolors.ENDC}"
+        "Do you want to use MySQL? (y/n)\nThis option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications."
     )
     useDB = strtobool(useDB)
 
@@ -25,9 +23,7 @@ If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove
 """
 
 if os.getenv("IP") is None:
-    print(
-        f"{bcolors.OKBLUE}Successfully connected to the SQLite Database{bcolors.ENDC}"
-    )
+    print(f"Successfully connected to the SQLite Database")
     db = SqliteDatabase("data.db")
 
 elif os.getenv("IP") is not None:
@@ -41,24 +37,18 @@ elif os.getenv("IP") is not None:
                 host=os.getenv("IP"),
                 port=int(os.getenv("PORT")),
             )
-            print(
-                f"{bcolors.OKBLUE}Successfully connected to the MySQL Database{bcolors.ENDC}"
-            )
+            print("Successfully connected to the MySQL Database")
         except Exception as e:
             print(
-                f"{bcolors.FAIL}Unable to connect to the MySQL Database:\n    > {e}\n\nSwitching to SQLite...{bcolors.ENDC}"
+                f"Unable to connect to the MySQL Database:\n    > {e}\n\nSwitching to SQLite..."
             )
             db = SqliteDatabase("data.db")
     else:
         db = SqliteDatabase("data.db")
         if not os.getenv("PyTestMODE"):
-            print(
-                f"{bcolors.OKBLUE}Successfully connected to the SQLite Database{bcolors.ENDC}"
-            )
+            print(f"Successfully connected to the SQLite Database")
         else:
-            print(
-                f"{bcolors.OKBLUE}Created a SQLite Database for testing...{bcolors.ENDC}"
-            )
+            print(f"Created a SQLite Database for testing...")
 
 
 def iter_table(model_dict: dict):
@@ -513,10 +503,14 @@ class BaseTickerInfo(BaseModel):
 
     `counter`: BigIntegerField()
     Counter for the total amount of channels.
+
+    `guildID`: BigIntegerField()
+    Guild ID.
     """
 
     id = AutoField()
     counter = BigIntegerField()
+    guildID = BigIntegerField()
 
 
 class VCDeletionQueue(BaseModel):
@@ -544,6 +538,46 @@ class VCDeletionQueue(BaseModel):
     ChannelID = BigIntegerField()
     GuildID = BigIntegerField()
     DTF = DateTimeField()
+
+
+class TechCommissionArchiveLog(BaseModel):
+    """
+    #TechCommissionArchiveLog
+
+    `id`: AutoField()
+    Database Entry
+
+    `ThreadID`: BigIntegerField()
+    ID of the thread.
+    """
+
+    id = AutoField()
+    ThreadID = BigIntegerField()
+
+class SandboxConfig(BaseModel):
+    """
+    #SandboxConfig
+
+    `id`: AutoField()
+    Database Entry
+
+    `mode`: TextField()
+    Current Mode of the Sandbox.
+    """
+    id = AutoField()
+    mode = TextField()
+
+    cat_mathticket = BigIntegerField()
+    cat_scienceticket = BigIntegerField()
+    cat_socialstudiesticket = BigIntegerField()
+    cat_essayticket = BigIntegerField()
+    cat_englishticket = BigIntegerField()
+    cat_otherticket = BigIntegerField()
+    cat_fineartsticket = BigIntegerField()
+    cat_languageticket = BigIntegerField()
+
+    ch_tv_console = BigIntegerField()
+    ch_tv_startvc = BigIntegerField()
 
 
 app = Flask(__name__)
@@ -586,6 +620,8 @@ tables = {
     "BaseTickerInfo": BaseTickerInfo,
     "VCDeletionQueue": VCDeletionQueue,
     "TutorSession_GracePeriod": TutorSession_GracePeriod,
+    "TechCommissionArchiveLog": TechCommissionArchiveLog,
+    "SandboxConfig": SandboxConfig
 }
 
 iter_table(tables)

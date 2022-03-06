@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 import discord
 from core import database
-from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID
+from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID, TECH_ID, SandboxConfig
 from discord.ext import commands, tasks
 import pytz
 
@@ -45,21 +45,31 @@ def showTotalMinutes(dateObj: datetime):
 
     return totalmin, now
 
+def getConsoleCH(column_id):
+    q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+    ColumnDict = {
+        0: q.ch_tv_console,
+        1: q.ch_tv_startvc,
+    }
+    return ColumnDict[column_id]
+
 
 class TutorVCUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
         self.channel_id = {
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
+            TECH_ID.g_tech: getConsoleCH(0)
         }
-        self.staticChannels = [MAIN_ID.ch_startPrivateVC, STAFF_ID.ch_startPrivateVC]
+        self.staticChannels = [MAIN_ID.ch_startPrivateVC, STAFF_ID.ch_startPrivateVC, getConsoleCH(0)]
         self.presetChannels = [
             MAIN_ID.ch_controlPanel,
             MAIN_ID.ch_startPrivateVC,
             STAFF_ID.ch_console,
             STAFF_ID.ch_startPrivateVC,
+            getConsoleCH(0),
+            getConsoleCH(1)
         ]
 
         self.TutorLogID = TUT_ID.ch_hourLogs
@@ -78,15 +88,20 @@ class TutorVCUpdate(commands.Cog):
         self.TT = "Technical Team"
 
         self.TutorRole = "Tutor"
-
-        self.categoryIDs = [MAIN_ID.cat_privateVC, STAFF_ID.cat_privateVC]
+        self.categoryIDs = [
+            MAIN_ID.cat_privateVC,
+            STAFF_ID.cat_privateVC,
+            SandboxConfig.cat_sandbox
+        ]
         self.CcategoryIDs = {
             MAIN_ID.g_main: MAIN_ID.cat_privateVC,
             STAFF_ID.g_staff: STAFF_ID.cat_privateVC,
+            TECH_ID.g_tech: SandboxConfig.cat_sandbox,
         }
         self.LobbyStartIDs = {
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
+            TECH_ID.g_tech: getConsoleCH(0),
         }
         # self.PRIVVC_DELETION_QUEUE.start()
 
@@ -94,14 +109,25 @@ class TutorVCUpdate(commands.Cog):
     # self.PRIVVC_DELETION_QUEUE.cancel()
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member: discord.Member, before, after):
+    async def on_voice_state_update(
+        self,
+        member: discord.Member,
+        before: discord.VoiceState,
+        after: discord.VoiceState,
+    ):
         database.db.connect(reuse_if_open=True)
-        try:
-            lobbyStart = await self.bot.fetch_channel(
+        print(self.LobbyStartIDs[member.guild.id])
+        lobbyStart = member.guild.get_channel(
                 self.LobbyStartIDs[member.guild.id]
-            )
-        except KeyError:
-            return
+        )
+        if lobbyStart == None:
+            try:
+                lobbyStart = await self.bot.fetch_channel(
+                    self.LobbyStartIDs[member.guild.id]
+                )
+            except Exception as e:
+                return print(e)
+        print(lobbyStart)
 
         if (
             before.channel is not None
@@ -312,6 +338,7 @@ class TutorVCUpdate(commands.Cog):
             acadChannel = await self.bot.fetch_channel(
                 self.LobbyStartIDs[member.guild.id]
             )
+            print(acadChannel, after.channel.guild.id)
             SB = discord.utils.get(member.guild.roles, name=self.SB)
 
             legend = discord.utils.get(member.guild.roles, name=self.Legend)

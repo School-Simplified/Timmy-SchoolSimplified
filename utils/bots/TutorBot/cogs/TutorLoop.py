@@ -124,7 +124,8 @@ class TutorBotLoop(commands.Cog):
             TutorSession = pytz.timezone("America/New_York").localize(entry.GP_DATE)
             val = int((TutorSession - now).total_seconds())
 
-            if 600 >= val >= 1:
+            if 120 >= val >= 1:
+                print(val)
                 try:
                     geten: database.TutorBot_Sessions = (
                         database.TutorBot_Sessions.select()

@@ -15,7 +15,8 @@ import discord
 import pytz
 from core import database
 from core.common import (
-    ACAD_ID,
+    CH_ID,
+    TUT_ID,
     HR_ID,
     MAIN_ID,
     MKT_ID,
@@ -23,6 +24,7 @@ from core.common import (
     ButtonHandler,
     Emoji,
     Others,
+    SandboxConfig,
     S3_upload_file,
     SelectMenuHandler,
     CHHelperRoles,
@@ -148,15 +150,17 @@ async def TicketExport(
                 await user.send(embed=embed)
             except Exception:
                 pass
-
-    os.remove(f"transcript-{channel.name}.html")
+    try:
+        os.remove(f"transcript-{channel.name}.html")
+    except:
+        pass
 
     if response == None:
         msg = S3_URL
     return msg, transcript_file, S3_URL
 
 
-def decodeDict(self, value: str) -> typing.Union[str, int]:
+def decodeDict(self, value: str, sandbox: bool = False) -> typing.Union[str, int]:
     """Returns the true value of a dict output and pair value.
 
     Args:
@@ -239,15 +243,28 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
         "['Other Helpers']": OtherOptions,
     }
 
-    decodeID = {
-        "['Math Helpers']": MAIN_ID.cat_mathTicket,
-        "['Science Helpers']": MAIN_ID.cat_scienceTicket,
-        "['Social Studies Helpers']": MAIN_ID.cat_socialStudiesTicket,
-        "['English Helpers']": MAIN_ID.cat_englishTicket,
-        "['Essay Helpers']": MAIN_ID.cat_essayTicket,
-        "['Language Helpers']": MAIN_ID.cat_otherTicket,
-        "['Other Helpers']": MAIN_ID.cat_otherTicket,
-    }
+    if sandbox:
+        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+        decodeID = {
+            "['Math Helpers']": q.cat_mathticket,
+            "['Science Helpers']": q.cat_scienceticket,
+            "['Social Studies Helpers']": q.cat_socialstudiesticket,
+            "['English Helpers']": q.cat_englishticket,
+            "['Essay Helpers']": q.cat_essayticket,
+            "['Language Helpers']": q.cat_otherticket,
+            "['Other Helpers']": q.cat_otherticket,
+        }
+    else:
+        decodeID = {
+            "['Math Helpers']": MAIN_ID.cat_mathTicket,
+            "['Science Helpers']": MAIN_ID.cat_scienceTicket,
+            "['Social Studies Helpers']": MAIN_ID.cat_socialStudiesTicket,
+            "['English Helpers']": MAIN_ID.cat_englishTicket,
+            "['Essay Helpers']": MAIN_ID.cat_essayTicket,
+            "['Language Helpers']": MAIN_ID.cat_otherTicket,
+            "['Other Helpers']": MAIN_ID.cat_otherTicket,
+        }
+
     name = decodeName[value]
     CategoryID = decodeID[value]
     if type(decodeOptList[value]) == int:
@@ -258,7 +275,9 @@ def decodeDict(self, value: str) -> typing.Union[str, int]:
     return name, CategoryID, OptList
 
 
-def getRole(guild: discord.Guild, mainSubject: str, subject: str) -> discord.Role:
+def getRole(
+    guild: discord.Guild, mainSubject: str, subject: str, sandbox: bool = False
+) -> discord.Role:
     """Returns the role of the subject.
 
     Args:
@@ -288,11 +307,18 @@ class TicketBT(discord.ui.Button):
         """
         self.bot = bot
         self.mainserver = MAIN_ID.g_main
-        self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
+        self.ServerIDs = [
+            TECH_ID.g_tech,
+            CH_ID.g_ch,
+            TUT_ID.g_tut,
+            MKT_ID.g_mkt,
+            HR_ID.g_hr,
+        ]
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
         self.CHID_DEFAULT = Others.CHID_DEFAULT
-        self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
+        self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
+
         super().__init__(
             label="Create Ticket",
             style=discord.enums.ButtonStyle.blurple,
@@ -301,15 +327,17 @@ class TicketBT(discord.ui.Button):
         )
 
     async def callback(self, interaction: discord.Interaction):
-        print("hi")
+        Sandbox = False
+        if interaction.message.guild.id == TECH_ID.g_tech:
+            Sandbox = True
+
         bucket = self.view.cd_mapping.get_bucket(interaction.message)
         retry_after = bucket.update_rate_limit()
         print(retry_after)
         if retry_after:
-            await interaction.response.send_message(
+            return await interaction.response.send_message(
                 "Sorry, you are being rate limited.", ephemeral=True
             )
-            return interaction.stop()
         else:
             channel = await self.bot.fetch_channel(interaction.channel_id)
             guild = interaction.message.guild
@@ -321,10 +349,6 @@ class TicketBT(discord.ui.Button):
                 )
             except Exception:
                 await interaction.followup.send("Check your DM's!", ephemeral=True)
-            except Exception:
-                await interaction.channel.send(
-                    f"{interaction.user.mention} Check your DM's!", delete_after=5.0
-                )
 
             def check(m):
                 return (
@@ -355,7 +379,9 @@ class TicketBT(discord.ui.Button):
                 return await DMChannel.send("Timed out, try again later.")
 
             ViewResponse = str(MasterSubjectView)
-            TypeSubject, CategoryID, OptList = decodeDict(self, f"['{ViewResponse}']")
+            TypeSubject, CategoryID, OptList = decodeDict(
+                self, f"['{ViewResponse}']", Sandbox
+            )
             c = discord.utils.get(guild.categories, id=int(CategoryID))
 
             if not TypeSubject == OptList:
@@ -485,7 +511,7 @@ class TicketBT(discord.ui.Button):
 
             CounterNum = (
                 database.BaseTickerInfo.select()
-                .where(database.BaseTickerInfo.id == 1)
+                .where(database.BaseTickerInfo.guildID == guild.id)
                 .get()
             )
             TNUM = CounterNum.counter
@@ -525,85 +551,94 @@ class TicketBT(discord.ui.Button):
             )
             query.save()
 
-            roles = [
-                # "Board Member",
-                # "Senior Executive",
-                # "Executive",
-                "Head Moderator",
-                "Moderator",
-                "Lead Helper",
-                "Chat Helper",
-                "Bot: TeXit",
-                "Academics Director",
-            ]
-            for role in roles:
-                RoleOBJ = discord.utils.get(interaction.message.guild.roles, name=role)
-                await channel.set_permissions(
-                    RoleOBJ,
-                    read_messages=True,
-                    send_messages=True,
-                    manage_messages=True,
-                    reason="Ticket Perms",
-                )
-                RoleOBJ = discord.utils.get(guild.roles, name=role)
-                if (
-                    not (
-                        RoleOBJ.id == MAIN_ID.r_chatHelper
-                        or RoleOBJ.id == MAIN_ID.r_leadHelper
+            if not Sandbox:
+                roles = [
+                    # "Board Member",
+                    # "Senior Executive",
+                    # "Executive",
+                    "Head Moderator",
+                    "Moderator",
+                    "Lead Helper",
+                    "Chat Helper",
+                    "Bot: TeXit",
+                    "Academics Director",
+                ]
+                for role in roles:
+                    RoleOBJ = discord.utils.get(
+                        interaction.message.guild.roles, name=role
                     )
-                    and not channel.category.id == MAIN_ID.cat_essayTicket
-                ):
-                    if RoleOBJ.id == MAIN_ID.r_essayReviser:
-                        if (
-                            channel.category.id == MAIN_ID.cat_essayTicket
-                            or channel.category.id == MAIN_ID.cat_englishTicket
-                        ):
-                            await channel.set_permissions(
-                                RoleOBJ,
-                                read_messages=True,
-                                send_messages=True,
-                                reason="Ticket Perms",
-                            )
-                        else:
-                            continue
-                else:
                     await channel.set_permissions(
                         RoleOBJ,
                         read_messages=True,
                         send_messages=True,
+                        manage_messages=True,
                         reason="Ticket Perms",
                     )
+                    RoleOBJ = discord.utils.get(guild.roles, name=role)
+                    if (
+                        not (
+                            RoleOBJ.id == MAIN_ID.r_chatHelper
+                            or RoleOBJ.id == MAIN_ID.r_leadHelper
+                        )
+                        and not channel.category.id == MAIN_ID.cat_essayTicket
+                    ):
+                        if RoleOBJ.id == MAIN_ID.r_essayReviser:
+                            if (
+                                channel.category.id == MAIN_ID.cat_essayTicket
+                                or channel.category.id == MAIN_ID.cat_englishTicket
+                            ):
+                                await channel.set_permissions(
+                                    RoleOBJ,
+                                    read_messages=True,
+                                    send_messages=True,
+                                    reason="Ticket Perms",
+                                )
+                            else:
+                                continue
+                    else:
+                        await channel.set_permissions(
+                            RoleOBJ,
+                            read_messages=True,
+                            send_messages=True,
+                            reason="Ticket Perms",
+                        )
+
+                if channel.category_id in self.EssayCategory:
+                    roles = ["Essay Reviser"]
+                    for role in roles:
+                        RoleOBJ = discord.utils.get(
+                            interaction.message.guild.roles, name=role
+                        )
+                        await channel.set_permissions(
+                            RoleOBJ,
+                            read_messages=True,
+                            send_messages=True,
+                            reason="Ticket Perms",
+                        )
+                else:
+                    roles = ["Chat Helper", "Lead Helper"]
+                    for role in roles:
+                        RoleOBJ = discord.utils.get(
+                            interaction.message.guild.roles, name=role
+                        )
+                        await channel.set_permissions(
+                            RoleOBJ,
+                            read_messages=True,
+                            send_messages=True,
+                            reason="Ticket Perms",
+                        )
             await channel.set_permissions(
                 interaction.user,
                 read_messages=True,
                 send_messages=True,
                 reason="Ticket Perms (User)",
             )
-
-            if channel.category_id in self.EssayCategory:
-                roles = ["Essay Reviser"]
-                for role in roles:
-                    RoleOBJ = discord.utils.get(
-                        interaction.message.guild.roles, name=role
-                    )
-                    await channel.set_permissions(
-                        RoleOBJ,
-                        read_messages=True,
-                        send_messages=True,
-                        reason="Ticket Perms",
-                    )
-            else:
-                roles = ["Chat Helper", "Lead Helper"]
-                for role in roles:
-                    RoleOBJ = discord.utils.get(
-                        interaction.message.guild.roles, name=role
-                    )
-                    await channel.set_permissions(
-                        RoleOBJ,
-                        read_messages=True,
-                        send_messages=True,
-                        reason="Ticket Perms",
-                    )
+            await channel.set_permissions(
+                interaction.guild.default_role,
+                read_messages=False,
+                send_messages=False,
+                reason="Ticket Perms (User)",
+            )
 
             controlTicket = discord.Embed(
                 title="Control Panel",
@@ -706,10 +741,16 @@ class DropdownTickets(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.mainserver = MAIN_ID.g_main
-        self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
+        self.ServerIDs = [
+            TECH_ID.g_tech,
+            CH_ID.g_ch,
+            TUT_ID.g_tut,
+            MKT_ID.g_mkt,
+            HR_ID.g_hr,
+        ]
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
         self.CHID_DEFAULT = Others.CHID_DEFAULT
-        self.EssayCategory = [ACAD_ID.cat_essay, ACAD_ID.cat_essay]
+        self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
         self.TicketInactive.start()
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
 
@@ -733,7 +774,7 @@ class DropdownTickets(commands.Cog):
             # and interaction.message.id == int(self.CHID_DEFAULT)
             and InteractionResponse["custom_id"] == "persistent_view:ticketdrop"
         ):
-            return
+            pass
         elif val == "ch_lock":
             channel = interaction.message.channel
             guild = interaction.message.guild
@@ -900,9 +941,14 @@ class DropdownTickets(commands.Cog):
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":
             channel = interaction.channel
-            ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
-                MAIN_ID.ch_transcriptLogs
-            )
+            if interaction.guild.id == MAIN_ID.g_main:
+                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                    MAIN_ID.ch_transcriptLogs
+                )
+            else:
+                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                    TECH_ID.ch_ticketLog
+                )
             author = interaction.user
             msg = await interaction.channel.send(
                 f"Please wait, creating your transcript {Emoji.loadingGIF2}\n**THIS MAY TAKE SOME TIME**"
@@ -957,7 +1003,14 @@ class DropdownTickets(commands.Cog):
         elif InteractionResponse["custom_id"] == "ch_lock_C&D":
             channel = await self.bot.fetch_channel(interaction.channel_id)
             author = interaction.user
-            ResponseLogChannel = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
+            if interaction.guild.id == MAIN_ID.g_main:
+                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                    MAIN_ID.ch_transcriptLogs
+                )
+            else:
+                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                    TECH_ID.ch_ticketLog
+                )
             query = (
                 database.TicketInfo.select()
                 .where(database.TicketInfo.ChannelID == interaction.channel_id)

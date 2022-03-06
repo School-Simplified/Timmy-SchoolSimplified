@@ -42,7 +42,13 @@ class VerificationStaff(commands.Cog):
         self.staffServer = {STAFF_ID.g_staff: STAFF_ID.ch_verificationLogs}
         self.StaffServerIDs = [STAFF_ID.g_staff]
         self.VerificationIDs = [DIGITAL_ID.ch_verification, STAFF_ID.ch_verification]
-        self.ServerIDs = [TECH_ID.g_tech, ACAD_ID.g_acad, MKT_ID.g_mkt, HR_ID.g_hr]
+        self.ServerIDs = [
+            TECH_ID.g_tech,
+            CH_ID.g_ch,
+            TUT_ID.g_tut,
+            MKT_ID.g_mkt,
+            HR_ID.g_hr,
+        ]
 
     @commands.Cog.listener("on_interaction")
     async def StaffVerification(self, interaction: discord.Interaction):

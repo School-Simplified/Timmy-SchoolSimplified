@@ -57,8 +57,10 @@ class TutorMain(commands.Cog):
                 text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
                 "these sessions with a warning sign next to them."
             )
-            await ctx.respond(embed=embed)
-
+            try:
+                await ctx.respond(embed=embed)
+            except:
+                await ctx.send(embed=embed)
         else:
             entry = database.TutorBot_Sessions.select().where(
                 database.TutorBot_Sessions.SessionID == id
@@ -86,14 +88,20 @@ class TutorMain(commands.Cog):
                     f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
                 )
                 embed.set_footer(text=f"Subject: {entry.Subject}")
-                await ctx.respond(embed=embed)
+                try:
+                    await ctx.respond(embed=embed)
+                except:
+                    await ctx.send(embed=embed)
             else:
                 embed = discord.Embed(
                     title="Invalid Session",
                     description="This session does not exist, please check the ID you've provided!",
                     color=discord.Color.red(),
                 )
-                await ctx.respond(embed=embed)
+                try:
+                    await ctx.respond(embed=embed)
+                except:
+                    await ctx.send(embed=embed)
 
     @slash_command(
         name="mview",  # TODO find better name later

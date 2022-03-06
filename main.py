@@ -2,6 +2,7 @@ import faulthandler
 import json
 import logging
 import os
+import random
 import subprocess
 import time
 import traceback
@@ -34,8 +35,10 @@ from core.common import (
     FeedbackButton,
 )
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
+from utils.bots.mktCommissions.ADCommissions import CommissionADButton
+from utils.events.TicketDropdown import TicketButton
 from utils.events.VerificationStaff import VerifyButton
-from utils.bots.CoreBot.cogs.techProject import CommissionTechButton
+from utils.events.AutoThreadUnarchive import CommissionTechButton
 
 load_dotenv()
 faulthandler.enable()
@@ -110,6 +113,8 @@ class Timmy(commands.Bot):
             bot.add_view(VerifyButton())
             bot.add_view(GSuiteVerify())
             bot.add_view(CommissionTechButton(bot))
+            bot.add_view(TicketButton(bot))
+            bot.add_view(CommissionADButton(bot))
             query.PersistantChange = True
             query.save()
 
@@ -180,10 +185,17 @@ class Timmy(commands.Bot):
                 f"to the bot development team"
             )
         else:
-            await ctx.respond(
-                f"Sorry an Error Occurred: {error}. This error has been sent "
-                f"to the bot development team"
-            )
+            try:
+                await ctx.respond(
+                    f"Sorry an Error Occurred: {error}. This error has been sent "
+                    f"to the bot development team"
+                )
+            except:
+                await ctx.send(
+                    f"Sorry an Error Occurred: {error}. This error has been sent "
+                    f"to the bot development team"
+                )
+            
         error_file = Path("error.txt")
         error_file.touch()
         with error_file.open("w") as f:
@@ -258,6 +270,231 @@ class Timmy(commands.Bot):
 
             error_file.unlink()
 
+    async def on_command_error(self, ctx: commands.Context, error: Exception):
+        tb = error.__traceback__
+        etype = type(error)
+        exception = traceback.format_exception(etype, error, tb, chain=True)
+        exception_msg = ""
+        for line in exception:
+            exception_msg += line
+
+        error = getattr(error, "original", error)
+        if ctx.command is not None:
+            if ctx.command.name == "rule":
+                return "No Rule..."
+
+        if isinstance(error, (commands.CheckFailure, commands.CheckAnyFailure)):
+            return
+
+        if hasattr(ctx.command, "on_error"):
+            return
+
+        elif isinstance(error, (commands.CommandNotFound, commands.errors.CommandNotFound)):
+            cmd = ctx.invoked_with
+            cmds = [cmd.name for cmd in bot.commands]
+            matches = get_close_matches(cmd, cmds)
+            slash_cmds = [cmd.qualified_name for cmd in bot.application_commands]
+            slash_matches = get_close_matches(slash_cmds, cmd)
+
+            if len(matches) > 0:
+                return await ctx.send(
+                    f'Command "{cmd}" not found, maybe you meant "{matches[0]}"?'
+                )
+            elif len(slash_matches) > 0:
+                return await ctx.send(
+                    f'Command "{cmd}" not found, command: {slash_matches[0]} is now a slash command! '
+                    f"Please check https://timmy.schoolsimplified.org/#slash-command-port for more updates!"
+                )
+            else:
+                return await ctx.send(
+                    f'Command "{cmd}" not found, use the help command to know what commands are available. '
+                    f"Some commands have moved over to slash commands, please check "
+                    f"https://timmy.schoolsimplified.org/#slash-command-port "
+                    f"for more updates! "
+                )
+
+        elif isinstance(
+            error, (commands.MissingRequiredArgument, commands.TooManyArguments)
+        ):
+            signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
+
+            if ctx.command.name == "schedule":
+                em = discord.Embed(
+                    title="Missing/Extra Required Arguments Passed In!",
+                    description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
+                    f"following:**\nUsage:\n`{signature}`\n\n-> If you seperated the time and the AM/PM. (Eg; "
+                    f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
+                    f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
+                    f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
+                    color=hexColors.red_error,
+                )
+                em.set_thumbnail(url=Others.error_png)
+                em.set_footer(
+                    text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
+                )
+                return await ctx.send(embed=em)
+            else:
+                em = discord.Embed(
+                    title="Missing/Extra Required Arguments Passed In!",
+                    description="You have missed one or several arguments in this command"
+                    "\n\nUsage:"
+                    f"\n`{signature}`",
+                    color=hexColors.red_error,
+                )
+                em.set_thumbnail(url=Others.error_png)
+                em.set_footer(
+                    text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
+                )
+                return await ctx.send(embed=em)
+
+        elif isinstance(
+            error,
+            (
+                commands.MissingAnyRole,
+                commands.MissingRole,
+                commands.MissingPermissions,
+                commands.errors.MissingAnyRole,
+                commands.errors.MissingRole,
+                commands.errors.MissingPermissions,
+            ),
+        ):
+            em = discord.Embed(
+                title="Invalid Permissions!",
+                description="You do not have the associated role in order to successfully invoke this command! Contact an "
+                "administrator/developer if you believe this is invalid.",
+                color=hexColors.red_error,
+            )
+            em.set_thumbnail(url=Others.error_png)
+            em.set_footer(
+                text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
+            )
+            await ctx.send(embed=em)
+            return
+
+        elif isinstance(error, commands.BadArgument):
+            signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
+            if ctx.command.name == "schedule":
+                em = discord.Embed(
+                    title="Bad Argument!",
+                    description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
+                    f"following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; "
+                    f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
+                    f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
+                    f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
+                    color=hexColors.red_error,
+                )
+                em.set_thumbnail(url=Others.error_png)
+                em.set_footer(
+                    text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
+                )
+                return await ctx.send(embed=em)
+            else:
+                em = discord.Embed(
+                    title="Bad Argument!",
+                    description=f"Unable to parse arguments, check what arguments you provided.\n\nUsage:\n`{signature}`",
+                    color=hexColors.red_error,
+                )
+                em.set_thumbnail(url=Others.error_png)
+                em.set_footer(
+                    text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
+                )
+                return await ctx.send(embed=em)
+
+        elif isinstance(
+            error, (commands.CommandOnCooldown, commands.errors.CommandOnCooldown)
+        ):
+            m, s = divmod(error.retry_after, 60)
+            h, m = divmod(m, 60)
+
+            msg = "This command cannot be used again for {} minutes and {} seconds".format(
+                round(m), round(s)
+            )
+
+            embed = discord.Embed(
+                title="Command On Cooldown", description=msg, color=discord.Color.red()
+            )
+            return await ctx.send(embed=embed)
+
+        else:
+            error_file = Path("error.txt")
+            error_file.touch()
+            with error_file.open("w") as f:
+                f.write(exception_msg)
+            with error_file.open("r") as f:
+                # config, _ = core.common.load_config()
+                data = "\n".join([l.strip() for l in f])
+
+                GITHUB_API = "https://api.github.com"
+                API_TOKEN = os.getenv("GIST")
+                url = GITHUB_API + "/gists"
+                headers = {"Authorization": "token %s" % API_TOKEN}
+                params = {"scope": "gist"}
+                payload = {
+                    "description": "Timmy encountered a Traceback!",
+                    "public": True,
+                    "files": {"error": {"content": f"{data}"}},
+                }
+                res = requests.post(
+                    url, headers=headers, params=params, data=json.dumps(payload)
+                )
+                j = json.loads(res.text)
+                ID = j["id"]
+                gisturl = f"https://gist.github.com/{ID}"
+                print(gisturl)
+
+                permitlist = []
+                query = database.Administrators.select().where(
+                    database.Administrators.TierLevel >= 3
+                )
+                for user in query:
+                    permitlist.append(user.discordID)
+
+                if ctx.author.id not in permitlist:
+                    embed = discord.Embed(
+                        title="Traceback Detected!",
+                        description="Timmy here has ran into an error!\nPlease check what you sent and/or check out the "
+                        "help command!",
+                        color=hexColors.orange_error,
+                    )
+                    embed.set_thumbnail(url=Others.timmyDog_png)
+                    embed.set_footer(text=f"Error: {str(error)}")
+                    await ctx.send(embed=embed)
+                else:
+                    embed = discord.Embed(
+                        title="Traceback Detected!",
+                        description="Timmy here has ran into an error!\nTraceback has been attached below.",
+                        color=hexColors.orange_error,
+                    )
+                    embed.add_field(name="GIST URL", value=gisturl)
+                    embed.set_thumbnail(url=Others.timmyDog_png)
+                    embed.set_footer(text=f"Error: {str(error)}")
+                    await ctx.send(embed=embed)
+
+                guild = bot.get_guild(Me.TechGuild)
+                channel = guild.get_channel(Me.TracebackChannel)
+
+                embed2 = discord.Embed(
+                    title="Traceback Detected!",
+                    description=f"**Information**\n"
+                    f"**Server:** {ctx.message.guild.name}\n"
+                    f"**User:** {ctx.message.author.mention}\n"
+                    f"**Command:** {ctx.command.name}",
+                    color=hexColors.orange_error,
+                )
+                embed2.add_field(
+                    name="Gist URL",
+                    value=f"[Uploaded Traceback to GIST](https://gist.github.com/{ID})",
+                )
+                await channel.send(embed=embed2)
+
+                view = FeedbackButton()
+                await ctx.send(
+                    "Want to help even more? Click here to submit feedback!", view=view
+                )
+                error_file.unlink()
+
+        raise error
+
     async def is_owner(self, user: discord.User):
         admin_ids = []
 
@@ -307,6 +544,7 @@ if os.getenv("DSN_SENTRY") is not None:
 UpQ = database.Uptime.select().where(database.Uptime.id == 1)
 CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)
 BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)
+SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)
 
 if not UpQ.exists():
     database.Uptime.create(UpStart="1")
@@ -336,6 +574,12 @@ if not BTE.exists():
         counter=0,
     )
     print("Created BaseTickerInfo Entry.")
+
+if not SM.exists():
+    database.SandboxConfig.create(
+        mode="None",
+    )
+    print("Created SandboxConfig Entry.")
 
 database.db.connect(reuse_if_open=True)
 q: database.Uptime = database.Uptime.select().where(database.Uptime.id == 1).get()
@@ -376,11 +620,7 @@ async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you wan
 
 @bot.user_command(name="Are they short?")
 async def short(ctx, member: discord.Member):
-    if (
-        member.id == 736765405728735232
-        or member.id == 518581570152693771
-        or member.id == 544724467709116457
-    ):
+    if random.randint(0, 1) == 1:
         await ctx.respond(f"{member.mention} is short!")
     else:
         await ctx.respond(f"{member.mention} is tall!")
@@ -427,10 +667,10 @@ for ext in get_extensions():
 
 @bot.check
 async def mainModeCheck(ctx: commands.Context):
-    MT = discord.utils.get(ctx.guild.roles, name="Moderator")
+    """MT = discord.utils.get(ctx.guild.roles, name="Moderator")
     VP = discord.utils.get(ctx.guild.roles, name="VP")
     CO = discord.utils.get(ctx.guild.roles, name="CO")
-    SS = discord.utils.get(ctx.guild.roles, name="Secret Service")
+    SS = discord.utils.get(ctx.guild.roles, name="Secret Service")"""
 
     blacklistedUsers = []
     for p in database.Blacklist:
@@ -467,20 +707,12 @@ async def mainModeCheck(ctx: commands.Context):
 
     # DM Check
     elif ctx.guild is None:
+        return True
         return CheckDB_CC.guildNone
 
     # External Server Check
     elif ctx.guild.id != MAIN_ID.g_main:
         return CheckDB_CC.externalGuild
-
-    # Mod Role Check
-    elif (
-        MT in ctx.author.roles
-        or VP in ctx.author.roles
-        or CO in ctx.author.roles
-        or SS in ctx.author.roles
-    ):
-        return CheckDB_CC.ModRoleBypass
 
     # Rule Command Check
     elif ctx.command.name == "rule":
@@ -493,233 +725,6 @@ async def mainModeCheck(ctx: commands.Context):
     # Else...
     else:
         return CheckDB_CC.elseSituation
-
-
-@bot.event
-async def on_command_error(ctx: commands.Context, error: Exception):
-    tb = error.__traceback__
-    etype = type(error)
-    exception = traceback.format_exception(etype, error, tb, chain=True)
-    exception_msg = ""
-    for line in exception:
-        exception_msg += line
-
-    error = getattr(error, "original", error)
-    if ctx.command is not None:
-        if ctx.command.name == "rule":
-            return "No Rule..."
-
-    if isinstance(error, (commands.CheckFailure, commands.CheckAnyFailure)):
-        return
-
-    if hasattr(ctx.command, "on_error"):
-        return
-
-    elif isinstance(error, (commands.CommandNotFound, commands.errors.CommandNotFound)):
-        cmd = ctx.invoked_with
-        cmds = [cmd.name for cmd in bot.commands]
-        matches = get_close_matches(cmd, cmds)
-        slash_cmds = [cmd.qualified_name for cmd in bot.application_commands]
-        slash_matches = get_close_matches(slash_cmds, cmd)
-
-        if len(matches) > 0:
-            return await ctx.send(
-                f'Command "{cmd}" not found, maybe you meant "{matches[0]}"?'
-            )
-        elif len(slash_matches) > 0:
-            return await ctx.send(
-                f'Command "{cmd}" not found, command: {slash_matches[0]} is now a slash command! '
-                f"Please check https://timmy.schoolsimplified.org/#slash-command-port for more updates!"
-            )
-        else:
-            return await ctx.send(
-                f'Command "{cmd}" not found, use the help command to know what commands are available. '
-                f"Some commands have moved over to slash commands, please check "
-                f"https://timmy.schoolsimplified.org/#slash-command-port "
-                f"for more updates! "
-            )
-
-    elif isinstance(
-        error, (commands.MissingRequiredArgument, commands.TooManyArguments)
-    ):
-        signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
-
-        if ctx.command.name == "schedule":
-            em = discord.Embed(
-                title="Missing/Extra Required Arguments Passed In!",
-                description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
-                f"following:**\nUsage:\n`{signature}`\n\n-> If you seperated the time and the AM/PM. (Eg; "
-                f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
-                f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
-                f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
-                color=hexColors.red_error,
-            )
-            em.set_thumbnail(url=Others.error_png)
-            em.set_footer(
-                text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
-            )
-            return await ctx.send(embed=em)
-        else:
-            em = discord.Embed(
-                title="Missing/Extra Required Arguments Passed In!",
-                description="You have missed one or several arguments in this command"
-                "\n\nUsage:"
-                f"\n`{signature}`",
-                color=hexColors.red_error,
-            )
-            em.set_thumbnail(url=Others.error_png)
-            em.set_footer(
-                text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
-            )
-            return await ctx.send(embed=em)
-
-    elif isinstance(
-        error,
-        (
-            commands.MissingAnyRole,
-            commands.MissingRole,
-            commands.MissingPermissions,
-            commands.errors.MissingAnyRole,
-            commands.errors.MissingRole,
-            commands.errors.MissingPermissions,
-        ),
-    ):
-        em = discord.Embed(
-            title="Invalid Permissions!",
-            description="You do not have the associated role in order to successfully invoke this command! Contact an "
-            "administrator/developer if you believe this is invalid.",
-            color=hexColors.red_error,
-        )
-        em.set_thumbnail(url=Others.error_png)
-        em.set_footer(
-            text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
-        )
-        await ctx.send(embed=em)
-        return
-
-    elif isinstance(error, commands.BadArgument):
-        signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
-        if ctx.command.name == "schedule":
-            em = discord.Embed(
-                title="Bad Argument!",
-                description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
-                f"following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; "
-                f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
-                f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
-                f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
-                color=hexColors.red_error,
-            )
-            em.set_thumbnail(url=Others.error_png)
-            em.set_footer(
-                text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
-            )
-            return await ctx.send(embed=em)
-        else:
-            em = discord.Embed(
-                title="Bad Argument!",
-                description=f"Unable to parse arguments, check what arguments you provided.\n\nUsage:\n`{signature}`",
-                color=hexColors.red_error,
-            )
-            em.set_thumbnail(url=Others.error_png)
-            em.set_footer(
-                text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
-            )
-            return await ctx.send(embed=em)
-
-    elif isinstance(
-        error, (commands.CommandOnCooldown, commands.errors.CommandOnCooldown)
-    ):
-        m, s = divmod(error.retry_after, 60)
-        h, m = divmod(m, 60)
-
-        msg = "This command cannot be used again for {} minutes and {} seconds".format(
-            round(m), round(s)
-        )
-
-        embed = discord.Embed(
-            title="Command On Cooldown", description=msg, color=discord.Color.red()
-        )
-        return await ctx.send(embed=embed)
-
-    else:
-        error_file = Path("error.txt")
-        error_file.touch()
-        with error_file.open("w") as f:
-            f.write(exception_msg)
-        with error_file.open("r") as f:
-            # config, _ = core.common.load_config()
-            data = "\n".join([l.strip() for l in f])
-
-            GITHUB_API = "https://api.github.com"
-            API_TOKEN = os.getenv("GIST")
-            url = GITHUB_API + "/gists"
-            headers = {"Authorization": "token %s" % API_TOKEN}
-            params = {"scope": "gist"}
-            payload = {
-                "description": "Timmy encountered a Traceback!",
-                "public": True,
-                "files": {"error": {"content": f"{data}"}},
-            }
-            res = requests.post(
-                url, headers=headers, params=params, data=json.dumps(payload)
-            )
-            j = json.loads(res.text)
-            ID = j["id"]
-            gisturl = f"https://gist.github.com/{ID}"
-            print(gisturl)
-
-            permitlist = []
-            query = database.Administrators.select().where(
-                database.Administrators.TierLevel >= 3
-            )
-            for user in query:
-                permitlist.append(user.discordID)
-
-            if ctx.author.id not in permitlist:
-                embed = discord.Embed(
-                    title="Traceback Detected!",
-                    description="Timmy here has ran into an error!\nPlease check what you sent and/or check out the "
-                    "help command!",
-                    color=hexColors.orange_error,
-                )
-                embed.set_thumbnail(url=Others.timmyDog_png)
-                embed.set_footer(text=f"Error: {str(error)}")
-                await ctx.send(embed=embed)
-            else:
-                embed = discord.Embed(
-                    title="Traceback Detected!",
-                    description="Timmy here has ran into an error!\nTraceback has been attached below.",
-                    color=hexColors.orange_error,
-                )
-                embed.add_field(name="GIST URL", value=gisturl)
-                embed.set_thumbnail(url=Others.timmyDog_png)
-                embed.set_footer(text=f"Error: {str(error)}")
-                await ctx.send(embed=embed)
-
-            guild = bot.get_guild(Me.TechGuild)
-            channel = guild.get_channel(Me.TracebackChannel)
-
-            embed2 = discord.Embed(
-                title="Traceback Detected!",
-                description=f"**Information**\n"
-                f"**Server:** {ctx.message.guild.name}\n"
-                f"**User:** {ctx.message.author.mention}\n"
-                f"**Command:** {ctx.command.name}",
-                color=hexColors.orange_error,
-            )
-            embed2.add_field(
-                name="Gist URL",
-                value=f"[Uploaded Traceback to GIST](https://gist.github.com/{ID})",
-            )
-            await channel.send(embed=embed2)
-
-            view = FeedbackButton()
-            await ctx.send(
-                "Want to help even more? Click here to submit feedback!", view=view
-            )
-            error_file.unlink()
-
-    raise error
 
 
 bot.run(os.getenv("TOKEN"))

@@ -5,7 +5,7 @@ import discord
 import pytz
 from core import database
 from core.checks import is_botAdmin
-from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID, SelectMenuHandler
+from core.common import TECH_ID, Emoji, MAIN_ID, STAFF_ID, TUT_ID, SandboxConfig, SelectMenuHandler
 from discord.ext import commands
 
 # global variables
@@ -84,10 +84,12 @@ GameDict = {
 class TutorVCCMD(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+
         self.channel_id = MAIN_ID.ch_controlPanel
-        self.categoryID = [MAIN_ID.cat_privateVC, STAFF_ID.cat_privateVC]
-        self.staticChannels = [MAIN_ID.ch_startPrivateVC]
-        self.presetChannels = [MAIN_ID.ch_controlPanel, MAIN_ID.ch_startPrivateVC]
+        self.categoryID = [MAIN_ID.cat_privateVC, STAFF_ID.cat_privateVC, SandboxConfig.cat_sandbox]
+        self.staticChannels = [MAIN_ID.ch_startPrivateVC, q.ch_tv_startvc]
+        self.presetChannels = [MAIN_ID.ch_controlPanel, MAIN_ID.ch_startPrivateVC, q.ch_tv_startvc, q.ch_tv_console]
 
         self.ownerID = 409152798609899530
         # self.botID = bot.user.id
@@ -159,11 +161,22 @@ class TutorVCCMD(commands.Cog):
         self.LobbyStartIDs = {
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
+            TECH_ID.g_tech: q.ch_tv_console,
         }
         self.StartVCIDs = {
             MAIN_ID.g_main: MAIN_ID.ch_startPrivateVC,
-            STAFF_ID.g_staff: STAFF_ID.g_staff,
+            STAFF_ID.g_staff: STAFF_ID.ch_startPrivateVC,
+            TECH_ID.g_tech: q.ch_tv_startvc,
         }
+
+    @commands.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def startmusic(self, ctx: commands.Context):
+        voice_state = ctx.author.voice
+        if voice_state is None:
+            return await ctx.send("You are not in a voice channel.")
+        GameLink = str(await voice_state.channel.create_activity_invite(880218394199220334))
+        await ctx.send(f"**Click the link to get started!**\n{GameLink}")
 
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -281,6 +294,84 @@ class TutorVCCMD(commands.Cog):
 
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
+    async def startyt(self, ctx: commands.Context):
+        database.db.connect(reuse_if_open=True)
+        voice_state = ctx.author.voice
+        if voice_state is None:
+            query = database.VCChannelInfo.select().where(
+                (database.VCChannelInfo.authorID == ctx.author.id)
+                & (database.VCChannelInfo.GuildID == ctx.guild.id)
+            )
+            if query.exists():
+                query = (
+                    database.VCChannelInfo.select()
+                    .where(
+                        (database.VCChannelInfo.authorID == ctx.author.id)
+                        & (database.VCChannelInfo.GuildID == ctx.guild.id)
+                    )
+                    .get()
+                )
+                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                    int(query.ChannelID)
+                )
+                GameLink = str(await channel.create_activity_invite(880218394199220334))
+                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+
+            else:
+                embed = discord.Embed(
+                    title=f"{Emoji.deny} Ownership Check Failed",
+                    description=f"You are not the owner of this voice channel, "
+                    f"please ask the original owner to start a game!",
+                    color=discord.Colour.red(),
+                )
+                return await ctx.send(embed=embed)
+
+        elif voice_state.channel.id in self.presetChannels:
+            embed = discord.Embed(
+                title=f"{Emoji.invalidchannel} UnAuthorized Channel Deletion",
+                description="You are not allowed to delete these channels!"
+                "\n\n**Error Detection:**"
+                "\n**1)** Detected Static Channels",
+                color=discord.Colour.dark_red(),
+            )
+            return await ctx.send(embed=embed)
+
+        elif voice_state.channel.category_id in self.categoryID:
+            query = database.VCChannelInfo.select().where(
+                (database.VCChannelInfo.authorID == ctx.author.id)
+                & (database.VCChannelInfo.ChannelID == voice_state.channel.id)
+                & (database.VCChannelInfo.GuildID == ctx.guild.id)
+            )
+
+            if query.exists():
+                q: database.VCChannelInfo = (
+                    database.VCChannelInfo.select()
+                    .where(
+                        (database.VCChannelInfo.authorID == ctx.author.id)
+                        & (database.VCChannelInfo.ChannelID == voice_state.channel.id)
+                        & (database.VCChannelInfo.GuildID == ctx.guild.id)
+                    )
+                    .get()
+                )
+                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                    q.ChannelID
+                )
+
+                GameLink = str(await channel.create_activity_invite(880218394199220334))
+                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+
+            else:
+                embed = discord.Embed(
+                    title=f"{Emoji.deny} Ownership Check Failed",
+                    description=f"You are not the owner of this voice channel, "
+                    f"please ask the original owner to start a game!",
+                    color=discord.Colour.red(),
+                )
+                return await ctx.send(embed=embed)
+        database.db.close()
+
+    @commands.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def rename(self, ctx, *, name=None):
         database.db.connect(reuse_if_open=True)
         SB = discord.utils.get(ctx.guild.roles, name=self.SB)
@@ -325,25 +416,24 @@ class TutorVCCMD(commands.Cog):
 
         member = ctx.guild.get_member(ctx.author.id)
 
-        if ctx.author.id != 415629932798935040:
-            if (
-                not any(role in ctx.author.roles for role in roleList)
-                and ctx.guild.id == 763119924385939498
-            ):
-                embed = discord.Embed(
-                    title=f"{Emoji.deny} Insufficient Rank",
-                    description="Sorry! But only the following people who have these roles can rename their channel!"
-                    "\n\n- **Moderators**"
-                    "\n- **Marketing Team**"
-                    "\n- **Technical Team**"
-                    "\n- **Academics Team**"
-                    "\n- **VP**\n- **CO**"
-                    "\n- **Legends**"
-                    "\n- **Simplified Boosters**"
-                    "\n- **Level 40+**",
-                    color=discord.Colour.blurple(),
-                )
-                return await ctx.send(embed=embed)
+        if (
+            not any(role in ctx.author.roles for role in roleList)
+            and ctx.guild.id == 763119924385939498
+        ):
+            embed = discord.Embed(
+                title=f"{Emoji.deny} Insufficient Rank",
+                description="Sorry! But only the following people who have these roles can rename their channel!"
+                "\n\n- **Moderators**"
+                "\n- **Marketing Team**"
+                "\n- **Technical Team**"
+                "\n- **Academics Team**"
+                "\n- **VP**\n- **CO**"
+                "\n- **Legends**"
+                "\n- **Simplified Boosters**"
+                "\n- **Level 40+**",
+                color=discord.Colour.blurple(),
+            )
+            return await ctx.send(embed=embed)
 
         voice_state = member.voice
 
