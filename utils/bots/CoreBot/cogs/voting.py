@@ -549,14 +549,15 @@ class VotingBot(commands.Cog):
                         embedError.set_footer(text="Canceled | Use '+vote create' to start again")
                         embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                         await msgConfirm.edit(embed=embedError)
+                    else:
 
-                    embedSuccess = discord.Embed(
-                        color=hex.green_confirm,
-                        title="Confirm",
-                        description="Successfully sent messages to following channel/s:"
-                                    f"\n{strChannels}"
-                    )
-                    await msgConfirm.edit(embed=embedSuccess)
+                        embedSuccess = discord.Embed(
+                            color=hex.green_confirm,
+                            title="Confirm",
+                            description="Successfully sent messages to following channel/s:"
+                                        f"\n{strChannels}"
+                        )
+                        await msgConfirm.edit(embed=embedSuccess)
 
                 elif str(reactionResponse.emoji) == "❌":
                     await msgConfirm.clear_reactions()
