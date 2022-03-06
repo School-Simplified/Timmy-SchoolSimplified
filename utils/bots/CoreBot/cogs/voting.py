@@ -69,9 +69,11 @@ class VotingBot(commands.Cog):
         3. Options (would be buttons)
         4. Durations
 
-
+        # TODO: Add message and components to db
+        # TODO: Add count to components in db (NOT MEMBER DUE OF PRIVACY)
+        # TODO: Catch interaction
         - Embed displays a timestamp and notes that the vote can't get undo                 # DONE
-        - When someone voted, he gets a ephemeral message, that the person has voted on X   
+        - When someone voted, he gets a ephemeral message, that the person has voted on X  
         - If the person votes again, he gets an ephemeral message, that he already voted
 
     vote list: lists every voting (finished and ongoing votings)
