@@ -182,7 +182,7 @@ class VotingBot(commands.Cog):
                 embedTimeout.set_author(
                     name=f"{ctx.author}", icon_url=ctx.author.avatar.url
                 )
-                embedTimeout.set_footer(text="Use 'vote create' to start again")
+                embedTimeout.set_footer(text="Use '+vote create' to start again")
 
                 await msgSetup.edit(embed=embedTimeout, view=viewReset)
 
@@ -205,7 +205,7 @@ class VotingBot(commands.Cog):
                     embedCancel.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
                     )
-                    embedCancel.set_footer(text="Use 'vote create' to start again")
+                    embedCancel.set_footer(text="Use '+vote create' to start again")
                     await msgSetup.edit(embed=embedCancel, view=viewReset)
 
                     try:
@@ -484,7 +484,7 @@ class VotingBot(commands.Cog):
             embedTimeout.set_author(
                 name=f"{ctx.author}", icon_url=ctx.author.avatar.url
             )
-            embedTimeout.set_footer(text="Use 'vote create' to start again")
+            embedTimeout.set_footer(text="Use '+vote create' to start again")
             await msgConfirm.edit(embed=embedTimeout)
             await msgConfirm.clear_reactions()
 
@@ -529,7 +529,19 @@ class VotingBot(commands.Cog):
                         )
                     )
 
-                await ctx.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
+                try:
+                    await ctx.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
+                except Exception as _error:
+                    embedError = discord.Embed(
+                        color=hex.red_error,
+                        title="Error while sending message/s",
+                        description="An unexpected error occurred! Please make sure I can send messages into the "
+                                    "provided channels."
+                                    f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`"
+                    )
+                    embedError.set_footer(text="Canceled | Use '+vote create' to start again")
+                    embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    await msgConfirm.edit(embed=embedError)
 
                 embedSuccess = discord.Embed(
                     color=hex.green_confirm,
@@ -550,7 +562,7 @@ class VotingBot(commands.Cog):
                 embedCancel.set_author(
                     name=f"{ctx.author}", icon_url=ctx.author.avatar.url
                 )
-                embedCancel.set_footer(text="Use 'vote create' to start again")
+                embedCancel.set_footer(text="Use '+vote create' to start again")
                 await msgConfirm.edit(embed=embedCancel)
 
 def setup(bot):
