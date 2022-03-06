@@ -478,11 +478,14 @@ class VotingBot(commands.Cog):
         await msgConfirm.add_reaction("❌")
 
         def confirmCheck(reaction, user):
+            print(user.id == ctx.author.id)
+            print(reaction.message.id == msgConfirm.id)
+            print(str(reaction.emoji) in ["✅", "❌"])
             return user.id == ctx.author.id and reaction.message.id == msgConfirm.id and \
                     str(reaction.emoji) in ["✅", "❌"]
 
         try:
-            reactionResponse, userResponse = await self.bot.wait_for('reaction', check=confirmCheck, timeout=60)
+            reactionResponse, userResponse = await self.bot.wait_for('reaction', check=confirmCheck, timeout=120)
         except asyncio.TimeoutError:
             embedTimeout = discord.Embed(
                 color=hex.red_error,
