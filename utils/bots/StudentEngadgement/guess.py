@@ -30,4 +30,4 @@ class Engagement(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Engagement)
+    bot.add_cog(Engagement(bot))
