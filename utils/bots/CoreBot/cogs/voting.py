@@ -248,7 +248,7 @@ class VotingBot(commands.Cog):
 
                         if any(channelInList is None for channelInList in tempChannels) or \
                                 any(type(channelInList) is not discord.TextChannel for channelInList in tempChannels) or \
-                                any(channelInList not in self.acceptedAnnouncementCHs for channelInList in tempChannels):
+                                any(channelInList.id not in self.acceptedAnnouncementCHs for channelInList in tempChannels):
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
                                 await msgError.delete(delay=7)
@@ -265,7 +265,7 @@ class VotingBot(commands.Cog):
                         else:
                             channel = None
 
-                        if channel is None or type(channel) is not discord.TextChannel or channel not in self.acceptedAnnouncementCHs:
+                        if channel is None or type(channel) is not discord.TextChannel or channel.id not in self.acceptedAnnouncementCHs:
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
                                 await msgError.delete(delay=7)
@@ -451,7 +451,7 @@ class VotingBot(commands.Cog):
 
                     setupFinished = True
                     break
-                    
+
         # TODO: stop here
         try:
             await msgError.delete()
