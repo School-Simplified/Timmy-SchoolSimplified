@@ -231,16 +231,12 @@ class VotingBot(commands.Cog):
 
                     tempChannels = []
                     if "," in msgContent:
-                        print("commas")
                         channelsStrList = msgContent.split(",")
-                        print(channelsStrList)
                         for channelStr in channelsStrList:
                             stripChannelStr = channelStr.strip()
-                            print(stripChannelStr)
                             channelsStrList[channelsStrList.index(channelStr)] = stripChannelStr
 
                             if stripChannelStr.isdigit():
-                                print("isdigit")
                                 channel = self.bot.get_channel(int(stripChannelStr))
 
                             else:
@@ -250,7 +246,6 @@ class VotingBot(commands.Cog):
 
                         if any(channelInList is None for channelInList in tempChannels) or \
                                 any(type(channelInList) is not discord.TextChannel for channelInList in tempChannels):
-                            print("2nd error")
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
                                 await msgError.delete(delay=7)
@@ -262,14 +257,12 @@ class VotingBot(commands.Cog):
                     else:
                         channelStr = msgContent.strip()
                         if channelStr.isdigit():
-                            print("isdigit")
                             channel = self.bot.get_channel(int(channelStr))
 
                         else:
                             channel = None
 
                         if channel is None or type(channel) is not discord.TextChannel:
-                            print("2nd error")
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
                                 await msgError.delete(delay=7)
@@ -281,7 +274,6 @@ class VotingBot(commands.Cog):
                         tempChannels.append(channel)
 
                     channels = tempChannels
-                    print(channels)
 
                     embedText = discord.Embed(
                         color=hex.ss_blurple,
@@ -478,9 +470,6 @@ class VotingBot(commands.Cog):
         await msgConfirm.add_reaction("❌")
 
         def confirmCheck(reaction, user):
-            print(user.id == ctx.author.id)
-            print(reaction.message.id == msgConfirm.id)
-            print(str(reaction.emoji) in ["✅", "❌"])
             return user.id == ctx.author.id and reaction.message.id == msgConfirm.id and \
                     str(reaction.emoji) in ["✅", "❌"]
 
@@ -510,7 +499,37 @@ class VotingBot(commands.Cog):
                 )
                 await msgConfirm.edit(embed=embedSending)
 
-                print("sending")
+                print("sending")        # TODO: !!
+
+                expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
+                expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
+
+                embedVoting = discord.Embed(
+                    color=hex.ss_blurple,
+                    title="Voting",
+                    description=f"{text}"
+                                f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})"
+                )
+                embedVoting.set_footer(text="Please vote anonymously below | You can't undo your vote!")
+
+                viewVoting = discord.ui.View()
+
+                for option in options:
+
+                    customEmoji = searchCustomEmoji(option)
+                    if customEmoji is not None:
+                        option = option.replace(f"{customEmoji}", "")
+
+                    viewVoting.add_item(
+                        ButtonHandler(
+                            style=discord.ButtonStyle.gray,
+                            disabled=False,
+                            label=option,
+                            emoji=customEmoji
+                        )
+                    )
+
+                await ctx.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
 
                 embedSuccess = discord.Embed(
                     color=hex.green_confirm,
