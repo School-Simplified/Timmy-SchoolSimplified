@@ -543,7 +543,7 @@ class VotingBot(commands.Cog):
                             color=hex.red_error,
                             title="Error while sending message/s",
                             description="An unexpected error occurred! Please make sure I can send messages into the "
-                                        "provided channels."
+                                        "provided channel/s."
                                         f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`"
                         )
                         embedError.set_footer(text="Canceled | Use '+vote create' to start again")
