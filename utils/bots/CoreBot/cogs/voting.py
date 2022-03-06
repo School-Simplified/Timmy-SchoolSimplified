@@ -452,124 +452,124 @@ class VotingBot(commands.Cog):
                     setupFinished = True
                     break
 
-        # TODO: stop here
-        try:
-            await msgError.delete()
-        except:
-            pass
+        if setupFinished:
+            try:
+                await msgError.delete()
+            except:
+                pass
 
-        strChannels = ""
-        for channel in channels:
-            strChannels += f"\n- {channel.name} (`{channel.id}`) from {channel.guild.name}"
+            strChannels = ""
+            for channel in channels:
+                strChannels += f"\n- {channel.name} (`{channel.id}`) from {channel.guild.name}"
 
-        embedConfirm = discord.Embed(
-            color=hex.yellow,
-            title="Confirm",
-            description=f"Please confirm that you overviewed the voting message and that this message will be sent and ping @everyone "
-                        f"in the following channel/s:"
-                        f"\n{strChannels}"
-        )
-        embedConfirm.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-        embedConfirm.set_footer(text="Abusing this feature has severe consequences! | Timeout after 60s")
-        msgConfirm = await ctx.send(embed=embedConfirm)
-        await msgConfirm.add_reaction("✅")
-        await msgConfirm.add_reaction("❌")
-
-        def confirmCheck(reaction, user):
-            return user.id == ctx.author.id and reaction.message.id == msgConfirm.id and \
-                    str(reaction.emoji) in ["✅", "❌"]
-
-        try:
-            reactionResponse, userResponse = await self.bot.wait_for("reaction_add", check=confirmCheck, timeout=120)
-        except asyncio.TimeoutError:
-            embedTimeout = discord.Embed(
-                color=hex.red_error,
+            embedConfirm = discord.Embed(
+                color=hex.yellow,
                 title="Confirm",
-                description="Confirmation canceled due to timeout."
+                description=f"Please confirm that you overviewed the voting message and that this message will be sent and ping @everyone "
+                            f"in the following channel/s:"
+                            f"\n{strChannels}"
             )
-            embedTimeout.set_author(
-                name=f"{ctx.author}", icon_url=ctx.author.avatar.url
-            )
-            embedTimeout.set_footer(text="Use '+vote create' to start again")
-            await msgConfirm.edit(embed=embedTimeout)
-            await msgConfirm.clear_reactions()
+            embedConfirm.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+            embedConfirm.set_footer(text="Abusing this feature has severe consequences! | Timeout after 60s")
+            msgConfirm = await ctx.send(embed=embedConfirm)
+            await msgConfirm.add_reaction("✅")
+            await msgConfirm.add_reaction("❌")
 
-        else:
-            if str(reactionResponse.emoji) == "✅":
-                await msgConfirm.clear_reactions()
+            def confirmCheck(reaction, user):
+                return user.id == ctx.author.id and reaction.message.id == msgConfirm.id and \
+                        str(reaction.emoji) in ["✅", "❌"]
 
-                embedSending = discord.Embed(
-                    color=hex.yellow,
+            try:
+                reactionResponse, userResponse = await self.bot.wait_for("reaction_add", check=confirmCheck, timeout=120)
+            except asyncio.TimeoutError:
+                embedTimeout = discord.Embed(
+                    color=hex.red_error,
                     title="Confirm",
-                    description="Sending message/s..."
+                    description="Confirmation canceled due to timeout."
                 )
-                await msgConfirm.edit(embed=embedSending)
-
-                print("sending")        # TODO: !!
-
-                expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
-                expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
-
-                embedVoting = discord.Embed(
-                    color=hex.ss_blurple,
-                    title="Voting",
-                    description=f"{text}"
-                                f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})"
-                )
-                embedVoting.set_footer(text="Please vote anonymously below | You can't undo your vote!")
-
-                viewVoting = discord.ui.View()
-
-                for option in options:
-
-                    customEmoji = searchCustomEmoji(option)
-                    if customEmoji is not None:
-                        option = option.replace(f"{customEmoji}", "")
-
-                    viewVoting.add_item(
-                        ButtonHandler(
-                            style=discord.ButtonStyle.gray,
-                            disabled=False,
-                            label=option,
-                            emoji=customEmoji
-                        )
-                    )
-
-                try:
-                    await ctx.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
-                except Exception as _error:
-                    embedError = discord.Embed(
-                        color=hex.red_error,
-                        title="Error while sending message/s",
-                        description="An unexpected error occurred! Please make sure I can send messages into the "
-                                    "provided channels."
-                                    f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`"
-                    )
-                    embedError.set_footer(text="Canceled | Use '+vote create' to start again")
-                    embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-                    await msgConfirm.edit(embed=embedError)
-
-                embedSuccess = discord.Embed(
-                    color=hex.green_confirm,
-                    title="Confirm",
-                    description="Successfully sent messages to following channel/s:"
-                                f"{strChannels}"
-                )
-                await msgConfirm.edit(embed=embedSuccess)
-
-            elif str(reactionResponse.emoji) == "❌":
-                await msgConfirm.clear_reactions()
-
-                embedCancel = discord.Embed(
-                    color=hex.red_cancel,
-                    title="Confirm",
-                    description="Confirmation canceled."
-                )
-                embedCancel.set_author(
+                embedTimeout.set_author(
                     name=f"{ctx.author}", icon_url=ctx.author.avatar.url
                 )
-                embedCancel.set_footer(text="Use '+vote create' to start again")
-                await msgConfirm.edit(embed=embedCancel)
+                embedTimeout.set_footer(text="Use '+vote create' to start again")
+                await msgConfirm.edit(embed=embedTimeout)
+                await msgConfirm.clear_reactions()
+
+            else:
+                if str(reactionResponse.emoji) == "✅":
+                    await msgConfirm.clear_reactions()
+
+                    embedSending = discord.Embed(
+                        color=hex.yellow,
+                        title="Confirm",
+                        description="Sending message/s..."
+                    )
+                    await msgConfirm.edit(embed=embedSending)
+
+                    print("sending")        # TODO: !!
+
+                    expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
+                    expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
+
+                    embedVoting = discord.Embed(
+                        color=hex.ss_blurple,
+                        title="Voting",
+                        description=f"{text}"
+                                    f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})"
+                    )
+                    embedVoting.set_footer(text="Please vote anonymously below | You can't undo your vote!")
+
+                    viewVoting = discord.ui.View()
+
+                    for option in options:
+
+                        customEmoji = searchCustomEmoji(option)
+                        if customEmoji is not None:
+                            option = option.replace(f"{customEmoji}", "")
+
+                        viewVoting.add_item(
+                            ButtonHandler(
+                                style=discord.ButtonStyle.gray,
+                                disabled=False,
+                                label=option,
+                                emoji=customEmoji
+                            )
+                        )
+
+                    try:
+                        await ctx.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
+                    except Exception as _error:
+                        embedError = discord.Embed(
+                            color=hex.red_error,
+                            title="Error while sending message/s",
+                            description="An unexpected error occurred! Please make sure I can send messages into the "
+                                        "provided channels."
+                                        f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`"
+                        )
+                        embedError.set_footer(text="Canceled | Use '+vote create' to start again")
+                        embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        await msgConfirm.edit(embed=embedError)
+
+                    embedSuccess = discord.Embed(
+                        color=hex.green_confirm,
+                        title="Confirm",
+                        description="Successfully sent messages to following channel/s:"
+                                    f"\n{strChannels}"
+                    )
+                    await msgConfirm.edit(embed=embedSuccess)
+
+                elif str(reactionResponse.emoji) == "❌":
+                    await msgConfirm.clear_reactions()
+
+                    embedCancel = discord.Embed(
+                        color=hex.red_cancel,
+                        title="Confirm",
+                        description="Confirmation canceled."
+                    )
+                    embedCancel.set_author(
+                        name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                    )
+                    embedCancel.set_footer(text="Use '+vote create' to start again")
+                    await msgConfirm.edit(embed=embedCancel)
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))
