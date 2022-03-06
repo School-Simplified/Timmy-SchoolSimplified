@@ -156,18 +156,15 @@ class VotingBot(commands.Cog):
         )
         msgSetup = await ctx.send(embed=embedServer, view=viewAcceptedCHs)
 
-        def msgInputCheck(messageCheck: discord.Message):
-            return (
-                    messageCheck.channel == ctx.channel
-                    and messageCheck.author == ctx.author
-            )
+        def msgInputCheck(message: discord.Message):
+            return message.channel == ctx.channel and message.author == ctx.author
 
         channels = []
         text = ...  # type: str
         options = []
         datetimeExpiration = ...  # type: datetime.datetime
 
-        msgError = ...  # type: discord.Message       # TODO: delete msgNotFound when timeout or canceled
+        msgError = ...  # type: discord.Message
         viewReset = discord.ui.View()
 
         index = 0
@@ -462,15 +459,44 @@ class VotingBot(commands.Cog):
         except:
             pass
 
+        strChannels = ""
+        for channel in channels:
+            strChannels += f"\n- {channel.name} (`{channel.id}`) from {channel.guild.name} (`{channel.guild.id}`)"
+
         embedConfirm = discord.Embed(
             color=hex.yellow,
             title="Confirm",
-            description=f"Please confirm that you overviewed the voting message and that this message will ping @everyone "
-                        "in the following channel of the **: "
+            description=f"Please confirm that you overviewed the voting message and that this message will be sent and ping @everyone "
+                        f"in the following channel/s:"
+                        f"{strChannels}"
         )
+        embedConfirm.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+        embedConfirm.set_footer(text="Abusing this feature has severe consequences! | Timeout after 60s")
+        msgConfirm = await ctx.send(embed=embedConfirm)
+        await msgConfirm.add_reaction("✅")
+        await msgConfirm.add_reaction("❌")
 
-        # def confirmCheck(reactionCheck, userCheck):
-        #     return userCheck.id == ctx.author.id and reactionCheck.message.id ==
+        def confirmCheck(reaction, user):
+            return user.id == ctx.author.id and reaction.message.id == msgConfirm.id and \
+                    str(reaction.emoji) in ["✅", "❌"]
+
+        try:
+            reactionResponse: discord.Reaction = self.bot.wait_for('reaction', check=confirmCheck, timeout=60)
+        except asyncio.TimeoutError:
+            embedTimeout = discord.Embed(
+                color=hex.red_error,
+                title="Confirm",
+                description="Canceled due timeout"
+            )
+            embedTimeout.set_author(
+                name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+            )
+            embedTimeout.set_footer(text="Use 'vote create' to start again")
+            await msgConfirm.edit(embed=embedTimeout)
+            await msgConfirm.clear_reactions()
+
+        else:
+            
 
 
 def setup(bot):
