@@ -481,7 +481,7 @@ class VotingBot(commands.Cog):
                     str(reaction.emoji) in ["✅", "❌"]
 
         try:
-            reactionResponse: discord.Reaction = self.bot.wait_for('reaction', check=confirmCheck, timeout=60)
+            reactionResponse: discord.Reaction = await self.bot.wait_for('reaction', check=confirmCheck, timeout=60)
         except asyncio.TimeoutError:
             embedTimeout = discord.Embed(
                 color=hex.red_error,
