@@ -501,7 +501,7 @@ class VotingBot(commands.Cog):
 
         else:
             if str(reactionResponse.emoji) == "✅":
-                msgConfirm.clear_reactions()
+                await msgConfirm.clear_reactions()
 
                 embedSending = discord.Embed(
                     color=hex.yellow,
@@ -521,7 +521,7 @@ class VotingBot(commands.Cog):
                 await msgConfirm.edit(embed=embedSuccess)
 
             elif str(reactionResponse.emoji) == "❌":
-                msgConfirm.clear_reactions()
+                await msgConfirm.clear_reactions()
 
                 embedCancel = discord.Embed(
                     color=hex.red_cancel,
