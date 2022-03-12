@@ -1,3 +1,4 @@
+import collections
 import faulthandler
 import json
 import logging
@@ -540,7 +541,7 @@ async def short_detector(
 
 
 @bot.tree.context_menu(name="Play TicTacToe with them!")
-async def _tictactoe_cm(interaction: discord.Interaction, member: discord.Member):
+async def cm_tictactoe(interaction: discord.Interaction, member: discord.Member):
     if member is None:
         return await interaction.response.send_message(
             "lonely :(, sorry but you need a person to play against!"
@@ -569,15 +570,16 @@ for ext in get_extensions():
 
 
 @bot.check
-async def mainModeCheck(ctx: commands.Context):
+async def main_mode_check(ctx: commands.Context):
     """MT = discord.utils.get(ctx.guild.roles, name="Moderator")
     VP = discord.utils.get(ctx.guild.roles, name="VP")
     CO = discord.utils.get(ctx.guild.roles, name="CO")
     SS = discord.utils.get(ctx.guild.roles, name="Secret Service")"""
 
-    blacklistedUsers = []
-    for p in database.Blacklist:
-        blacklistedUsers.append(p.discordID)
+    blacklisted_users = []
+    db_blacklist: collections.Iterable = database.Blacklist
+    for p in db_blacklist:
+        blacklisted_users.append(p.discordID)
 
     adminIDs = []
     query = database.Administrators.select().where(
@@ -605,7 +607,7 @@ async def mainModeCheck(ctx: commands.Context):
         return False
 
     # Blacklist Check
-    elif ctx.author.id in blacklistedUsers:
+    elif ctx.author.id in blacklisted_users:
         return False
 
     # DM Check
