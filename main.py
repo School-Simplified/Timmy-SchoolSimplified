@@ -13,7 +13,8 @@ from pathlib import Path
 import discord
 import requests
 import sentry_sdk
-from discord.commands import Option
+from discord.app_commands import describe
+
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
@@ -58,6 +59,7 @@ class Timmy(commands.Bot):
     """
 
     def __init__(self):
+
         intents = discord.Intents.all()
         super().__init__(
             command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
@@ -104,8 +106,8 @@ class Timmy(commands.Bot):
         now = datetime.now()
         query: database.CheckInformation = (
             database.CheckInformation.select()
-            .where(database.CheckInformation.id == 1)
-            .get()
+                .where(database.CheckInformation.id == 1)
+                .get()
         )
 
         if not query.PersistantChange:
@@ -166,110 +168,6 @@ class Timmy(commands.Bot):
         """
         )
 
-    async def on_application_command_error(
-        self, interaction: discord.Interaction, error: Exception
-    ):
-        tb = error.__traceback__
-        etype = type(error)
-        exception = traceback.format_exception(etype, error, tb, chain=True)
-        exception_msg = ""
-        for line in exception:
-            exception_msg += line
-
-        error = getattr(error, "original", error)
-
-        ctx: discord.ApplicationContext = await bot.get_application_context(interaction)
-        if ctx.response.is_done():
-            await ctx.send_followup(
-                f"Sorry an Error Occurred: {error}. This error has been sent "
-                f"to the bot development team"
-            )
-        else:
-            try:
-                await ctx.respond(
-                    f"Sorry an Error Occurred: {error}. This error has been sent "
-                    f"to the bot development team"
-                )
-            except:
-                await ctx.send(
-                    f"Sorry an Error Occurred: {error}. This error has been sent "
-                    f"to the bot development team"
-                )
-            
-        error_file = Path("error.txt")
-        error_file.touch()
-        with error_file.open("w") as f:
-            f.write(exception_msg)
-        with error_file.open("r") as f:
-            # config, _ = core.common.load_config()
-            data = "\n".join([l.strip() for l in f])
-
-            GITHUB_API = "https://api.github.com"
-            API_TOKEN = os.getenv("GIST")
-            url = GITHUB_API + "/gists"
-            print(f"Request URL: {url}")
-            headers = {"Authorization": "token %s" % API_TOKEN}
-            params = {"scope": "gist"}
-            payload = {
-                "description": "Timmy encountered a Traceback!",
-                "public": True,
-                "files": {"error": {"content": f"{data}"}},
-            }
-            res = requests.post(
-                url, headers=headers, params=params, data=json.dumps(payload)
-            )
-            j = json.loads(res.text)
-            ID = j["id"]
-            gis_turl = f"https://gist.github.com/{ID}"
-            print(gis_turl)
-
-            permitlist = []
-            query = database.Administrators.select().where(
-                database.Administrators.TierLevel >= 3
-            )
-            for user in query:
-                permitlist.append(user.discordID)
-
-            if ctx.interaction.user.id not in permitlist:
-                embed = discord.Embed(
-                    title="Traceback Detected!",
-                    description="Timmy here has ran into an error!\nPlease check what you sent and/or check out the "
-                    "help command!",
-                    color=hexColors.orange_error,
-                )
-                embed.set_thumbnail(url=Others.timmyDog_png)
-                embed.set_footer(text=f"Error: {str(error)}")
-                await ctx.send(embed=embed)
-            else:
-                embed = discord.Embed(
-                    title="Traceback Detected!",
-                    description="Timmy here has ran into an error!\nTraceback has been attached below.",
-                    color=hexColors.orange_error,
-                )
-                embed.add_field(name="GIST URL", value=gis_turl)
-                embed.set_thumbnail(url=Others.timmyDog_png)
-                embed.set_footer(text=f"Error: {str(error)}")
-                await ctx.send(embed=embed)
-
-            guild = bot.get_guild(Me.TechGuild)
-            channel = guild.get_channel(Me.TracebackChannel)
-
-            embed2 = discord.Embed(
-                title="Traceback Detected!",
-                description=f"**Information**\n"
-                f"**Server:** {ctx.guild.name}\n"
-                f"**User:** {ctx.author.mention}\n"
-                f"**Command:** {ctx.command.qualified_name}",
-                color=hexColors.orange_error,
-            )
-            embed2.add_field(
-                name="Gist URL",
-                value=f"[Uploaded Traceback to GIST](https://gist.github.com/{ID})",
-            )
-            await channel.send(embed=embed2)
-
-            error_file.unlink()
-
     async def on_command_error(self, ctx: commands.Context, error: Exception):
         tb = error.__traceback__
         etype = type(error)
@@ -293,18 +191,18 @@ class Timmy(commands.Bot):
             cmd = ctx.invoked_with
             cmds = [cmd.name for cmd in bot.commands]
             matches = get_close_matches(cmd, cmds)
-            slash_cmds = [cmd.qualified_name for cmd in bot.application_commands]
-            slash_matches = get_close_matches(slash_cmds, cmd)
+            # slash_cmds = [cmd.qualified_name for cmd in bot.application_commands]
+            # slash_matches = get_close_matches(slash_cmds, cmd)
 
             if len(matches) > 0:
                 return await ctx.send(
                     f'Command "{cmd}" not found, maybe you meant "{matches[0]}"?'
                 )
-            elif len(slash_matches) > 0:
-                return await ctx.send(
-                    f'Command "{cmd}" not found, command: {slash_matches[0]} is now a slash command! '
-                    f"Please check https://timmy.schoolsimplified.org/#slash-command-port for more updates!"
-                )
+            # elif len(slash_matches) > 0:
+            #     return await ctx.send(
+            #         f'Command "{cmd}" not found, command: {slash_matches[0]} is now a slash command! '
+            #         f"Please check https://timmy.schoolsimplified.org/#slash-command-port for more updates!"
+            #     )
             else:
                 return await ctx.send(
                     f'Command "{cmd}" not found, use the help command to know what commands are available. '
@@ -314,7 +212,7 @@ class Timmy(commands.Bot):
                 )
 
         elif isinstance(
-            error, (commands.MissingRequiredArgument, commands.TooManyArguments)
+                error, (commands.MissingRequiredArgument, commands.TooManyArguments)
         ):
             signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
 
@@ -322,10 +220,12 @@ class Timmy(commands.Bot):
                 em = discord.Embed(
                     title="Missing/Extra Required Arguments Passed In!",
                     description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
-                    f"following:**\nUsage:\n`{signature}`\n\n-> If you seperated the time and the AM/PM. (Eg; "
-                    f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
-                    f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
-                    f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
+                                f"following:**\nUsage:\n`{signature}`\n\n-> If you seperated the time and the AM/PM. "
+                                f"(Eg; "
+                                f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
+                                f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the ["
+                                f"documentation "
+                                f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
                     color=hexColors.red_error,
                 )
                 em.set_thumbnail(url=Others.error_png)
@@ -337,8 +237,8 @@ class Timmy(commands.Bot):
                 em = discord.Embed(
                     title="Missing/Extra Required Arguments Passed In!",
                     description="You have missed one or several arguments in this command"
-                    "\n\nUsage:"
-                    f"\n`{signature}`",
+                                "\n\nUsage:"
+                                f"\n`{signature}`",
                     color=hexColors.red_error,
                 )
                 em.set_thumbnail(url=Others.error_png)
@@ -348,20 +248,20 @@ class Timmy(commands.Bot):
                 return await ctx.send(embed=em)
 
         elif isinstance(
-            error,
-            (
-                commands.MissingAnyRole,
-                commands.MissingRole,
-                commands.MissingPermissions,
-                commands.errors.MissingAnyRole,
-                commands.errors.MissingRole,
-                commands.errors.MissingPermissions,
-            ),
+                error,
+                (
+                        commands.MissingAnyRole,
+                        commands.MissingRole,
+                        commands.MissingPermissions,
+                        commands.errors.MissingAnyRole,
+                        commands.errors.MissingRole,
+                        commands.errors.MissingPermissions,
+                ),
         ):
             em = discord.Embed(
                 title="Invalid Permissions!",
                 description="You do not have the associated role in order to successfully invoke this command! Contact an "
-                "administrator/developer if you believe this is invalid.",
+                            "administrator/developer if you believe this is invalid.",
                 color=hexColors.red_error,
             )
             em.set_thumbnail(url=Others.error_png)
@@ -377,10 +277,10 @@ class Timmy(commands.Bot):
                 em = discord.Embed(
                     title="Bad Argument!",
                     description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
-                    f"following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; "
-                    f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
-                    f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
-                    f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
+                                f"following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; "
+                                f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
+                                f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
+                                f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
                     color=hexColors.red_error,
                 )
                 em.set_thumbnail(url=Others.error_png)
@@ -401,7 +301,7 @@ class Timmy(commands.Bot):
                 return await ctx.send(embed=em)
 
         elif isinstance(
-            error, (commands.CommandOnCooldown, commands.errors.CommandOnCooldown)
+                error, (commands.CommandOnCooldown, commands.errors.CommandOnCooldown)
         ):
             m, s = divmod(error.retry_after, 60)
             h, m = divmod(m, 60)
@@ -453,7 +353,7 @@ class Timmy(commands.Bot):
                     embed = discord.Embed(
                         title="Traceback Detected!",
                         description="Timmy here has ran into an error!\nPlease check what you sent and/or check out the "
-                        "help command!",
+                                    "help command!",
                         color=hexColors.orange_error,
                     )
                     embed.set_thumbnail(url=Others.timmyDog_png)
@@ -476,9 +376,9 @@ class Timmy(commands.Bot):
                 embed2 = discord.Embed(
                     title="Traceback Detected!",
                     description=f"**Information**\n"
-                    f"**Server:** {ctx.message.guild.name}\n"
-                    f"**User:** {ctx.message.author.mention}\n"
-                    f"**Command:** {ctx.command.name}",
+                                f"**Server:** {ctx.message.guild.name}\n"
+                                f"**User:** {ctx.message.author.mention}\n"
+                                f"**Command:** {ctx.command.name}",
                     color=hexColors.orange_error,
                 )
                 embed2.add_field(
@@ -594,75 +494,78 @@ query.save()
 database.db.close()
 
 
-@bot.slash_command(description="Play a game of TicTacToe with someone!")
-async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you want")):
-    if ctx.channel.id != MAIN_ID.ch_commands:
-        return await ctx.respond(
-            f"{ctx.author.mention}\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!",
+@bot.tree.command(description="Play a game of TicTacToe with someone!")
+async def tictactoe(interaction: discord.Interaction, user: discord.Member):
+    if interaction.channel.id != MAIN_ID.ch_commands:
+        return await interaction.response.send_message(
+            f"{interaction.user.mention}\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!",
             ephemeral=True,
         )
     if user is None:
-        return await ctx.respond(
-            "lonely :(, sorry but you need a person to play against!"
+        return await interaction.response.send_message(
+            "lonely :(, sorry but you need a person to play against!",
+            ephemeral=True
         )
     elif user == bot.user:
-        return await ctx.respond("i'm good.")
-    elif user == ctx.author:
-        return await ctx.respond(
-            "lonely :(, sorry but you need an actual person to play against, not yourself!"
+        return await interaction.response.send_message("i'm good.", ephemeral=True)
+    elif user == interaction.user:
+        return await interaction.response.send_message(
+            "lonely :( sorry but you need an actual person to play against, not yourself!",
+            ephemeral=True
         )
 
-    await ctx.respond(
-        f"Tic Tac Toe: {ctx.author.mention} goes first",
-        view=TicTacToe(ctx.author, user),
+    await interaction.response.send_message(
+        f"Tic Tac Toe: {interaction.user.mention} goes first",
+        view=TicTacToe(interaction.user, user),
     )
 
 
-@bot.user_command(name="Are they short?")
-async def short(ctx, member: discord.Member):
+@bot.tree.command(name="Are they short?")
+async def short(interaction: discord.Interaction, member: discord.Member):
     if random.randint(0, 1) == 1:
-        await ctx.respond(f"{member.mention} is short!")
+        await interaction.response.send_message(f"{member.mention} is short!")
     else:
-        await ctx.respond(f"{member.mention} is tall!")
+        await interaction.response.send_message(f"{member.mention} is tall!")
 
 
-@bot.slash_command(description="Check's if a user is short!")
+@bot.tree.command(description="Check's if a user is short!")
+@describe(member="Enter a user you want to check!")
 async def short_detector(
-    ctx, member: Option(discord.Member, "Enter a user you want to check!")
+        interaction: discord.Interaction, member: discord.Member,
 ):
     if member.id in [736765405728735232, 518581570152693771, 544724467709116457]:
-        await ctx.respond(f"{member.mention} is short!")
+        await interaction.response.send_message(f"{member.mention} is short!")
     else:
-        await ctx.respond(f"{member.mention} is tall!")
+        await interaction.response.send_message(f"{member.mention} is tall!")
 
 
-@bot.user_command(name="Play TicTacToe with them!")
-async def tictactoeCTX(ctx, member: discord.Member):
+@bot.tree.context_menu(name="Play TicTacToe with them!")
+async def _tictactoe_cm(interaction: discord.Interaction, member: discord.Member):
     if member is None:
-        return await ctx.respond(
+        return await interaction.response.send_message(
             "lonely :(, sorry but you need a person to play against!"
         )
     elif member == bot.user:
-        return await ctx.respond("i'm good.")
-    elif member == ctx.author:
-        return await ctx.respond(
+        return await interaction.response.send_message("i'm good.")
+    elif member == interaction.user:
+        return await interaction.response.send_message(
             "lonely :(, sorry but you need an actual person to play against, not yourself!"
         )
 
-    await ctx.respond(
-        f"Tic Tac Toe: {ctx.author.mention} goes first",
-        view=TicTacToe(ctx.author, member),
+    await interaction.response.send_message(
+        f"Tic Tac Toe: {interaction.user.mention} goes first",
+        view=TicTacToe(interaction.user, member),
     )
 
 
 for ext in get_extensions():
     try:
         bot.load_extension(ext)
-    except discord.ExtensionAlreadyLoaded:
+    except commands.ExtensionAlreadyLoaded:
         bot.unload_extension(ext)
         bot.load_extension(ext)
-    except discord.ExtensionNotFound:
-        raise discord.ExtensionNotFound(ext)
+    except commands.ExtensionNotFound:
+        raise commands.ExtensionNotFound(ext)
 
 
 @bot.check
@@ -707,7 +610,6 @@ async def mainModeCheck(ctx: commands.Context):
 
     # DM Check
     elif ctx.guild is None:
-        return True
         return CheckDB_CC.guildNone
 
     # External Server Check
