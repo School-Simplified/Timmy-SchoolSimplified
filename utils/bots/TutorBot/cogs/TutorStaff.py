@@ -250,11 +250,11 @@ class TutorBotStaffCMD(commands.Cog):
                 await ctx.respond(f"Re-scheduled Session to `{nw}`")
             else:
                 embed = discord.Embed(
-                title="Invalid Permissions",
-                description="This session does exist, but you are not the owner of it!",
-                color=discord.Color.red(),
-            )
-            await ctx.respond(embed=embed)
+                    title="Invalid Permissions",
+                    description="This session does exist, but you are not the owner of it!",
+                    color=discord.Color.red(),
+                )
+                await ctx.respond(embed=embed)
 
         else:
             embed = discord.Embed(
