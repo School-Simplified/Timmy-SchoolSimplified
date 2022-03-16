@@ -73,7 +73,6 @@ This file represents every database table and the model they follow. When fetchi
 
 """
 
-
 class BaseModel(Model):
     """Base Model class used for creating new tables."""
 

@@ -582,7 +582,7 @@ class TutorVCCMD(commands.Cog):
 
                     student = await self.bot.fetch_user(tutorSession.StudentID)
                     tutor = await self.bot.fetch_user(tutorSession.TutorID)
-
+                    
                     HOURCH = await self.bot.fetch_channel(self.TutorLogID)
 
                     hourlog = discord.Embed(
@@ -764,7 +764,7 @@ class TutorVCCMD(commands.Cog):
 
     @commands.command()
     @commands.has_any_role(
-        "Moderator", "Secret Service", "Head Moderator", "Mod Trainee", "!"
+        "Moderator", "Secret Service", "Head Moderator", "Mod Trainee", 844013914609680384
     )
     async def forceend(self, ctx, channel):
         database.db.connect(reuse_if_open=True)
