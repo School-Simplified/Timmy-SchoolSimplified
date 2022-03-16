@@ -1582,7 +1582,7 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
             return ID
 
 
-async def force_restart(ctx):
+async def force_restart(ctx, main_or_beta):
     p = subprocess.run(
         "git status -uno", shell=True, text=True, capture_output=True, check=True
     )
@@ -1600,7 +1600,7 @@ async def force_restart(ctx):
     try:
 
         result = subprocess.run(
-            "cd && cd Timmy-SchoolSimplified",
+            f"cd && cd {main_or_beta}",
             shell=True,
             text=True,
             capture_output=True,

@@ -380,10 +380,13 @@ class MiscCMD(commands.Cog):
         hostDir = getHostDir()
         if hostDir == "/home/timmya/TimmyMain-SS":
             branch = "origin/main"
+            directory = "TimmyMain-SS"
         elif hostDir == "/home/timmya/TimmyBeta-SS":
             branch = "origin/beta"
+            directory = "TimmyBeta-SS"
+
         else:
-            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
+            raise ValueError("Host directory is neither 'TimmyMain-SS' nor 'TimmyBeta-SS'.")
 
         try:
             p = subprocess.run(
@@ -424,7 +427,7 @@ class MiscCMD(commands.Cog):
         await ctx.send(embed=embed)
 
         if mode == "-a":
-            await force_restart(ctx)
+            await force_restart(ctx, directory)
         elif mode == "-c":
             await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
 
