@@ -2,11 +2,14 @@ import asyncio
 import datetime
 import re
 from typing import List
-import random, string
+import random
+import string
 import os
+import json
 
 import discord
 from discord.ext import commands
+from core import database
 from core.checks import isnot_hostTimmyA
 from core.common import hexColors as hex
 from core.common import Emoji
@@ -113,7 +116,7 @@ class VotingBot(commands.Cog):
         pass
 
     @vote.command()
-    #@isnot_hostTimmyA          TODO !!
+    @isnot_hostTimmyA
     async def create(self, ctx: commands.Context):
 
         acceptedChannelsStr = ""
@@ -523,7 +526,7 @@ class VotingBot(commands.Cog):
                     )
                     await msgConfirm.edit(embed=embedSending)
 
-                    print("sending")        # TODO: !!
+                    print("sending")        # TODO: Sending to original channel
 
                     expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
                     expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
@@ -537,7 +540,6 @@ class VotingBot(commands.Cog):
                     embedVoting.set_footer(text="Please vote anonymously below | You can't undo your vote!")
 
                     viewVoting = discord.ui.View()
-
                     for option in options:
 
                         customEmoji = searchCustomEmoji(option)
@@ -555,7 +557,7 @@ class VotingBot(commands.Cog):
 
                     channelTest = self.bot.get_channel(932066545738350640)
                     try:
-                        await channelTest.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
+                        msgVote = await channelTest.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
                     except Exception as _error:
                         embedError = discord.Embed(
                             color=hex.red_error,
@@ -568,6 +570,14 @@ class VotingBot(commands.Cog):
                         embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                         await msgConfirm.edit(embed=embedError)
                     else:
+
+                        compDict = {}
+                        for option in options:
+                            compDict[option] = 0
+
+                        compDict = json.dumps(compDict)
+                        query = database.Voting.create(msgID=msgVote, components=compDict)
+                        query.save()
 
                         embedSuccess = discord.Embed(
                             color=hex.green_confirm,
