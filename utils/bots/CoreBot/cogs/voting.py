@@ -131,6 +131,27 @@ class VotingBot(commands.Cog):
 
         print(f"noneChannels: {noneChannels}")
 
+        rolesID = [LEADER_ID.r_corporateOfficer,
+        LEADER_ID.r_director,
+        LEADER_ID.r_president,
+        LEADER_ID.r_vicePresident,
+        LEADER_ID.r_boardMember,
+        LEADER_ID.r_informationTechnologyManager,
+        LEADER_ID.r_ssDigitalCommittee]
+        guild = self.bot.get_guild(888929996033368154)
+
+        roles = []
+        for roleID in rolesID:
+            role = guild.get_role(roleID)
+
+            if role is None:
+                rolename = None
+
+            else:
+                rolename = role.name
+            roles.append(f"{roleID}: {rolename}")
+
+
         randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
         tempVoteCHsFilename = "TEMP_voteCHS_{randomID}.txt"
