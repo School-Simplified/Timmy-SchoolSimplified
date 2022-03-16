@@ -120,10 +120,16 @@ class VotingBot(commands.Cog):
     async def create(self, ctx: commands.Context):
 
         acceptedChannelsStr = ""
+        noneChannels = []
         for channelID in self.acceptedAnnouncementCHs:
             acceptedChannel = self.bot.get_channel(channelID)
 
-            acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name} ({acceptedChannel.id})\n"
+            if acceptedChannel is not None:
+                acceptedChannelsStr += f"- {acceptedChannel.name} from {acceptedChannel.guild.name} ({acceptedChannel.id})\n"
+            else:
+                noneChannels.append(channelID)
+
+        print(f"noneChannels: {noneChannels}")
 
         randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
