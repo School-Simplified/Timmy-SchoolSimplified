@@ -65,14 +65,14 @@ class VotingBot(commands.Cog):
     """
     vote create: creates a voting
         1. Announcement channel
-        2. Text                                                                             # TODO: not longer than X symbols
+        2. Text                                                                             # TODO: not longer than X chars
         3. Options (would be buttons)
         4. Durations
 
         # TODO: Add message and components to db
+        # TODO: Catch interaction with decorator '@commands.Cog.listener("on_interaction")
         # TODO: Add count to components in db (NOT MEMBER DUE OF PRIVACY)
-        # TODO: Catch interaction
-        - Embed displays a timestamp and notes that the vote can't get undo                 # DONE
+        - Embed displays a timestamp and notes that the vote can't get undo                         # DONE
         - When someone voted, he gets a ephemeral message, that the person has voted on X  
         - If the person votes again, he gets an ephemeral message, that he already voted
 
@@ -113,7 +113,7 @@ class VotingBot(commands.Cog):
         pass
 
     @vote.command()
-    @isnot_hostTimmyA
+    #@isnot_hostTimmyA          TODO !!
     async def create(self, ctx: commands.Context):
 
         acceptedChannelsStr = ""
@@ -305,6 +305,22 @@ class VotingBot(commands.Cog):
                         await msgError.delete()
                     except:
                         pass
+
+                    if len(msgContent) > 2000:
+                        embedTooLong = discord.Embed(
+                            color=hex.red_error,
+                            title="Create Voting",
+                            description="This text is too long! Make sure the text is less than 2000 characters."
+                        )
+                        embedTooLong.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedTooLong.set_footer(text="Use 'cancel' to cancel")
+                        msgTooLong = await ctx.send(embed=embedTooLong)
+                        try:
+                            await msgTooLong.delete(delay=7)
+                        except:
+                            pass
+
+                        continue
 
                     text = msgContent
 
