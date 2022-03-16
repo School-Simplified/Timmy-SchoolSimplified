@@ -10,7 +10,7 @@ import json
 import discord
 from discord.ext import commands
 from core import database
-from core.checks import isnot_hostTimmyA
+from core.checks import is_hostTimmyBeta
 from core.common import hexColors as hex
 from core.common import Emoji
 from core.common import MAIN_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID, LEADER_ID, STAFF_ID
@@ -116,7 +116,7 @@ class VotingBot(commands.Cog):
         pass
 
     @vote.command()
-    @isnot_hostTimmyA
+    @is_hostTimmyBeta
     async def create(self, ctx: commands.Context):
 
         acceptedChannelsStr = ""

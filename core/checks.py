@@ -91,16 +91,16 @@ def mktCommissionAdd(ctx):
 is_mktCommissionAuthorized = commands.check(mktCommissionAdd)
 
 
-def notHostTimmyA(ctx):
+def TimmyBetaHost(ctx):
     runPath = os.path.realpath(__file__)
-    runDir = re.search("/home/[^/]*", runPath)
+    runDir = re.search("/home/timmya/[^/]*", runPath)
 
     if runDir is not None:
         runDir = runDir.group(0)
     else:
         runDir = None
 
-    return not runDir == "/home/timmya"
+    return runDir == "/home/timmya/TimmyBeta-SS"
 
 
-isnot_hostTimmyA = commands.check(notHostTimmyA)
+is_hostTimmyBeta = commands.check(TimmyBetaHost)

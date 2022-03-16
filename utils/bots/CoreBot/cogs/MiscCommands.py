@@ -378,9 +378,9 @@ class MiscCMD(commands.Cog):
         output = ""
 
         hostDir = getHostDir()
-        if hostDir == "/home/timmya":
+        if hostDir == "/home/timmya/TimmyMain-SS":
             branch = "origin/main"
-        elif hostDir == "/home/timmy-beta":
+        elif hostDir == "/home/timmya/TimmyBeta-SS":
             branch = "origin/beta"
         else:
             raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
