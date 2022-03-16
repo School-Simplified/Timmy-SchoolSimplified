@@ -77,7 +77,7 @@ class VotingBot(commands.Cog):
                                         SSD Notes Creation, SSD Chat Helping, Programming Simplified,
                                         Programming Simplified Staff, (The Editorial Division), (The Division of Projects),
                                         (Marketing Brand Strategy Division)
-            - !! Update announcements channels due of hack which deleted channels in configcat (not common.py)
+            - !! Update announcements channels in configcat (not common.py) due of hack which deleted channels
             - Add message and components to db
             - Catch interaction with decorator '@commands.Cog.listener("on_interaction")
             - Add count to components in db (NOT MEMBER DUE OF PRIVACY)
