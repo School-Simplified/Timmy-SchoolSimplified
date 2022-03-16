@@ -73,13 +73,16 @@ class VotingBot(commands.Cog):
         4. Durations
         
         # TODO
-            - !! INCLUDE THESE SERVERS: Marketing Brand Strategy Division, Marketing Social Media Division, 
-                                        The Editorial Division, The Division of Projects
-            - !! Update announcements channels due of hack which deleted channels
+            - !! INCLUDE THESE SERVERS: Marketing Social Media Division, SSD Essay Revision, SSD Community Engagement, 
+                                        SSD Notes Creation, SSD Chat Helping, Programming Simplified,
+                                        Programming Simplified Staff, (The Editorial Division), (The Division of Projects),
+                                        (Marketing Brand Strategy Division)
+            - !! Update announcements channels due of hack which deleted channels in configcat (not common.py)
             - Add message and components to db
             - Catch interaction with decorator '@commands.Cog.listener("on_interaction")
             - Add count to components in db (NOT MEMBER DUE OF PRIVACY)
-            
+            - check if new servers and/or channels get created (restore of hack)
+             
         - Embed displays a timestamp and notes that the vote can't get undo                         # DONE
         - When someone voted, he gets a ephemeral message, that the person has voted on X  
         - If the person votes again, he gets an ephemeral message, that he already voted
