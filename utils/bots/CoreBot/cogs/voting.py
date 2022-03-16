@@ -151,7 +151,8 @@ class VotingBot(commands.Cog):
                 rolename = role.name
             roles.append(f"{roleID}: {rolename}")
 
-
+        print(roles)
+        
         randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
         tempVoteCHsFilename = "TEMP_voteCHS_{randomID}.txt"
