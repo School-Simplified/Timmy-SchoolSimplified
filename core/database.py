@@ -579,6 +579,21 @@ class SandboxConfig(BaseModel):
     ch_tv_startvc = BigIntegerField()
 
 
+class Voting(BaseModel):
+    """
+    #Voting
+
+    `id`: AutoField()
+    Database Entry
+
+    `ThreadID`: BigIntegerField()
+    ID of the thread.
+    """
+
+    msgID = BigIntegerField()
+    components = CharField()
+
+
 app = Flask(__name__)
 
 
@@ -620,7 +635,8 @@ tables = {
     "VCDeletionQueue": VCDeletionQueue,
     "TutorSession_GracePeriod": TutorSession_GracePeriod,
     "TechCommissionArchiveLog": TechCommissionArchiveLog,
-    "SandboxConfig": SandboxConfig
+    "SandboxConfig": SandboxConfig,
+    "Voting": Voting
 }
 
 iter_table(tables)
