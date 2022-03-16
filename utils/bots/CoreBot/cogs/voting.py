@@ -71,10 +71,15 @@ class VotingBot(commands.Cog):
         2. Text                                                                             # TODO: not longer than X chars
         3. Options (would be buttons)
         4. Durations
-
-        # TODO: Add message and components to db
-        # TODO: Catch interaction with decorator '@commands.Cog.listener("on_interaction")
-        # TODO: Add count to components in db (NOT MEMBER DUE OF PRIVACY)
+        
+        # TODO
+            - !! INCLUDE THESE SERVERS: Marketing Brand Strategy Division, Marketing Social Media Division, 
+                                        The Editorial Division, The Division of Projects
+            - !! Update announcements channels due of hack which deleted channels
+            - Add message and components to db
+            - Catch interaction with decorator '@commands.Cog.listener("on_interaction")
+            - Add count to components in db (NOT MEMBER DUE OF PRIVACY)
+            
         - Embed displays a timestamp and notes that the vote can't get undo                         # DONE
         - When someone voted, he gets a ephemeral message, that the person has voted on X  
         - If the person votes again, he gets an ephemeral message, that he already voted
@@ -131,28 +136,6 @@ class VotingBot(commands.Cog):
 
         print(f"noneChannels: {noneChannels}")
 
-        rolesID = [LEADER_ID.r_corporateOfficer,
-        LEADER_ID.r_director,
-        LEADER_ID.r_president,
-        LEADER_ID.r_vicePresident,
-        LEADER_ID.r_boardMember,
-        LEADER_ID.r_informationTechnologyManager,
-        LEADER_ID.r_ssDigitalCommittee]
-        guild = self.bot.get_guild(888929996033368154)
-
-        roles = []
-        for roleID in rolesID:
-            role = guild.get_role(roleID)
-
-            if role is None:
-                rolename = None
-
-            else:
-                rolename = role.name
-            roles.append(f"{roleID}: {rolename}")
-
-        print(roles)
-        
         randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
         tempVoteCHsFilename = "TEMP_voteCHS_{randomID}.txt"
