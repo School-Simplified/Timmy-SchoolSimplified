@@ -79,6 +79,7 @@ class VotingBot(commands.Cog):
                                         (Marketing Brand Strategy Division)
             - !! Update announcements channels in configcat (not common.py) due of hack which deleted channels
             - Catch interaction with decorator '@commands.Cog.listener("on_interaction")
+            - Dict to string and string to dict functions
             - Add count to components in db (NOT MEMBER DUE OF PRIVACY)
             - check if new servers and/or channels get created (restore of hack)
              
