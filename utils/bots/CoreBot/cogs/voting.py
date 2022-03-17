@@ -112,8 +112,11 @@ class VotingBot(commands.Cog):
     @commands.Cog.listener("on_interaction")
     async def on_voting_interaction(self, interaction: discord.Interaction):
         query = database.Voting.select()
-        results = query.get()
+        print(query)
+        results = [msg.msgID for msg in query]
+        results2 = [msg.components for msg in query]
         print(results)
+        print(results2)
 
     @commands.group(invoke_without_command=True)
     @commands.has_any_role(
