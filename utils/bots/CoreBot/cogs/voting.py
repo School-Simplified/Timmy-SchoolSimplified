@@ -504,7 +504,7 @@ class VotingBot(commands.Cog):
                             f"\n{strChannels}"
             )
             embedConfirm.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-            embedConfirm.set_footer(text="Abusing this feature has severe consequences! | Timeout after 60s")
+            embedConfirm.set_footer(text="Abusing this feature has severe consequences! | Timeout after 120s")
             msgConfirm = await ctx.send(embed=embedConfirm)
             await msgConfirm.add_reaction("✅")
             await msgConfirm.add_reaction("❌")
