@@ -165,14 +165,14 @@ class TechProjectCMD(commands.Cog):
         channel: discord.TextChannel = await self.bot.fetch_channel(
             int(TECH_ID.ch_botreq)
         )
-        print(channel.name, type(channel))
+        #print(channel.name, type(channel))
         for guild in guilds:
             guild = await self.bot.fetch_guild(932066545117585428)
-            print("stuff", guild.threads)
+            #print("stuff", guild.threads)
             for thread in guild.threads:
-                print(channel.name, type(channel))
+                #print(channel.name, type(channel))
                 query = database.TechCommissionArchiveLog.select().where(database.ThreadID == thread.id).exists()
-                print(thread.archived, query, (thread.parent_id in guild[1]))
+                #print(thread.archived, query, (thread.parent_id in guild[1]))
                 if (
                     thread.archived
                     and thread.parent_id in guild[1]

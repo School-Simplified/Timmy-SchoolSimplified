@@ -593,6 +593,18 @@ class Voting(BaseModel):
     msgID = BigIntegerField()
     components = CharField()
 
+class BaseQueue(BaseModel):
+    """
+    #BaseQueue
+
+    `id`: AutoField()
+    Database Entry
+
+    `queueID`: BigIntegerField()
+    Type of queue.
+    """
+    id = AutoField()
+    queueID = BigIntegerField()
 
 app = Flask(__name__)
 
@@ -636,7 +648,8 @@ tables = {
     "TutorSession_GracePeriod": TutorSession_GracePeriod,
     "TechCommissionArchiveLog": TechCommissionArchiveLog,
     "SandboxConfig": SandboxConfig,
-    "Voting": Voting
+    "Voting": Voting,
+    "BaseQueue": BaseQueue
 }
 
 iter_table(tables)

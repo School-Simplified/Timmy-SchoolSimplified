@@ -630,7 +630,7 @@ async def short(ctx, member: discord.Member):
 async def short_detector(
     ctx, member: Option(discord.Member, "Enter a user you want to check!")
 ):
-    if member.id in [736765405728735232, 518581570152693771, 544724467709116457]:
+    if random.randint(0, 1) == 1:
         await ctx.respond(f"{member.mention} is short!")
     else:
         await ctx.respond(f"{member.mention} is tall!")

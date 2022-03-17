@@ -141,12 +141,10 @@ class TutorBotLoop(commands.Cog):
 
     @tutorsession.before_loop
     async def before_printer(self):
-        print("Starting Tutor Loop")
         await self.bot.wait_until_ready()
 
     @tutorsession_graceperiod.before_loop
     async def before_printer(self):
-        print("Starting TutorGP Loop")
         await self.bot.wait_until_ready()
 
 
