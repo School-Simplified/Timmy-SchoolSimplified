@@ -117,7 +117,7 @@ class VotingBot(commands.Cog):
         interMsgID = interaction.message.id
         print(f"interMsgID: {interMsgID}")
         if interMsgID in msgIDList:
-            componentsStr = database.Voting.select(database.Voting.components).where(database.Voting.msgID == interMsgID).get()
+            componentsStr = database.Voting.select().where(database.Voting.msgID == interMsgID).get().components
             print(f"componentsStr: {componentsStr}")
 
     @commands.group(invoke_without_command=True)
