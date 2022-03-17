@@ -378,15 +378,16 @@ class MiscCMD(commands.Cog):
         output = ""
 
         hostDir = getHostDir()
-        if hostDir == "/home/timmya/TimmyMain-SS":
+        if hostDir == "/home/timmya":
             branch = "origin/main"
             directory = "TimmyMain-SS"
-        elif hostDir == "/home/timmya/TimmyBeta-SS":
+
+        elif hostDir == "/home/timmy-beta":
             branch = "origin/beta"
             directory = "TimmyBeta-SS"
 
         else:
-            raise ValueError("Host directory is neither 'TimmyMain-SS' nor 'TimmyBeta-SS'.")
+            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
 
         try:
             p = subprocess.run(
