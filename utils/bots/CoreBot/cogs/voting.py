@@ -589,7 +589,7 @@ class VotingBot(commands.Cog):
                             compDict[option] = 0
 
                         compDict = json.dumps(compDict)
-                        query = database.Voting.create(msgID=msgVote, components=compDict)
+                        query = database.Voting.create(msgID=msgVote.id, components=compDict)
                         query.save()
 
                         embedSuccess = discord.Embed(
