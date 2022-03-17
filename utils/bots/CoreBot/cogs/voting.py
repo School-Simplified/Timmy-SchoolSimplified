@@ -68,7 +68,7 @@ class VotingBot(commands.Cog):
     """
     vote create: creates a voting
         1. Announcement channel
-        2. Text                                                                             # TODO: not longer than X chars
+        2. Text
         3. Options (would be buttons)
         4. Durations
         
@@ -83,7 +83,6 @@ class VotingBot(commands.Cog):
             - Add count to components in db (NOT MEMBER DUE OF PRIVACY)
             - check if new servers and/or channels get created (restore of hack)
              
-        - Embed displays a timestamp and notes that the vote can't get undo                         # DONE
         - When someone voted, he gets a ephemeral message, that the person has voted on X  
         - If the person votes again, he gets an ephemeral message, that he already voted
 
