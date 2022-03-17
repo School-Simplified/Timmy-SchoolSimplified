@@ -583,8 +583,6 @@ class VotingBot(commands.Cog):
                         embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                         await msgConfirm.edit(embed=embedError)
                     else:
-                        test = database.Voting.select()
-                        print(test)
                         compDict = {}
                         for option in options:
                             compDict[option] = 0
