@@ -53,7 +53,6 @@ class VerificationStaff(commands.Cog):
     @commands.Cog.listener("on_interaction")
     async def StaffVerification(self, interaction: discord.Interaction):
         InteractionResponse = interaction.data
-        print(InteractionResponse)
 
         if interaction.message is None:
             return
