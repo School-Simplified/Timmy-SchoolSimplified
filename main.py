@@ -670,7 +670,7 @@ async def mainModeCheck(ctx: commands.Context):
     """MT = discord.utils.get(ctx.guild.roles, name="Moderator")
     VP = discord.utils.get(ctx.guild.roles, name="VP")
     CO = discord.utils.get(ctx.guild.roles, name="CO")
-    SS = discord.utils.get(ctx.guild.roles, name="Secret Service")"""
+    SS = discord.utils.get(ctx.guild.roles, name=844013914609680384)"""
 
     blacklistedUsers = []
     for p in database.Blacklist:

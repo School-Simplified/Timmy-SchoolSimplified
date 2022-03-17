@@ -38,7 +38,7 @@ class InfoCMD(commands.Cog):
 
     @commands.command(aliases=["find"])
     @commands.has_any_role(
-        "Moderator", "Mod", "Senior Mod", "Head Mod", "Secret Service"
+        "Moderator", "Mod", "Senior Mod", "Head Mod", 844013914609680384, "HR"
     )
     async def info(
         self, ctx: commands.Context, user: commands.Greedy[discord.User] = []

@@ -764,7 +764,7 @@ class TutorVCCMD(commands.Cog):
 
     @commands.command()
     @commands.has_any_role(
-        "Moderator", "Secret Service", "Head Moderator", "Mod Trainee", 844013914609680384
+        "Moderator", 844013914609680384, "Head Moderator", "Mod Trainee", 844013914609680384
     )
     async def forceend(self, ctx, channel):
         database.db.connect(reuse_if_open=True)

@@ -39,7 +39,7 @@ class CTag(commands.Cog):
 
     @commands.command(aliases=["newc"])
     @commands.has_any_role(
-        "Secret Service", "Head Moderator", "Senior Mod", "Moderator"
+        844013914609680384, "Head Moderator", "Senior Mod", "Moderator"
     )
     # don't let this recognize tag number, name is a required field for new tags. - Fire
     async def cmod(self, ctx, name, title, *, text):
@@ -68,7 +68,7 @@ class CTag(commands.Cog):
 
     @commands.command(aliases=["delc", "cp"])
     @commands.has_any_role(
-        "Secret Service", "Head Moderator", "Senior Mod", "Moderator"
+        844013914609680384, "Head Moderator", "Senior Mod", "Moderator"
     )
     async def deletec(self, ctx, name):
         """Delete a tag"""
