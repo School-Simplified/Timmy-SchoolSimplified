@@ -592,6 +592,9 @@ class VotingBot(commands.Cog):
                         query = database.Voting.create(msgID=msgVote.id, components=compDict)
                         query.save()
 
+                        test = database.Voting.select()
+                        print(test)
+
                         embedSuccess = discord.Embed(
                             color=hex.green_confirm,
                             title="Confirm",
