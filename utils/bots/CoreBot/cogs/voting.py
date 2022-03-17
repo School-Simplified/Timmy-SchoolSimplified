@@ -568,7 +568,7 @@ class VotingBot(commands.Cog):
                             )
                         )
 
-                    channelTest = self.bot.get_channel(932066545738350640)
+                    channelTest = self.bot.get_channel(942076483290161203)
                     try:
                         msgVote = await channelTest.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
                     except Exception as _error:
