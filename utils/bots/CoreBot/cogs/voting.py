@@ -78,7 +78,6 @@ class VotingBot(commands.Cog):
                                         Programming Simplified Staff, (The Editorial Division), (The Division of Projects),
                                         (Marketing Brand Strategy Division)
             - !! Update announcements channels in configcat (not common.py) due of hack which deleted channels
-            - Add message and components to db
             - Catch interaction with decorator '@commands.Cog.listener("on_interaction")
             - Add count to components in db (NOT MEMBER DUE OF PRIVACY)
             - check if new servers and/or channels get created (restore of hack)
@@ -108,6 +107,13 @@ class VotingBot(commands.Cog):
     
     vote delete <ID>: Deletes a voting and ends the voting if ongoing
     """
+
+
+    @commands.Cog.listener("on_interaction")
+    async def on_voting_interaction(self, interaction: discord.Interaction):
+        query = database.Voting.select()
+        results = query.get()
+        print(results)
 
     @commands.group(invoke_without_command=True)
     @commands.has_any_role(
