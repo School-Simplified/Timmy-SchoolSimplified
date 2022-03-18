@@ -12,7 +12,7 @@ class Engagement(commands.Cog):
         name="puzzle_guess",
         guild_ids=[MAIN_ID.g_main],
     )
-        async def _guess(self, ctx: discord.ApplicationContext, guess: str):
+    async def _guess(self, ctx: discord.ApplicationContext, guess: str):
         """
         :param guess: The guess you are making to the weekly puzzle
         """
