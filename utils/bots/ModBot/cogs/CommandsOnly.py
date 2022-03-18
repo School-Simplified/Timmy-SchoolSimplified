@@ -1,12 +1,9 @@
-import inspect
-import io
 import discord
 from core import database
 from core.common import rulesDict
 from discord import Option, slash_command
 from discord.ext import commands
 from core.common import MAIN_ID
-from discord.commands import permissions
 
 MESSAGEC = "Go chit chat somewhere else, this is for commands only."
 MESSAGEMASA = "Hey you ||~~short~~|| *I mean* tall mf, go chit chat somewhere you twat."

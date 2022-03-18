@@ -17,10 +17,10 @@ class Engagement(commands.Cog):
         :param guess: The guess you are making to the weekly puzzle
         """
         embed = discord.Embed(
-            color=0xc387ff,
+            color=0xC387FF,
             title="Puzzle Guess",
             description=f"```{guess}```",
-            timestamp=discord.utils.utcnow()
+            timestamp=discord.utils.utcnow(),
         )
         embed.set_author(name=ctx.author, icon_url=ctx.author.avatar.url)
 

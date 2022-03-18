@@ -1,19 +1,10 @@
 from __future__ import print_function
 
-import json
-import os
 import os.path
 
-import regex
-from google.auth.transport.requests import Request
-from google.cloud import secretmanager
 from google.cloud import speech_v1p1beta1 as speech
 from google.cloud import storage
-from google.oauth2 import service_account
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from oauth2client.service_account import ServiceAccountCredentials
 
 from core.common import access_secret
 

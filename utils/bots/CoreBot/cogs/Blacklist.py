@@ -1,6 +1,6 @@
 import discord
 from core import database
-from core.checks import is_botAdmin3, is_botAdmin4, predicate_LV4, predicate_LV3
+from core.checks import predicate_LV4, predicate_LV3
 from discord.ext import commands
 from dotenv import load_dotenv
 from discord import SlashCommandGroup, CommandPermission

@@ -13,6 +13,7 @@ from pathlib import Path
 import discord
 import requests
 import sentry_sdk
+from alive_progress import alive_bar
 from discord.commands import Option
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
@@ -26,19 +27,19 @@ from core.common import (
     TECH_ID,
     CheckDB_CC,
     Emoji,
+    FeedbackButton,
     GSuiteVerify,
     LockButton,
     Others,
     bcolors,
     get_extensions,
     hexColors,
-    FeedbackButton,
 )
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
 from utils.bots.mktCommissions.ADCommissions import CommissionADButton
+from utils.events.AutoThreadUnarchive import CommissionTechButton
 from utils.events.TicketDropdown import TicketButton
 from utils.events.VerificationStaff import VerifyButton
-from utils.events.AutoThreadUnarchive import CommissionTechButton
 
 load_dotenv()
 faulthandler.enable()
@@ -195,7 +196,7 @@ class Timmy(commands.Bot):
                     f"Sorry an Error Occurred: {error}. This error has been sent "
                     f"to the bot development team"
                 )
-            
+
         error_file = Path("error.txt")
         error_file.touch()
         with error_file.open("w") as f:
@@ -289,7 +290,9 @@ class Timmy(commands.Bot):
         if hasattr(ctx.command, "on_error"):
             return
 
-        elif isinstance(error, (commands.CommandNotFound, commands.errors.CommandNotFound)):
+        elif isinstance(
+            error, (commands.CommandNotFound, commands.errors.CommandNotFound)
+        ):
             cmd = ctx.invoked_with
             cmds = [cmd.name for cmd in bot.commands]
             matches = get_close_matches(cmd, cmds)
@@ -316,7 +319,9 @@ class Timmy(commands.Bot):
         elif isinstance(
             error, (commands.MissingRequiredArgument, commands.TooManyArguments)
         ):
-            signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
+            signature = (
+                f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
+            )
 
             if ctx.command.name == "schedule":
                 em = discord.Embed(
@@ -372,7 +377,9 @@ class Timmy(commands.Bot):
             return
 
         elif isinstance(error, commands.BadArgument):
-            signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
+            signature = (
+                f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
+            )
             if ctx.command.name == "schedule":
                 em = discord.Embed(
                     title="Bad Argument!",
@@ -655,14 +662,18 @@ async def tictactoeCTX(ctx, member: discord.Member):
     )
 
 
-for ext in get_extensions():
-    try:
-        bot.load_extension(ext)
-    except discord.ExtensionAlreadyLoaded:
-        bot.unload_extension(ext)
-        bot.load_extension(ext)
-    except discord.ExtensionNotFound:
-        raise discord.ExtensionNotFound(ext)
+with alive_bar(
+    len(get_extensions()), ctrl_c=False, bar="bubbles", title=f"Initializing Cogs:"
+) as bar:
+    for ext in get_extensions():
+        try:
+            bot.load_extension(ext)
+        except discord.ExtensionAlreadyLoaded:
+            bot.unload_extension(ext)
+            bot.load_extension(ext)
+        except discord.ExtensionNotFound:
+            raise discord.ExtensionNotFound(ext)
+        bar()
 
 
 @bot.check
@@ -670,7 +681,7 @@ async def mainModeCheck(ctx: commands.Context):
     """MT = discord.utils.get(ctx.guild.roles, name="Moderator")
     VP = discord.utils.get(ctx.guild.roles, name="VP")
     CO = discord.utils.get(ctx.guild.roles, name="CO")
-    SS = discord.utils.get(ctx.guild.roles, name="Secret Service")"""
+    SS = discord.utils.get(ctx.guild.roles, name=844013914609680384)"""
 
     blacklistedUsers = []
     for p in database.Blacklist:
@@ -708,7 +719,7 @@ async def mainModeCheck(ctx: commands.Context):
     # DM Check
     elif ctx.guild is None:
         return True
-        return CheckDB_CC.guildNone
+        # return CheckDB_CC.guildNone
 
     # External Server Check
     elif ctx.guild.id != MAIN_ID.g_main:

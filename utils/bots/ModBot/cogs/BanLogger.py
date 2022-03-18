@@ -3,7 +3,6 @@ import json
 import os
 import re
 from datetime import datetime
-from random import randint
 
 import discord
 import gspread

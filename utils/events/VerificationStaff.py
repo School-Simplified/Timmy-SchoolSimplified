@@ -1,5 +1,15 @@
 import discord
-from core.common import *
+from core.common import (
+    CH_ID,
+    DIGITAL_ID,
+    HR_ID,
+    MKT_ID,
+    STAFF_ID,
+    TECH_ID,
+    TUT_ID,
+    Others,
+    load_config,
+)
 from discord.ext import commands
 
 config, _ = load_config("equelRoles")

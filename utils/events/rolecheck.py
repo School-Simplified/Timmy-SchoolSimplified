@@ -1,5 +1,5 @@
 import discord
-from core.common import *
+from core.common import load_config, hexColors
 from discord.ext import commands
 
 from core.common import MAIN_ID, TUT_ID, DIGITAL_ID

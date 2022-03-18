@@ -1,9 +1,6 @@
 import discord
-from core.checks import is_botAdmin3
-from discord.ext import commands, tasks
-from core.common import SelectMenuHandler, TempConfirm, LockButton, TECH_ID, Emoji
 from core.checks import is_botAdmin
-from core import database
+from discord.ext import commands
 
 "Everyone needs to make advertisements at some point and every SBU/department has access to using corporate marketing’s resources!\n\n",
 ":white_check_mark: Note:",
@@ -59,9 +56,7 @@ class AD_MDL_1(discord.ui.Modal):
         )
 
     async def callback(self, interaction: discord.Interaction):
-        embed = discord.Embed(
-            title="{} Request", color=discord.Color.blurple()
-        )
+        embed = discord.Embed(title="{} Request", color=discord.Color.blurple())
         embed.set_author(
             name=interaction.user.name, icon_url=interaction.user.avatar.url
         )

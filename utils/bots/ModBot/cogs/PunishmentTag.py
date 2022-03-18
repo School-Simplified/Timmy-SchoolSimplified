@@ -42,7 +42,7 @@ class PunishmentTag(commands.Cog):
 
     @commands.command(aliases=["newp"])
     @commands.has_any_role(
-        "Secret Service", "Head Moderator", "Senior Mod", "Moderator"
+        844013914609680384, "Head Moderator", "Senior Mod", "Moderator"
     )
     # don't let this recognize tag number, name is a required field for new tags. - Fire
     async def pmod(self, ctx, name, title, *, text):
@@ -73,7 +73,7 @@ class PunishmentTag(commands.Cog):
 
     @commands.command(aliases=["delp", "dp"])
     @commands.has_any_role(
-        "Secret Service", "Head Moderator", "Senior Mod", "Moderator"
+        844013914609680384, "Head Moderator", "Senior Mod", "Moderator"
     )
     async def deletep(self, ctx, name):
         """Delete a tag"""

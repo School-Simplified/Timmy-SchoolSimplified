@@ -1,12 +1,8 @@
-import os
-
 import discord
 from core import database
 from core.checks import is_botAdmin
 from discord.ext import commands
 from google.cloud import texttospeech
-from gtts import gTTS
-from oauth2client.service_account import ServiceAccountCredentials
 
 from core.common import access_secret
 

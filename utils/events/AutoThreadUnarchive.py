@@ -1,7 +1,6 @@
 import discord
-from core.checks import is_botAdmin3
 from discord.ext import commands, tasks
-from core.common import SelectMenuHandler, TempConfirm, LockButton, TECH_ID, Emoji
+from core.common import TECH_ID
 from core.checks import is_botAdmin
 from core import database
 
@@ -159,24 +158,23 @@ class TechProjectCMD(commands.Cog):
         """
         Create a task loop to make sure threads don't automatically archive due to inactivity.
         """
-        guilds = [
-            [932066545117585428, [933181562885914724]]
-        ]
+        guilds = [[932066545117585428, [933181562885914724]]]
         channel: discord.TextChannel = await self.bot.fetch_channel(
             int(TECH_ID.ch_botreq)
         )
-        #print(channel.name, type(channel))
+        # print(channel.name, type(channel))
         for guild in guilds:
             guild = await self.bot.fetch_guild(932066545117585428)
-            #print("stuff", guild.threads)
+            # print("stuff", guild.threads)
             for thread in guild.threads:
-                #print(channel.name, type(channel))
-                query = database.TechCommissionArchiveLog.select().where(database.ThreadID == thread.id).exists()
-                #print(thread.archived, query, (thread.parent_id in guild[1]))
-                if (
-                    thread.archived
-                    and thread.parent_id in guild[1]
-                ):
+                # print(channel.name, type(channel))
+                query = (
+                    database.TechCommissionArchiveLog.select()
+                    .where(database.ThreadID == thread.id)
+                    .exists()
+                )
+                # print(thread.archived, query, (thread.parent_id in guild[1]))
+                if thread.archived and thread.parent_id in guild[1]:
                     await thread.unarchive()
 
 
