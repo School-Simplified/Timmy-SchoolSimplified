@@ -4,6 +4,7 @@ import random
 import string
 import os
 import json
+import ast
 
 import discord
 from discord.ext import commands
@@ -124,13 +125,12 @@ class VotingBot(commands.Cog):
         interMsgID = interaction.message.id
         print(f"interMsgID: {interMsgID}")
         if interMsgID in msgIDList:
-            componentsStr = (
-                database.Voting.select()
-                .where(database.Voting.msgID == interMsgID)
-                .get()
-                .components
-            )
-            print(f"componentsStr: {componentsStr}")
+            componentsStr = database.Voting.select().where(database.Voting.msgID == interMsgID).get().components
+            componentsDict = ast.literal_eval(componentsStr)
+            interactionData = interaction.data
+
+            print(componentsDict, type(componentsDict))
+            print(interactionData)
 
     @commands.group(invoke_without_command=True)
     @commands.has_any_role(
