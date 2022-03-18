@@ -6,7 +6,9 @@ from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4
 from core.common import Emoji, hexColors
 from discord.ext import commands
 from dotenv import load_dotenv
+
 load_dotenv()
+
 
 def get_extensions():
     extensions = []
@@ -16,6 +18,7 @@ def get_extensions():
             continue
         extensions.append(str(file).replace("/", ".").replace(".py", ""))
     return extensions
+
 
 class CoreBotConfig(commands.Cog):
     def __init__(self, bot):

@@ -8,7 +8,7 @@ from google.cloud import texttospeech
 from gtts import gTTS
 from oauth2client.service_account import ServiceAccountCredentials
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gsheetsadmin/TTScreds.json"
+from core.common import access_secret
 
 
 class SayCMD(commands.Cog):
@@ -52,7 +52,9 @@ class SayCMD(commands.Cog):
         NE.save()
 
         # Lets prepare our text, and then save the audio file
-        TTSClient = texttospeech.TextToSpeechClient()
+        TTSClient = texttospeech.TextToSpeechClient(
+            credentials=access_secret("ttscreds", True, 2)
+        )
 
         synthesis_input = texttospeech.SynthesisInput(text=text)
         voice = texttospeech.VoiceSelectionParams(
