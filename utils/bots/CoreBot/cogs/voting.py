@@ -11,7 +11,16 @@ from core import database
 from core.checks import is_hostTimmyBeta
 from core.common import hexColors as hex
 from core.common import Emoji
-from core.common import MAIN_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID, LEADER_ID, STAFF_ID
+from core.common import (
+    MAIN_ID,
+    DIGITAL_ID,
+    TECH_ID,
+    MKT_ID,
+    TUT_ID,
+    HR_ID,
+    LEADER_ID,
+    STAFF_ID,
+)
 from core.common import stringTimeConvert, ButtonHandler, searchCustomEmoji
 
 
@@ -60,7 +69,7 @@ class VotingBot(commands.Cog):
             LEADER_ID.ch_rebrandAnnouncements,
             LEADER_ID.ch_staffAnnouncements,
             STAFF_ID.ch_announcements,
-            STAFF_ID.ch_leadershipAnnouncements
+            STAFF_ID.ch_leadershipAnnouncements,
         ]
 
     """
@@ -107,7 +116,6 @@ class VotingBot(commands.Cog):
     vote delete <ID>: Deletes a voting and ends the voting if ongoing
     """
 
-
     @commands.Cog.listener("on_interaction")
     async def on_voting_interaction(self, interaction: discord.Interaction):
         query = database.Voting.select()
@@ -116,7 +124,12 @@ class VotingBot(commands.Cog):
         interMsgID = interaction.message.id
         print(f"interMsgID: {interMsgID}")
         if interMsgID in msgIDList:
-            componentsStr = database.Voting.select().where(database.Voting.msgID == interMsgID).get().components
+            componentsStr = (
+                database.Voting.select()
+                .where(database.Voting.msgID == interMsgID)
+                .get()
+                .components
+            )
             print(f"componentsStr: {componentsStr}")
 
     @commands.group(invoke_without_command=True)
@@ -127,7 +140,7 @@ class VotingBot(commands.Cog):
         LEADER_ID.r_vicePresident,
         LEADER_ID.r_boardMember,
         LEADER_ID.r_informationTechnologyManager,
-        LEADER_ID.r_ssDigitalCommittee
+        LEADER_ID.r_ssDigitalCommittee,
     )
     async def vote(self, ctx):
         pass
@@ -148,13 +161,12 @@ class VotingBot(commands.Cog):
 
         print(f"noneChannels: {noneChannels}")
 
-        randomID = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        randomID = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
         tempVoteCHsFilename = "TEMP_voteCHS_{randomID}.txt"
 
         tempVoteCHsFileWrite = open(tempVoteCHsPath, "w+")
-        tempVoteCHsFileWrite.write(f"Accepted channels:"
-                                   f"\n{acceptedChannelsStr}")
+        tempVoteCHsFileWrite.write(f"Accepted channels:" f"\n{acceptedChannelsStr}")
         tempVoteCHsFileWrite.close()
         tempVoteCHsFile = discord.File(tempVoteCHsPath, filename=tempVoteCHsFilename)
 
@@ -168,8 +180,8 @@ class VotingBot(commands.Cog):
             color=hex.ss_blurple,
             title="Create Voting",
             description="Please provide the announcement-channel/s ID in which the voting should get sent. To send it to "
-                        "multiple channels, separate the channels with commas (`,`)."
-                        "\n**Click on the link below to see a list of the accepted channels.**",
+            "multiple channels, separate the channels with commas (`,`)."
+            "\n**Click on the link below to see a list of the accepted channels.**",
         )
         embedServer.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
         embedServer.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
@@ -179,7 +191,7 @@ class VotingBot(commands.Cog):
             ButtonHandler(
                 style=discord.ButtonStyle.link,
                 url=voteCHsFileURL,
-                label="Accepted Channels"
+                label="Accepted Channels",
             )
         )
         msgSetup = await ctx.send(embed=embedServer, view=viewAcceptedCHs)
@@ -229,7 +241,7 @@ class VotingBot(commands.Cog):
                     embedCancel = discord.Embed(
                         color=hex.red_cancel,
                         title="Create Voting",
-                        description="Setup canceled."
+                        description="Setup canceled.",
                     )
                     embedCancel.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -254,9 +266,11 @@ class VotingBot(commands.Cog):
                         color=hex.red_error,
                         title="Create Voting",
                         description=f"Couldn't find one or more of the given text channels. Make sure the channel exists, "
-                                    f"you provide the channel's ID and it's an accepted channel."
+                        f"you provide the channel's ID and it's an accepted channel.",
                     )
-                    embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedNotFound.set_author(
+                        name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                    )
                     embedNotFound.set_footer(text="Use 'cancel' to cancel")
 
                     tempChannels = []
@@ -264,7 +278,9 @@ class VotingBot(commands.Cog):
                         channelsStrList = msgContent.split(",")
                         for channelStr in channelsStrList:
                             stripChannelStr = channelStr.strip()
-                            channelsStrList[channelsStrList.index(channelStr)] = stripChannelStr
+                            channelsStrList[
+                                channelsStrList.index(channelStr)
+                            ] = stripChannelStr
 
                             if stripChannelStr.isdigit():
                                 channel = self.bot.get_channel(int(stripChannelStr))
@@ -274,9 +290,17 @@ class VotingBot(commands.Cog):
 
                             tempChannels.append(channel)
 
-                        if any(channelInList is None for channelInList in tempChannels) or \
-                                any(type(channelInList) is not discord.TextChannel for channelInList in tempChannels) or \
-                                any(channelInList.id not in self.acceptedAnnouncementCHs for channelInList in tempChannels):
+                        if (
+                            any(channelInList is None for channelInList in tempChannels)
+                            or any(
+                                type(channelInList) is not discord.TextChannel
+                                for channelInList in tempChannels
+                            )
+                            or any(
+                                channelInList.id not in self.acceptedAnnouncementCHs
+                                for channelInList in tempChannels
+                            )
+                        ):
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
                                 await msgError.delete(delay=7)
@@ -293,7 +317,11 @@ class VotingBot(commands.Cog):
                         else:
                             channel = None
 
-                        if channel is None or type(channel) is not discord.TextChannel or channel.id not in self.acceptedAnnouncementCHs:
+                        if (
+                            channel is None
+                            or type(channel) is not discord.TextChannel
+                            or channel.id not in self.acceptedAnnouncementCHs
+                        ):
                             msgError = await ctx.send(embed=embedNotFound)
                             try:
                                 await msgError.delete(delay=7)
@@ -310,11 +338,11 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Create Voting",
                         description="Please provide the text you want to add to the voting."
-                                    "\n\n**Example:**"
-                                    "\nHey everyone,"
-                                    "\nWhich programming language is better? Please vote now!"
-                                    f"\n{Emoji.pythonLogo} Python | {Emoji.javascriptLogo} JavaScript"
-                                    f"\n\n(In the example above you would choose Python of course {Emoji.blobamused})",
+                        "\n\n**Example:**"
+                        "\nHey everyone,"
+                        "\nWhich programming language is better? Please vote now!"
+                        f"\n{Emoji.pythonLogo} Python | {Emoji.javascriptLogo} JavaScript"
+                        f"\n\n(In the example above you would choose Python of course {Emoji.blobamused})",
                     )
                     embedText.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -336,9 +364,11 @@ class VotingBot(commands.Cog):
                         embedTooLong = discord.Embed(
                             color=hex.red_error,
                             title="Create Voting",
-                            description="This text is too long! Make sure the text is less than 2000 characters."
+                            description="This text is too long! Make sure the text is less than 2000 characters.",
                         )
-                        embedTooLong.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedTooLong.set_author(
+                            name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                        )
                         embedTooLong.set_footer(text="Use 'cancel' to cancel")
                         msgTooLong = await ctx.send(embed=embedTooLong)
                         try:
@@ -354,9 +384,9 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Create Voting",
                         description="Please provide the options for the voting by separating the options with commas (`,`). "
-                                    "They will shown as buttons."
-                                    f"\n\nFrom the example on the last message, the options would be: "
-                                    f"{Emoji.pythonLogo} Python, {Emoji.javascriptLogo} JavaScript",
+                        "They will shown as buttons."
+                        f"\n\nFrom the example on the last message, the options would be: "
+                        f"{Emoji.pythonLogo} Python, {Emoji.javascriptLogo} JavaScript",
                     )
                     embedText.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -382,11 +412,15 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Create Voting",
                         description="Please provide the duration of the voting."
-                                    "\n\n**Example:**"
-                                    "\n`2d 4h 5m 50s` -> would be 2 days, 4 hours, 5m and 50 seconds."
+                        "\n\n**Example:**"
+                        "\n`2d 4h 5m 50s` -> would be 2 days, 4 hours, 5m and 50 seconds.",
                     )
-                    embedDuration.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-                    embedDuration.set_footer(text="Type 'cancel' to cancel | Timeout after 60s")
+                    embedDuration.set_author(
+                        name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                    )
+                    embedDuration.set_footer(
+                        text="Type 'cancel' to cancel | Timeout after 60s"
+                    )
                     await msgSetup.edit(embed=embedDuration)
 
                     index += 1
@@ -403,13 +437,20 @@ class VotingBot(commands.Cog):
                     minutes = timeDict["minutes"]
                     seconds = timeDict["seconds"]
 
-                    if days is None and hours is None and minutes is None and seconds is None:
+                    if (
+                        days is None
+                        and hours is None
+                        and minutes is None
+                        and seconds is None
+                    ):
                         embedNotFound = discord.Embed(
                             color=hex.red_error,
                             title="Create Voting",
-                            description="Couldn't find something matching to the time units. Please try again."
+                            description="Couldn't find something matching to the time units. Please try again.",
                         )
-                        embedNotFound.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedNotFound.set_author(
+                            name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                        )
                         embedNotFound.set_footer(text="Use 'cancel' to cancel")
                         msgError = await ctx.send(embed=embedNotFound)
                         try:
@@ -433,16 +474,23 @@ class VotingBot(commands.Cog):
 
                     datetimeNow = datetime.datetime.now()
                     try:
-                        datetimeExpiration = datetimeNow + datetime.timedelta(days=days) + datetime.timedelta(
-                            hours=hours) + datetime.timedelta(minutes=minutes) + datetime.timedelta(seconds=seconds)
+                        datetimeExpiration = (
+                            datetimeNow
+                            + datetime.timedelta(days=days)
+                            + datetime.timedelta(hours=hours)
+                            + datetime.timedelta(minutes=minutes)
+                            + datetime.timedelta(seconds=seconds)
+                        )
                     except OverflowError as _error:
                         embedOverflow = discord.Embed(
                             color=hex.red_error,
                             title="Create Voting",
                             description="Couldn't convert it to a datetime due of a too big expiration date. Please try again."
-                                        f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`"
+                            f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`",
                         )
-                        embedOverflow.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedOverflow.set_author(
+                            name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                        )
                         embedOverflow.set_footer(text="Use 'cancel' to cancel")
                         msgError = await ctx.send(embed=embedOverflow)
                         try:
@@ -455,9 +503,11 @@ class VotingBot(commands.Cog):
                     embedFinish = discord.Embed(
                         color=hex.ss_blurple,
                         title="Create Voting",
-                        description="**Almost done...** Please overview the pseudo voting below and confirm it."
+                        description="**Almost done...** Please overview the pseudo voting below and confirm it.",
                     )
-                    embedFinish.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                    embedFinish.set_author(
+                        name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                    )
                     await ctx.send(embed=embedFinish)
 
                     await msgSetup.delete()
@@ -469,10 +519,12 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Voting",
                         description=f"{text}"
-                                    f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})"
+                        f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})",
                     )
                     embedPseudo.set_author(name="Pseudo voting embed")
-                    embedPseudo.set_footer(text="Please vote anonymously below | You can't undo your vote!")
+                    embedPseudo.set_footer(
+                        text="Please vote anonymously below | You can't undo your vote!"
+                    )
 
                     viewOverview = discord.ui.View()
 
@@ -487,7 +539,7 @@ class VotingBot(commands.Cog):
                                 style=discord.ButtonStyle.gray,
                                 disabled=False,
                                 label=option,
-                                emoji=customEmoji
+                                emoji=customEmoji,
                             )
                         )
 
@@ -504,32 +556,43 @@ class VotingBot(commands.Cog):
 
             strChannels = ""
             for channel in channels:
-                strChannels += f"\n- {channel.name} (`{channel.id}`) from {channel.guild.name}"
+                strChannels += (
+                    f"\n- {channel.name} (`{channel.id}`) from {channel.guild.name}"
+                )
 
             embedConfirm = discord.Embed(
                 color=hex.yellow,
                 title="Confirm",
                 description=f"Please confirm that you overviewed the voting message and that this message will be sent and ping @everyone "
-                            f"in the following channel/s:"
-                            f"\n{strChannels}"
+                f"in the following channel/s:"
+                f"\n{strChannels}",
             )
-            embedConfirm.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-            embedConfirm.set_footer(text="Abusing this feature has severe consequences! | Timeout after 120s")
+            embedConfirm.set_author(
+                name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+            )
+            embedConfirm.set_footer(
+                text="Abusing this feature has severe consequences! | Timeout after 120s"
+            )
             msgConfirm = await ctx.send(embed=embedConfirm)
             await msgConfirm.add_reaction("✅")
             await msgConfirm.add_reaction("❌")
 
             def confirmCheck(reaction, user):
-                return user.id == ctx.author.id and reaction.message.id == msgConfirm.id and \
-                        str(reaction.emoji) in ["✅", "❌"]
+                return (
+                    user.id == ctx.author.id
+                    and reaction.message.id == msgConfirm.id
+                    and str(reaction.emoji) in ["✅", "❌"]
+                )
 
             try:
-                reactionResponse, userResponse = await self.bot.wait_for("reaction_add", check=confirmCheck, timeout=120)
+                reactionResponse, userResponse = await self.bot.wait_for(
+                    "reaction_add", check=confirmCheck, timeout=120
+                )
             except asyncio.TimeoutError:
                 embedTimeout = discord.Embed(
                     color=hex.red_error,
                     title="Confirm",
-                    description="Confirmation canceled due to timeout."
+                    description="Confirmation canceled due to timeout.",
                 )
                 embedTimeout.set_author(
                     name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -545,11 +608,11 @@ class VotingBot(commands.Cog):
                     embedSending = discord.Embed(
                         color=hex.yellow,
                         title="Confirm",
-                        description="Sending message/s..."
+                        description="Sending message/s...",
                     )
                     await msgConfirm.edit(embed=embedSending)
 
-                    print("sending")        # TODO: Sending to original channel
+                    print("sending")  # TODO: Sending to original channel
 
                     expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
                     expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
@@ -558,9 +621,11 @@ class VotingBot(commands.Cog):
                         color=hex.ss_blurple,
                         title="Voting",
                         description=f"{text}"
-                                    f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})"
+                        f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})",
                     )
-                    embedVoting.set_footer(text="Please vote anonymously below | You can't undo your vote!")
+                    embedVoting.set_footer(
+                        text="Please vote anonymously below | You can't undo your vote!"
+                    )
 
                     viewVoting = discord.ui.View()
                     for option in options:
@@ -574,23 +639,29 @@ class VotingBot(commands.Cog):
                                 style=discord.ButtonStyle.gray,
                                 disabled=False,
                                 label=option,
-                                emoji=customEmoji
+                                emoji=customEmoji,
                             )
                         )
 
                     channelTest = self.bot.get_channel(942076483290161203)
                     try:
-                        msgVote = await channelTest.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
+                        msgVote = await channelTest.send(
+                            content="@ everyone", embed=embedVoting, view=viewVoting
+                        )  # TODO: everyone
                     except Exception as _error:
                         embedError = discord.Embed(
                             color=hex.red_error,
                             title="Error while sending message/s",
                             description="An unexpected error occurred! Please make sure I can send messages into the "
-                                        "provided channel/s."
-                                        f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`"
+                            "provided channel/s."
+                            f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`",
                         )
-                        embedError.set_footer(text="Canceled | Use '+vote create' to start again")
-                        embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+                        embedError.set_footer(
+                            text="Canceled | Use '+vote create' to start again"
+                        )
+                        embedError.set_author(
+                            name=f"{ctx.author}", icon_url=ctx.author.avatar.url
+                        )
                         await msgConfirm.edit(embed=embedError)
                     else:
                         compDict = {}
@@ -598,14 +669,16 @@ class VotingBot(commands.Cog):
                             compDict[option] = 0
 
                         compDict = json.dumps(compDict)
-                        query = database.Voting.create(msgID=msgVote.id, components=compDict)
+                        query = database.Voting.create(
+                            msgID=msgVote.id, components=compDict
+                        )
                         query.save()
 
                         embedSuccess = discord.Embed(
                             color=hex.green_confirm,
                             title="Confirm",
                             description="Successfully sent messages to following channel/s:"
-                                        f"\n{strChannels}"
+                            f"\n{strChannels}",
                         )
                         await msgConfirm.edit(embed=embedSuccess)
 
@@ -615,13 +688,14 @@ class VotingBot(commands.Cog):
                     embedCancel = discord.Embed(
                         color=hex.red_cancel,
                         title="Confirm",
-                        description="Confirmation canceled."
+                        description="Confirmation canceled.",
                     )
                     embedCancel.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
                     )
                     embedCancel.set_footer(text="Use '+vote create' to start again")
                     await msgConfirm.edit(embed=embedCancel)
+
 
 def setup(bot):
     bot.add_cog(VotingBot(bot))

@@ -5,9 +5,18 @@ from distutils.util import strtobool
 
 from dotenv import load_dotenv
 from flask import Flask
-from peewee import (AutoField, BigIntegerField, BooleanField, CharField,
-                    DateTimeField, IntegerField, Model, MySQLDatabase,
-                    SqliteDatabase, TextField)
+from peewee import (
+    AutoField,
+    BigIntegerField,
+    BooleanField,
+    CharField,
+    DateTimeField,
+    IntegerField,
+    Model,
+    MySQLDatabase,
+    SqliteDatabase,
+    TextField,
+)
 
 load_dotenv()
 useDB = True
@@ -74,6 +83,7 @@ DATABASE FILES
 This file represents every database table and the model they follow. When fetching information from the tables, consult the typehints for possible methods!
 
 """
+
 
 class BaseModel(Model):
     """Base Model class used for creating new tables."""
@@ -555,6 +565,7 @@ class TechCommissionArchiveLog(BaseModel):
     id = AutoField()
     ThreadID = BigIntegerField()
 
+
 class SandboxConfig(BaseModel):
     """
     #SandboxConfig
@@ -565,6 +576,7 @@ class SandboxConfig(BaseModel):
     `mode`: TextField()
     Current Mode of the Sandbox.
     """
+
     id = AutoField()
     mode = TextField()
 
@@ -595,6 +607,7 @@ class Voting(BaseModel):
     msgID = BigIntegerField(primary_key=True)
     components = CharField()
 
+
 class BaseQueue(BaseModel):
     """
     #BaseQueue
@@ -605,8 +618,10 @@ class BaseQueue(BaseModel):
     `queueID`: BigIntegerField()
     Type of queue.
     """
+
     id = AutoField()
     queueID = BigIntegerField()
+
 
 app = Flask(__name__)
 
@@ -651,7 +666,7 @@ tables = {
     "TechCommissionArchiveLog": TechCommissionArchiveLog,
     "SandboxConfig": SandboxConfig,
     "Voting": Voting,
-    "BaseQueue": BaseQueue
+    "BaseQueue": BaseQueue,
 }
 
 iter_table(tables)

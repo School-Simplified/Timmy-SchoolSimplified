@@ -56,9 +56,7 @@ class AD_MDL_1(discord.ui.Modal):
         )
 
     async def callback(self, interaction: discord.Interaction):
-        embed = discord.Embed(
-            title="{} Request", color=discord.Color.blurple()
-        )
+        embed = discord.Embed(title="{} Request", color=discord.Color.blurple())
         embed.set_author(
             name=interaction.user.name, icon_url=interaction.user.avatar.url
         )

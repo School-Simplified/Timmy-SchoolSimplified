@@ -45,8 +45,11 @@ def showTotalMinutes(dateObj: datetime):
 
     return totalmin, now
 
+
 def getConsoleCH(column_id):
-    q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+    q: database.SandboxConfig = (
+        database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+    )
     ColumnDict = {
         0: q.ch_tv_console,
         1: q.ch_tv_startvc,
@@ -60,16 +63,20 @@ class TutorVCUpdate(commands.Cog):
         self.channel_id = {
             MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
             STAFF_ID.g_staff: STAFF_ID.ch_console,
-            TECH_ID.g_tech: getConsoleCH(0)
+            TECH_ID.g_tech: getConsoleCH(0),
         }
-        self.staticChannels = [MAIN_ID.ch_startPrivateVC, STAFF_ID.ch_startPrivateVC, getConsoleCH(0)]
+        self.staticChannels = [
+            MAIN_ID.ch_startPrivateVC,
+            STAFF_ID.ch_startPrivateVC,
+            getConsoleCH(0),
+        ]
         self.presetChannels = [
             MAIN_ID.ch_controlPanel,
             MAIN_ID.ch_startPrivateVC,
             STAFF_ID.ch_console,
             STAFF_ID.ch_startPrivateVC,
             getConsoleCH(0),
-            getConsoleCH(1)
+            getConsoleCH(1),
         ]
 
         self.TutorLogID = TUT_ID.ch_hourLogs
@@ -91,7 +98,7 @@ class TutorVCUpdate(commands.Cog):
         self.categoryIDs = [
             MAIN_ID.cat_privateVC,
             STAFF_ID.cat_privateVC,
-            SandboxConfig.cat_sandbox
+            SandboxConfig.cat_sandbox,
         ]
         self.CcategoryIDs = {
             MAIN_ID.g_main: MAIN_ID.cat_privateVC,
@@ -117,9 +124,7 @@ class TutorVCUpdate(commands.Cog):
     ):
         database.db.connect(reuse_if_open=True)
         print(self.LobbyStartIDs[member.guild.id])
-        lobbyStart = member.guild.get_channel(
-                self.LobbyStartIDs[member.guild.id]
-        )
+        lobbyStart = member.guild.get_channel(self.LobbyStartIDs[member.guild.id])
         if lobbyStart == None:
             try:
                 lobbyStart = await self.bot.fetch_channel(

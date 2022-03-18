@@ -240,7 +240,9 @@ def decodeDict(self, value: str, sandbox: bool = False) -> typing.Union[str, int
     }
 
     if sandbox:
-        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+        q: database.SandboxConfig = (
+            database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+        )
         decodeID = {
             "['Math Helpers']": q.cat_mathticket,
             "['Science Helpers']": q.cat_scienceticket,

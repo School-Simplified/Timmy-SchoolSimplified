@@ -4,7 +4,15 @@ from datetime import datetime, timedelta
 import discord
 import pytz
 from core import database
-from core.common import TECH_ID, Emoji, MAIN_ID, STAFF_ID, TUT_ID, SandboxConfig, SelectMenuHandler
+from core.common import (
+    TECH_ID,
+    Emoji,
+    MAIN_ID,
+    STAFF_ID,
+    TUT_ID,
+    SandboxConfig,
+    SelectMenuHandler,
+)
 from discord.ext import commands
 
 # global variables
@@ -83,12 +91,23 @@ GameDict = {
 class TutorVCCMD(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        q: database.SandboxConfig = database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+        q: database.SandboxConfig = (
+            database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+        )
 
         self.channel_id = MAIN_ID.ch_controlPanel
-        self.categoryID = [MAIN_ID.cat_privateVC, STAFF_ID.cat_privateVC, SandboxConfig.cat_sandbox]
+        self.categoryID = [
+            MAIN_ID.cat_privateVC,
+            STAFF_ID.cat_privateVC,
+            SandboxConfig.cat_sandbox,
+        ]
         self.staticChannels = [MAIN_ID.ch_startPrivateVC, q.ch_tv_startvc]
-        self.presetChannels = [MAIN_ID.ch_controlPanel, MAIN_ID.ch_startPrivateVC, q.ch_tv_startvc, q.ch_tv_console]
+        self.presetChannels = [
+            MAIN_ID.ch_controlPanel,
+            MAIN_ID.ch_startPrivateVC,
+            q.ch_tv_startvc,
+            q.ch_tv_console,
+        ]
 
         self.ownerID = 409152798609899530
         # self.botID = bot.user.id
@@ -174,7 +193,9 @@ class TutorVCCMD(commands.Cog):
         voice_state = ctx.author.voice
         if voice_state is None:
             return await ctx.send("You are not in a voice channel.")
-        GameLink = str(await voice_state.channel.create_activity_invite(880218394199220334))
+        GameLink = str(
+            await voice_state.channel.create_activity_invite(880218394199220334)
+        )
         await ctx.send(f"**Click the link to get started!**\n{GameLink}")
 
     @commands.command()
@@ -581,7 +602,7 @@ class TutorVCCMD(commands.Cog):
 
                     student = await self.bot.fetch_user(tutorSession.StudentID)
                     tutor = await self.bot.fetch_user(tutorSession.TutorID)
-                    
+
                     HOURCH = await self.bot.fetch_channel(self.TutorLogID)
 
                     hourlog = discord.Embed(
@@ -763,7 +784,11 @@ class TutorVCCMD(commands.Cog):
 
     @commands.command()
     @commands.has_any_role(
-        "Moderator", 844013914609680384, "Head Moderator", "Mod Trainee", 844013914609680384
+        "Moderator",
+        844013914609680384,
+        "Head Moderator",
+        "Mod Trainee",
+        844013914609680384,
     )
     async def forceend(self, ctx, channel):
         database.db.connect(reuse_if_open=True)

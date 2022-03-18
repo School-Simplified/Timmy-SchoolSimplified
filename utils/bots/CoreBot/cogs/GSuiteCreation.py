@@ -11,21 +11,18 @@ from core.common import HR_ID, access_secret
 
 def get_random_string(length=13):
     # choose from all lowercase letter
-    chars = string.ascii_letters + string.digits + '!@#$%^&*()'
+    chars = string.ascii_letters + string.digits + "!@#$%^&*()"
 
     rnd = random.SystemRandom()
-    return (''.join(rnd.choice(chars) for i in range(length)))
-
-
+    return "".join(rnd.choice(chars) for i in range(length))
 
 
 # ADMIN API NOW
 SCOPES = [
-    'https://www.googleapis.com/auth/admin.directory.user', 
-    'https://www.googleapis.com/auth/admin.directory.group', 
-    'https://www.googleapis.com/auth/admin.directory.orgunit',
-    'https://www.googleapis.com/auth/admin.directory.userschema',
-    
+    "https://www.googleapis.com/auth/admin.directory.user",
+    "https://www.googleapis.com/auth/admin.directory.group",
+    "https://www.googleapis.com/auth/admin.directory.orgunit",
+    "https://www.googleapis.com/auth/admin.directory.userschema",
 ]
 orgUnit = {
     "Personal Account": "/School Simplified Personal Acc.",
@@ -34,8 +31,7 @@ orgUnit = {
 
 
 creds = access_secret("adm_t", True, 0, SCOPES)
-service = build('admin', 'directory_v1', credentials=creds)
-
+service = build("admin", "directory_v1", credentials=creds)
 
 
 class AdminAPI(commands.Cog):
@@ -47,7 +43,15 @@ class AdminAPI(commands.Cog):
         description="Create a GSuite Account",
         guild_ids=[HR_ID.g_hr],
     )
-    async def create_gsuite(self, ctx: commands.Context, firstname, lastname, organizationunit: discord.Option(str, "Choose an account type.", choices=["Personal Account", "Team Account"]),):
+    async def create_gsuite(
+        self,
+        ctx: commands.Context,
+        firstname,
+        lastname,
+        organizationunit: discord.Option(
+            str, "Choose an account type.", choices=["Personal Account", "Team Account"]
+        ),
+    ):
         HR_Role = discord.utils.get(ctx.guild.roles, id=HR_ID.r_hrStaff)
         if HR_Role not in ctx.author.roles:
             return await ctx.respond(
@@ -59,21 +63,24 @@ class AdminAPI(commands.Cog):
             "name": {
                 "givenName": firstname,
                 "fullName": firstname + " " + lastname,
-                "familyName": lastname
+                "familyName": lastname,
             },
             "password": temppass,
             "primaryEmail": f"{firstname}.{lastname}@schoolsimplified.org",
             "changePasswordAtNextLogin": True,
-            "orgUnitPath": orgUnit[organizationunit]
+            "orgUnitPath": orgUnit[organizationunit],
         }
         service.users().insert(body=user).execute()
         await ctx.respond(
             f"{ctx.author.mention} Successfully created **{firstname} {lastname}'s** account.\n"
             f"**Username:** {firstname}.{lastname}@schoolsimplified.orf\n"
             f"**Organization Unit:** {orgUnit[organizationunit]}",
-            ephemeral=False
+            ephemeral=False,
         )
-        await ctx.respond(f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ", ephemeral=True)
+        await ctx.respond(
+            f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",
+            ephemeral=True,
+        )
 
     @discord.slash_command(
         name="gsuite-delete",
@@ -86,7 +93,7 @@ class AdminAPI(commands.Cog):
             return await ctx.respond(
                 f"{ctx.author.mention} You do not have the required permissions to use this command."
             )
-        
+
         try:
             service.users().delete(userKey=email).execute()
         except:
@@ -95,6 +102,7 @@ class AdminAPI(commands.Cog):
             )
         else:
             await ctx.respond("Successfully deleted the account.")
+
 
 def setup(bot):
     bot.add_cog(AdminAPI(bot))
