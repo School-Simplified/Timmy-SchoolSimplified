@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from core.common import Emoji
-import difflib
 
 
 class User(commands.Converter):

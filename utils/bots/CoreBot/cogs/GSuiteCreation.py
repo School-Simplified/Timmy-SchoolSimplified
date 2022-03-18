@@ -1,22 +1,12 @@
 from __future__ import print_function
 
-import json
-import os
-import os.path
 import random
 import string
 
 import discord
-import gspread
-from core.checks import is_botAdmin
 from discord.ext import commands
-from google.auth.transport.requests import AuthorizedSession, Request
-from google.oauth2 import service_account
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from oauth2client.service_account import ServiceAccountCredentials
-from core.common import HR_ID, access_secret, bcolors
+from core.common import HR_ID, access_secret
 
 
 def get_random_string(length=13):

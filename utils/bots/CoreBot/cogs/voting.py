@@ -1,7 +1,5 @@
 import asyncio
 import datetime
-import re
-from typing import List
 import random
 import string
 import os

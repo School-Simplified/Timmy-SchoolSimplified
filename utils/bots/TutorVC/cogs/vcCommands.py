@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 import discord
 import pytz
 from core import database
-from core.checks import is_botAdmin
 from core.common import TECH_ID, Emoji, MAIN_ID, STAFF_ID, TUT_ID, SandboxConfig, SelectMenuHandler
 from discord.ext import commands
 

@@ -5,9 +5,7 @@ import typing
 from datetime import datetime, timedelta
 from pytz import timezone
 from io import BytesIO
-import json
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 import re
 
 import chat_exporter
@@ -24,7 +22,6 @@ from core.common import (
     ButtonHandler,
     Emoji,
     Others,
-    SandboxConfig,
     S3_upload_file,
     SelectMenuHandler,
     CHHelperRoles,
@@ -46,7 +43,6 @@ essayTicketLog_key = "1pB5xpsBGKIES5vmEY4hjluFg7-FYolOmN_w3s20yzr0"
 
 creds = access_secret("gsheets_c", True, 3, scope)
 gspread_client = gspread.authorize(creds)
-print("Connected to Gspread.")
 
 
 """

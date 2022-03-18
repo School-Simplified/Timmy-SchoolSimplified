@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import discord
 from core import database
 from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID, TECH_ID, SandboxConfig
-from discord.ext import commands, tasks
+from discord.ext import commands
 import pytz
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}

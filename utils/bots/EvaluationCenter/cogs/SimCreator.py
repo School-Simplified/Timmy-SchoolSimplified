@@ -1,11 +1,6 @@
-import json
-
 import discord
-import requests
 from core import database
-from core.checks import is_botAdmin
-from core.common import (TECH_ID, ConfigcatClient, SandboxConfig, config_patch,
-                         get_extensions)
+from core.common import TECH_ID, SandboxConfig, get_extensions
 from discord.ext import commands
 
 

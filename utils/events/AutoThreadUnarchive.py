@@ -1,7 +1,6 @@
 import discord
-from core.checks import is_botAdmin3
 from discord.ext import commands, tasks
-from core.common import SelectMenuHandler, TempConfirm, LockButton, TECH_ID, Emoji
+from core.common import TECH_ID
 from core.checks import is_botAdmin
 from core import database
 

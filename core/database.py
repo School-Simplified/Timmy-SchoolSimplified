@@ -5,7 +5,9 @@ from distutils.util import strtobool
 
 from dotenv import load_dotenv
 from flask import Flask
-from peewee import *
+from peewee import (AutoField, BigIntegerField, BooleanField, CharField,
+                    DateTimeField, IntegerField, Model, MySQLDatabase,
+                    SqliteDatabase, TextField)
 
 load_dotenv()
 useDB = True

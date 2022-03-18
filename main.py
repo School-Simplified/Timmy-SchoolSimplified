@@ -13,6 +13,7 @@ from pathlib import Path
 import discord
 import requests
 import sentry_sdk
+from alive_progress import alive_bar
 from discord.commands import Option
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
@@ -21,24 +22,14 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
-from core.common import (
-    MAIN_ID,
-    TECH_ID,
-    CheckDB_CC,
-    Emoji,
-    GSuiteVerify,
-    LockButton,
-    Others,
-    bcolors,
-    get_extensions,
-    hexColors,
-    FeedbackButton,
-)
+from core.common import (MAIN_ID, TECH_ID, CheckDB_CC, Emoji, FeedbackButton,
+                         GSuiteVerify, LockButton, Others, bcolors,
+                         get_extensions, hexColors)
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
 from utils.bots.mktCommissions.ADCommissions import CommissionADButton
+from utils.events.AutoThreadUnarchive import CommissionTechButton
 from utils.events.TicketDropdown import TicketButton
 from utils.events.VerificationStaff import VerifyButton
-from utils.events.AutoThreadUnarchive import CommissionTechButton
 
 load_dotenv()
 faulthandler.enable()
@@ -654,16 +645,16 @@ async def tictactoeCTX(ctx, member: discord.Member):
         view=TicTacToe(ctx.author, member),
     )
 
-
-for ext in get_extensions():
-    try:
-        bot.load_extension(ext)
-    except discord.ExtensionAlreadyLoaded:
-        bot.unload_extension(ext)
-        bot.load_extension(ext)
-    except discord.ExtensionNotFound:
-        raise discord.ExtensionNotFound(ext)
-
+with alive_bar(len(get_extensions()), ctrl_c=False, bar = "bubbles", title=f'Initializing Cogs:') as bar:
+    for ext in get_extensions():
+        try:
+            bot.load_extension(ext)
+        except discord.ExtensionAlreadyLoaded:
+            bot.unload_extension(ext)
+            bot.load_extension(ext)
+        except discord.ExtensionNotFound:
+            raise discord.ExtensionNotFound(ext)
+        bar()
 
 @bot.check
 async def mainModeCheck(ctx: commands.Context):
@@ -708,7 +699,7 @@ async def mainModeCheck(ctx: commands.Context):
     # DM Check
     elif ctx.guild is None:
         return True
-        return CheckDB_CC.guildNone
+        #return CheckDB_CC.guildNone
 
     # External Server Check
     elif ctx.guild.id != MAIN_ID.g_main:
