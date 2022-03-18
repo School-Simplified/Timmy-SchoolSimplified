@@ -76,8 +76,8 @@ class VotingBot(commands.Cog):
                                         Programming Simplified Staff, (The Editorial Division), (The Division of Projects),
                                         (Marketing Brand Strategy Division)
             - !! Update announcements channels in configcat (not common.py) due of hack which deleted channels
-            - Add message and components to db
             - Catch interaction with decorator '@commands.Cog.listener("on_interaction")
+            - Dict to string and string to dict functions
             - Add count to components in db (NOT MEMBER DUE OF PRIVACY)
             - check if new servers and/or channels get created (restore of hack)
              
@@ -106,6 +106,18 @@ class VotingBot(commands.Cog):
     
     vote delete <ID>: Deletes a voting and ends the voting if ongoing
     """
+
+
+    @commands.Cog.listener("on_interaction")
+    async def on_voting_interaction(self, interaction: discord.Interaction):
+        query = database.Voting.select()
+        msgIDList = [msg.msgID for msg in query]
+
+        interMsgID = interaction.message.id
+        print(f"interMsgID: {interMsgID}")
+        if interMsgID in msgIDList:
+            componentsStr = database.Voting.select().where(database.Voting.msgID == interMsgID).get().components
+            print(f"componentsStr: {componentsStr}")
 
     @commands.group(invoke_without_command=True)
     @commands.has_any_role(
@@ -502,7 +514,7 @@ class VotingBot(commands.Cog):
                             f"\n{strChannels}"
             )
             embedConfirm.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
-            embedConfirm.set_footer(text="Abusing this feature has severe consequences! | Timeout after 60s")
+            embedConfirm.set_footer(text="Abusing this feature has severe consequences! | Timeout after 120s")
             msgConfirm = await ctx.send(embed=embedConfirm)
             await msgConfirm.add_reaction("✅")
             await msgConfirm.add_reaction("❌")
@@ -566,7 +578,7 @@ class VotingBot(commands.Cog):
                             )
                         )
 
-                    channelTest = self.bot.get_channel(932066545738350640)
+                    channelTest = self.bot.get_channel(942076483290161203)
                     try:
                         msgVote = await channelTest.send(content="@ everyone", embed=embedVoting, view=viewVoting)        # TODO: everyone
                     except Exception as _error:
@@ -581,13 +593,12 @@ class VotingBot(commands.Cog):
                         embedError.set_author(name=f"{ctx.author}", icon_url=ctx.author.avatar.url)
                         await msgConfirm.edit(embed=embedError)
                     else:
-
                         compDict = {}
                         for option in options:
                             compDict[option] = 0
 
                         compDict = json.dumps(compDict)
-                        query = database.Voting.create(msgID=msgVote, components=compDict)
+                        query = database.Voting.create(msgID=msgVote.id, components=compDict)
                         query.save()
 
                         embedSuccess = discord.Embed(

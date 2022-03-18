@@ -585,14 +585,14 @@ class Voting(BaseModel):
     """
     #Voting
 
-    `id`: AutoField()
-    Database Entry
+    `msgID`: BigIntegerField(primary_key)
+    The ID of the message
 
-    `ThreadID`: BigIntegerField()
-    ID of the thread.
+    `components`: CharField()
+    A dict as a string which includes a component of the message (`msgID`) as a key and the count of the component as a value.
     """
 
-    msgID = BigIntegerField()
+    msgID = BigIntegerField(primary_key=True)
     components = CharField()
 
 class BaseQueue(BaseModel):
