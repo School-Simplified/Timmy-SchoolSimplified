@@ -20,24 +20,12 @@ from core.common import (
     Others,
     MAIN_ID,
 )
+from core.common import getHostDir, force_restart
 from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk import Hub
 
 load_dotenv()
-
-
-async def force_restart2(ctx):  # Forces REPL to apply changes to everything
-    try:
-        subprocess.run(
-            "python main.py", shell=True, text=True, capture_output=True, check=True
-        )
-    except Exception as e:
-        await ctx.send(
-            f"❌ Something went wrong while trying to restart the bot!\nThere might have been a bug which could have caused this!\n**Error:**\n{e}"
-        )
-    finally:
-        sys.exit(0)
 
 
 class MiscCMD(commands.Cog):
@@ -104,7 +92,7 @@ class MiscCMD(commands.Cog):
             await ctx.send(masa.mention + f" {msg}")
         else:
             await ctx.send(masa.mention)
-    
+
     @commands.command()
     @commands.has_any_role("Moderator")
     async def debateban(self, ctx, member: discord.Member, *, reason=None):
@@ -163,7 +151,6 @@ class MiscCMD(commands.Cog):
                     color=hexColors.yellow_ticketBan,
                 )
                 await ctx.send(embed=embed)
-
 
     @commands.command()
     async def obama(self, ctx):
@@ -390,6 +377,18 @@ class MiscCMD(commands.Cog):
     async def gitpull(self, ctx, mode="-a"):
         output = ""
 
+        hostDir = getHostDir()
+        if hostDir == "/home/timmya":
+            branch = "origin/main"
+            directory = "TimmyMain-SS"
+
+        elif hostDir == "/home/timmy-beta":
+            branch = "origin/beta"
+            directory = "TimmyBeta-SS"
+
+        else:
+            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
+
         try:
             p = subprocess.run(
                 "git fetch --all",
@@ -404,7 +403,7 @@ class MiscCMD(commands.Cog):
             await ctx.send(f"**Error:**\n{e}")
         try:
             p = subprocess.run(
-                "git reset --hard origin/main",
+                f"git reset --hard {branch}",
                 shell=True,
                 text=True,
                 capture_output=True,
@@ -417,15 +416,19 @@ class MiscCMD(commands.Cog):
 
         embed = discord.Embed(
             title="GitHub Local Reset",
-            description="Local Files changed to match Timmy/main",
+            description=f"Local Files changed to match {branch}",
             color=hexColors.green_general,
         )
         embed.add_field(name="Shell Output", value=f"```shell\n$ {output}\n```")
-        embed.set_footer(text="Attempting to restart the bot...")
+        if mode == "-a":
+            embed.set_footer(text="Attempting to restart the bot...")
+        elif mode == "-c":
+            embed.set_footer(text="Attempting to reloading cogs...")
+
         await ctx.send(embed=embed)
 
         if mode == "-a":
-            await force_restart2(ctx)
+            await force_restart(ctx, directory)
         elif mode == "-c":
             await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
 

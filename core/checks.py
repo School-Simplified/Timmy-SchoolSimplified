@@ -9,12 +9,14 @@ Otherwise, use the same format to make your own check.
 """
 
 import typing
+import os
+import re
 from discord.ext import commands
 from core import database
 from core.common import MKT_ID
 
 
-def predicate_LV1(ctx):
+def predicate_LV1(ctx) -> bool:
     adminIDs = []
 
     query = database.Administrators.select().where(
@@ -87,3 +89,18 @@ def mktCommissionAdd(ctx):
 
 
 is_mktCommissionAuthorized = commands.check(mktCommissionAdd)
+
+
+def TimmyBetaHost(ctx):
+    runPath = os.path.realpath(__file__)
+    runDir = re.search("/home/[^/]*", runPath)
+
+    if runDir is not None:
+        runDir = runDir.group(0)
+    else:
+        runDir = None
+
+    return runDir == "/home/timmy-beta"
+
+
+is_hostTimmyBeta = commands.check(TimmyBetaHost)

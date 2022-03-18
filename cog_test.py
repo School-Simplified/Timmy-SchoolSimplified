@@ -6,6 +6,7 @@ import discord.ext.test as dpytest
 import pytest
 from discord.ext import commands
 
+
 def get_extensions():
     extensions = []
     extensions.append("jishaku")
@@ -20,6 +21,7 @@ def get_extensions():
         extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
     return extensions
 
+
 @pytest.fixture
 def bot(event_loop):
     bot = commands.Bot(loop=event_loop)
@@ -27,11 +29,13 @@ def bot(event_loop):
     dpytest.configure(bot)
     return bot
 
+
 @pytest.mark.asyncio
 async def test_cogs(bot):
-    os.environ["PyTestMODE"] = True
+    os.environ["PyTestMODE"] = "True"
     for ext in get_extensions():
         bot.load_extension(ext)
+
 
 def pytest_sessionfinish():
     print("Session finished")

@@ -21,7 +21,8 @@ class SuggestionCMD(commands.Cog):
         )
         embed.add_field(name="Suggestion Collected", value=suggestion)
         embed.set_footer(
-            text="Double check this suggestion || MAKE SURE THIS SUGGESTION IS RELATED TO THE BOT, NOT THE DISCORD SERVER!"
+            text="Double check this suggestion || MAKE SURE THIS SUGGESTION IS RELATED TO THE BOT, NOT THE DISCORD "
+            "SERVER! "
         )
 
         message = await ctx.send(embed=embed)
