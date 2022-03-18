@@ -12,7 +12,7 @@ class Engagement(commands.Cog):
         name="puzzle_guess",
         guild_ids=[MAIN_ID.g_main],
     )
-    async def _guess(self, ctx: discord.ApplicationContext, guess: str):
+        async def _guess(self, ctx: discord.ApplicationContext, guess: str):
         """
         :param guess: The guess you are making to the weekly puzzle
         """
@@ -24,12 +24,12 @@ class Engagement(commands.Cog):
         )
         embed.set_author(name=ctx.author, icon_url=ctx.author.avatar.url)
 
-        ssd: discord.Guild = self.bot.get_guild(950799439625355294)
-        if not ssd:
-            ssd = await self.bot.fetch_guild(950799439625355294)
-        guess_channel: discord.TextChannel = ssd.get_channel(950083341967843398)
-        if not guess_channel:
-            guess_channel = await self.bot.fetch_channel(950083341967843398)
+        # ssd: discord.Guild = self.bot.get_guild(950799439625355294)
+        # if not ssd:
+        # ssd = await self.bot.fetch_guild(950799439625355294)
+        # guess_channel: discord.TextChannel = ssd.get_channel(950083341967843398)
+        # if not guess_channel:
+        guess_channel = await self.bot.fetch_channel(950083341967843398)
         await guess_channel.send(embed=embed)
         await ctx.respond("Your guess has been submitted!", ephemeral=True)
 
