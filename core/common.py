@@ -1420,7 +1420,6 @@ class SelectMenuHandler(ui.Select):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
-        self.view_response = None
 
         if self.custom_id_:
             super().__init__(
@@ -1444,7 +1443,7 @@ class SelectMenuHandler(ui.Select):
         if self.select_user in [None, interaction.user] or any(
             role in interaction.user.roles for role in self.roles
         ):
-            self.view_response = self.values[0]
+            self.view.value = self.values[0]
 
             if self.interaction_message_:
                 await interaction.response.send_message(
@@ -1510,7 +1509,6 @@ class ButtonHandler(ui.Button):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
-        self.view_response = None
 
         if self.custom_id_:
             super().__init__(
@@ -1535,9 +1533,9 @@ class ButtonHandler(ui.Button):
             role in interaction.user.roles for role in self.roles
         ):
             if self.custom_id_ is None:
-                self.view_response = None
+                self.view.value = None
             else:
-                self.view_response = self.custom_id_
+                self.view.value = self.custom_id_
 
             if self.interaction_message_:
                 await interaction.response.send_message(
