@@ -667,6 +667,15 @@ class StudyVCLeaderboard(BaseModel):
 
     `totalSessions`: BigIntegerField()
     Total number of sessions.
+
+    `level`: IntegerField()
+    The level the user has.
+
+    `xp`: IntegerField()
+    The current xp, which get reset when new level reached.
+
+    `totalXP`: IntegerField()
+    The total XP, which the user has.
     """
     
     id = AutoField()
