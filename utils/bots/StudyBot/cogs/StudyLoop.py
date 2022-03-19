@@ -22,7 +22,6 @@ class StudyLoop(commands.Cog):
 
     @tasks.loop(seconds=10)
     async def TTSWeekCheck(self):
-        print("loop")
         now = datetime.datetime.now(self.est)
         weekdayNow = now.isoweekday()
         timeNow = now.time()

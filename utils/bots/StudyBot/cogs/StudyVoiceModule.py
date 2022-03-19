@@ -80,7 +80,6 @@ async def addLeaderboardProgress(self, member: discord.Member):
             currentTotalXP = leaderboardQuery.totalXP
 
             xpNeeded = getXPForNextLvl(currentLvl)
-            print(f"xpNeeded: {xpNeeded}")
             xpEarned = totalmin * self.xpPerMinute
 
             newXP = currentXP + xpEarned
@@ -92,8 +91,13 @@ async def addLeaderboardProgress(self, member: discord.Member):
                 isNewLvl = True
                 newXPNeeded = xpNeeded
                 while newXP >= newXPNeeded:
+                    print(f"newXP: {newXP}")
+                    print(f"newXPNeeded: {newXPNeeded}")
+                    print(f"newLvl: {newLvl}")
                     newXP -= newXPNeeded
+                    print(f"newXP after minus: {newXP}")
                     newLvl += 1
+                    print(f"newLvl after increment: {newLvl}")
                     newXpNeeded = getXPForNextLvl(newLvl)
 
             leaderboardQuery.xp = newXP
@@ -134,107 +138,102 @@ async def addLeaderboardProgress(self, member: discord.Member):
             )
             q.save()
 
-
-        if isNewLvl:
-            if newLvl == 5:
-                role = None  # TODO: get lvl 5 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            elif newLvl == 10:
-                role = None  # TODO: get lvl 10 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            elif newLvl == 20:
-                role = None  # TODO: get lvl 20 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            elif newLvl == 30:
-                role = None  # TODO: get lvl 30 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            elif newLvl == 40:
-                role = None  # TODO: get lvl 40 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            elif newLvl == 50:
-                role = None  # TODO: get lvl 50 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            elif newLvl == 60:
-                role = None  # TODO: get lvl 60 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            elif newLvl == 70:
-                role = None  # TODO: get lvl 70 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            elif newLvl == 80:
-                role = None  # TODO: get lvl 80 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            elif newLvl == 90:
-                role = None  # TODO: get lvl 90 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            elif newLvl == 100:
-                role = None  # TODO: get lvl 100 role
-                roleStr = f"\nYou've earned a new role: {role}"
-
-            else:
-                roleStr = ""
-
-            dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
-                    f"{roleStr}"
-            try:
-                await member.send(dmMSG)
-            except:
-                pass
-
+        roleStr = ""
         if newLvl < 5:
             pass
 
         elif newLvl < 10:
-            # TODO: add user lvl 5 role
+            role = None  # TODO: get lvl 5 role and add to user
+
+            if currentLvl < 5:
+                roleStr = f"\nYou've earned a new role: {role}"
             pass
 
         elif newLvl < 20:
-            # TODO: add user lvl 10 role
+            role = None  # TODO: get lvl 10 role and add to user
+            roleStr = f"\nYou've earned a new role: {role}"
+
+            if currentLvl < 10:
+                roleStr = f"\nYou've earned a new role: {role}"
             pass
 
         elif newLvl < 30:
-            # TODO: add user lvl 20 role
+            role = None  # TODO: get lvl 20 role and add to user
+            roleStr = f"\nYou've earned a new role: {role}"
+
+            if currentLvl < 20:
+                roleStr = f"\nYou've earned a new role: {role}"
             pass
 
         elif newLvl < 40:
-            # TODO: add user lvl 30 role
+            role = None  # TODO: get lvl 30 role and add to user
+            roleStr = f"\nYou've earned a new role: {role}"
+
+            if currentLvl < 30:
+                roleStr = f"\nYou've earned a new role: {role}"
             pass
 
         elif newLvl < 50:
-            # TODO: add user lvl 40 role
+            role = None  # TODO: get lvl 40 role and add to user
+            roleStr = f"\nYou've earned a new role: {role}"
+
+            if currentLvl < 40:
+                roleStr = f"\nYou've earned a new role: {role}"
             pass
 
         elif newLvl < 60:
-            # TODO: add user lvl 50 role
+            role = None  # TODO: get lvl 50 role and add to user
+            roleStr = f"\nYou've earned a new role: {role}"
+
+            if currentLvl < 50:
+                roleStr = f"\nYou've earned a new role: {role}"
             pass
 
         elif newLvl < 70:
-            # TODO: add user lvl 60 role
+            role = None  # TODO: get lvl 60 role and add to user
+            roleStr = f"\nYou've earned a new role: {role}"
+
+            if currentLvl < 60:
+                roleStr = f"\nYou've earned a new role: {role}"
             pass
 
         elif newLvl < 80:
-            # TODO: add user lvl 70 role
+            role = None  # TODO: get lvl 70 role and add to user
+            roleStr = f"\nYou've earned a new role: {role}"
+
+            if currentLvl < 70:
+                roleStr = f"\nYou've earned a new role: {role}"
             pass
 
         elif newLvl < 90:
-            # TODO: add user lvl 80 role
+            role = None  # TODO: get lvl 80 role and add to user
+            roleStr = f"\nYou've earned a new role: {role}"
+
+            if currentLvl < 80:
+                roleStr = f"\nYou've earned a new role: {role}"
             pass
 
         elif newLvl < 100:
-            # TODO: add user lvl 90 role
+            role = None  # TODO: get lvl 90 role and add to user
+            roleStr = f"\nYou've earned a new role: {role}"
+
+            if currentLvl < 90:
+                roleStr = f"\nYou've earned a new role: {role}"
             pass
 
         elif newLvl >= 100:
-            # TODO: add user lvl 100 role
+            role = None  # TODO: get lvl 100 role and add to user
+            roleStr = f"\nYou've earned a new role: {role}"
+
+            if currentLvl < 100:
+                roleStr = f"\nYou've earned a new role: {role}"
+            pass
+
+        dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
+                f"{roleStr}"
+        try:
+            await member.send(dmMSG)
+        except:
             pass
 
     else:
@@ -326,6 +325,7 @@ class StudyVCUpdate(commands.Cog):
     """
     TODO
     
+    - BUG FIX: Total XP doesn't fit with level (multiple level bug?)
     - Get lvl roles
     - if user not in db -> add xp, level etc.
     - Special role for top time in current week
