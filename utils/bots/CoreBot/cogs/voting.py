@@ -122,6 +122,8 @@ class VotingBot(commands.Cog):
         query = database.Voting.select()
         msgIDList = [msg.msgID for msg in query]
 
+        if interaction.message is None:
+            return
         interMsgID = interaction.message.id
         print(f"interMsgID: {interMsgID}")
         if interMsgID in msgIDList:
