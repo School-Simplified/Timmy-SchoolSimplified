@@ -58,7 +58,8 @@ def showTotalMinutes(dateObj: datetime):
 
     return totalmin, now
 
-async def addLeaderboardProgress(self, member: discord.Member, isPaused: bool = False):
+
+async def addLeaderboardProgress(member: discord.Member):
     StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
     if StudySessionQ.exists():
         StudySessionQ = StudySessionQ.get()
@@ -68,15 +69,16 @@ async def addLeaderboardProgress(self, member: discord.Member, isPaused: bool = 
         isNewLvl = False
         if leaderboardQuery.exists():
             leaderboardQuery = leaderboardQuery.get()
-            leaderboardQuery.TTS = totalmin + leaderboardQuery.totalMinutes
-            leaderboardQuery.totalSessions = leaderboardQuery.totalSession + 1
+            leaderboardQuery.TTS = totalmin + leaderboardQuery.TTS
+            leaderboardQuery.TTSWeek = totalmin + leaderboardQuery.TTSWeek
+            leaderboardQuery.totalSessions = leaderboardQuery.totalSessions + 1
 
             currentLvl = leaderboardQuery.level
             currentXP = leaderboardQuery.xp
             currentTotalXP = leaderboardQuery.totalXP
 
             xpNeeded = getXPForNextLvl(currentLvl)
-            xpEarned = totalmin * self.xpPerMinute
+            xpEarned = totalmin * StudyVCUpdate.xpPerMinute
 
             newXP = currentXP + xpEarned
             newTotalXP = currentTotalXP + xpEarned
@@ -103,7 +105,7 @@ async def addLeaderboardProgress(self, member: discord.Member, isPaused: bool = 
             currentTotalXP = 0
 
             xpNeeded = getXPForNextLvl(currentLvl)
-            xpEarned = totalmin * self.xpPerMinute
+            xpEarned = totalmin * StudyVCUpdate.xpPerMinute
 
             newXP = currentXP + xpEarned
             newTotalXP = currentTotalXP + xpEarned
@@ -283,7 +285,7 @@ async def setNewStudyGoal(self, console: discord.TextChannel, member: discord.Me
         q = database.StudyVCDB.create(discordID = member.id, goal = goal, StartTime = datetime.now(EST), RenewalTime = renewal)
         q.save()
     else:
-        addLeaderboardProgress(member)
+        await addLeaderboardProgress(member)
 
         query.goal = goal
         query.RenewalTime = renewal
@@ -351,7 +353,7 @@ class StudyVCUpdate(commands.Cog):
             )
             and not member.bot
         ):
-            await addLeaderboardProgress(self, member, True)
+            await addLeaderboardProgress(member)
             await console.send(
                 f"{member.mention} has left the channel, saved your current progress!"
             )
