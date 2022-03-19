@@ -73,7 +73,7 @@ class StudyToDo(commands.Cog):
         StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == ctx.author.id)
         if StudySessionQ.exists():
             StudySessionQ = StudySessionQ.get()
-            totalmin, now = showTotalMinutes(StudySessionQ.startTime)
+            totalmin, now = showTotalMinutes(StudySessionQ.StartTime)
             leaderboardQuery = database.StudyVCLeaderboard.select().where(database.StudyVCLeaderboard.discordID == ctx.author.id)
             if leaderboardQuery.exists():
                 leaderboardQuery = leaderboardQuery.get()
@@ -92,7 +92,7 @@ class StudyToDo(commands.Cog):
             return await ctx.send(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
         StudySessionQ = StudySessionQ.get()
-        StudySessionQ.startTime = datetime.now(EST)
+        StudySessionQ.StartTime = datetime.now(EST)
         StudySessionQ.Paused = True
         StudySessionQ.save()
         await console.send(
@@ -124,7 +124,8 @@ class StudyToDo(commands.Cog):
         l = []
         for t in database.StudyVCLeaderboard.select().order_by(database.StudyVCLeaderboard.TTS.desc()):
             i = 1
-            totalmin, now = showTotalMinutes(t.startTime)
+            #totalmin, now = showTotalMinutes(t.TTS)
+            totalmin = t.TTS
             if totalmin > 60:
                 totalmin = totalmin // 60
                 totalmin = f"{totalmin} hour(s)"

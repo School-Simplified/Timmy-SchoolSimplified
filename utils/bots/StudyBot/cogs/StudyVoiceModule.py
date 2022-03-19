@@ -20,7 +20,7 @@ SSTypes = [
     discord.SelectOption(
         label="50 Minute Study Session",
         description="Start a 25 minute study session followed by a 10 minute break.",
-        emoji="⚡️",
+        emoji="💪",
     ),
 ]
 
@@ -50,6 +50,7 @@ def showFutureTime(time):
 
 def showTotalMinutes(dateObj: datetime):
     now = datetime.now(EST)
+    dateObj = pytz.timezone("America/New_York").localize(dateObj)
 
     deltaTime = now - dateObj
 
@@ -78,9 +79,11 @@ def getXPForNextLvl(lvl: int):
 class StudyVCUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
         self.xpPerMinute = 30
-
+        self.StudyVCCategory = [945459539967348787]
+        self.StudyVCChannels = [954516833694810152]
+        self.StudyVCConsole = 954516809577533530
+        
     """
     TODO
     
@@ -97,6 +100,8 @@ class StudyVCUpdate(commands.Cog):
         - Rankcard like Mee6
     """
 
+        
+
     @commands.Cog.listener("on_voice_state_update")
     async def StudyVCModule(
         self,
@@ -104,20 +109,20 @@ class StudyVCUpdate(commands.Cog):
         before: discord.VoiceState,
         after: discord.VoiceState,
     ):
-        console: discord.TextChannel = await self.bot.fetch_channel(954516809577533530)
+        console: discord.TextChannel = await self.bot.fetch_channel(self.StudyVCConsole)
         if (
             before.channel is not None
             and (
                 after.channel is None
-                or after.channel.category_id not in self.categoryIDs
-                or after.channel.id in self.staticChannels
+                or after.channel.category_id not in self.StudyVCCategory
+                or after.channel.id in self.StudyVCChannels
             )
             and not member.bot
         ):
             StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
             if StudySessionQ.exists():
                 StudySessionQ = StudySessionQ.get()
-                totalmin, now = showTotalMinutes(StudySessionQ.startTime)
+                totalmin, now = showTotalMinutes(StudySessionQ.StartTime)
                 leaderboardQuery = database.StudyVCLeaderboard.select().where(database.StudyVCLeaderboard.discordID == member.id)
                 if leaderboardQuery.exists():
                     leaderboardQuery = leaderboardQuery.get()
@@ -261,7 +266,7 @@ class StudyVCUpdate(commands.Cog):
             else:
                 return
             StudySessionQ = StudySessionQ.get()
-            StudySessionQ.startTime = datetime.now(EST)
+            StudySessionQ.StartTime = datetime.now(EST)
             StudySessionQ.Paused = True
             StudySessionQ.save()
             await console.send(
@@ -271,7 +276,7 @@ class StudyVCUpdate(commands.Cog):
 
         if (
             after.channel is not None
-            and after.channel.id in self.presetChannels
+            and after.channel.id in self.StudyVCChannels
             and not member.bot
         ):
             query = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
@@ -281,14 +286,14 @@ class StudyVCUpdate(commands.Cog):
                     SSTypes, "temp_view:studybot_st1", "Select a duration for your study session"
                 )
                 MSV.add_item(var)
-                
+
                 await console.send(
                     f"{member.mention} You have joined a study channel. Please choose the duration of your study session!",
                     view=MSV
                 )
                 timeout = await MSV.wait()
                 if not timeout:
-                    selection_str = MSV.value
+                    selection_str = var.view_response
                 else:
                     await member.move_to(None)
                     return await MSV.send("Timed out, try again later.")
@@ -320,7 +325,8 @@ class StudyVCUpdate(commands.Cog):
                 query.StartTime = datetime.now(EST)
                 query.save()
 
-                if query.RenewalTime - datetime.now(EST) < timedelta(minutes=5):
+                dateObj = pytz.timezone("America/New_York").localize(query.RenewalTime)
+                if dateObj - datetime.now(EST) < timedelta(minutes=5):
                     await member.send(
                         f"{member.mention} Your study session is ending in **less than 5 minutes**. (Ends at: {query.RenewalTime.strftime(r'%I:%M %p')})\n\nMaybe renew your study session?"
                     )
