@@ -665,6 +665,9 @@ class StudyVCLeaderboard(BaseModel):
     `TTS`: BigIntegerField()
     Total time spent studying. (Measured in Minutes)
 
+    `TTSWeek`: BigIntegerField()
+    Total time spent in current week. This value gets reset every week (Monday Midnight) (Measured in Minutes)
+
     `totalSessions`: BigIntegerField()
     Total number of sessions.
 
@@ -681,6 +684,7 @@ class StudyVCLeaderboard(BaseModel):
     id = AutoField()
     discordID = BigIntegerField()
     TTS = BigIntegerField()
+    TTSWeek = BigIntegerField()
     totalSessions = BigIntegerField()
     level = IntegerField()
     xp = IntegerField()
