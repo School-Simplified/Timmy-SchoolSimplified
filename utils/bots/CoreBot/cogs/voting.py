@@ -1,5 +1,5 @@
 import asyncio
-import datetime
+import datetime, pytz
 import random
 import string
 import os
@@ -72,6 +72,7 @@ class VotingBot(commands.Cog):
             STAFF_ID.ch_announcements,
             STAFF_ID.ch_leadershipAnnouncements,
         ]
+        self.est = pytz.timezone("US/Eastern")
 
     """
     vote create: creates a voting
@@ -474,7 +475,7 @@ class VotingBot(commands.Cog):
                     if seconds is None:
                         seconds = 0
 
-                    datetimeNow = datetime.datetime.now()
+                    datetimeNow = datetime.datetime.now(self.est)
                     try:
                         datetimeExpiration = (
                             datetimeNow
