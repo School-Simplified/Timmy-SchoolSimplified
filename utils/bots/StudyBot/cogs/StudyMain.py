@@ -10,6 +10,7 @@ EST = pytz.timezone("US/Eastern")
 
 def showTotalMinutes(dateObj: datetime):
     now = datetime.now(EST)
+    dateObj = pytz.timezone("America/New_York").localize(dateObj)
 
     deltaTime = now - dateObj
 

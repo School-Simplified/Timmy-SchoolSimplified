@@ -650,7 +650,7 @@ class StudyVCDB(BaseModel):
     Goal = TextField()
     StartTime = DateTimeField()
     RenewalTime = DateTimeField()
-    Paused = BooleanField()
+    Paused = BooleanField(default=False)
 
 class StudyVCLeaderboard(BaseModel):
     """
