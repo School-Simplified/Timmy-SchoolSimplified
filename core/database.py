@@ -622,6 +622,57 @@ class BaseQueue(BaseModel):
     id = AutoField()
     queueID = BigIntegerField()
 
+class StudyVCDB(BaseModel):
+    """
+    #StudyVCDB
+
+    `id`: AutoField()
+    Database Entry ID
+
+    `discordID`: BigIntegerField()
+    Discord ID of the user.
+
+    `Goal`: TextField()
+    Goal of the current study session.
+
+    `StartTime`: DateTimeField()
+    DateTime Object of when the session started.
+
+    `RenewalTime`: DateTimeField()
+    DateTime Object of when the session will renew.
+
+    `Paused`: BooleanField()
+    Boolean that states if the session is paused.
+    """
+    
+    id = AutoField()
+    discordID = BigIntegerField()
+    Goal = TextField()
+    StartTime = DateTimeField()
+    RenewalTime = DateTimeField()
+    Paused = BooleanField()
+
+class StudyVCLeaderboard(BaseModel):
+    """
+    #StudyVCLeaderboard
+
+    `id`: AutoField()
+    Database Entry ID
+
+    `discordID`: BigIntegerField()
+    Discord ID of the user.
+
+    `TTS`: BigIntegerField()
+    Total time spent studying. (Measured in Minutes)
+
+    `totalSessions`: BigIntegerField()
+    Total number of sessions.
+    """
+    
+    id = AutoField()
+    discordID = BigIntegerField()
+    TTS = BigIntegerField()
+    totalSessions = BigIntegerField()
 
 app = Flask(__name__)
 
@@ -667,6 +718,8 @@ tables = {
     "SandboxConfig": SandboxConfig,
     "Voting": Voting,
     "BaseQueue": BaseQueue,
+    "StudyVCDB": StudyVCDB,
+    "StudyVCLeaderboard": StudyVCLeaderboard
 }
 
 iter_table(tables)

@@ -1324,6 +1324,7 @@ rulesDict = {
     14: f"No evading user blocks, punishments, or bans by using alternate accounts. && {Emoji.barrow} Sending unwanted, repeated friend requests or messages to contact someone who has blocked you is prohibited.\n{Emoji.barrow} Creating alternate accounts to evade a punishment or ban, harass or impersonate someone, or participate in a raid are all strictly prohibited.\n{Emoji.barrow} Suspicions of being an alternate account are cause for a ban with no prior warning.\n{Emoji.barrow} To discuss punishments or warnings, create a support ticket or talk to a moderator in DMs.",
 }
 
+deprecatedFiles = ["TTScreds.json", "tokenA.json", "staff_verifyClient.json", "gmailAPI_credentials.json", "gmail_token.json", "docs_token.json", "docs_credentials.json", "credentialsA.json", "admincred.json"]
 
 class bcolors:
     HEADER = "\033[95m"

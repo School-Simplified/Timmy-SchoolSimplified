@@ -34,6 +34,7 @@ from core.common import (
     bcolors,
     get_extensions,
     hexColors,
+    deprecatedFiles,
 )
 from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
 from utils.bots.mktCommissions.ADCommissions import CommissionADButton
@@ -600,6 +601,11 @@ query.PersistantChange = False
 query.save()
 database.db.close()
 
+for deprecationFile in deprecatedFiles:
+    if os.path.exists("gsheetsadmin/{}".format(deprecationFile)):
+        print(f"{bcolors.WARNING}Authentication via {deprecationFile} is deprecated. Consider removing this file and using sstimmy.json instead.{bcolors.ENDC}")
+
+
 
 @bot.slash_command(description="Play a game of TicTacToe with someone!")
 async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you want")):
@@ -666,6 +672,7 @@ with alive_bar(
     len(get_extensions()), ctrl_c=False, bar="bubbles", title=f"Initializing Cogs:"
 ) as bar:
     for ext in get_extensions():
+        #start = time.time()
         try:
             bot.load_extension(ext)
         except discord.ExtensionAlreadyLoaded:
@@ -673,6 +680,8 @@ with alive_bar(
             bot.load_extension(ext)
         except discord.ExtensionNotFound:
             raise discord.ExtensionNotFound(ext)
+        #end = time.time()
+        #print(f"{ext} loaded in {end - start:.2f} seconds")
         bar()
 
 
