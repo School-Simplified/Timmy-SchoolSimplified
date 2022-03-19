@@ -1393,20 +1393,20 @@ class SelectMenuHandler(ui.Select):
         roles: List[discord.Role] = None,
         interaction_message: typing.Union[str, None] = None,
         ephemeral: bool = True,
-        coroutine: coroutineType = None,
-        view_response=None,
+        coroutine: coroutineType = None
     ):
         """
         Parameters:
             options: List of discord.SelectOption
             custom_id: Custom ID of the view. Default to None.
-            place_holder: Place Holder string for the view. Default to None.
+            place_holder: Placeholder string for the view. Default to None.
             max_values Maximum values that are selectable. Default to 1.
             min_values: Minimum values that are selectable. Default to 1.
             disabled: Whenever the button is disabled or not. Default to False.
             select_user: The user that can perform this action, leave blank for everyone. Defaults to None.
             interaction_message: The response message when pressing on a selection. Default to None.
             ephemeral: Whenever the response message should only be visible for the select_user or not. Default to True.
+            coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed. Default to None.
         """
 
         self.options_ = options
@@ -1420,7 +1420,7 @@ class SelectMenuHandler(ui.Select):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
-        self.view_response = view_response
+        self.view_response = None
 
         if self.custom_id_:
             super().__init__(
@@ -1444,11 +1444,7 @@ class SelectMenuHandler(ui.Select):
         if self.select_user in [None, interaction.user] or any(
             role in interaction.user.roles for role in self.roles
         ):
-            if self.custom_id_ is None:
-                self.view.value = self.values[0]
-            else:
-                # self.view.value = self.custom_id_
-                self.view_response = self.values[0]
+            self.view_response = self.values[0]
 
             if self.interaction_message_:
                 await interaction.response.send_message(
@@ -1501,7 +1497,7 @@ class ButtonHandler(ui.Button):
             roles: The roles which the user needs to be able to click the button.
             interaction_message: The response message when pressing on a selection. Default to None.
             ephemeral: Whenever the response message should only be visible for the select_user or not. Default to True.
-            coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed.  Default to None.
+            coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed. Default to None.
         """
         self.style_ = style
         self.label_ = label
@@ -1514,6 +1510,7 @@ class ButtonHandler(ui.Button):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
+        self.view_response = None
 
         if self.custom_id_:
             super().__init__(
@@ -1538,9 +1535,9 @@ class ButtonHandler(ui.Button):
             role in interaction.user.roles for role in self.roles
         ):
             if self.custom_id_ is None:
-                self.view.value = None
+                self.view_response = None
             else:
-                self.view.value = self.custom_id_
+                self.view_response = self.custom_id_
 
             if self.interaction_message_:
                 await interaction.response.send_message(
