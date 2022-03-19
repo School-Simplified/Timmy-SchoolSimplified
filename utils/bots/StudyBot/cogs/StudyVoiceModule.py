@@ -246,7 +246,7 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
 
 
-async def setNewStudyGoal(self, console: discord.TextChannel, member: discord.Member, renew: bool):
+async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
     now = datetime.now(EST)
     if renew:
         query = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id).get()
@@ -315,7 +315,7 @@ def getXPForNextLvl(lvl: int):
 
 
 class StudyVCUpdate(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.xpPerMinute = 30
         self.StudyVCCategory = [945459539967348787]
@@ -402,16 +402,21 @@ class StudyVCUpdate(commands.Cog):
                         f"{member.mention} You already have a study session going!\n\nMake sure you come back at {query.RenewalTime.strftime(r'%I:%M %p')} to renew your study session!"
                     )
 
-    @tasks.loop(seconds=60.0)
+    @tasks.loop(seconds=10)
     async def StudyVCChecker(self):
         """Loop through each session and check if a user's study session is about to end"""
-        console: discord.TextChannel = await self.bot.fetch_channel(self.StudyVCConsole)
+        print("loop StudyVCChecker")
+
+        console = await self.bot.fetch_channel(self.StudyVCConsole)
 
         for q in database.StudyVCDB:
-            q: database.StudyVCDB = q
             dateObj = pytz.timezone("America/New_York").localize(q.RenewalTime)
+            print(f"dateObj: {dateObj}")
+            print(f"q.RenewalTime: {q.RenewalTime}")
+            print(f"now: {datetime.now(EST)}")
+
             if datetime.now(EST) >= dateObj:
-                user = await self.bot.fetch_user(q.discordID)
+                user = await self.bot
                 await console.send(
                     f"{user.mention} Your study session has ended, set a new goal!"
                 )
@@ -419,6 +424,7 @@ class StudyVCUpdate(commands.Cog):
                 await console.send(
                     f"{user.mention} Your study goal has been updated to '{goal}'.\n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
                 )
+
             elif q.RenewalTime - datetime.now(EST) < timedelta(minutes=5):
                 await console.send(
                     f"{self.bot.get_user(q.discordID).mention} Your study session is ending in **less than 5 minutes**. (Ends at: {q.RenewalTime.strftime(r'%I:%M %p')})\n\nMaybe renew your study session?"
