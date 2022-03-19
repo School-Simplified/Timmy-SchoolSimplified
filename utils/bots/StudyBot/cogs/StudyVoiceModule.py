@@ -60,6 +60,8 @@ def showTotalMinutes(dateObj: datetime):
 
 
 async def addLeaderboardProgress(self, member: discord.Member):
+    print("addLeaderboardProgress called")
+
     StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
     if StudySessionQ.exists():
         StudySessionQ = StudySessionQ.get()
@@ -78,6 +80,7 @@ async def addLeaderboardProgress(self, member: discord.Member):
             currentTotalXP = leaderboardQuery.totalXP
 
             xpNeeded = getXPForNextLvl(currentLvl)
+            print(f"xpNeeded: {xpNeeded}")
             xpEarned = totalmin * self.xpPerMinute
 
             newXP = currentXP + xpEarned
@@ -123,7 +126,7 @@ async def addLeaderboardProgress(self, member: discord.Member):
             q = database.StudyVCLeaderboard.create(
                 discordID=member.id,
                 TTS=totalmin,
-                totalSessions=1,
+                totalSessions=0,
                 xp=newXP,
                 totalXP=newTotalXP,
                 level=newLvl,
@@ -318,7 +321,8 @@ class StudyVCUpdate(commands.Cog):
         self.StudyVCCategory = [945459539967348787]
         self.StudyVCChannels = [954516833694810152]
         self.StudyVCConsole = 954516809577533530
-        
+
+        self.StudyVCChecker.start()
     """
     TODO
     
@@ -334,7 +338,8 @@ class StudyVCUpdate(commands.Cog):
         - Rankcard like Mee6
     """
 
-        
+    def cog_unload(self):
+        self.StudyVCChecker.stop()
 
     @commands.Cog.listener("on_voice_state_update")
     async def StudyVCModule(
