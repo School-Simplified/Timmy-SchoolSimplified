@@ -665,6 +665,9 @@ class StudyVCLeaderboard(BaseModel):
     `TTS`: BigIntegerField()
     Total time spent studying. (Measured in Minutes)
 
+    `TTSWeek`: BigIntegerField()
+    Total time spent in current week. This value gets reset every week (Monday Midnight) (Measured in Minutes)
+
     `totalSessions`: BigIntegerField()
     Total number of sessions.
 
@@ -681,10 +684,12 @@ class StudyVCLeaderboard(BaseModel):
     id = AutoField()
     discordID = BigIntegerField()
     TTS = BigIntegerField(default=0)
+    TTSWeek = BigIntegerField(default=0)
     totalSessions = BigIntegerField(default=0)
     level = IntegerField(default=0)
     xp = IntegerField(default=0)
     totalXP = IntegerField(default=0)
+
 
 app = Flask(__name__)
 
