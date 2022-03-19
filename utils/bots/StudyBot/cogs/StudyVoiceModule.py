@@ -416,7 +416,7 @@ class StudyVCUpdate(commands.Cog):
             print(f"now: {datetime.now(EST)}")
 
             if datetime.now(EST) >= dateObj:
-                user = await self.bot
+                user = await self.bot.fetch_user(q.discordID)
                 await console.send(
                     f"{user.mention} Your study session has ended, set a new goal!"
                 )
