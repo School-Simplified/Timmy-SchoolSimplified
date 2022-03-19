@@ -22,21 +22,22 @@ class StudyLoop(commands.Cog):
 
     @tasks.loop(seconds=10)
     async def TTSWeekCheck(self):
+        print("loop")
         now = datetime.datetime.now(self.est)
         weekdayNow = now.isoweekday()
         timeNow = now.time()
 
         queryLeaderboard = StudyVCLeaderboard.select()
         entries = [entry.id for entry in queryLeaderboard]
-        print(queryLeaderboard)
+
 
         for entry in entries:
             queryLeaderboard = queryLeaderboard.select().where(StudyVCLeaderboard.id == entry)
             queryLeaderboard = queryLeaderboard.get()
             queryLeaderboard.TTSWeeks = 0
 
-
-        queryLeaderboard.save()
+            print(f"ID {queryLeaderboard.id}: {queryLeaderboard.discordID}")
+            queryLeaderboard.save()
 
         if weekdayNow == 1 and (now - self.lastReset >= datetime.timedelta(days=7)) and timeNow >= self.midnight:
             lastReset = now

@@ -413,7 +413,7 @@ class StudyVCUpdate(commands.Cog):
             if datetime.now(EST) >= dateObj:
                 user = await self.bot.fetch_user(q.discordID)
                 await console.send(
-                    f"{self.bot.get_user(q.discordID).mention} Your study session has ended, set a new goal!"
+                    f"{user.mention} Your study session has ended, set a new goal!"
                 )
                 goal, renewal = await setNewStudyGoal(self, console, user, True)
                 await console.send(
