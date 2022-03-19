@@ -673,6 +673,9 @@ class StudyVCLeaderboard(BaseModel):
     discordID = BigIntegerField()
     TTS = BigIntegerField()
     totalSessions = BigIntegerField()
+    level = IntegerField()
+    xp = IntegerField()
+    totalXP = IntegerField()
 
 app = Flask(__name__)
 
