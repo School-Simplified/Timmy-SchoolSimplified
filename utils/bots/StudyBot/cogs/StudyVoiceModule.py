@@ -69,10 +69,33 @@ def getConsoleCH(column_id):
     return ColumnDict[column_id]
 
 
+def getXPForNextLvl(lvl: int):
+    xpNeeded = (5 * lvl * lvl) + (50 * lvl) + 100
+
+    return xpNeeded
+
+
 class StudyVCUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+
+        self.xpPerMinute = 30
+
+    """
+    TODO
+    
+    - Get lvl roles
+    - level check (multiple lvl ups in one session)
+    - if user not in db -> add xp, level etc.
+    - Special role for top time in current week
+        - loop that resets TTSWeek every Monday Midnight
+    
+    - Leaderboard command
+        - Paginator
+        - button which shows current TTSWeek top 1
+    - Rank command
+        - Rankcard like Mee6
+    """
 
     @commands.Cog.listener("on_voice_state_update")
     async def StudyVCModule(
@@ -98,15 +121,141 @@ class StudyVCUpdate(commands.Cog):
                 leaderboardQuery = database.StudyVCLeaderboard.select().where(database.StudyVCLeaderboard.discordID == member.id)
                 if leaderboardQuery.exists():
                     leaderboardQuery = leaderboardQuery.get()
-                    leaderboardQuery.totalMinutes = int(totalmin) + leaderboardQuery.totalMinutes
-                    leaderboardQuery.totalSession = leaderboardQuery.totalSession + 1
+                    leaderboardQuery.TTS = totalmin + leaderboardQuery.totalMinutes
+                    leaderboardQuery.totalSessions = leaderboardQuery.totalSession + 1
+
+                    currentLvl = leaderboardQuery.level
+                    currentXP = leaderboardQuery.xp
+                    currentTotalXP = leaderboardQuery.totalXP
+
+                    xpNeeded = getXPForNextLvl(currentLvl)
+                    xpEarned = totalmin * self.xpPerMinute
+
+                    newXP = currentXP + xpEarned
+                    newTotalXP = currentTotalXP + xpEarned
+                    newLvl = currentLvl
+
+                    if newXP >= xpNeeded:
+
+                        newXPNeeded = xpNeeded
+                        while newXP >= newXPNeeded:
+                            newXP -= newXPNeeded  # 400
+                            newLvl += 1
+                            newXpNeeded = getXPForNextLvl(newLvl)
+
+                        if newLvl == 5:
+                            role = None             # TODO: get lvl 5 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        elif newLvl == 10:
+                            role = None             # TODO: get lvl 10 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        elif newLvl == 20:
+                            role = None             # TODO: get lvl 20 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        elif newLvl == 30:
+                            role = None             # TODO: get lvl 30 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        elif newLvl == 40:
+                            role = None             # TODO: get lvl 40 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        elif newLvl == 50:
+                            role = None             # TODO: get lvl 50 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        elif newLvl == 60:
+                            role = None             # TODO: get lvl 60 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        elif newLvl == 70:
+                            role = None             # TODO: get lvl 70 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        elif newLvl == 80:
+                            role = None             # TODO: get lvl 80 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        elif newLvl == 90:
+                            role = None             # TODO: get lvl 90 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        elif newLvl == 100:
+                            role = None             # TODO: get lvl 100 role
+                            roleStr = f"\nYou've earned a new role: {role}"
+
+                        else:
+                            roleStr = ""
+
+                        dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
+                                f"{roleStr}"
+                        try:
+                            await member.send(dmMSG)
+                        except:
+                            pass
+
+                    if newLvl < 5:
+                        pass
+
+                    elif newLvl < 10:
+                        # TODO: add user lvl 5 role
+                        pass
+
+                    elif newLvl < 20:
+                        # TODO: add user lvl 10 role
+                        pass
+
+                    elif newLvl < 30:
+                        # TODO: add user lvl 20 role
+                        pass
+
+                    elif newLvl < 40:
+                        # TODO: add user lvl 30 role
+                        pass
+
+                    elif newLvl < 50:
+                        # TODO: add user lvl 40 role
+                        pass
+
+                    elif newLvl < 60:
+                        # TODO: add user lvl 50 role
+                        pass
+
+                    elif newLvl < 70:
+                        # TODO: add user lvl 60 role
+                        pass
+
+                    elif newLvl < 80:
+                        # TODO: add user lvl 70 role
+                        pass
+
+                    elif newLvl < 90:
+                        # TODO: add user lvl 80 role
+                        pass
+
+                    elif newLvl < 100:
+                        # TODO: add user lvl 90 role
+                        pass
+
+                    elif newLvl >= 100:
+                        # TODO: add user lvl 100 role
+                        pass
+
+                    leaderboardQuery.xp = newXP
+                    leaderboardQuery.totalXP = newTotalXP
+                    leaderboardQuery.level = newLvl
+
                     leaderboardQuery.save()
 
                 else:
                     q = database.StudyVCLeaderboard.create(
                         discordID=member.id,
-                        totalMinutes=int(totalmin),
+                        TTS=totalmin,
                         totalSessions=1,
+                        # TODO: Add xp, totalXP and level
                     )
                     q.save()
             else:
