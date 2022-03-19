@@ -124,7 +124,8 @@ async def addLeaderboardProgress(self, member: discord.Member, isPaused: bool = 
                 totalSessions=1,
                 xp=newXP,
                 totalXP=newTotalXP,
-                level=newLvl
+                level=newLvl,
+                TTSWeek=totalmin
             )
             q.save()
 
