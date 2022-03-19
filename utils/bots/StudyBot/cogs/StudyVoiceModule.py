@@ -58,31 +58,187 @@ def showTotalMinutes(dateObj: datetime):
 
     return totalmin, now
 
-def addLeaderboardProgress(member: discord.Member, isPaused: bool = False):
+async def addLeaderboardProgress(self, member: discord.Member, isPaused: bool = False):
     StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
     if StudySessionQ.exists():
         StudySessionQ = StudySessionQ.get()
         totalmin, now = showTotalMinutes(StudySessionQ.StartTime)
         leaderboardQuery = database.StudyVCLeaderboard.select().where(database.StudyVCLeaderboard.discordID == member.id)
+
+        isNewLvl = False
         if leaderboardQuery.exists():
             leaderboardQuery = leaderboardQuery.get()
-            leaderboardQuery.TTS = int(totalmin) + leaderboardQuery.TTS
-            leaderboardQuery.totalSessions = leaderboardQuery.totalSessions + 1
+            leaderboardQuery.TTS = totalmin + leaderboardQuery.totalMinutes
+            leaderboardQuery.totalSessions = leaderboardQuery.totalSession + 1
+
+            currentLvl = leaderboardQuery.level
+            currentXP = leaderboardQuery.xp
+            currentTotalXP = leaderboardQuery.totalXP
+
+            xpNeeded = getXPForNextLvl(currentLvl)
+            xpEarned = totalmin * self.xpPerMinute
+
+            newXP = currentXP + xpEarned
+            newTotalXP = currentTotalXP + xpEarned
+            newLvl = currentLvl
+
+            if newXP >= xpNeeded:
+
+                isNewLvl = True
+                newXPNeeded = xpNeeded
+                while newXP >= newXPNeeded:
+                    newXP -= newXPNeeded
+                    newLvl += 1
+                    newXpNeeded = getXPForNextLvl(newLvl)
+
+            leaderboardQuery.xp = newXP
+            leaderboardQuery.totalXP = newTotalXP
+            leaderboardQuery.level = newLvl
+
             leaderboardQuery.save()
 
         else:
+            currentLvl = 0
+            currentXP = 0
+            currentTotalXP = 0
+
+            xpNeeded = getXPForNextLvl(currentLvl)
+            xpEarned = totalmin * self.xpPerMinute
+
+            newXP = currentXP + xpEarned
+            newTotalXP = currentTotalXP + xpEarned
+            newLvl = currentLvl
+
+            if newXP >= xpNeeded:
+
+                isNewLvl = True
+                newXPNeeded = xpNeeded
+                while newXP >= newXPNeeded:
+                    newXP -= newXPNeeded
+                    newLvl += 1
+                    newXpNeeded = getXPForNextLvl(newLvl)
+
             q = database.StudyVCLeaderboard.create(
                 discordID=member.id,
-                totalMinutes=int(totalmin),
+                TTS=totalmin,
                 totalSessions=1,
+                xp=newXP,
+                totalXP=newTotalXP,
+                level=newLvl
             )
             q.save()
+
+
+        if isNewLvl:
+            if newLvl == 5:
+                role = None  # TODO: get lvl 5 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            elif newLvl == 10:
+                role = None  # TODO: get lvl 10 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            elif newLvl == 20:
+                role = None  # TODO: get lvl 20 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            elif newLvl == 30:
+                role = None  # TODO: get lvl 30 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            elif newLvl == 40:
+                role = None  # TODO: get lvl 40 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            elif newLvl == 50:
+                role = None  # TODO: get lvl 50 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            elif newLvl == 60:
+                role = None  # TODO: get lvl 60 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            elif newLvl == 70:
+                role = None  # TODO: get lvl 70 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            elif newLvl == 80:
+                role = None  # TODO: get lvl 80 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            elif newLvl == 90:
+                role = None  # TODO: get lvl 90 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            elif newLvl == 100:
+                role = None  # TODO: get lvl 100 role
+                roleStr = f"\nYou've earned a new role: {role}"
+
+            else:
+                roleStr = ""
+
+            dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
+                    f"{roleStr}"
+            try:
+                await member.send(dmMSG)
+            except:
+                pass
+
+        if newLvl < 5:
+            pass
+
+        elif newLvl < 10:
+            # TODO: add user lvl 5 role
+            pass
+
+        elif newLvl < 20:
+            # TODO: add user lvl 10 role
+            pass
+
+        elif newLvl < 30:
+            # TODO: add user lvl 20 role
+            pass
+
+        elif newLvl < 40:
+            # TODO: add user lvl 30 role
+            pass
+
+        elif newLvl < 50:
+            # TODO: add user lvl 40 role
+            pass
+
+        elif newLvl < 60:
+            # TODO: add user lvl 50 role
+            pass
+
+        elif newLvl < 70:
+            # TODO: add user lvl 60 role
+            pass
+
+        elif newLvl < 80:
+            # TODO: add user lvl 70 role
+            pass
+
+        elif newLvl < 90:
+            # TODO: add user lvl 80 role
+            pass
+
+        elif newLvl < 100:
+            # TODO: add user lvl 90 role
+            pass
+
+        elif newLvl >= 100:
+            # TODO: add user lvl 100 role
+            pass
+
     else:
         return
     StudySessionQ = StudySessionQ.get()
-    StudySessionQ.Paused = isPaused
     StudySessionQ.StartTime = datetime.now(EST)
+    StudySessionQ.Paused = True
     StudySessionQ.save()
+
+
 
 async def setNewStudyGoal(self, console: discord.TextChannel, member: discord.Member, renew: bool):
     now = datetime.now(EST)
@@ -132,6 +288,8 @@ async def setNewStudyGoal(self, console: discord.TextChannel, member: discord.Me
         query.RenewalTime = renewal
         query.save()
     return goal, renewal
+
+
 
 def getConsoleCH(column_id):
     q: database.SandboxConfig = (
@@ -192,184 +350,7 @@ class StudyVCUpdate(commands.Cog):
             )
             and not member.bot
         ):
-            StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
-            if StudySessionQ.exists():
-                StudySessionQ = StudySessionQ.get()
-                totalmin, now = showTotalMinutes(StudySessionQ.StartTime)
-                leaderboardQuery = database.StudyVCLeaderboard.select().where(database.StudyVCLeaderboard.discordID == member.id)
-
-                isNewLvl = False
-                if leaderboardQuery.exists():
-                    leaderboardQuery = leaderboardQuery.get()
-                    leaderboardQuery.TTS = totalmin + leaderboardQuery.totalMinutes
-                    leaderboardQuery.totalSessions = leaderboardQuery.totalSession + 1
-
-                    currentLvl = leaderboardQuery.level
-                    currentXP = leaderboardQuery.xp
-                    currentTotalXP = leaderboardQuery.totalXP
-
-                    xpNeeded = getXPForNextLvl(currentLvl)
-                    xpEarned = totalmin * self.xpPerMinute
-
-                    newXP = currentXP + xpEarned
-                    newTotalXP = currentTotalXP + xpEarned
-                    newLvl = currentLvl
-
-                    if newXP >= xpNeeded:
-
-                        isNewLvl = True
-                        newXPNeeded = xpNeeded
-                        while newXP >= newXPNeeded:
-                            newXP -= newXPNeeded
-                            newLvl += 1
-                            newXpNeeded = getXPForNextLvl(newLvl)
-
-                    leaderboardQuery.xp = newXP
-                    leaderboardQuery.totalXP = newTotalXP
-                    leaderboardQuery.level = newLvl
-
-                    leaderboardQuery.save()
-
-                else:
-                    currentLvl = 0
-                    currentXP = 0
-                    currentTotalXP = 0
-
-                    xpNeeded = getXPForNextLvl(currentLvl)
-                    xpEarned = totalmin * self.xpPerMinute
-
-                    newXP = currentXP + xpEarned
-                    newTotalXP = currentTotalXP + xpEarned
-                    newLvl = currentLvl
-
-                    if newXP >= xpNeeded:
-
-                        isNewLvl = True
-                        newXPNeeded = xpNeeded
-                        while newXP >= newXPNeeded:
-                            newXP -= newXPNeeded
-                            newLvl += 1
-                            newXpNeeded = getXPForNextLvl(newLvl)
-
-                    q = database.StudyVCLeaderboard.create(
-                        discordID=member.id,
-                        TTS=totalmin,
-                        totalSessions=1,
-                        xp=newXP,
-                        totalXP=newTotalXP,
-                        level=newLvl
-                    )
-                    q.save()
-
-
-                if isNewLvl:
-                    if newLvl == 5:
-                        role = None  # TODO: get lvl 5 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    elif newLvl == 10:
-                        role = None  # TODO: get lvl 10 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    elif newLvl == 20:
-                        role = None  # TODO: get lvl 20 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    elif newLvl == 30:
-                        role = None  # TODO: get lvl 30 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    elif newLvl == 40:
-                        role = None  # TODO: get lvl 40 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    elif newLvl == 50:
-                        role = None  # TODO: get lvl 50 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    elif newLvl == 60:
-                        role = None  # TODO: get lvl 60 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    elif newLvl == 70:
-                        role = None  # TODO: get lvl 70 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    elif newLvl == 80:
-                        role = None  # TODO: get lvl 80 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    elif newLvl == 90:
-                        role = None  # TODO: get lvl 90 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    elif newLvl == 100:
-                        role = None  # TODO: get lvl 100 role
-                        roleStr = f"\nYou've earned a new role: {role}"
-
-                    else:
-                        roleStr = ""
-
-                    dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
-                            f"{roleStr}"
-                    try:
-                        await member.send(dmMSG)
-                    except:
-                        pass
-
-                if newLvl < 5:
-                    pass
-
-                elif newLvl < 10:
-                    # TODO: add user lvl 5 role
-                    pass
-
-                elif newLvl < 20:
-                    # TODO: add user lvl 10 role
-                    pass
-
-                elif newLvl < 30:
-                    # TODO: add user lvl 20 role
-                    pass
-
-                elif newLvl < 40:
-                    # TODO: add user lvl 30 role
-                    pass
-
-                elif newLvl < 50:
-                    # TODO: add user lvl 40 role
-                    pass
-
-                elif newLvl < 60:
-                    # TODO: add user lvl 50 role
-                    pass
-
-                elif newLvl < 70:
-                    # TODO: add user lvl 60 role
-                    pass
-
-                elif newLvl < 80:
-                    # TODO: add user lvl 70 role
-                    pass
-
-                elif newLvl < 90:
-                    # TODO: add user lvl 80 role
-                    pass
-
-                elif newLvl < 100:
-                    # TODO: add user lvl 90 role
-                    pass
-
-                elif newLvl >= 100:
-                    # TODO: add user lvl 100 role
-                    pass
-
-            else:
-                return
-            StudySessionQ = StudySessionQ.get()
-            StudySessionQ.StartTime = datetime.now(EST)
-            StudySessionQ.Paused = True
-            StudySessionQ.save()
+            await addLeaderboardProgress(self, member, True)
             await console.send(
                 f"{member.mention} has left the channel, saved your current progress!"
             )
