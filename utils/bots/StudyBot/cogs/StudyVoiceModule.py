@@ -101,7 +101,7 @@ async def addLeaderboardProgress(self, member: discord.Member):
                     newLvl += 1
                     print(f"newLvl after increment: {newLvl}")
 
-                    newXpNeeded = getXPForNextLvl(newLvl)
+                    newXPNeeded = getXPForNextLvl(newLvl)
 
                     print("\n")
 
@@ -138,7 +138,7 @@ async def addLeaderboardProgress(self, member: discord.Member):
                     newLvl += 1
                     print(f"newLvl after increment: {newLvl}")
 
-                    newXpNeeded = getXPForNextLvl(newLvl)
+                    newXPNeeded = getXPForNextLvl(newLvl)
 
                     print("\n")
 
