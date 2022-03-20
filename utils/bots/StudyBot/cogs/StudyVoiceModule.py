@@ -60,7 +60,7 @@ def showTotalMinutes(dateObj: datetime):
 
 
 async def addLeaderboardProgress(self, member: discord.Member):
-    print("addLeaderboardProgress called")
+    print(f"addLeaderboardProgress called: {member}")
 
     StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
     if StudySessionQ.exists():
@@ -94,11 +94,16 @@ async def addLeaderboardProgress(self, member: discord.Member):
                     print(f"newXP: {newXP}")
                     print(f"newXPNeeded: {newXPNeeded}")
                     print(f"newLvl: {newLvl}")
+
                     newXP -= newXPNeeded
                     print(f"newXP after minus: {newXP}")
+
                     newLvl += 1
                     print(f"newLvl after increment: {newLvl}")
+
                     newXpNeeded = getXPForNextLvl(newLvl)
+
+                    print("\n")
 
             leaderboardQuery.xp = newXP
             leaderboardQuery.totalXP = newTotalXP
@@ -123,9 +128,19 @@ async def addLeaderboardProgress(self, member: discord.Member):
                 isNewLvl = True
                 newXPNeeded = xpNeeded
                 while newXP >= newXPNeeded:
+                    print(f"newXP: {newXP}")
+                    print(f"newXPNeeded: {newXPNeeded}")
+                    print(f"newLvl: {newLvl}")
+
                     newXP -= newXPNeeded
+                    print(f"newXP after minus: {newXP}")
+
                     newLvl += 1
+                    print(f"newLvl after increment: {newLvl}")
+
                     newXpNeeded = getXPForNextLvl(newLvl)
+
+                    print("\n")
 
             q = database.StudyVCLeaderboard.create(
                 discordID=member.id,
@@ -151,7 +166,6 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
         elif newLvl < 20:
             role = None  # TODO: get lvl 10 role and add to user
-            roleStr = f"\nYou've earned a new role: {role}"
 
             if currentLvl < 10:
                 roleStr = f"\nYou've earned a new role: {role}"
@@ -159,7 +173,6 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
         elif newLvl < 30:
             role = None  # TODO: get lvl 20 role and add to user
-            roleStr = f"\nYou've earned a new role: {role}"
 
             if currentLvl < 20:
                 roleStr = f"\nYou've earned a new role: {role}"
@@ -167,7 +180,6 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
         elif newLvl < 40:
             role = None  # TODO: get lvl 30 role and add to user
-            roleStr = f"\nYou've earned a new role: {role}"
 
             if currentLvl < 30:
                 roleStr = f"\nYou've earned a new role: {role}"
@@ -175,7 +187,6 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
         elif newLvl < 50:
             role = None  # TODO: get lvl 40 role and add to user
-            roleStr = f"\nYou've earned a new role: {role}"
 
             if currentLvl < 40:
                 roleStr = f"\nYou've earned a new role: {role}"
@@ -183,7 +194,6 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
         elif newLvl < 60:
             role = None  # TODO: get lvl 50 role and add to user
-            roleStr = f"\nYou've earned a new role: {role}"
 
             if currentLvl < 50:
                 roleStr = f"\nYou've earned a new role: {role}"
@@ -191,7 +201,6 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
         elif newLvl < 70:
             role = None  # TODO: get lvl 60 role and add to user
-            roleStr = f"\nYou've earned a new role: {role}"
 
             if currentLvl < 60:
                 roleStr = f"\nYou've earned a new role: {role}"
@@ -199,7 +208,6 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
         elif newLvl < 80:
             role = None  # TODO: get lvl 70 role and add to user
-            roleStr = f"\nYou've earned a new role: {role}"
 
             if currentLvl < 70:
                 roleStr = f"\nYou've earned a new role: {role}"
@@ -207,7 +215,6 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
         elif newLvl < 90:
             role = None  # TODO: get lvl 80 role and add to user
-            roleStr = f"\nYou've earned a new role: {role}"
 
             if currentLvl < 80:
                 roleStr = f"\nYou've earned a new role: {role}"
@@ -215,7 +222,6 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
         elif newLvl < 100:
             role = None  # TODO: get lvl 90 role and add to user
-            roleStr = f"\nYou've earned a new role: {role}"
 
             if currentLvl < 90:
                 roleStr = f"\nYou've earned a new role: {role}"
@@ -223,14 +229,15 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
         elif newLvl >= 100:
             role = None  # TODO: get lvl 100 role and add to user
-            roleStr = f"\nYou've earned a new role: {role}"
 
             if currentLvl < 100:
                 roleStr = f"\nYou've earned a new role: {role}"
             pass
 
-        dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
-                f"{roleStr}"
+        if isNewLvl:
+
+            dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
+                    f"{roleStr}"
         try:
             await member.send(dmMSG)
         except:
@@ -238,6 +245,7 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
     else:
         return
+
     StudySessionQ = StudySessionQ.get()
     StudySessionQ.StartTime = datetime.now(EST)
     StudySessionQ.Paused = True
