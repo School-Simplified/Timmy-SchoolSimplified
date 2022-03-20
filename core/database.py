@@ -687,8 +687,8 @@ class StudyVCLeaderboard(BaseModel):
     TTSWeek = BigIntegerField(default=0)
     totalSessions = BigIntegerField(default=0)
     level = IntegerField(default=0)
-    xp = IntegerField(default=0)
-    totalXP = IntegerField(default=0)
+    xp = BigIntegerField(default=0)
+    totalXP = BigIntegerField(default=0)
 
 
 app = Flask(__name__)
