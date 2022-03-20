@@ -243,6 +243,30 @@ async def addLeaderboardProgress(member: discord.Member):
     return True
 
 
+async def endSession(member: discord.Member):
+    """
+    Ends the session by kicking the user out of the voice channel and removing the user from the database table `StudyVCDB`.
+
+    :param member: The member which should get removed from the database.
+
+    :return: Whenever the user has been found in the database: bool
+    """
+
+    StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
+    if StudySessionQ.exists():
+        StudySessionQ = StudySessionQ.get()
+        StudySessionQ.delete_instance()
+        StudySessionQ.save()
+
+        if member.voice:
+            await member.move_to(None)
+
+    else:
+        return False
+
+    return True
+
+
 class StudyToDo(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -303,7 +327,8 @@ class StudyToDo(commands.Cog):
 
         if isInDatabase:
             if ctx.author.voice:
-                await ctx.author.move_to(None)
+                await endSession(ctx.author)
+                await ctx.send(f"{ctx.author.mention} Your study session ended. To make one again, join any StudyVC!")
 
         else:
             await ctx.send(f"You don't have a study session yet! Make one by joining any StudyVC!")
