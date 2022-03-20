@@ -1,3 +1,5 @@
+# TODO: Testing Feedback Modal, Testing TicketLockButton
+
 import asyncio
 import io
 import json
@@ -20,7 +22,6 @@ import requests
 import sentry_sdk
 from botocore.exceptions import ClientError
 from discord import (
-    ApplicationCommandError,
     Button,
     ButtonStyle,
     DiscordException,
@@ -964,43 +965,8 @@ class LEADER_ID:
             "ch_mainannouncements", 936464173687259226
         )
     )
-
-    # *** Roles ***
-    r_corporateOfficer = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444)
-    )
-    r_president = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_president", 900940957783056444)
-    )
-    r_vicePresident = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_vicepresident", 888929996175978508)
-    )
-    r_boardMember = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_boardmember", 888929996188549189)
-    )
-    r_director = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_director", 892531463482900480)
-    )
-    r_ssDigitalCommittee = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "r_ssdigitalcommittee", 912472488594771968
-        )
-    )
-    r_informationTechnologyManager = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "r_informationtechnologymanager", 943942441357172758
-        )
-    )
-
-    # *** Roles **
-    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
-
-    # *** Channels ***
     ch_announcements = int(
         ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362)
-    )
-    ch_mktAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_mktannouncements", 816733579660754944)
     )
     ch_acadAnnouncements = int(
         ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557)
@@ -1014,66 +980,6 @@ class LEADER_ID:
         )
     )
 
-
-class LEADER_ID:
-    """
-    IDs of the Leadership Lounge server.
-    NOTE: If you want to add IDs, please use the format as below.
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    # *** Guilds ***
-    g_leader = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154)
-    )
-
-    # *** Channels ***
-    ch_staffAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_staffannouncements", 936134263777148949
-        )
-    )
-    ch_envAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_envannouncements", 942572395640782909
-        )
-    )
-    ch_rebrandAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_rebrandannouncements", 946180039630782474
-        )
-    )
-    ch_workonlyAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_workonlyannouncements", 890993285940789299
-        )
-    )
-    ch_financeAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_financeannouncements", 919341240280023060
-        )
-    )
-    ch_mktAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_mktannouncements", 942792208841588837
-        )
-    )
-    ch_ssdAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_ssdannouncements", 947656507162525698
-        )
-    )
-    ch_mainAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_mainannouncements", 936464173687259226
-        )
-    )
-
     # *** Roles ***
     r_corporateOfficer = int(
         ConfigcatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444)
@@ -1100,6 +1006,7 @@ class LEADER_ID:
             "r_informationtechnologymanager", 943942441357172758
         )
     )
+    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
 
 
 class CheckDB_CC:
@@ -1170,16 +1077,6 @@ def config_patch(key, value):
     )
     print(r.status_code)
     return r
-
-
-class ErrorCodes:
-    {
-        "TOE-": [discord.errors, DiscordException, ApplicationCommandError],
-        "TOE-": [
-            KeyError,
-            TypeError,
-        ],
-    }
 
 
 class Emoji:
@@ -1582,7 +1479,7 @@ class TechnicalCommissionConfirm(discord.ui.View):
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         TranscriptLOG = self.bot.get_channel(TECH_ID.ch_ticketLog)
-        ch = await self.bot.fetch_channel(interaction.channel_id)
+        ch = await self.bot.get_channel(interaction.channel_id)
 
         await rawExport(self, ch, TranscriptLOG, interaction.user)
         await ch.delete()
@@ -1611,7 +1508,7 @@ class LockButton(discord.ui.View):
     )
     async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.value = True
-        ch = await self.bot.fetch_channel(interaction.channel_id)
+        ch = await self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TechnicalCommissionConfirm(self.bot)
 
         msg = await ch.send(
@@ -1696,8 +1593,8 @@ class TicketLockButton(discord.ui.View):
     )
     async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.value = True
-        ch = await self.bot.fetch_channel(interaction.channel_id)
-        TempConfirmInstance = TicketTempConfirm(self.bot)
+        ch = await self.bot.get_channel(interaction.channel_id)
+        TempConfirmInstance = TicketTempConfirm()
 
         msg = await ch.send(
             "Are you sure you want to close this ticket?", view=TempConfirmInstance
@@ -1728,43 +1625,43 @@ class TicketTempConfirm(discord.ui.View):
         self.stop()
 
 
-class FeedbackModel(discord.ui.Modal):
+class FeedbackModel(discord.ui.Modal, title="Submit Feedback"):
     def __init__(self) -> None:
-        super().__init__("Submit Feedback")
+        super().__init__()
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="What did you try to do?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Describe the steps to reproduce the issue",
-                style=discord.InputTextStyle.short,
+                style=discord.TextStyle.short,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="What happened?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="What was supposed to happen?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Anything else?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 required=False,
             )
         )
 
     async def callback(self, interaction: discord.Interaction):
-        response = f"User Action: {self.children[0].value}\nSteps to reproduce the issue: {self.children[1].value}\nWhat happened: {self.children[2].value}\nExpected Result: {self.children[3].value}\nAnything else: {self.children[4].value}"
+        response = f"User Action: {self.children[0]}\nSteps to reproduce the issue: {self.children[1]}\nWhat happened: {self.children[2]}\nExpected Result: {self.children[3]}\nAnything else: {self.children[4]}"
         url = f"https://sentry.io/api/0/projects/schoolsimplified/timmy/user-feedback/"
         headers = {"Authorization": f'Bearer {os.getenv("FDB_SENTRY")}'}
 
