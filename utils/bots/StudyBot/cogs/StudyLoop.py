@@ -29,22 +29,13 @@ class StudyLoop(commands.Cog):
         queryLeaderboard = StudyVCLeaderboard.select()
         entries = [entry.id for entry in queryLeaderboard]
 
-
-        for entry in entries:
-            queryLeaderboard = queryLeaderboard.select().where(StudyVCLeaderboard.id == entry)
-            queryLeaderboard = queryLeaderboard.get()
-
-            print(f"ID {queryLeaderboard.id}: Before {queryLeaderboard.TTSWeek}")
-
-            queryLeaderboard.TTSWeek = 0
-
-            print(f"ID {queryLeaderboard.id}: After {queryLeaderboard.TTSWeek}")
-            queryLeaderboard.save()
-
         if weekdayNow == 1 and (now - self.lastReset >= datetime.timedelta(days=7)) and timeNow >= self.midnight:
             lastReset = now
-
-
+            for entry in entries:
+                queryLeaderboard = queryLeaderboard.select().where(StudyVCLeaderboard.id == entry)
+                queryLeaderboard = queryLeaderboard.get()
+                queryLeaderboard.TTSWeek = 0
+                queryLeaderboard.save()
 
 
 def setup(bot: commands.Bot):

@@ -4,6 +4,7 @@ import discord
 import pytz
 from core import database
 from core.common import hexColors
+from core.common import TECH_ID
 from discord.ext import commands
 
 EST = pytz.timezone("US/Eastern")
@@ -21,6 +22,9 @@ def showTotalMinutes(dateObj: datetime):
 class StudyToDo(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+
+        self.StudyVCGuildID = TECH_ID.g_tech
+
 
     @commands.group(aliaseS=["study-todo"])
     async def studytodo(self, ctx: commands.Context):
@@ -65,7 +69,7 @@ class StudyToDo(commands.Cog):
 
 
     @studytodo.command()
-    async def end(self, ctx: commands.Context, todo_id: int):
+    async def end(self, ctx: commands.Context):
         """
         Removes an item from the study to-do list of the author/owner.
         """
@@ -120,22 +124,26 @@ class StudyToDo(commands.Cog):
         else:
             return await ctx.send(f"You don't have a study session yet! Make one by joining any StudyVC!")
     
-    @studytodo.command()
+    @studytodo.command(aliases=["lb"])
     async def leaderboard(self, ctx):
-        l = []
-        for t in database.StudyVCLeaderboard.select().order_by(database.StudyVCLeaderboard.TTS.desc()):
+        lb = []
+
+        for entry in database.StudyVCLeaderboard.select().order_by(database.StudyVCLeaderboard.totalXP.desc(),
+                                                                   database.StudyVCLeaderboard.xp.desc()):
+            member =
+
             i = 1
-            #totalmin, now = showTotalMinutes(t.TTS)
-            totalmin = t.TTS
+            totalmin = entry.TTS
             if totalmin > 60:
                 totalmin = totalmin // 60
                 totalmin = f"{totalmin} hour(s)"
             else:
                 totalmin = f"{totalmin} minute(s)"
             user = await self.bot.fetch_user(t.discordID)
-            l.append(f"{str(i)}. {user.name} -> {totalmin}")
+            lb.append(f"{str(i)}. {user.name} -> {totalmin}")
             i += 1
-        FormattedList = "\n".join(l)
+
+        FormattedList = "\n".join(lb)
         embed = discord.Embed(
             title="Study Leaderboard",
             description=f"```\n{FormattedList}\n```",
