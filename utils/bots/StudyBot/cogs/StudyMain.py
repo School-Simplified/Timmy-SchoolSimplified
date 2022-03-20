@@ -130,8 +130,6 @@ class StudyToDo(commands.Cog):
 
         for entry in database.StudyVCLeaderboard.select().order_by(database.StudyVCLeaderboard.totalXP.desc(),
                                                                    database.StudyVCLeaderboard.xp.desc()):
-            member =
-
             i = 1
             totalmin = entry.TTS
             if totalmin > 60:
