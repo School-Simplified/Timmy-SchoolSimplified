@@ -120,11 +120,13 @@ class VotingBot(commands.Cog):
 
     @commands.Cog.listener("on_interaction")
     async def on_voting_interaction(self, interaction: discord.Interaction):
-        query = database.Voting.select()
-        msgIDList = [msg.msgID for msg in query]
 
         if interaction.message is None:
             return
+
+        query = database.Voting.select()
+        msgIDList = [msg.msgID for msg in query]
+
         interMsgID = interaction.message.id
         print(f"interMsgID: {interMsgID}")
         if interMsgID in msgIDList:
@@ -146,6 +148,8 @@ class VotingBot(commands.Cog):
         LEADER_ID.r_ssDigitalCommittee,
     )
     async def vote(self, ctx):
+        # TODO: error, default message
+
         pass
 
     @vote.command()
