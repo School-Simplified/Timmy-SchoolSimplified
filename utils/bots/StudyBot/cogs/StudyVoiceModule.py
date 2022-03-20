@@ -1,12 +1,15 @@
 import asyncio
 import datetime
 from datetime import datetime, timedelta
+import pytz
 
 import discord
+from discord.ext import commands, tasks
+
 from core import database
 from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID, TECH_ID, SandboxConfig, SelectMenuHandler
-from discord.ext import commands, tasks
-import pytz
+from utils.bots.StudyBot.cogs.StudyMain import addLeaderboardProgress
+
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 EST = pytz.timezone("US/Eastern")
@@ -23,234 +26,6 @@ SSTypes = [
         emoji="💪",
     ),
 ]
-
-def convert_time_to_seconds(time):
-    try:
-        value = int(time[:-1]) * time_convert[time[-1]]
-    except:
-        value = time
-    finally:
-        if value < 60:
-            return None
-        else:
-            return value
-
-
-def showFutureTime(time):
-    now = datetime.now(EST)
-    output = convert_time_to_seconds(time)
-    if output is None:
-        return None
-
-    add = timedelta(seconds=int(output))
-    now_plus_10 = now + add
-
-    return now_plus_10.strftime(r"%I:%M %p")
-
-
-def showTotalMinutes(dateObj: datetime):
-    now = datetime.now(EST)
-    dateObj = pytz.timezone("America/New_York").localize(dateObj)
-
-    deltaTime = now - dateObj
-
-    totalmin = deltaTime.total_seconds() // 60
-
-    return totalmin, now
-
-
-async def addLeaderboardProgress(self, member: discord.Member):
-    print(f"addLeaderboardProgress called: {member}")
-
-    StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
-    if StudySessionQ.exists():
-        StudySessionQ = StudySessionQ.get()
-        totalmin, now = showTotalMinutes(StudySessionQ.StartTime)
-        leaderboardQuery = database.StudyVCLeaderboard.select().where(database.StudyVCLeaderboard.discordID == member.id)
-
-        isNewLvl = False
-        if leaderboardQuery.exists():
-            leaderboardQuery = leaderboardQuery.get()
-            leaderboardQuery.TTS = totalmin + leaderboardQuery.TTS
-            leaderboardQuery.TTSWeek = totalmin + leaderboardQuery.TTSWeek
-            leaderboardQuery.totalSessions = leaderboardQuery.totalSessions + 1
-
-            currentLvl = leaderboardQuery.level
-            currentXP = leaderboardQuery.xp
-            currentTotalXP = leaderboardQuery.totalXP
-
-            xpNeeded = getXPForNextLvl(currentLvl)
-            xpEarned = totalmin * self.xpPerMinute
-
-            newXP = currentXP + xpEarned
-            newTotalXP = currentTotalXP + xpEarned
-            newLvl = currentLvl
-
-            if newXP >= xpNeeded:
-
-                isNewLvl = True
-                newXPNeeded = xpNeeded
-                while newXP >= newXPNeeded:
-                    print(f"newXP: {newXP}")
-                    print(f"newXPNeeded: {newXPNeeded}")
-                    print(f"newLvl: {newLvl}")
-
-                    newXP -= newXPNeeded
-                    print(f"newXP after minus: {newXP}")
-
-                    newLvl += 1
-                    print(f"newLvl after increment: {newLvl}")
-
-                    newXPNeeded = getXPForNextLvl(newLvl)
-
-                    print("\n")
-
-            leaderboardQuery.xp = newXP
-            leaderboardQuery.totalXP = newTotalXP
-            leaderboardQuery.level = newLvl
-
-            leaderboardQuery.save()
-
-        else:
-            currentLvl = 0
-            currentXP = 0
-            currentTotalXP = 0
-
-            xpNeeded = getXPForNextLvl(currentLvl)
-            xpEarned = totalmin * self.xpPerMinute
-
-            newXP = currentXP + xpEarned
-            newTotalXP = currentTotalXP + xpEarned
-            newLvl = currentLvl
-
-            if newXP >= xpNeeded:
-
-                isNewLvl = True
-                newXPNeeded = xpNeeded
-                while newXP >= newXPNeeded:
-                    print(f"newXP: {newXP}")
-                    print(f"newXPNeeded: {newXPNeeded}")
-                    print(f"newLvl: {newLvl}")
-
-                    newXP -= newXPNeeded
-                    print(f"newXP after minus: {newXP}")
-
-                    newLvl += 1
-                    print(f"newLvl after increment: {newLvl}")
-
-                    newXPNeeded = getXPForNextLvl(newLvl)
-
-                    print("\n")
-
-            q = database.StudyVCLeaderboard.create(
-                discordID=member.id,
-                TTS=totalmin,
-                totalSessions=0,
-                xp=newXP,
-                totalXP=newTotalXP,
-                level=newLvl,
-                TTSWeek=totalmin
-            )
-            q.save()
-
-        roleStr = ""
-        if newLvl < 5:
-            pass
-
-        elif newLvl < 10:
-            role = None  # TODO: get lvl 5 role and add to user
-
-            if currentLvl < 5:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 20:
-            role = None  # TODO: get lvl 10 role and add to user
-
-            if currentLvl < 10:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 30:
-            role = None  # TODO: get lvl 20 role and add to user
-
-            if currentLvl < 20:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 40:
-            role = None  # TODO: get lvl 30 role and add to user
-
-            if currentLvl < 30:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 50:
-            role = None  # TODO: get lvl 40 role and add to user
-
-            if currentLvl < 40:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 60:
-            role = None  # TODO: get lvl 50 role and add to user
-
-            if currentLvl < 50:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 70:
-            role = None  # TODO: get lvl 60 role and add to user
-
-            if currentLvl < 60:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 80:
-            role = None  # TODO: get lvl 70 role and add to user
-
-            if currentLvl < 70:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 90:
-            role = None  # TODO: get lvl 80 role and add to user
-
-            if currentLvl < 80:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 100:
-            role = None  # TODO: get lvl 90 role and add to user
-
-            if currentLvl < 90:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl >= 100:
-            role = None  # TODO: get lvl 100 role and add to user
-
-            if currentLvl < 100:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        if isNewLvl:
-
-            dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
-                    f"{roleStr}"
-            try:
-                await member.send(dmMSG)
-            except:
-                pass
-
-    else:
-        return
-
-    StudySessionQ = StudySessionQ.get()
-    StudySessionQ.StartTime = datetime.now(EST)
-    StudySessionQ.Paused = True
-    StudySessionQ.save()
-
 
 
 async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
@@ -272,7 +47,7 @@ async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
         selection_str = var.view_response
     else:
         await member.move_to(None)
-        return await MSV.send("Timed out, try again later.")
+        return await console.send(f"{member.mention} Timed out, try again later.")
     
     await console.send("Send your goal for this study session!")
 
@@ -318,11 +93,6 @@ def getConsoleCH(column_id):
     }
     return ColumnDict[column_id]
 
-
-def getXPForNextLvl(lvl: int):
-    xpNeeded = (5 * lvl * lvl) + (50 * lvl) + 100
-
-    return xpNeeded
 
 
 class StudyVCUpdate(commands.Cog):
@@ -414,20 +184,20 @@ class StudyVCUpdate(commands.Cog):
                         f"{member.mention} You already have a study session going!\n\nMake sure you come back at {query.RenewalTime.strftime(r'%I:%M %p')} to renew your study session!"
                     )
 
+
     @tasks.loop(seconds=10) # TODO: change to 60s due of rate limits
     async def StudyVCChecker(self):
         """Loop through each session and check if a user's study session is about to end"""
         print("loop StudyVCChecker")
 
         StudyVCGuildObj = await self.bot.fetch_guild(self.StudyVCGuild)
-        StudyVCConsoleObj = self.bot.get_channel(self.StudyVCConsole)
+        StudyVCConsoleObj = await StudyVCGuildObj.fetch_channel(self.StudyVCConsole)
 
         for q in database.StudyVCDB:
             dateObj = pytz.timezone("America/New_York").localize(q.RenewalTime)
 
+            member = await StudyVCGuildObj.fetch_member(q.discordID)
             if datetime.now(EST) >= dateObj:
-
-                member = await StudyVCGuildObj.fetch_member(q.discordID)
                 if member.voice:
                     await member.move_to(None)
                     await StudyVCConsoleObj.send(
@@ -440,7 +210,7 @@ class StudyVCUpdate(commands.Cog):
 
             elif dateObj - datetime.now(EST) < timedelta(minutes=5):
                 await StudyVCConsoleObj.send(
-                    f"{self.bot.get_user(q.discordID).mention} Your study session is ending in **less than 5 minutes**. (Ends at: {q.RenewalTime.strftime(r'%I:%M %p')})\n\nMaybe renew your study session?"
+                    f"{member.mention} Your study session is ending in **less than 5 minutes**. (Ends at: {dateObj.strftime(r'%I:%M %p')})\n\nMaybe renew your study session?"
                 )
 
 
