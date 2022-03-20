@@ -33,9 +33,12 @@ class StudyLoop(commands.Cog):
         for entry in entries:
             queryLeaderboard = queryLeaderboard.select().where(StudyVCLeaderboard.id == entry)
             queryLeaderboard = queryLeaderboard.get()
-            queryLeaderboard.TTSWeeks = 0
 
-            print(f"ID {queryLeaderboard.id}: {queryLeaderboard.discordID}")
+            print(f"ID {queryLeaderboard.id}: Before {queryLeaderboard.TTSWeek}")
+
+            queryLeaderboard.TTSWeek = 0
+
+            print(f"ID {queryLeaderboard.id}: After {queryLeaderboard.TTSWeek}")
             queryLeaderboard.save()
 
         if weekdayNow == 1 and (now - self.lastReset >= datetime.timedelta(days=7)) and timeNow >= self.midnight:
