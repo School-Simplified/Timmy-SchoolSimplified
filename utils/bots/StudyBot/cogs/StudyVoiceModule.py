@@ -293,6 +293,10 @@ async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
         query.goal = goal
         query.RenewalTime = renewal
         query.save()
+
+    await console.send(
+        f"{member.mention} Your study goal has been updated to '{goal}'.\n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
+    )
     return goal, renewal
 
 
@@ -322,6 +326,8 @@ class StudyVCUpdate(commands.Cog):
         self.StudyVCChannels = [954516833694810152]
         self.StudyVCConsole = 954516809577533530
 
+        self.StudyVCGuild = 932066545117585428
+
         self.StudyVCChecker.start()
     """
     TODO
@@ -349,6 +355,8 @@ class StudyVCUpdate(commands.Cog):
         after: discord.VoiceState,
     ):
         console: discord.TextChannel = await self.bot.fetch_channel(self.StudyVCConsole)
+        if member.guild.id != self.StudyVCGuild:
+            return
         if (
             before.channel is not None
             and (
@@ -371,9 +379,6 @@ class StudyVCUpdate(commands.Cog):
             query = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
             if not query.exists():
                 goal, renewal = await setNewStudyGoal(self, console, member, False)
-                await console.send(
-                    f"{member.mention} Your study goal has been updated to '{goal}'.\n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
-                )
             else:
                 query = query.get()
                 query.Paused = False
@@ -407,7 +412,7 @@ class StudyVCUpdate(commands.Cog):
         """Loop through each session and check if a user's study session is about to end"""
         print("loop StudyVCChecker")
 
-        console = await self.bot.fetch_channel(self.StudyVCConsole)
+        console: discord.TextChannel = await self.bot.fetch_channel(self.StudyVCConsole)
 
         for q in database.StudyVCDB:
             dateObj = pytz.timezone("America/New_York").localize(q.RenewalTime)
@@ -416,14 +421,16 @@ class StudyVCUpdate(commands.Cog):
             print(f"now: {datetime.now(EST)}")
 
             if datetime.now(EST) >= dateObj:
-                user = await self.bot.fetch_user(q.discordID)
-                await console.send(
-                    f"{user.mention} Your study session has ended, set a new goal!"
-                )
-                goal, renewal = await setNewStudyGoal(self, console, user, True)
-                await console.send(
-                    f"{user.mention} Your study goal has been updated to '{goal}'.\n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
-                )
+                member = await console.guild.fetch_member(q.discordID)
+                if member.voice:
+                    await member.move_to(None)
+                    await console.send(
+                        f"{member.mention} Your study session has ended, set a new goal!"
+                    )
+                    goal, renewal = await setNewStudyGoal(self, console, member, True)
+                    await console.send(
+                        f"{member.mention} Your study goal has been updated to '{goal}'.\n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
+                    )
 
             elif q.RenewalTime - datetime.now(EST) < timedelta(minutes=5):
                 await console.send(
