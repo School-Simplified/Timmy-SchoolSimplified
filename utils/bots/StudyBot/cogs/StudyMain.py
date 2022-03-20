@@ -80,6 +80,50 @@ def _getXPForNextLvl(lvl: int):
     return xpNeeded
 
 
+def _shortNumber(number: int) -> str:
+    """
+    Shorts a number and adds the number abbreviation to it.
+        - Thousands: K
+        - Millions: M
+        - Billions: B
+        - Trillions: T
+
+    :param number: The number which should get shorted: int
+
+    :return: The string with the number and if needed with the abbreviation: str
+    """
+
+    numberStr = ...     # type: str
+
+    if number < 1000:
+        numberStr = f"{number}"
+
+    elif number < 1000000:
+        number /= 1000
+        number = round(number, 2)
+        numberStr = f"{number}K"
+
+    elif number < 1000000000:
+        number /= 1000000
+        number = round(number, 2)
+        numberStr = f"{number}M"
+
+    elif number < 1000000000000:
+        number /= 1000000000
+        number = round(number, 2)
+        numberStr = f"{number}B"
+
+    elif number < 1000000000000000:
+        number /= 1000000000000
+        number = round(number, 2)
+        numberStr = f"{number}T"
+
+    else:
+        raise ValueError("Number is too big to handle.")
+
+    return numberStr
+
+
 async def addLeaderboardProgress(member: discord.Member):
     """
     Updates the data in the database table `StudyVCLeaderboard` of a specific member and adds level roles to the member if needed.
@@ -372,25 +416,37 @@ class StudyToDo(commands.Cog):
     
     @studytodo.command(aliases=["lb"])
     async def leaderboard(self, ctx):
-        lb = []
 
+        guild = await self.bot.fetch_guild(self.StudyVCGuildID)
+
+        lbList = []
+        i = 1
         for entry in database.StudyVCLeaderboard.select().order_by(database.StudyVCLeaderboard.totalXP.desc(),
                                                                    database.StudyVCLeaderboard.xp.desc()):
-            i = 1
-            totalmin = entry.TTS
-            if totalmin > 60:
-                totalmin = totalmin // 60
-                totalmin = f"{totalmin} hour(s)"
-            else:
-                totalmin = f"{totalmin} minute(s)"
-            user = await self.bot.fetch_user(entry.discordID)
-            lb.append(f"{str(i)}. {user.name} -> {totalmin}")
-            i += 1
+            member = await guild.fetch_member(entry.discordID)
+            print(entry, member)
+            if member:
 
-        FormattedList = "\n".join(lb)
+                if i == 1:
+                    place = "🥇"
+
+                elif i == 2:
+                    place = "🥈"
+
+                elif i == 3:
+                    place = "🥉"
+
+                else:
+                    place = f"`{i}th`"
+
+                totalXPStr = _shortNumber(entry.totalXP)
+                lbList.append(f"{place} **{member}**: `{totalXPStr} XP`")
+                i += 1
+        print(lbList)
+        FormattedList = "\n".join(lbList)
         embed = discord.Embed(
             title="Study Leaderboard",
-            description=f"```\n{FormattedList}\n```",
+            description=f"{FormattedList}",
             color=hexColors.ss_blurple,
         )
         embed.set_footer(
