@@ -143,10 +143,12 @@ class StudyVCUpdate(commands.Cog):
             )
             and not member.bot
         ):
-            await addLeaderboardProgress(member)
-            await console.send(
-                f"{member.mention} has left the channel, saved your current progress!"
-            )
+            StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
+            if StudySessionQ.exists():
+                await addLeaderboardProgress(member)
+                await console.send(
+                    f"{member.mention} has left the channel, saved your current progress!"
+                )
 
         elif (
             after.channel is not None
