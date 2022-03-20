@@ -238,10 +238,10 @@ async def addLeaderboardProgress(self, member: discord.Member):
 
             dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
                     f"{roleStr}"
-        try:
-            await member.send(dmMSG)
-        except:
-            pass
+            try:
+                await member.send(dmMSG)
+            except:
+                pass
 
     else:
         return
