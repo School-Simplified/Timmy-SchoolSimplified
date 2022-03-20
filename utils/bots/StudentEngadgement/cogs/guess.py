@@ -29,7 +29,7 @@ class Engagement(commands.Cog):
         # ssd = await self.bot.fetch_guild(950799439625355294)
         # guess_channel: discord.TextChannel = ssd.get_channel(950083341967843398)
         # if not guess_channel:
-        guess_channel = await self.bot.fetch_channel(950083341967843398)
+        guess_channel = await self.bot.fetch_channel(952402735167320084)
         await guess_channel.send(embed=embed)
         await ctx.respond("Your guess has been submitted!", ephemeral=True)
 
