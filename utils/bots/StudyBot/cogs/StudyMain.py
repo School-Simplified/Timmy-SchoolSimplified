@@ -7,6 +7,25 @@ from core.common import hexColors
 from core.common import TECH_ID
 from discord.ext import commands
 
+"""
+TODO
+
+- Get lvl roles in addLeaderboardProgress
+- Special role for top time in current week
+    - loop that resets TTSWeek every Monday Midnight
+- After session has ended automatically 5 or 10 min break
+- After break new goal
+- maybe messages in embeds?
+- maybe rename studytodo to studyvc?
+- do we need studytodo list and set?
+
+- Leaderboard command
+    - Paginator
+    - button which shows current TTSWeek top 1
+- Rank command
+    - Rankcard like Mee6
+"""
+
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 EST = pytz.timezone("US/Eastern")
@@ -321,8 +340,6 @@ class StudyToDo(commands.Cog):
         """
         Removes an item from the study to-do list of the author/owner.
         """
-        console: discord.TextChannel = await self.bot.fetch_channel(954516809577533530)
-
         isInDatabase = await addLeaderboardProgress(ctx.author)
 
         if isInDatabase:

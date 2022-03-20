@@ -17,12 +17,12 @@ duration = {"25 Minute Study Session": 25, "50 Minute Study Session": 50}
 SSTypes = [
     discord.SelectOption(
         label="25 Minute Study Session",
-        description="Start a 25 minute study session followed by a 5 minute break.",
+        description="25 minute study session, 5 minute break",
         emoji="✍️",
     ),
     discord.SelectOption(
         label="50 Minute Study Session",
-        description="Start a 25 minute study session followed by a 10 minute break.",
+        description="50 minute study session, 10 minute break",
         emoji="💪",
     ),
 ]
@@ -30,25 +30,38 @@ SSTypes = [
 
 async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
     now = datetime.now(EST)
+
     if renew:
         query = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id).get()
-    MSV = discord.ui.View()
+
+    MSV = discord.ui.View(timeout=60)
     var = SelectMenuHandler(
         SSTypes, "temp_view:studybot_st1", "Select a duration for your study session"
     )
     MSV.add_item(var)
 
-    await console.send(
+    msgView = await console.send(
         f"{member.mention} You have joined a study channel. Please choose the duration of your study session!",
         view=MSV
     )
     timeout = await MSV.wait()
+
     if not timeout:
         selection_str = var.view_response
+
     else:
+        MSV_disabled = discord.ui.View()
+        var = SelectMenuHandler(
+            SSTypes, "temp_view:studybot_st1", "Timed out", disabled=True
+        )
+        MSV_disabled.add_item(var)
+
+        await msgView.edit(view=MSV_disabled)
+
         await member.move_to(None)
-        return await console.send(f"{member.mention} Timed out, try again later.")
-    
+        await console.send(f"{member.mention} Timed out, rejoin to start again.")
+        return None, None
+
     await console.send("Send your goal for this study session!")
 
     try:
@@ -61,7 +74,10 @@ async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
         )
         if renew:
             query.delete_instance()
-        return await member.move_to(None)
+
+        await member.move_to(None)
+        return None, None
+
     goal = goal.content
     renewal = now + timedelta(minutes=duration[selection_str])
 
@@ -80,6 +96,7 @@ async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
         f"{member.mention} Successfully started your study session! Your study goal is '{goal}'."
         f"\n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
     )
+
     return goal, renewal
 
 
@@ -107,20 +124,7 @@ class StudyVCUpdate(commands.Cog):
 
 
         self.StudyVCChecker.start()
-    """
-    TODO
-    
-    - Get lvl roles
-    - if user not in db -> add xp, level etc.
-    - Special role for top time in current week
-        - loop that resets TTSWeek every Monday Midnight
-    
-    - Leaderboard command
-        - Paginator
-        - button which shows current TTSWeek top 1
-    - Rank command
-        - Rankcard like Mee6
-    """
+
 
     def cog_unload(self):
         self.StudyVCChecker.stop()
