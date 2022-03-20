@@ -77,7 +77,8 @@ async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
         query.save()
 
     await console.send(
-        f"{member.mention} Your study goal has been updated to '{goal}'.\n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
+        f"{member.mention} Successfully started your study session! Your study goal is '{goal}'."
+        f"\n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
     )
     return goal, renewal
 
@@ -173,7 +174,8 @@ class StudyVCUpdate(commands.Cog):
                     )
                     goal, renewal = await setNewStudyGoal(self, console, member, True)
                     await console.send(
-                        f"{member.mention} Your study goal has been updated to '{goal}'.\n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
+                                f"{member.mention} Successfully started your study session! Your study goal is '{goal}'."
+                                f"n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
                     )
 
                 elif dateObj - datetime.now(EST) < timedelta(minutes=5):
@@ -207,7 +209,8 @@ class StudyVCUpdate(commands.Cog):
                     )
                     goal, renewal = await setNewStudyGoal(self, StudyVCConsoleObj, member, True)
                     await StudyVCConsoleObj.send(
-                        f"{member.mention} Your study goal has been updated to '{goal}'.\n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
+                        f"{member.mention} Successfully started your study session! Your study goal is '{goal}'."
+                        f"n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
                     )
 
             elif dateObj - datetime.now(EST) < timedelta(minutes=5):

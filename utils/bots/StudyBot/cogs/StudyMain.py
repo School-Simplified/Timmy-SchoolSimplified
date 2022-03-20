@@ -326,9 +326,8 @@ class StudyToDo(commands.Cog):
         isInDatabase = await addLeaderboardProgress(ctx.author)
 
         if isInDatabase:
-            if ctx.author.voice:
-                await endSession(ctx.author)
-                await ctx.send(f"{ctx.author.mention} Your study session ended. To make one again, join any StudyVC!")
+            await endSession(ctx.author)
+            await ctx.send(f"{ctx.author.mention} Your study session ended. To make one again, join any StudyVC!")
 
         else:
             await ctx.send(f"You don't have a study session yet! Make one by joining any StudyVC!")
