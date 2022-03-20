@@ -70,7 +70,7 @@ async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
         q = database.StudyVCDB.create(discordID = member.id, goal = goal, StartTime = datetime.now(EST), RenewalTime = renewal)
         q.save()
     else:
-        await addLeaderboardProgress(self, member)
+        await addLeaderboardProgress(member)
 
         query.goal = goal
         query.RenewalTime = renewal
@@ -143,7 +143,7 @@ class StudyVCUpdate(commands.Cog):
             )
             and not member.bot
         ):
-            await addLeaderboardProgress(self, member)
+            await addLeaderboardProgress(member)
             await console.send(
                 f"{member.mention} has left the channel, saved your current progress!"
             )
