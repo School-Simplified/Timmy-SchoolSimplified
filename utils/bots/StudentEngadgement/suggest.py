@@ -270,3 +270,7 @@ class SuggestModal(discord.ui.Modal):
 
         channel = self.bot.get_channel(SET_ID.ch_suggestions)
         await channel.send(embed=embed)
+
+
+async def setup(bot: commands.Bot):
+    bot.tree.add_command(Suggest(bot))
