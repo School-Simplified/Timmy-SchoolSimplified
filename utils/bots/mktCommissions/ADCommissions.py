@@ -60,7 +60,7 @@ class AD_MDL_1(discord.ui.Modal):
         embed.set_author(
             name=interaction.user.name, icon_url=interaction.user.avatar.url
         )
-        assert self.children
+
         embed.add_field(
             name="Project Title", value=self.children[0].value, inline=False
         )
