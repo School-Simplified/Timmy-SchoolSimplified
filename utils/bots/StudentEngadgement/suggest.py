@@ -19,42 +19,52 @@ class Suggest(Group):
 
     @command(name="book")
     async def __book(self, interaction: discord.Interaction):
+        """Make a book suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Book"))
 
     @command(name="movie")
     async def __movie(self, interaction: discord.Interaction):
+        """Make a movie suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Movie"))
 
     @command(name="tv_show")
     async def __tv_show(self, interaction: discord.Interaction):
+        """Make a TV show suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "TV Show"))
 
     @command(name="meme")
     async def __meme(self, interaction: discord.Interaction):
+        """Make a meme suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Meme"))
 
     @command(name="pickup_line")
     async def __pickup_line(self, interaction: discord.Interaction):
+        """Make a pickup line suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Pickup Line"))
 
     @command(name="puzzle")
     async def __puzzle(self, interaction: discord.Interaction):
+        """Make a suggestion for the weekly puzzle!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Puzzle"))
 
     @command(name="daily_question")
     async def __daily_question(self, interaction: discord.Interaction):
+        """Make a suggestion for the daily question!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Daily Question"))
 
     @command(name="motivation")
     async def __motivation(self, interaction: discord.Interaction):
+        """Make a motivation suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Motivation"))
 
     @command(name="music")
     async def __motivation(self, interaction: discord.Interaction):
+        """Make a music suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Music"))
 
     @command(name="art")
     async def __art(self, interaction: discord.Interaction, art: discord.Attachment):
+        """Make an art appreciation suggestion!"""
         await interaction.response.send_message("Submitted!")
         embed = discord.Embed(
             title="Art Appreciation Suggestion",
