@@ -8,7 +8,6 @@ If you wish to use the @is_botAdmin check, DM Space.".
 Otherwise, use the same format to make your own check. 
 """
 
-import typing
 import os
 import re
 
@@ -153,7 +152,7 @@ def mktCommissionAdd(ctx):
 is_mktCommissionAuthorized = commands.check(mktCommissionAdd)
 
 
-def notHostTimmyA(ctx):
+def TimmyBetaHost(ctx):
     runPath = os.path.realpath(__file__)
     runDir = re.search("/home/[^/]*", runPath)
 
@@ -162,7 +161,7 @@ def notHostTimmyA(ctx):
     else:
         runDir = None
 
-    return not runDir == "/home/timmya"
+    return runDir == "/home/timmy-beta"
 
 
-isnot_hostTimmyA = commands.check(notHostTimmyA)
+is_hostTimmyBeta = commands.check(TimmyBetaHost)

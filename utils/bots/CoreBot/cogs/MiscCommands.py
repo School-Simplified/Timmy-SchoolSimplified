@@ -1,5 +1,4 @@
 import asyncio
-import os
 import random
 import subprocess
 import sys
@@ -8,7 +7,6 @@ from datetime import timedelta
 
 import discord
 import psutil
-import sentry_sdk
 from core import database
 from core.checks import is_botAdmin, is_botAdmin2
 from core.common import (
@@ -380,8 +378,12 @@ class MiscCMD(commands.Cog):
         hostDir = getHostDir()
         if hostDir == "/home/timmya":
             branch = "origin/main"
+            directory = "TimmyMain-SS"
+
         elif hostDir == "/home/timmy-beta":
             branch = "origin/beta"
+            directory = "TimmyBeta-SS"
+
         else:
             raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
 
@@ -424,7 +426,7 @@ class MiscCMD(commands.Cog):
         await ctx.send(embed=embed)
 
         if mode == "-a":
-            await force_restart(ctx)
+            await force_restart(ctx, directory)
         elif mode == "-c":
             await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
 

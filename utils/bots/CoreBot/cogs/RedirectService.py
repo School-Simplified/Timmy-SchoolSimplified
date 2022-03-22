@@ -2,7 +2,6 @@ import os
 import aiohttp
 import discord
 from dotenv import load_dotenv
-from core import database
 from core.checks import is_botAdmin
 from discord.ext import commands
 from core import redirect_sdk

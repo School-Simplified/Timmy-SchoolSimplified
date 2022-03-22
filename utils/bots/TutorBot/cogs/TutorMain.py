@@ -108,7 +108,7 @@ class TutorMain(commands.Cog):
         description="View someone else's tutor sessions",
         guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut],
     )
-    @permissions.has_any_role("Senior Tutor", "Tutoring Manager", "Tutoring Director")
+    @permissions.has_role("Tutoring Director")
     async def mview(self, ctx, user: discord.User):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.TutorID == user.id

@@ -1,5 +1,15 @@
 import discord
-from core.common import *
+from core.common import (
+    CH_ID,
+    DIGITAL_ID,
+    HR_ID,
+    MKT_ID,
+    STAFF_ID,
+    TECH_ID,
+    TUT_ID,
+    Others,
+    load_config,
+)
 from discord.ext import commands
 
 config, _ = load_config("equelRoles")
@@ -53,7 +63,6 @@ class VerificationStaff(commands.Cog):
     @commands.Cog.listener("on_interaction")
     async def StaffVerification(self, interaction: discord.Interaction):
         InteractionResponse = interaction.data
-        print(InteractionResponse)
 
         if interaction.message is None:
             return

@@ -6,7 +6,18 @@ from distutils.util import strtobool
 
 from dotenv import load_dotenv
 from flask import Flask
-from peewee import *
+from peewee import (
+    AutoField,
+    BigIntegerField,
+    BooleanField,
+    CharField,
+    DateTimeField,
+    IntegerField,
+    Model,
+    MySQLDatabase,
+    SqliteDatabase,
+    TextField,
+)
 
 load_dotenv()
 useDB = True
@@ -556,6 +567,7 @@ class TechCommissionArchiveLog(BaseModel):
     id = AutoField()
     ThreadID = BigIntegerField()
 
+
 class SandboxConfig(BaseModel):
     """
     #SandboxConfig
@@ -566,6 +578,7 @@ class SandboxConfig(BaseModel):
     `mode`: TextField()
     Current Mode of the Sandbox.
     """
+
     id = AutoField()
     mode = TextField()
 
@@ -580,6 +593,36 @@ class SandboxConfig(BaseModel):
 
     ch_tv_console = BigIntegerField()
     ch_tv_startvc = BigIntegerField()
+
+
+class Voting(BaseModel):
+    """
+    #Voting
+
+    `msgID`: BigIntegerField(primary_key)
+    The ID of the message
+
+    `components`: CharField()
+    A dict as a string which includes a component of the message (`msgID`) as a key and the count of the component as a value.
+    """
+
+    msgID = BigIntegerField(primary_key=True)
+    components = CharField()
+
+
+class BaseQueue(BaseModel):
+    """
+    #BaseQueue
+
+    `id`: AutoField()
+    Database Entry
+
+    `queueID`: BigIntegerField()
+    Type of queue.
+    """
+
+    id = AutoField()
+    queueID = BigIntegerField()
 
 
 app = Flask(__name__)
@@ -623,7 +666,9 @@ tables = {
     "VCDeletionQueue": VCDeletionQueue,
     "TutorSession_GracePeriod": TutorSession_GracePeriod,
     "TechCommissionArchiveLog": TechCommissionArchiveLog,
-    "SandboxConfig": SandboxConfig
+    "SandboxConfig": SandboxConfig,
+    "Voting": Voting,
+    "BaseQueue": BaseQueue,
 }
 
 iter_table(tables)

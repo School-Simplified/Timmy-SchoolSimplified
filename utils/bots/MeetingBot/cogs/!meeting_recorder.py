@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from core.checks import is_botAdmin
 from google.cloud import speech_v1p1beta1 as speech
 
 doc_id = "1u_Ab5ZkKxHLlkOWAAXW8Ht_vgv9T-3PBA_Lj-KWc-G0"
