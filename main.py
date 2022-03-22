@@ -60,7 +60,6 @@ class Timmy(commands.Bot):
     """
 
     def __init__(self):
-
         intents = discord.Intents.all()
         super().__init__(
             command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
@@ -102,6 +101,16 @@ class Timmy(commands.Bot):
                     "channel_id": ctx.channel.id,
                 },
             )
+
+    async def setup_hook(self) -> None:
+        for ext in get_extensions():
+            try:
+                await bot.load_extension(ext)
+            except commands.ExtensionAlreadyLoaded:
+                await bot.unload_extension(ext)
+                await bot.load_extension(ext)
+            except commands.ExtensionNotFound:
+                raise commands.ExtensionNotFound(ext)
 
     async def on_ready(self):
         now = datetime.now()
@@ -353,7 +362,8 @@ class Timmy(commands.Bot):
                 if ctx.author.id not in permitlist:
                     embed = discord.Embed(
                         title="Traceback Detected!",
-                        description="Timmy here has ran into an error!\nPlease check what you sent and/or check out the "
+                        description="Timmy here has ran into an error!\nPlease check what you sent and/or check out "
+                                    "the "
                                     "help command!",
                         color=hexColors.orange_error,
                     )
@@ -524,9 +534,8 @@ async def tictactoe(interaction: discord.Interaction, user: discord.Member):
 @bot.tree.command(name="Are they short?")
 async def short(interaction: discord.Interaction, member: discord.Member):
     if random.randint(0, 1) == 1:
-        await interaction.response.send_message(f"{member.mention} is short!")
-    else:
-        await interaction.response.send_message(f"{member.mention} is tall!")
+        return await interaction.response.send_message(f"{member.mention} is short!")
+    await interaction.response.send_message(f"{member.mention} is tall!")
 
 
 @bot.tree.command(description="Check's if a user is short!")
@@ -535,13 +544,12 @@ async def short_detector(
         interaction: discord.Interaction, member: discord.Member,
 ):
     if member.id in [736765405728735232, 518581570152693771, 544724467709116457]:
-        await interaction.response.send_message(f"{member.mention} is short!")
-    else:
-        await interaction.response.send_message(f"{member.mention} is tall!")
+        return await interaction.response.send_message(f"{member.mention} is short!")
+    await interaction.response.send_message(f"{member.mention} is tall!")
 
 
 @bot.tree.context_menu(name="Play TicTacToe with them!")
-async def cm_tictactoe(interaction: discord.Interaction, member: discord.Member):
+async def _tictactoe(interaction: discord.Interaction, member: discord.Member):
     if member is None:
         return await interaction.response.send_message(
             "lonely :(, sorry but you need a person to play against!"
@@ -557,16 +565,6 @@ async def cm_tictactoe(interaction: discord.Interaction, member: discord.Member)
         f"Tic Tac Toe: {interaction.user.mention} goes first",
         view=TicTacToe(interaction.user, member),
     )
-
-
-for ext in get_extensions():
-    try:
-        bot.load_extension(ext)
-    except commands.ExtensionAlreadyLoaded:
-        bot.unload_extension(ext)
-        bot.load_extension(ext)
-    except commands.ExtensionNotFound:
-        raise commands.ExtensionNotFound(ext)
 
 
 @bot.check
