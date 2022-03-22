@@ -10,6 +10,8 @@ Otherwise, use the same format to make your own check.
 
 import os
 import re
+
+import discord
 from discord.ext import commands
 from core import database
 from core.common import MKT_ID
@@ -30,7 +32,7 @@ def predicate_LV1(ctx) -> bool:
 is_botAdmin = commands.check(predicate_LV1)
 
 
-def predicate_LV2(ctx):
+def predicate_LV2(ctx) -> bool:
     adminIDs = []
 
     query = database.Administrators.select().where(
@@ -73,6 +75,66 @@ def predicate_LV4(ctx):
 
 
 is_botAdmin4 = commands.check(predicate_LV4)
+
+
+def slash_is_bot_admin():
+    def predicate(interaction: discord.Interaction) -> bool:
+        admin_ids = []
+
+        query = database.Administrators.select().where(
+            database.Administrators.TierLevel >= 1
+        )
+        for admin in query:
+            admin_ids.append(admin.discordID)
+
+        return interaction.user.id in admin_ids
+
+    return discord.app_commands.check(predicate)
+
+
+def slash_is_bot_admin_2():
+    def predicate(interaction: discord.Interaction) -> bool:
+        admin_ids = []
+
+        query = database.Administrators.select().where(
+            database.Administrators.TierLevel >= 2
+        )
+        for admin in query:
+            admin_ids.append(admin.discordID)
+
+        return interaction.user.id in admin_ids
+
+    return discord.app_commands.check(predicate)
+
+
+def slash_is_bot_admin_3():
+    def predicate(interaction: discord.Interaction) -> bool:
+        admin_ids = []
+
+        query = database.Administrators.select().where(
+            database.Administrators.TierLevel >= 3
+        )
+        for admin in query:
+            admin_ids.append(admin.discordID)
+
+        return interaction.user.id in admin_ids
+
+    return discord.app_commands.check(predicate)
+
+
+def slash_is_bot_admin_4():
+    def predicate(interaction: discord.Interaction) -> bool:
+        admin_ids = []
+
+        query = database.Administrators.select().where(
+            database.Administrators.TierLevel >= 4
+        )
+        for admin in query:
+            admin_ids.append(admin.discordID)
+
+        return interaction.user.id in admin_ids
+
+    return discord.app_commands.check(predicate)
 
 
 def mktCommissionAdd(ctx):

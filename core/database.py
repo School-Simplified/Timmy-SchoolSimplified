@@ -1,3 +1,4 @@
+import collections
 import os
 import sys
 from datetime import datetime
@@ -23,7 +24,8 @@ useDB = True
 
 if not os.getenv("PyTestMODE"):
     useDB = input(
-        "Do you want to use MySQL? (y/n)\nThis option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications."
+        "Do you want to use MySQL? (y/n)\nThis option should be avoided if you are testing new database structures, "
+        "do not use MySQL Production if you are testing table modifications. "
     )
     useDB = strtobool(useDB)
 
@@ -306,7 +308,7 @@ class CheckInformation(BaseModel):
 
     `MasterMaintenance`: BooleanField()
     Ultimate Check; If this is enabled no one except Permit 4+ users are allowed to use the bot.\n
-    >>> **NOTE:** This attribute must always have a bypass to prevent lockouts, otherwise this check will ALWAYS return False.
+    '>>> **NOTE:** This attribute must always have a bypass to prevent lockouts, otherwise this check will ALWAYS return False.
 
     `guildNone`: BooleanField()
     If commands executed outside of guilds (DMs) are allowed.
