@@ -5,7 +5,7 @@ from core.common import MAIN_ID, SET_ID
 from discord.ext import commands
 
 
-class Suggest(Group):
+class Suggest(commands.Cog, Group):
     def __init__(
             self,
             bot: commands.Bot
@@ -95,7 +95,7 @@ class SuggestModal(discord.ui.Modal):
     ):
         super().__init__(
             timeout=None,
-            title=suggest_type + "Suggestion"
+            title=suggest_type + " Suggestion"
         )
         self.type = suggest_type
         self.bot = bot
@@ -267,20 +267,19 @@ class SuggestModal(discord.ui.Modal):
     async def on_submit(self, interaction: discord.Interaction) -> None:
         await interaction.response.send_message("Submitted!")
         embed = discord.Embed(
-            title=self.type + "Suggestion",
+            title=self.type + " Suggestion",
             timestamp=discord.utils.utcnow(),
             color=discord.Color.blurple()
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
-
-        for item in [item for item in self.__modal_children_items__ if isinstance(item, discord.TextInput)]:
-            for question in self.type_to_questions_list[self.type]:
-                embed.add_field(name=question["question"], value=item.value if item.value else "None")
-                break
-
+        for item, question in zip(
+                [item for item in self.__modal_children_items__ if isinstance(item, discord.TextInput)],
+                self.type_to_questions_list[self.type]
+        ):
+            embed.add_field(name=question["question"], value=item.value if item.value else "None")
         channel = self.bot.get_channel(SET_ID.ch_suggestions)
         await channel.send(embed=embed)
 
 
 async def setup(bot: commands.Bot):
-    bot.tree.add_command(Suggest(bot))
+    await bot.add_cog(Suggest(bot))
