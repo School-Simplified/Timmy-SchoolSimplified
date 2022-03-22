@@ -18,38 +18,38 @@ class AD_MDL_1(discord.ui.Modal):
         self.bot = bot
 
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="What is a descriptive title for your request?",
-                style=discord.InputTextStyle.short,
+                style=discord.TextStyle.short,
                 max_length=1024,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="How critical is your request?",
-                style=discord.InputTextStyle.short,
+                style=discord.TextStyle.short,
                 placeholder="How urgent and how imperative is it",
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Which team is this request for?",
-                style=discord.InputTextStyle.short,
+                style=discord.TextStyle.short,
                 max_length=1024,
                 placeholder="Include BOTH the Team and Department/Program",
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Write a brief description about your request",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 max_length=1024,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="What are you hoping to gain from this ad?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 required=True,
                 max_length=1024,
             )
@@ -60,7 +60,7 @@ class AD_MDL_1(discord.ui.Modal):
         embed.set_author(
             name=interaction.user.name, icon_url=interaction.user.avatar.url
         )
-
+        assert self.children
         embed.add_field(
             name="Project Title", value=self.children[0].value, inline=False
         )
@@ -117,7 +117,14 @@ class MKTProject2(commands.Cog):
             "https://cdn.discordapp.com/attachments/892290621249847406/945506790253158440/Copy_of_Multiuse_Banner_1.png"
         )
         await ctx.send(
-            "Everyone needs to make advertisements at some point and every SBU/department has access to using corporate marketing’s resources!\n\n**✅ Note:**\n<:barrow:896096260396814377> Marketing has final say regarding where and how something is promoted.\n<:barrow:896096260396814377> The release of an advertisement will be decided by Marketing and will be dependent on the urgency of the request.\n<:barrow:896096260396814377> The Marketing Team has the right to cancel and ignore any commissions if deemed appropriate. \n\n\n\n**📸  How To Get Started:**\n<:barrow:896096260396814377> Click the button below!\n<:barrow:896096260396814377> Please make sure you are authorized to make commissions!",
+            "Everyone needs to make advertisements at some point and every SBU/department has access to using "
+            "corporate marketing’s resources!\n\n**✅ Note:**\n<:barrow:896096260396814377> Marketing has final say "
+            "regarding where and how something is promoted.\n<:barrow:896096260396814377> The release of an "
+            "advertisement will be decided by Marketing and will be dependent on the urgency of the "
+            "request.\n<:barrow:896096260396814377> The Marketing Team has the right to cancel and ignore any "
+            "commissions if deemed appropriate. \n\n\n\n**📸  How To Get Started:**\n<:barrow:896096260396814377> "
+            "Click the button below!\n<:barrow:896096260396814377> Please make sure you are authorized to make "
+            "commissions!",
             view=view,
         )
 

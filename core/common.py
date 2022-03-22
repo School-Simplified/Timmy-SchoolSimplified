@@ -947,7 +947,7 @@ class LEADER_ID:
 
 class SET_ID:
     """
-    IDs of the SS Main server.
+    IDs of the SSD SET SERVER
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
@@ -960,29 +960,17 @@ class SET_ID:
     g_set = int(ConfigcatClient.SET_ID_CC.get_value("g_set", 950799439625355294))
 
     # *** Channels ***
-    ch_suggestions = int(ConfigcatClient.SET_ID_CC.get_value("ch_suggestions", 954190487026274344))
-    ch_puzzle = int(ConfigcatClient.SET_ID_CC.get_value("ch_puzzle", 952402735167320084))
-
-    ch_announcements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362)
+    ch_suggestions = int(
+        ConfigcatClient.SET_ID_CC.get_value("ch_suggestions", 954190487026274344)
     )
-    ch_mktAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_mktannouncements", 816733579660754944)
+    ch_puzzle = int(
+        ConfigcatClient.SET_ID_CC.get_value("ch_puzzle", 952402735167320084)
     )
-    ch_acadAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557)
-    )
-    ch_techAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421)
-    )
-    ch_leadershipAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value(
-            "ch_leadershipannouncements", 819009569979629569
-        )
+    ch_college_acceptance = int(
+        ConfigcatClient.SET_ID_CC.get_value("ch_college_acceptance", 955960683785236540)
     )
 
-    # *** Roles ***
-    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+
 
 
 class LEADER_ID:
