@@ -118,8 +118,8 @@ class TechProjectCMD(commands.Cog):
         )
         embed.set_footer(
             text="The Bot Development Team has the right to cancel and ignore any commissions if deemed appropriate. "
-            "We also have the right to cancel and ignore any commissions if an improper deadline is given, "
-            "please make sure you create a commission ahead of time and not right before a due date",
+                 "We also have the right to cancel and ignore any commissions if an improper deadline is given, "
+                 "please make sure you create a commission ahead of time and not right before a due date",
         )
         view = CommissionTechButton(self.bot)
         await ctx.send(embed=embed, view=view)
@@ -170,13 +170,13 @@ class TechProjectCMD(commands.Cog):
                 # print(channel.name, type(channel))
                 query = (
                     database.TechCommissionArchiveLog.select()
-                    .where(database.ThreadID == thread.id)
-                    .exists()
+                        .where(database.ThreadID == thread.id)
+                        .exists()
                 )
                 # print(thread.archived, query, (thread.parent_id in guild[1]))
                 if thread.archived and thread.parent_id in guild[1]:
                     await thread.unarchive()
 
 
-def setup(bot):
-    bot.add_cog(TechProjectCMD(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(TechProjectCMD(bot))
