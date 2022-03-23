@@ -7,40 +7,40 @@ from core import database
 
 class BotRequestModal(discord.ui.Modal):
     def __init__(self, bot) -> None:
-        super().__init__("Bot Development Request")
+        super().__init__(title="Bot Development Request")
         self.bot = bot
 
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="What is a descriptive title for your project?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 max_length=1024,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Which team is this project for?",
-                style=discord.InputTextStyle.short,
+                style=discord.TextStyle.short,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Write a brief description of the project.",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 max_length=1024,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Do you have approval for this commission?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 max_length=1024,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Anything else?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 required=False,
                 max_length=1024,
             )
