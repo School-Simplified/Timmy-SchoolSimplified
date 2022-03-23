@@ -28,7 +28,7 @@ from discord import (
     SelectOption,
     ui,
 )
-from discord.ext import commands
+from discord.ext import commands, menus
 from dotenv import load_dotenv
 from google.cloud import secretmanager
 from google_auth_oauthlib.flow import Flow
@@ -1287,6 +1287,7 @@ rulesDict = {
     14: f"No evading user blocks, punishments, or bans by using alternate accounts. && {Emoji.barrow} Sending unwanted, repeated friend requests or messages to contact someone who has blocked you is prohibited.\n{Emoji.barrow} Creating alternate accounts to evade a punishment or ban, harass or impersonate someone, or participate in a raid are all strictly prohibited.\n{Emoji.barrow} Suspicions of being an alternate account are cause for a ban with no prior warning.\n{Emoji.barrow} To discuss punishments or warnings, create a support ticket or talk to a moderator in DMs.",
 }
 
+deprecatedFiles = ["TTScreds.json", "tokenA.json", "staff_verifyClient.json", "gmailAPI_credentials.json", "gmail_token.json", "docs_token.json", "docs_credentials.json", "credentialsA.json", "admincred.json"]
 
 class bcolors:
     HEADER = "\033[95m"
@@ -1362,13 +1363,14 @@ class SelectMenuHandler(ui.Select):
         Parameters:
             options: List of discord.SelectOption
             custom_id: Custom ID of the view. Default to None.
-            place_holder: Place Holder string for the view. Default to None.
+            place_holder: Placeholder string for the view. Default to None.
             max_values Maximum values that are selectable. Default to 1.
             min_values: Minimum values that are selectable. Default to 1.
             disabled: Whenever the button is disabled or not. Default to False.
             select_user: The user that can perform this action, leave blank for everyone. Defaults to None.
             interaction_message: The response message when pressing on a selection. Default to None.
             ephemeral: Whenever the response message should only be visible for the select_user or not. Default to True.
+            coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed. Default to None.
         """
 
         self.options_ = options
@@ -1382,7 +1384,7 @@ class SelectMenuHandler(ui.Select):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
-        self.view_response = view_response
+        self.view_response = None
 
         if self.custom_id_:
             super().__init__(
@@ -1406,11 +1408,8 @@ class SelectMenuHandler(ui.Select):
         if self.select_user in [None, interaction.user] or any(
                 role in interaction.user.roles for role in self.roles
         ):
-            if self.custom_id_ is None:
-                self.view.value = self.values[0]
-            else:
-                # self.view.value = self.custom_id_
-                self.view_response = self.values[0]
+            self.view.value = self.values[0]
+            self.view_response = self.values[0]
 
             if self.interaction_message_:
                 await interaction.response.send_message(
@@ -1463,7 +1462,7 @@ class ButtonHandler(ui.Button):
             roles: The roles which the user needs to be able to click the button.
             interaction_message: The response message when pressing on a selection. Default to None.
             ephemeral: Whenever the response message should only be visible for the select_user or not. Default to True.
-            coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed.  Default to None.
+            coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed. Default to None.
         """
         self.style_ = style
         self.label_ = label
@@ -1476,6 +1475,7 @@ class ButtonHandler(ui.Button):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
+        self.view_response = None
 
         if self.custom_id_:
             super().__init__(
@@ -1501,8 +1501,10 @@ class ButtonHandler(ui.Button):
         ):
             if self.custom_id_ is None:
                 self.view.value = None
+                self.view_response = None
             else:
                 self.view.value = self.custom_id_
+                self.view_response = self.custom_id_
 
             if self.interaction_message_:
                 await interaction.response.send_message(
@@ -1757,6 +1759,43 @@ class FeedbackButton(discord.ui.View):
     ):
         modal = FeedbackModel()
         return await interaction.response.send_modal(modal)
+
+
+class LeaderboardPages(menus.ListPageSource):
+    def __init__(self, leaderboard):
+        super().__init__(entries=leaderboard, per_page=25)
+
+    async def format_page(self, menu, item):
+
+        with open('levels.json', 'r') as fcheckrew:
+            checkrew = json.load(fcheckrew)
+        if f'{menu.ctx.guild.id}' in checkrew.keys():
+            if not checkrew[f'{menu.ctx.guild.id}'] == {}:
+
+                listkeys = []
+                authorrank = ''
+                for key, value in sorted(checkrew[f'{menu.ctx.guild.id}'].items(), key=lambda pair: pair[1]['total'], reverse=True):
+                    if menu.ctx.guild.get_member(int(key)):
+                        listkeys.append(key)
+
+                        if int(key) == menu.ctx.author.id:
+                            authorrank_len = int(listkeys.index(str(menu.ctx.author.id))) + 1
+
+
+                if f'{menu.ctx.author.id}' in listkeys:
+                    authorrank = f"Your rank: #{authorrank_len}"
+
+                else:
+                    authorrank = f"You aren't ranked yet."
+
+                joined = '\n'.join(item)
+                embed = discord.Embed(color=farbegeneral, title=f'Leaderboard of {menu.ctx.guild.name}', description=
+                f'_ _'
+                f'\n{joined}')
+                embed.set_footer(text=f'{authorrank} | page {menu.current_page + 1}/{self.get_max_pages()}')
+                embed.set_thumbnail(url=f'{menu.ctx.guild.icon_url}')
+
+                return embed
 
 
 async def id_generator(size=3, chars=string.ascii_uppercase):

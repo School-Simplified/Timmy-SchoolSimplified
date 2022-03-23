@@ -73,7 +73,7 @@ class AdminAPI(commands.Cog):
         service.users().insert(body=user).execute()
         await ctx.respond(
             f"{ctx.author.mention} Successfully created **{firstname} {lastname}'s** account.\n"
-            f"**Username:** {firstname}.{lastname}@schoolsimplified.orf\n"
+            f"**Username:** {firstname}.{lastname}@schoolsimplified.org\n"
             f"**Organization Unit:** {orgUnit[organizationunit]}",
             ephemeral=False,
         )

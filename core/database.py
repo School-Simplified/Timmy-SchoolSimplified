@@ -622,6 +622,74 @@ class BaseQueue(BaseModel):
     id = AutoField()
     queueID = BigIntegerField()
 
+class StudyVCDB(BaseModel):
+    """
+    #StudyVCDB
+
+    `id`: AutoField()
+    Database Entry ID
+
+    `discordID`: BigIntegerField()
+    Discord ID of the user.
+
+    `Goal`: TextField()
+    Goal of the current study session.
+
+    `StartTime`: DateTimeField()
+    DateTime Object of when the session started.
+
+    `RenewalTime`: DateTimeField()
+    DateTime Object of when the session will renew.
+
+    `Paused`: BooleanField()
+    Boolean that states if the session is paused.
+    """
+    
+    id = AutoField()
+    discordID = BigIntegerField()
+    Goal = TextField()
+    StartTime = DateTimeField()
+    RenewalTime = DateTimeField()
+    Paused = BooleanField(default=False)
+
+class StudyVCLeaderboard(BaseModel):
+    """
+    #StudyVCLeaderboard
+
+    `id`: AutoField()
+    Database Entry ID
+
+    `discordID`: BigIntegerField()
+    Discord ID of the user.
+
+    `TTS`: BigIntegerField()
+    Total time spent studying. (Measured in Minutes)
+
+    `TTSWeek`: BigIntegerField()
+    Total time spent in current week. This value gets reset every week (Monday Midnight) (Measured in Minutes)
+
+    `totalSessions`: BigIntegerField()
+    Total number of sessions.
+
+    `level`: IntegerField()
+    The level the user has.
+
+    `xp`: IntegerField()
+    The current xp, which get reset when new level reached.
+
+    `totalXP`: IntegerField()
+    The total XP, which the user has.
+    """
+    
+    id = AutoField()
+    discordID = BigIntegerField()
+    TTS = BigIntegerField(default=0)
+    TTSWeek = BigIntegerField(default=0)
+    totalSessions = BigIntegerField(default=0)
+    level = IntegerField(default=0)
+    xp = BigIntegerField(default=0)
+    totalXP = BigIntegerField(default=0)
+
 
 app = Flask(__name__)
 
@@ -667,6 +735,8 @@ tables = {
     "SandboxConfig": SandboxConfig,
     "Voting": Voting,
     "BaseQueue": BaseQueue,
+    "StudyVCDB": StudyVCDB,
+    "StudyVCLeaderboard": StudyVCLeaderboard
 }
 
 iter_table(tables)

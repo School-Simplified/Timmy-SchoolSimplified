@@ -29,6 +29,7 @@ class Engagement(commands.Cog):
             description=f"{guess}",
             timestamp=discord.utils.utcnow(),
         )
+
         embed.set_author(name=interaction.author, icon_url=interaction.author.avatar.url)
         await interaction.respond("Your guess has been submitted!", ephemeral=True)
         guess_channel = self.bot.fetch_channel(952402735167320084)
