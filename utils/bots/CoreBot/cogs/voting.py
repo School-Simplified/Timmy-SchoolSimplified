@@ -1,9 +1,10 @@
 import asyncio
-import datetime
+import datetime, pytz
 import random
 import string
 import os
 import json
+import ast
 
 import discord
 from discord.ext import commands
@@ -71,6 +72,7 @@ class VotingBot(commands.Cog):
             STAFF_ID.ch_announcements,
             STAFF_ID.ch_leadershipAnnouncements,
         ]
+        self.est = pytz.timezone("US/Eastern")
 
     """
     vote create: creates a voting
@@ -118,19 +120,22 @@ class VotingBot(commands.Cog):
 
     @commands.Cog.listener("on_interaction")
     async def on_voting_interaction(self, interaction: discord.Interaction):
+
+        if interaction.message is None:
+            return
+
         query = database.Voting.select()
         msgIDList = [msg.msgID for msg in query]
 
         interMsgID = interaction.message.id
         print(f"interMsgID: {interMsgID}")
         if interMsgID in msgIDList:
-            componentsStr = (
-                database.Voting.select()
-                .where(database.Voting.msgID == interMsgID)
-                .get()
-                .components
-            )
-            print(f"componentsStr: {componentsStr}")
+            componentsStr = database.Voting.select().where(database.Voting.msgID == interMsgID).get().components
+            componentsDict = ast.literal_eval(componentsStr)
+            interactionData = interaction.data
+
+            print(componentsDict, type(componentsDict))
+            print(interactionData)
 
     @commands.group(invoke_without_command=True)
     @commands.has_any_role(
@@ -143,6 +148,8 @@ class VotingBot(commands.Cog):
         LEADER_ID.r_ssDigitalCommittee,
     )
     async def vote(self, ctx):
+        # TODO: error, default message
+
         pass
 
     @vote.command()
@@ -472,7 +479,7 @@ class VotingBot(commands.Cog):
                     if seconds is None:
                         seconds = 0
 
-                    datetimeNow = datetime.datetime.now()
+                    datetimeNow = datetime.datetime.now(self.est)
                     try:
                         datetimeExpiration = (
                             datetimeNow
