@@ -18,7 +18,7 @@ class Engagement(commands.Cog):
         embed.set_author(name=interaction.author, icon_url=interaction.author.avatar.url)
         embed.set_image(url=file.url)
         await interaction.respond("Submitted! Congrats!!")
-        channel = self.bot.fetch_channel(SET_ID.ch_college_acceptance)
+        channel = self.bot.get_channel(SET_ID.ch_college_acceptance)
         await channel.send(embed=embed)
 
     @slash_command(name="puzzle_guess", guild_ids=[MAIN_ID.g_main])
@@ -32,7 +32,7 @@ class Engagement(commands.Cog):
 
         embed.set_author(name=interaction.author, icon_url=interaction.author.avatar.url)
         await interaction.respond("Your guess has been submitted!", ephemeral=True)
-        guess_channel = self.bot.fetch_channel(952402735167320084)
+        guess_channel = self.bot.get_channel(952402735167320084)
         await guess_channel.send(embed=embed)
 
 
