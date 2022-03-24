@@ -1,4 +1,4 @@
-from discord.app_commands import describe, Group, command, guilds
+from discord.app_commands import describe, Group, command
 from discord.ext import commands
 import discord
 from core.common import MAIN_ID, SET_ID
@@ -8,14 +8,16 @@ from set import reload_blacklist
 
 class SetSuggestBlacklist(commands.Cog, Group):
     def __init__(self, bot: commands.Bot):
-        super().__init__(name="set_blacklist")
+        super().__init__(
+            name="set_blacklist",
+            guild_ids=[MAIN_ID.g_main, SET_ID.g_set]
+        )
         self.bot = bot
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         return interaction.user.id == 752984497259151370
 
     @command(name="add")
-    @guilds(MAIN_ID.g_main, SET_ID.g_set)
     @describe(user="User ID or mention")
     async def __add(self, interaction: discord.Interaction, user: discord.User):
         """Blacklist a user from suggesting and submitting puzzle guesses"""
@@ -33,7 +35,6 @@ class SetSuggestBlacklist(commands.Cog, Group):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @command(name="remove")
-    @guilds(MAIN_ID.g_main, SET_ID.g_set)
     @describe(user="User ID or mention")
     async def __remove(self, interaction: discord.Interaction, user: discord.User):
         """Unblacklist a user from suggesting and submitting puzzle guesses"""
@@ -62,7 +63,6 @@ class SetSuggestBlacklist(commands.Cog, Group):
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @command(name="reload")
-    @guilds(MAIN_ID.g_main, SET_ID.g_set)
     async def __reload(self, interaction: discord.Interaction):
         """Force reload the blacklist"""
         reload_blacklist()
