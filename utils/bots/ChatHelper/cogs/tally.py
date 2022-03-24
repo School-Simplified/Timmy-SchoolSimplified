@@ -372,5 +372,5 @@ class TallyCMD(commands.Cog):
         await msg.edit(embed=embed)
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(TallyCMD(bot))

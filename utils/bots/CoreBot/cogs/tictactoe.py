@@ -161,5 +161,5 @@ class TicTacToeBot(commands.Cog):
         )
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(TicTacToeBot(bot))

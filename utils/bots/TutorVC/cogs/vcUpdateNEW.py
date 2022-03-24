@@ -112,7 +112,7 @@ class TutorVCUpdate(commands.Cog):
         }
         # self.PRIVVC_DELETION_QUEUE.start()
 
-    # def cog_unload(self):
+    # async def cog_unload(self):
     # self.PRIVVC_DELETION_QUEUE.cancel()
 
     @commands.Cog.listener()
@@ -680,5 +680,5 @@ class TutorVCUpdate(commands.Cog):
                 print("Did not give 2 minutes, moving on...")"""
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(TutorVCUpdate(bot))

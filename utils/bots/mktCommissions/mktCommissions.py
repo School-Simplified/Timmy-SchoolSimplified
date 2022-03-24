@@ -640,5 +640,5 @@ class mktCommissions(commands.Cog):
         await logChannel.send(file=transcript_file)
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(mktCommissions(bot))

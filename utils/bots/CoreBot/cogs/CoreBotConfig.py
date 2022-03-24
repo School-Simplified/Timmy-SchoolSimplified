@@ -351,5 +351,5 @@ class CoreBotConfig(commands.Cog):
         database.db.close()
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(CoreBotConfig(bot))

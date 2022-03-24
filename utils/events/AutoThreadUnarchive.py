@@ -103,7 +103,7 @@ class TechProjectCMD(commands.Cog):
         self.bot: commands.Bot = bot
         self.AUTO_UNARHCIVE.start()
 
-    def cog_unload(self):
+    async def cog_unload(self):
         self.AUTO_UNARHCIVE.cancel()
 
     @commands.command()
@@ -178,5 +178,5 @@ class TechProjectCMD(commands.Cog):
                     await thread.unarchive()
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(TechProjectCMD(bot))

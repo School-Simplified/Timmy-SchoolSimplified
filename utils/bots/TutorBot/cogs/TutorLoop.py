@@ -14,7 +14,7 @@ class TutorBotLoop(commands.Cog):
         self.tutorsession.start()
         self.tutorsession_graceperiod.start()
 
-    def cog_unload(self):
+    async def cog_unload(self):
         self.tutorsession.cancel()
         self.tutorsession_graceperiod.cancel()
 
@@ -148,5 +148,5 @@ class TutorBotLoop(commands.Cog):
         await self.bot.wait_until_ready()
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(TutorBotLoop(bot))

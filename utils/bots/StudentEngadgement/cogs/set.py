@@ -48,5 +48,5 @@ class Engagement(commands.Cog):
         await guess_channel.send(embed=embed)
 
 
-def setup(bot: commands.Bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(Engagement(bot))

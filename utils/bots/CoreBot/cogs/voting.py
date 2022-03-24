@@ -697,5 +697,5 @@ class VotingBot(commands.Cog):
                     await msgConfirm.edit(embed=embedCancel)
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(VotingBot(bot))

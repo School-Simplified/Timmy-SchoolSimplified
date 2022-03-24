@@ -317,5 +317,5 @@ class RoleCheck(commands.Cog):
                         await before.remove_roles(altServerBooster)
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(RoleCheck(bot))

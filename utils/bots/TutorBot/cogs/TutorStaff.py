@@ -324,5 +324,5 @@ class TutorBotStaffCMD(commands.Cog):
             )
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(TutorBotStaffCMD(bot))

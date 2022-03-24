@@ -104,5 +104,5 @@ class AdminAPI(commands.Cog):
             await ctx.respond("Successfully deleted the account.")
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(AdminAPI(bot))

@@ -81,5 +81,5 @@ class SayCMD(commands.Cog):
             await ctx.send(f"TypeError exception:\n`{e}`")
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(SayCMD(bot))

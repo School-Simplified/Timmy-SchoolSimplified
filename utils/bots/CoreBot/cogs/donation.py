@@ -27,5 +27,5 @@ class Donation(commands.Cog):
         await ctx.send(embed=embedDonate, file=timmyDonation_png)
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(Donation(bot))

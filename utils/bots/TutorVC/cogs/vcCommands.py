@@ -1586,5 +1586,5 @@ class TutorVCCMD(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(TutorVCCMD(bot))

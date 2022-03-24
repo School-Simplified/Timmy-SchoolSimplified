@@ -78,5 +78,5 @@ class SuggestionCMD(commands.Cog):
             raise error
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(SuggestionCMD(bot))

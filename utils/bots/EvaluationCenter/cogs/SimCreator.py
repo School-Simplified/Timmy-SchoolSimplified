@@ -155,5 +155,5 @@ class SituationCreator(commands.Cog):
         await ctx.send(f"**Current Simulation:** {q.mode}")
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(SituationCreator(bot))

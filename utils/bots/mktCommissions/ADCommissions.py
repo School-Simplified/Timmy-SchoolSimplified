@@ -147,5 +147,5 @@ class MKTProject2(commands.Cog):
             await thread.archive(locked=True)
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(MKTProject2(bot))

@@ -152,5 +152,5 @@ class TutorMain(commands.Cog):
         await ctx.respond(embed=embed)
 
 
-def setup(bot):
+async def setup(bot):
     await bot.add_cog(TutorMain(bot))
