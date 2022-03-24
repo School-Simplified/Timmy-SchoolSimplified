@@ -289,6 +289,15 @@ class SuggestModal(discord.ui.Modal):
                 [item for item in self.children if isinstance(item, discord.TextInput)],
                 self.type_to_questions_list[self.type]
         ):
+            """
+            item: discord.TextInput 
+                if isinstance(item, discord.TextInput) 
+                ensures item is type TextInput and not another subclass of discord.Item
+            
+            question: Dict[str, Union[str, None, bool]] 
+                exe: question = {"question": "How is your day?", "placeholder": None ,"required": True}
+            
+            """
             embed.add_field(
                 name=question["question"],
                 value=item.value if item.value else "None"
