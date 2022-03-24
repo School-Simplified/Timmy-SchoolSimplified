@@ -360,21 +360,21 @@ class Blacklist(BaseModel):
     discordID = BigIntegerField(unique=True)
 
 
-# class ResponseSpamBlacklist(BaseModel):
-#     """
-#     # Blacklist:
-#     List of users who are blacklisted from suggesting to the SET team.
-#
-#     `id`: AutoField()
-#     Database Entry
-#
-#     `discordID`: BigIntegerField()
-#     Discord ID
-#     """
-#
-#     id = AutoField()
-#
-#     discordID = BigIntegerField(unique=True)
+class ResponseSpamBlacklist(BaseModel):
+    """
+    # Blacklist:
+    List of users who are blacklisted from suggesting to the SET team.
+
+    `id`: AutoField()
+    Database Entry
+
+    `discordID`: BigIntegerField()
+    Discord ID
+    """
+
+    id = AutoField()
+
+    discordID = BigIntegerField(unique=True)
 
 
 class ToDo(BaseModel):
