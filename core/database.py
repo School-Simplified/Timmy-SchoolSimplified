@@ -29,7 +29,6 @@ if not os.getenv("PyTestMODE"):
     )
     useDB = strtobool(useDB)
 
-
 """
 Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
@@ -359,6 +358,23 @@ class Blacklist(BaseModel):
     id = AutoField()
 
     discordID = BigIntegerField(unique=True)
+
+
+# class ResponseSpamBlacklist(BaseModel):
+#     """
+#     # Blacklist:
+#     List of users who are blacklisted from suggesting to the SET team.
+#
+#     `id`: AutoField()
+#     Database Entry
+#
+#     `discordID`: BigIntegerField()
+#     Discord ID
+#     """
+#
+#     id = AutoField()
+#
+#     discordID = BigIntegerField(unique=True)
 
 
 class ToDo(BaseModel):

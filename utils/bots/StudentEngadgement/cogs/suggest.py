@@ -272,11 +272,16 @@ class SuggestModal(discord.ui.Modal):
             color=discord.Color.blurple()
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
+
         for item, question in zip(
                 [item for item in self.__modal_children_items__ if isinstance(item, discord.TextInput)],
                 self.type_to_questions_list[self.type]
         ):
-            embed.add_field(name=question["question"], value=item.value if item.value else "None")
+            embed.add_field(
+                name=question["question"],
+                value=item.value if item.value else "None"
+            )
+
         channel = self.bot.get_channel(SET_ID.ch_suggestions)
         await channel.send(embed=embed)
 
