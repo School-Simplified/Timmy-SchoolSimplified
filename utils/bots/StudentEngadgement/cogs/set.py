@@ -58,7 +58,7 @@ class Engagement(commands.Cog):
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
         await interaction.response.send_message("Your guess has been submitted!", ephemeral=True)
-        guess_channel = self.bot.get_channel(952402735167320084)
+        guess_channel = self.bot.get_channel(SET_ID.ch_puzzle)
         await guess_channel.send(embed=embed)
 
 
