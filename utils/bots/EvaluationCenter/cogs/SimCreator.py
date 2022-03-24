@@ -156,4 +156,4 @@ class SituationCreator(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(SituationCreator(bot))
+    await bot.add_cog(SituationCreator(bot))

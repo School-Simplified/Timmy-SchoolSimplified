@@ -188,4 +188,4 @@ class GSuiteLogin(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(GSuiteLogin(bot))
+    await bot.add_cog(GSuiteLogin(bot))

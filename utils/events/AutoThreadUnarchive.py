@@ -179,4 +179,4 @@ class TechProjectCMD(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(TechProjectCMD(bot))
+    await bot.add_cog(TechProjectCMD(bot))

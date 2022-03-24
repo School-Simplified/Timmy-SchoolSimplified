@@ -148,4 +148,4 @@ class MKTProject2(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(MKTProject2(bot))
+    await bot.add_cog(MKTProject2(bot))

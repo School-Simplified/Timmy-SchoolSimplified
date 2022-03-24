@@ -1587,4 +1587,4 @@ class TutorVCCMD(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(TutorVCCMD(bot))
+    await bot.add_cog(TutorVCCMD(bot))

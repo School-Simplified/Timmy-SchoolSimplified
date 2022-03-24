@@ -373,4 +373,4 @@ class TallyCMD(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(TallyCMD(bot))
+    await bot.add_cog(TallyCMD(bot))

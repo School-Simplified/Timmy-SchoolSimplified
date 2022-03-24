@@ -126,4 +126,4 @@ class InfoCMD(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(InfoCMD(bot))
+    await bot.add_cog(InfoCMD(bot))

@@ -88,4 +88,4 @@ class DropdownDemo(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(DropdownDemo(bot))
+    await bot.add_cog(DropdownDemo(bot))

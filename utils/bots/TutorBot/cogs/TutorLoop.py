@@ -149,4 +149,4 @@ class TutorBotLoop(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(TutorBotLoop(bot))
+    await bot.add_cog(TutorBotLoop(bot))

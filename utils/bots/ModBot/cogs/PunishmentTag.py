@@ -124,4 +124,4 @@ class PunishmentTag(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(PunishmentTag(bot))
+    await bot.add_cog(PunishmentTag(bot))

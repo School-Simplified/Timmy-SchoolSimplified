@@ -101,4 +101,4 @@ class StudyToDo(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(StudyToDo(bot))
+    await bot.add_cog(StudyToDo(bot))

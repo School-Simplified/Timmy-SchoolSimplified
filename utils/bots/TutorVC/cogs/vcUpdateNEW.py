@@ -681,4 +681,4 @@ class TutorVCUpdate(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(TutorVCUpdate(bot))
+    await bot.add_cog(TutorVCUpdate(bot))

@@ -126,4 +126,4 @@ class BlacklistCMD(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(BlacklistCMD(bot))
+    await bot.add_cog(BlacklistCMD(bot))

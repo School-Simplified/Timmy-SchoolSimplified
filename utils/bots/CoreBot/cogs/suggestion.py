@@ -79,4 +79,4 @@ class SuggestionCMD(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(SuggestionCMD(bot))
+    await bot.add_cog(SuggestionCMD(bot))

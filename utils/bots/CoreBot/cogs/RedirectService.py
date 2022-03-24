@@ -49,4 +49,4 @@ class RedirectURL(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(RedirectURL(bot))
+    await bot.add_cog(RedirectURL(bot))

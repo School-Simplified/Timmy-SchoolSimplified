@@ -153,4 +153,4 @@ class TutorMain(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(TutorMain(bot))
+    await bot.add_cog(TutorMain(bot))

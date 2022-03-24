@@ -82,4 +82,4 @@ class SayCMD(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(SayCMD(bot))
+    await bot.add_cog(SayCMD(bot))

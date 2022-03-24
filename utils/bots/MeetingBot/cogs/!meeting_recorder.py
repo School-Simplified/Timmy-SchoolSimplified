@@ -51,4 +51,4 @@ class MTGBOT(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(MTGBOT(bot))
+    await bot.add_cog(MTGBOT(bot))
