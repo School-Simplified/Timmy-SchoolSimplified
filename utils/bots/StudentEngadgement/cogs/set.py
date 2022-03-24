@@ -1,22 +1,35 @@
 from discord.ext import commands
-from discord.app_commands import command, guilds
+from discord.app_commands import command, guilds, check
 import discord
+from core import database
 from core.common import MAIN_ID, SET_ID
+
+blacklist = []
+
+
+def spammer_check():
+    def predicate(interaction: discord.Interaction) -> bool:
+        return interaction.user.id not in blacklist
+
+    return check(predicate)
+
+
+def reload_blacklist():
+    blacklist.clear()
+    for user_id in database.ResponseSpamBlacklist:
+        blacklist.append(user_id)
 
 
 class Engagement(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @property
-    def display_group(self) -> str:
-        return "Student Engagement"
-
-    @property
-    def display_emoji(self) -> str:
-        return "Student Engagement"
+    async def cog_load(self) -> None:
+        for user_id in database.ResponseSpamBlacklist:
+            blacklist.append(user_id)
 
     @command(name="acceptance_letter")
+    @spammer_check()
     @guilds(discord.Object(MAIN_ID.g_main))
     async def __college_accept(self, interaction: discord.Interaction, file: discord.Attachment):
         embed = discord.Embed(
@@ -31,6 +44,7 @@ class Engagement(commands.Cog):
         await channel.send(embed=embed)
 
     @command(name="puzzle_guess")
+    @spammer_check()
     @guilds(discord.Object(MAIN_ID.g_main))
     async def _guess(self, interaction: discord.Interaction, guess: str):
         """
