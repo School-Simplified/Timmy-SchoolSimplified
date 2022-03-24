@@ -3,6 +3,7 @@ import discord
 from typing import List, Literal, Dict, Union
 from core.common import MAIN_ID, SET_ID
 from discord.ext import commands
+from set import spammer_check
 
 
 class Suggest(commands.Cog, Group):
@@ -18,51 +19,61 @@ class Suggest(commands.Cog, Group):
         self.bot = bot
 
     @command(name="book")
+    @spammer_check()
     async def __book(self, interaction: discord.Interaction):
         """Make a book suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Book"))
 
     @command(name="movie")
+    @spammer_check()
     async def __movie(self, interaction: discord.Interaction):
         """Make a movie suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Movie"))
 
     @command(name="tv_show")
+    @spammer_check()
     async def __tv_show(self, interaction: discord.Interaction):
         """Make a TV show suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "TV Show"))
 
     @command(name="meme")
+    @spammer_check()
     async def __meme(self, interaction: discord.Interaction):
         """Make a meme suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Meme"))
 
     @command(name="pickup_line")
+    @spammer_check()
     async def __pickup_line(self, interaction: discord.Interaction):
         """Make a pickup line suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Pickup Line"))
 
     @command(name="puzzle")
+    @spammer_check()
     async def __puzzle(self, interaction: discord.Interaction):
         """Make a suggestion for the weekly puzzle!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Puzzle"))
 
     @command(name="daily_question")
+    @spammer_check()
     async def __daily_question(self, interaction: discord.Interaction):
         """Make a suggestion for the daily question!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Daily Question"))
 
     @command(name="motivation")
+    @spammer_check()
     async def __motivation(self, interaction: discord.Interaction):
         """Make a motivation suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Motivation"))
 
     @command(name="music")
+    @spammer_check()
     async def __motivation(self, interaction: discord.Interaction):
         """Make a music suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Music"))
 
     @command(name="art")
+    @spammer_check()
     async def __art(self, interaction: discord.Interaction, art: discord.Attachment):
         """Make an art appreciation suggestion!"""
         await interaction.response.send_message("Submitted!")
@@ -261,6 +272,7 @@ class SuggestModal(discord.ui.Modal):
                     placeholder=question["placeholder"] if question["placeholder"] else None,
                     max_length=1024,
                     style=discord.TextStyle.paragraph,
+                    custom_id="suggestion_modal"
                 )
             )
 
@@ -274,7 +286,7 @@ class SuggestModal(discord.ui.Modal):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
 
         for item, question in zip(
-                [item for item in self.__modal_children_items__ if isinstance(item, discord.TextInput)],
+                [item for item in self.children if isinstance(item, discord.TextInput)],
                 self.type_to_questions_list[self.type]
         ):
             embed.add_field(
