@@ -7,40 +7,40 @@ from core import database
 
 class BotRequestModal(discord.ui.Modal):
     def __init__(self, bot) -> None:
-        super().__init__("Bot Development Request")
+        super().__init__(title="Bot Development Request")
         self.bot = bot
 
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="What is a descriptive title for your project?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 max_length=1024,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Which team is this project for?",
-                style=discord.InputTextStyle.short,
+                style=discord.TextStyle.short,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Write a brief description of the project.",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 max_length=1024,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Do you have approval for this commission?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 max_length=1024,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Anything else?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 required=False,
                 max_length=1024,
             )
@@ -118,8 +118,8 @@ class TechProjectCMD(commands.Cog):
         )
         embed.set_footer(
             text="The Bot Development Team has the right to cancel and ignore any commissions if deemed appropriate. "
-            "We also have the right to cancel and ignore any commissions if an improper deadline is given, "
-            "please make sure you create a commission ahead of time and not right before a due date",
+                 "We also have the right to cancel and ignore any commissions if an improper deadline is given, "
+                 "please make sure you create a commission ahead of time and not right before a due date",
         )
         view = CommissionTechButton(self.bot)
         await ctx.send(embed=embed, view=view)
@@ -170,13 +170,12 @@ class TechProjectCMD(commands.Cog):
                 # print(channel.name, type(channel))
                 query = (
                     database.TechCommissionArchiveLog.select()
-                    .where(database.ThreadID == thread.id)
-                    .exists()
+                        .where(database.ThreadID == thread.id)
+                        .exists()
                 )
                 # print(thread.archived, query, (thread.parent_id in guild[1]))
                 if thread.archived and thread.parent_id in guild[1]:
                     await thread.unarchive()
 
-
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(TechProjectCMD(bot))

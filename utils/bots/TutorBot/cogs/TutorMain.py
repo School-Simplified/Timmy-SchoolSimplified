@@ -1,10 +1,9 @@
 import discord
 from core import database
 from core.common import Others
+from discord.app_commands import command, guilds
 from discord.ext import commands
 from datetime import datetime
-from discord import slash_command
-from discord.commands import permissions
 from core.common import MAIN_ID, TUT_ID
 import pytz
 
@@ -15,19 +14,20 @@ class TutorMain(commands.Cog):
         self.RepeatEmoji = {False: "\U00002b1b", True: "🔁"}
         self.ExpireEmoji = {False: "", True: "| ⚠️"}
 
-    @slash_command(name="view", guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut])
-    async def view(self, ctx, id=None):
+    @command(name="view")
+    @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
+    async def view(self, interaction: discord.Interaction, id=None):
         if id is None:
             query: database.TutorBot_Sessions = (
                 database.TutorBot_Sessions.select().where(
-                    database.TutorBot_Sessions.TutorID == ctx.author.id
+                    database.TutorBot_Sessions.TutorID == interaction.user.id
                 )
             )
 
             embed = discord.Embed(
                 title="Scheduled Tutor Sessions", color=discord.Color.dark_blue()
             )
-            embed.add_field(name="Schedule:", value=f"{ctx.author.name}'s Schedule:")
+            embed.add_field(name="Schedule:", value=f"{interaction.user.name}'s Schedule:")
 
             if query.count() == 0:
                 embed.add_field(
@@ -58,9 +58,9 @@ class TutorMain(commands.Cog):
                 "these sessions with a warning sign next to them."
             )
             try:
-                await ctx.respond(embed=embed)
+                await interaction.response.send_message(embed=embed)
             except:
-                await ctx.send(embed=embed)
+                await interaction.channel.send(embed=embed)
         else:
             entry = database.TutorBot_Sessions.select().where(
                 database.TutorBot_Sessions.SessionID == id
@@ -82,16 +82,16 @@ class TutorMain(commands.Cog):
                     name="Values",
                     value=f"**Session ID:** `{entry.SessionID}`"
                     f"\n**Student:** `{student_user.name}`"
-                    f"\n**Tutor:** `{ctx.author.name}`"
+                    f"\n**Tutor:** `{interaction.user.name}`"
                     f"\n**Date:** <t:{timestamp}:d>"
                     f"\n**Time:** <t:{timestamp}:t>"
                     f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
                 )
                 embed.set_footer(text=f"Subject: {entry.Subject}")
                 try:
-                    await ctx.respond(embed=embed)
+                    await interaction.response.send_message(embed=embed)
                 except:
-                    await ctx.send(embed=embed)
+                    await interaction.channel.send(embed=embed)
             else:
                 embed = discord.Embed(
                     title="Invalid Session",
@@ -99,17 +99,17 @@ class TutorMain(commands.Cog):
                     color=discord.Color.red(),
                 )
                 try:
-                    await ctx.respond(embed=embed)
+                    await interaction.response.send_message(embed=embed)
                 except:
-                    await ctx.send(embed=embed)
+                    await interaction.channel.send(embed=embed)
 
-    @slash_command(
-        name="mview",  # TODO find better name later
+    @command(
+        name="mview",
         description="View someone else's tutor sessions",
-        guild_ids=[MAIN_ID.g_main, TUT_ID.g_tut],
     )
-    @permissions.has_role("Tutoring Director")
-    async def mview(self, ctx, user: discord.User):
+    @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
+    # @permissions.has_role("Tutoring Director")
+    async def mview(self, interaction: discord.Interaction, user: discord.User):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.TutorID == user.id
         )
@@ -149,8 +149,8 @@ class TutorMain(commands.Cog):
             text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
             "these sessions with a warning sign next to them."
         )
-        await ctx.respond(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(TutorMain(bot))

@@ -12,9 +12,9 @@ from discord.ext import commands
 ":barrow~3: Please make sure you are authorized to make commissions! ",
 
 
-class AD_MDL_1(discord.ui.Modal):
+class AdvertisementModal(discord.ui.Modal):
     def __init__(self, bot) -> None:
-        super().__init__("Advertisement Request")
+        super().__init__(title="Advertisement Request")
         self.bot = bot
 
         self.add_item(
@@ -60,7 +60,6 @@ class AD_MDL_1(discord.ui.Modal):
         embed.set_author(
             name=interaction.user.name, icon_url=interaction.user.avatar.url
         )
-
         embed.add_field(
             name="Project Title", value=self.children[0].value, inline=False
         )
@@ -101,7 +100,7 @@ class CommissionADButton(discord.ui.View):
         emoji="📝",
     )
     async def verify(self, button: discord.ui.Button, interaction: discord.Interaction):
-        modal = AD_MDL_1(self.bot)
+        modal = AdvertisementModal(self.bot)
         return await interaction.response.send_modal(modal)
 
 
@@ -146,6 +145,5 @@ class MKTProject2(commands.Cog):
             await ctx.send("Closed!")
             await thread.archive(locked=True)
 
-
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(MKTProject2(bot))
