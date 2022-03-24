@@ -105,7 +105,8 @@ class Timmy(commands.Bot):
             )
 
     async def setup_hook(self) -> None:
-        await self.tree.sync()
+        for guild in self.guilds:
+            await self.tree.sync(guild=guild)
         for ext in get_extensions():
             try:
                 await bot.load_extension(ext)
