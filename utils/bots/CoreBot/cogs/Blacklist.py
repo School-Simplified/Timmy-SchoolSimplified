@@ -125,5 +125,5 @@ class BlacklistCMD(commands.Cog):
         await ctx.respond(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(BlacklistCMD(bot))
+async def setup(bot):
+    await bot.add_cog(BlacklistCMD(bot))

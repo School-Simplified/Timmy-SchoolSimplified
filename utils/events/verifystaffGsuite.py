@@ -187,5 +187,5 @@ class GSuiteLogin(commands.Cog):
         await ctx.send(embed=embed, view=GSuiteButton)
 
 
-def setup(bot):
-    bot.add_cog(GSuiteLogin(bot))
+async def setup(bot):
+    await bot.add_cog(GSuiteLogin(bot))

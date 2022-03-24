@@ -753,7 +753,7 @@ class DropdownTickets(commands.Cog):
         self.TicketInactive.start()
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
 
-    def cog_unload(self):
+    async def cog_unload(self):
         self.TicketInactive.cancel()
 
     @commands.Cog.listener("on_interaction")
@@ -1235,5 +1235,5 @@ class DropdownTickets(commands.Cog):
         )
 
 
-def setup(bot):
-    bot.add_cog(DropdownTickets(bot))
+async def setup(bot):
+    await bot.add_cog(DropdownTickets(bot))

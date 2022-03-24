@@ -87,5 +87,5 @@ class DropdownDemo(commands.Cog):
         await ctx.send(dropdownclass)
 
 
-def setup(bot):
-    bot.add_cog(DropdownDemo(bot))
+async def setup(bot):
+    await bot.add_cog(DropdownDemo(bot))

@@ -22,6 +22,9 @@ from core.common import getHostDir, force_restart
 from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk import Hub
+from discord import app_commands
+
+from utils.bots.CoreBot.cogs.tictactoe import TicTacToe
 
 load_dotenv()
 
@@ -554,6 +557,68 @@ class MiscCMD(commands.Cog):
         user = await self.bot.fetch_user(736765405728735232)
         await ctx.channel.purge(check=lambda m: m.author == user, limit=num)
 
+    @app_commands.command(description="Play a game of TicTacToe with someone!")
+    @app_commands.describe(user='The user you want to play with.')
+    async def tictactoe(self, ctx: discord.Interaction, user: discord.Member):
+        if ctx.channel.id != MAIN_ID.ch_commands:
+            return await ctx.response.send_message(
+                f"{ctx.author.mention}\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!",
+                ephemeral=True,
+            )
+        if user is None:
+            return await ctx.response.send_message(
+                "lonely :(, sorry but you need a person to play against!"
+            )
+        elif user == self.bot.user:
+            return await ctx.response.send_message("i'm good.")
+        elif user == ctx.author:
+            return await ctx.response.send_message(
+                "lonely :(, sorry but you need an actual person to play against, not yourself!"
+            )
 
-def setup(bot):
-    bot.add_cog(MiscCMD(bot))
+        await ctx.respond(
+            f"Tic Tac Toe: {ctx.user.mention} goes first",
+            view=TicTacToe(ctx.user, user),
+        )
+
+
+    @app_commands.command(name="Are they short?")
+    async def short(self, ctx: discord.Interaction, member: discord.Member):
+        if random.randint(0, 1) == 1:
+            await ctx.response.send_message(f"{member.mention} is short!")
+        else:
+            await ctx.response.send_message(f"{member.mention} is tall!")
+
+
+    @app_commands.command(description="Check's if a user is short!")
+    @app_commands.describe(member="The user's height you want to check.")
+    async def short_detector(
+        self, ctx: discord.Interaction, member: discord.Member
+    ):
+        if random.randint(0, 1) == 1:
+            await ctx.response.send_message(f"{member.mention} is short!")
+        else:
+            await ctx.response.send_message(f"{member.mention} is tall!")
+
+
+    @app_commands.command(name="Play TicTacToe with them!")
+    @app_commands.describe(member='The user you want to play with.')
+    async def tictactoeCTX(self, ctx: discord.Interaction, member: discord.Member):
+        if member is None:
+            return await ctx.response.send_message(
+                "lonely :(, sorry but you need a person to play against!"
+            )
+        elif member == self.bot.user:
+            return await ctx.response.send_message("i'm good.")
+        elif member == ctx.author:
+            return await ctx.response.send_message(
+                "lonely :(, sorry but you need an actual person to play against, not yourself!"
+            )
+
+        await ctx.response.send_message(
+            f"Tic Tac Toe: {ctx.user.mention} goes first",
+            view=TicTacToe(ctx.user, member),
+        )
+
+async def setup(bot: commands.Bot):
+    await bot.add_cog(MiscCMD(bot))

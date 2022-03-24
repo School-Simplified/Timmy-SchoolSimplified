@@ -111,10 +111,10 @@ class SituationCreator(commands.Cog):
             for ext in get_extensions():
                 try:
                     self.bot.load_extension(ext)
-                except discord.ExtensionAlreadyLoaded:
+                except commands.ExtensionAlreadyLoaded:
                     self.bot.unload_extension(ext)
                     self.bot.load_extension(ext)
-                except discord.ExtensionNotFound:
+                except commands.ExtensionNotFound:
                     raise discord.ExtensionNotFound(ext)
 
             await ctx.send("Done!")
@@ -155,5 +155,5 @@ class SituationCreator(commands.Cog):
         await ctx.send(f"**Current Simulation:** {q.mode}")
 
 
-def setup(bot):
-    bot.add_cog(SituationCreator(bot))
+async def setup(bot):
+    await bot.add_cog(SituationCreator(bot))

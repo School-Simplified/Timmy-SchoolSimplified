@@ -11,6 +11,8 @@ from datetime import datetime
 from difflib import get_close_matches
 from pathlib import Path
 
+from alive_progress import alive_bar
+
 import discord
 import requests
 import sentry_sdk
@@ -505,66 +507,18 @@ query.save()
 database.db.close()
 
 
-@bot.tree.command(description="Play a game of TicTacToe with someone!")
-async def tictactoe(interaction: discord.Interaction, user: discord.Member):
-    if interaction.channel.id != MAIN_ID.ch_commands:
-        return await interaction.response.send_message(
-            f"{interaction.user.mention}\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!",
-            ephemeral=True,
-        )
-    if user is None:
-        return await interaction.response.send_message(
-            "lonely :(, sorry but you need a person to play against!",
-            ephemeral=True
-        )
-    elif user == bot.user:
-        return await interaction.response.send_message("i'm good.", ephemeral=True)
-    elif user == interaction.user:
-        return await interaction.response.send_message(
-            "lonely :( sorry but you need an actual person to play against, not yourself!",
-            ephemeral=True
-        )
-
-    await interaction.response.send_message(
-        f"Tic Tac Toe: {interaction.user.mention} goes first",
-        view=TicTacToe(interaction.user, user),
-    )
-
-
-@bot.tree.command(name="Are they short?")
-async def short(interaction: discord.Interaction, member: discord.Member):
-    if random.randint(0, 1) == 1:
-        return await interaction.response.send_message(f"{member.mention} is short!")
-    await interaction.response.send_message(f"{member.mention} is tall!")
-
-
-@bot.tree.command(description="Check's if a user is short!")
-@describe(member="Enter a user you want to check!")
-async def short_detector(
-        interaction: discord.Interaction, member: discord.Member,
-):
-    if member.id in [736765405728735232, 518581570152693771, 544724467709116457]:
-        return await interaction.response.send_message(f"{member.mention} is short!")
-    await interaction.response.send_message(f"{member.mention} is tall!")
-
-
-@bot.tree.context_menu(name="Play TicTacToe with them!")
-async def _tictactoe(interaction: discord.Interaction, member: discord.Member):
-    if member is None:
-        return await interaction.response.send_message(
-            "lonely :(, sorry but you need a person to play against!"
-        )
-    elif member == bot.user:
-        return await interaction.response.send_message("i'm good.")
-    elif member == interaction.user:
-        return await interaction.response.send_message(
-            "lonely :(, sorry but you need an actual person to play against, not yourself!"
-        )
-
-    await interaction.response.send_message(
-        f"Tic Tac Toe: {interaction.user.mention} goes first",
-        view=TicTacToe(interaction.user, member),
-    )
+with alive_bar(
+    len(get_extensions()), ctrl_c=False, bar="bubbles", title=f"Initializing Cogs:"
+) as bar:
+    for ext in get_extensions():
+        try:
+            bot.load_extension(ext)
+        except discord.ExtensionAlreadyLoaded:
+            bot.unload_extension(ext)
+            bot.load_extension(ext)
+        except discord.ExtensionNotFound:
+            raise discord.ExtensionNotFound(ext)
+        bar()
 
 
 @bot.check

@@ -145,6 +145,5 @@ class MKTProject2(commands.Cog):
             await ctx.send("Closed!")
             await thread.archive(locked=True)
 
-
 async def setup(bot: commands.Bot):
     await bot.add_cog(MKTProject2(bot))

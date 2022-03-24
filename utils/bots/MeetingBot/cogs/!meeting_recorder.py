@@ -50,5 +50,5 @@ class MTGBOT(commands.Cog):
             await ctx.respond("The recording has started!")
 
 
-def setup(bot):
-    bot.add_cog(MTGBOT(bot))
+async def setup(bot):
+    await bot.add_cog(MTGBOT(bot))

@@ -95,5 +95,5 @@ class TodoCMD(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(TodoCMD(bot))
+async def setup(bot):
+    await bot.add_cog(TodoCMD(bot))
