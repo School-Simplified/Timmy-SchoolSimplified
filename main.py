@@ -105,6 +105,7 @@ class Timmy(commands.Bot):
             )
 
     async def setup_hook(self) -> None:
+        await self.tree.sync()
         for ext in get_extensions():
             try:
                 await bot.load_extension(ext)
@@ -203,18 +204,10 @@ class Timmy(commands.Bot):
             cmd = ctx.invoked_with
             cmds = [cmd.name for cmd in bot.commands]
             matches = get_close_matches(cmd, cmds)
-            # slash_cmds = [cmd.qualified_name for cmd in bot.application_commands]
-            # slash_matches = get_close_matches(slash_cmds, cmd)
-
             if len(matches) > 0:
                 return await ctx.send(
                     f'Command "{cmd}" not found, maybe you meant "{matches[0]}"?'
                 )
-            # elif len(slash_matches) > 0:
-            #     return await ctx.send(
-            #         f'Command "{cmd}" not found, command: {slash_matches[0]} is now a slash command! '
-            #         f"Please check https://timmy.schoolsimplified.org/#slash-command-port for more updates!"
-            #     )
             else:
                 return await ctx.send(
                     f'Command "{cmd}" not found, use the help command to know what commands are available. '
@@ -272,8 +265,8 @@ class Timmy(commands.Bot):
         ):
             em = discord.Embed(
                 title="Invalid Permissions!",
-                description="You do not have the associated role in order to successfully invoke this command! Contact an "
-                            "administrator/developer if you believe this is invalid.",
+                description="You do not have the associated role in order to successfully invoke this command! "
+                            "Contact an administrator/developer if you believe this is invalid.",
                 color=hexColors.red_error,
             )
             em.set_thumbnail(url=Others.error_png)
