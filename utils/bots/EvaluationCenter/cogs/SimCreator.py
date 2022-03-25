@@ -5,9 +5,9 @@ from discord.ext import commands
 
 
 class SimulatorProfile:
-    @classmethod
-    async def create_TicketSys(self, botself, ctx: commands.Context):
-        category = discord.utils.get(ctx.guild.categories, id=TECH_ID.cat_sandbox)
+    @staticmethod
+    async def create_TicketSys(ctx: commands.Context):
+        # category = discord.utils.get(ctx.guild.categories, id=TECH_ID.cat_sandbox)
         query: database.SandboxConfig = (
             database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
         )
@@ -25,15 +25,15 @@ class SimulatorProfile:
         ]
         for cat in ListofCat:
             pos = 7
-            category = ctx.guild.create_category(cat[0], position=pos)
+            category = await ctx.guild.create_category(cat[0], position=pos)
             cat[1] = category.id
             if cat[0] == "Other Tickets":
                 query.cat_fineartsticket = category.id
             pos += 1
         query.save()
 
-    @classmethod
-    async def cleanup_TicketSys(self, botself, ctx: commands.Context):
+    @staticmethod
+    async def cleanup_ticket_sys(ctx: commands.Context):
         query: database.SandboxConfig = (
             database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
         )
@@ -55,8 +55,8 @@ class SimulatorProfile:
         query.mode = "None"
         query.save()
 
-    @classmethod
-    async def create_PrivVCSys(self, botself, ctx: commands.Context):
+    @staticmethod
+    async def create_PrivVCSys(ctx: commands.Context):
         category = discord.utils.get(ctx.guild.categories, id=SandboxConfig.cat_sandbox)
         q: database.SandboxConfig = (
             database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
@@ -71,14 +71,14 @@ class SimulatorProfile:
         q.ch_tv_startvc = spv.id
         q.save()
 
-    @classmethod
-    async def cleanup_PrivVCSys(self, botself, ctx: commands.Context):
+    @staticmethod
+    async def cleanup_PrivVCSys(ctx: commands.Context):
         q: database.SandboxConfig = (
             database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
         )
         channels = [q.ch_tv_console, q.ch_tv_startvc]
         for channel in channels:
-            ch = await botself.bot.fetch_channel(channel)
+            ch = await ctx.bot.fetch_channel(channel)
             await ch.delete()
 
         q.mode = "None"
@@ -104,23 +104,23 @@ class SituationCreator(commands.Cog):
         )
         if q.mode == "None":
             if profile == "TicketSys":
-                await SP.create_TicketSys(self, ctx)
+                await SP.create_TicketSys(ctx)
             elif profile == "PrivateVC":
-                await SP.create_PrivVCSys(self, ctx)
+                await SP.create_PrivVCSys(ctx)
 
             for ext in get_extensions():
                 try:
-                    self.bot.load_extension(ext)
+                    await self.bot.load_extension(ext)
                 except commands.ExtensionAlreadyLoaded:
-                    self.bot.unload_extension(ext)
-                    self.bot.load_extension(ext)
+                    await self.bot.unload_extension(ext)
+                    await self.bot.load_extension(ext)
                 except commands.ExtensionNotFound:
-                    raise discord.ExtensionNotFound(ext)
+                    raise commands.ExtensionNotFound(ext)
 
             await ctx.send("Done!")
         else:
             await ctx.send(
-                "Unable to initate simulation, a simulation is already active. Run the cleanup command first!"
+                "Unable to initiate simulation, a simulation is already active. Run the cleanup command first!"
             )
 
     @sim.command()
@@ -132,18 +132,18 @@ class SituationCreator(commands.Cog):
         if q.mode == "None":
             return await ctx.send("No simulation currently active.")
         elif q.mode == "TutorVC":
-            await SP.cleanup_PrivVCSys(self, ctx)
+            await SP.cleanup_PrivVCSys(ctx)
         elif q.mode == "TicketSys":
-            await SP.cleanup_TicketSys(self, ctx)
+            await SP.cleanup_ticket_sys(ctx)
 
         for ext in get_extensions():
             try:
-                self.bot.load_extension(ext)
-            except discord.ExtensionAlreadyLoaded:
-                self.bot.unload_extension(ext)
-                self.bot.load_extension(ext)
-            except discord.ExtensionNotFound:
-                raise discord.ExtensionNotFound(ext)
+                await self.bot.load_extension(ext)
+            except commands.ExtensionAlreadyLoaded:
+                await self.bot.unload_extension(ext)
+                await self.bot.load_extension(ext)
+            except commands.ExtensionNotFound:
+                raise commands.ExtensionNotFound(ext)
 
         await ctx.send("Cleared simulation.")
 
