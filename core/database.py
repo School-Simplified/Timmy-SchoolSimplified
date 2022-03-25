@@ -640,7 +640,23 @@ class BaseQueue(BaseModel):
     id = AutoField()
     queueID = BigIntegerField()
 
+class AuthorizedGuilds(BaseModel):
+    """
+    #AuthorizedGuilds
 
+    `id`: AutoField()
+    Database Entry ID.
+
+    `guildID`: BigIntegerField()
+    Guild ID.
+
+    `authorizedUserID`: BigIntegerField()
+    User who performed the action.
+    """
+
+    id = AutoField()
+    guildID = BigIntegerField()
+    authorizedUserID = BigIntegerField()
 app = Flask(__name__)
 
 
@@ -685,6 +701,7 @@ tables = {
     "SandboxConfig": SandboxConfig,
     "Voting": Voting,
     "BaseQueue": BaseQueue,
+    "AuthorizedGuilds": AuthorizedGuilds,
 }
 
 iter_table(tables)

@@ -38,7 +38,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 from core import database
 
 load_dotenv()
-# global variables
+
+# module variables
 coroutineType = Callable[[Any, Any], Awaitable[Any]]
 
 
