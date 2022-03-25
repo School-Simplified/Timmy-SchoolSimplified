@@ -1,14 +1,9 @@
 import faulthandler
 import logging
 import os
-import time
-from typing import Any, Optional, Union
-
-from alive_progress import alive_bar
 
 import discord
-from discord.app_commands import AppCommandError, Command, ContextMenu
-
+from alive_progress import alive_bar
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
@@ -16,8 +11,10 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
-from core.special_methods import before_invoke_, main_mode_check_, on_command_error_, on_ready_
-from core.common import get_extensions
+from core.common import Others, get_extensions
+from core.special_methods import (before_invoke_, initializeDB,
+                                  main_mode_check_, on_command_error_,
+                                  on_ready_)
 
 load_dotenv()
 faulthandler.enable()
@@ -104,60 +101,7 @@ if os.getenv("DSN_SENTRY") is not None:
         integrations=[FlaskIntegration(), sentry_logging],
     )
 
-# Start Check
-UpQ = database.Uptime.select().where(database.Uptime.id == 1)
-CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)
-BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)
-SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)
-
-if not UpQ.exists():
-    database.Uptime.create(UpStart="1")
-    print("Created Uptime Entry.")
-
-if not CIQ.exists():
-    database.CheckInformation.create(
-        MasterMaintenance=False,
-        guildNone=False,
-        externalGuild=True,
-        ModRoleBypass=True,
-        ruleBypass=True,
-        publicCategories=True,
-        elseSituation=True,
-        PersistantChange=False,
-    )
-    print("Created CheckInformation Entry.")
-
-if len(database.Administrators) == 0:
-    for person in bot.owner_ids:
-        database.Administrators.create(discordID=person, TierLevel=4)
-        print("Created Administrator Entry.")
-    database.Administrators.create(discordID=409152798609899530, TierLevel=4)
-
-if not BTE.exists():
-    database.BaseTickerInfo.create(
-        counter=0,
-    )
-    print("Created BaseTickerInfo Entry.")
-
-if not SM.exists():
-    database.SandboxConfig.create(
-        mode="None",
-    )
-    print("Created SandboxConfig Entry.")
-
-database.db.connect(reuse_if_open=True)
-q: database.Uptime = database.Uptime.select().where(database.Uptime.id == 1).get()
-q.UpStart = time.time()
-q.save()
-
-query: database.CheckInformation = (
-    database.CheckInformation.select().where(database.CheckInformation.id == 1).get()
-)
-query.PersistantChange = False
-query.save()
-database.db.close()
-
-
+initializeDB(bot)
 
 # class TimmyCommandTree(discord.app_commands.CommandTree):
 #     def __init__(self, client: commands.Bot):
