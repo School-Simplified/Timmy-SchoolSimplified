@@ -6,9 +6,12 @@ from typing import Literal
 
 import discord
 from discord.ext import commands
+from discord import app_commands
+
 from googleapiclient.discovery import build
+
 from core.common import HR_ID, access_secret
-from discord.app_commands import command, describe
+
 
 def get_random_string(length=13):
     # choose from all lowercase letter
@@ -39,25 +42,23 @@ class AdminAPI(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @command(
+    @app_commands.command(
         name="gsuite-create",
         description="Create a GSuite Account",
-        guild_ids=[HR_ID.g_hr],
     )
-    @describe(organizationunit='Select the organization unit this user will be in.')
+    @app_commands.guilds(HR_ID.g_hr)
+    @app_commands.describe(organizationunit='Select the organization unit this user will be in.')
     async def create_gsuite(
         self,
-        ctx: discord.Interaction,
+        interaction: discord.Interaction,
         firstname: str,
         lastname: str,
-        organizationunit: Literal[
-            "Personal Account", "Team Account"
-        ],
+        organizationunit: Literal["Personal Account", "Team Account"],
     ):
         HR_Role = discord.utils.get(ctx.guild.roles, id=HR_ID.r_hrStaff)
-        if HR_Role not in ctx.author.roles:
-            return await ctx.respond(
-                f"{ctx.author.mention} You do not have the required permissions to use this command."
+        if HR_Role not in interaction.user.roles:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You do not have the required permissions to use this command."
             )
 
         temppass = get_random_string()
@@ -73,37 +74,37 @@ class AdminAPI(commands.Cog):
             "orgUnitPath": orgUnit[organizationunit],
         }
         service.users().insert(body=user).execute()
-        await ctx.respond(
-            f"{ctx.author.mention} Successfully created **{firstname} {lastname}'s** account.\n"
+        await interaction.response.send_message(
+            f"{interaction.user.mention} Successfully created **{firstname} {lastname}'s** account.\n"
             f"**Username:** {firstname}.{lastname}@schoolsimplified.orf\n"
             f"**Organization Unit:** {orgUnit[organizationunit]}",
             ephemeral=False,
         )
-        await ctx.respond(
+        await interaction.response.send_message(
             f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",
             ephemeral=True,
         )
 
-    @discord.slash_command(
+    @app_commands.command(
         name="gsuite-delete",
         description="Suspend/Delete a GSuite Account",
-        guild_ids=[HR_ID.g_hr],
     )
-    async def delete_gsuite(self, ctx: commands.Context, email):
-        HR_Role = discord.utils.get(ctx.guild.roles, id=HR_ID.r_hrStaff)
-        if HR_Role not in ctx.author.roles:
-            return await ctx.respond(
-                f"{ctx.author.mention} You do not have the required permissions to use this command."
+    @app_commands.guilds(HR_ID.g_hr)
+    async def delete_gsuite(self, interaction: discord.Interaction, email):
+        HR_Role = discord.utils.get(interaction.guild.roles, id=HR_ID.r_hrStaff)
+        if HR_Role not in interaction.user.roles:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You do not have the required permissions to use this command."
             )
 
         try:
             service.users().delete(userKey=email).execute()
         except:
-            return await ctx.respond(
-                f"{ctx.author.mention} The account **{email}** does not exist."
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} The account **{email}** does not exist."
             )
         else:
-            await ctx.respond("Successfully deleted the account.")
+            await interaction.response.send_message("Successfully deleted the account.")
 
 
 async def setup(bot):
