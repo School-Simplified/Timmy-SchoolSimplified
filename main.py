@@ -1,3 +1,10 @@
+"""
+Copyright (C) School Simplified - All Rights Reserved
+ * Unauthorized self-hosting of this application is strictly prohibited.
+ * Permission is granted to use this application as a code reference for educational purposes.
+ * Written by School Simplified, IT Dept. <timmy@schoolsimplified.org>, March 2022
+"""
+
 import faulthandler
 import logging
 import os
@@ -126,7 +133,5 @@ async def on_guild_join(guild: discord.Guild):
                 await channel.send(embed=embed)
                 break
         await guild.leave()
-
-
 
 bot.run(os.getenv("TOKEN"))
