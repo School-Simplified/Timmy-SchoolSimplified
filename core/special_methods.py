@@ -26,7 +26,7 @@ from common import (
 from utils.bots.mktCommissions.ADCommissions import CommissionADButton
 from utils.events.TicketDropdown import TicketButton
 from utils.events.VerificationStaff import VerifyButton
-from utils.events.AutoThreadUnarchive import CommissionTechButton
+from utils.bots.CoreBot.cogs.techCommissions import CommissionTechButton
 from pathlib import Path
 
 
