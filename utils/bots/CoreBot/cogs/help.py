@@ -448,6 +448,30 @@ class Help(commands.Cog):
             key = lambda c: c.qualified_name
 
         iterator = _commands
+        # iterator = commands if self.show_hidden else filter(lambda c: not c.hidden, commands)
+        #
+        # if self.verify_checks is False:
+        #     # if we do not need to verify the checks then we can just
+        #     # run it straight through normally without using await.
+        #     return sorted(iterator, key=key) if sort else list(iterator)
+        #
+        #
+        # async def predicate(cmd: commands.Command[Any, ..., Any]) -> bool:
+        #     try:
+        #         return await cmd.can_run()
+        #     except commands.CommandError:
+        #         return False
+        #
+        # ret = []
+        # for cmd in iterator:
+        #     valid = await predicate(cmd)
+        #     if valid:
+        #         ret.append(cmd)
+        #
+        # if sort:
+        #     ret.sort(key=key)
+        # return ret
+        # TODO IMPLEMENT CHECKS
 
         return sorted(iterator, key=key) if sort else list(iterator)
 
@@ -487,7 +511,7 @@ class Help(commands.Cog):
             key=key
         )
 
-        all_commands: Dict[commands.Cog, List[Union[commands.Command, app_commands.Command, ...]]] = {}
+        all_commands: Dict[commands.Cog, Union[Set[...], List[Union[commands.Command, app_commands.Command, ...]]]] = {}
         for name, children in itertools.groupby(entries, key=key):
             if name == '\U0010ffff':
                 continue
