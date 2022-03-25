@@ -127,7 +127,7 @@ class TutorVCUpdate(commands.Cog):
         lobbyStart = member.guild.get_channel(self.LobbyStartIDs[member.guild.id])
         if lobbyStart == None:
             try:
-                lobbyStart = await self.bot.fetch_channel(
+                lobbyStart = self.bot.get_channel(
                     self.LobbyStartIDs[member.guild.id]
                 )
             except Exception as e:
@@ -144,7 +144,7 @@ class TutorVCUpdate(commands.Cog):
             and not member.bot
         ):
 
-            acadChannel = await self.bot.fetch_channel(self.channel_id[member.guild.id])
+            acadChannel = self.bot.get_channel(self.channel_id[member.guild.id])
             query = database.VCChannelInfo.select().where(
                 (database.VCChannelInfo.authorID == member.id)
                 & (database.VCChannelInfo.ChannelID == before.channel.id)
@@ -180,7 +180,7 @@ class TutorVCUpdate(commands.Cog):
                     .get()
                 )
                 try:
-                    tutorChannel = await self.bot.fetch_channel(int(query.ChannelID))
+                    tutorChannel = self.bot.get_channel(int(query.ChannelID))
                 except:
                     tutorChannel = None
 
@@ -280,13 +280,13 @@ class TutorVCUpdate(commands.Cog):
 
                                     tutorSession = tutorSession.get()
 
-                                    student = await self.bot.fetch_user(
+                                    student = self.bot.get_user(
                                         tutorSession.StudentID
                                     )
-                                    tutor = await self.bot.fetch_user(
+                                    tutor = self.bot.get_user(
                                         tutorSession.TutorID
                                     )
-                                    HOURCH = await self.bot.fetch_channel(
+                                    HOURCH = self.bot.get_channel(
                                         self.TutorLogID
                                     )
 
@@ -340,7 +340,7 @@ class TutorVCUpdate(commands.Cog):
             and after.channel.id in self.presetChannels
             and not member.bot
         ):
-            acadChannel = await self.bot.fetch_channel(
+            acadChannel = self.bot.get_channel(
                 self.LobbyStartIDs[member.guild.id]
             )
             print(acadChannel, after.channel.guild.id)
@@ -394,7 +394,7 @@ class TutorVCUpdate(commands.Cog):
                     color=discord.Colour.red(),
                 )
                 try:
-                    tutorChannel = await self.bot.fetch_channel(
+                    tutorChannel = self.bot.get_channel(
                         int(moveToChannel.ChannelID)
                     )
                     await member.move_to(

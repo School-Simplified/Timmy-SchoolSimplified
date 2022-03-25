@@ -78,7 +78,7 @@ class SimulatorProfile:
         )
         channels = [q.ch_tv_console, q.ch_tv_startvc]
         for channel in channels:
-            ch = await ctx.bot.fetch_channel(channel)
+            ch = ctx.bot.get_channel(channel)
             await ch.delete()
 
         q.mode = "None"

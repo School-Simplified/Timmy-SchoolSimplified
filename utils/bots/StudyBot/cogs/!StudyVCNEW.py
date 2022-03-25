@@ -136,9 +136,10 @@ class StudyVCUpdate(commands.Cog):
         before: discord.VoiceState,
         after: discord.VoiceState,
     ):
-        console: discord.TextChannel = await self.bot.fetch_channel(self.StudyVCConsole)
+        console: discord.TextChannel = self.bot.get_channel(self.StudyVCConsole)
         if member.guild.id != self.StudyVCGuild:
             return
+
         if (
             before.channel is not None
             and (
@@ -148,6 +149,7 @@ class StudyVCUpdate(commands.Cog):
             )
             and not member.bot
         ):
+
             StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
             if StudySessionQ.exists():
                 await addLeaderboardProgress(member)
@@ -160,6 +162,7 @@ class StudyVCUpdate(commands.Cog):
             and after.channel.id in self.StudyVCChannels
             and not member.bot
         ):
+
             query = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
             if not query.exists():
                 goal, renewal = await setNewStudyGoal(self, console, member, False)
@@ -198,13 +201,13 @@ class StudyVCUpdate(commands.Cog):
         """Loop through each session and check if a user's study session is about to end"""
         print("loop StudyVCChecker")
 
-        StudyVCGuildObj = await self.bot.fetch_guild(self.StudyVCGuild)
-        StudyVCConsoleObj = await StudyVCGuildObj.fetch_channel(self.StudyVCConsole)
+        StudyVCGuildObj = self.bot.get_guild(self.StudyVCGuild)
+        StudyVCConsoleObj = StudyVCGuildObj.get_channel(self.StudyVCConsole)
 
         for q in database.StudyVCDB:
             dateObj = pytz.timezone("America/New_York").localize(q.RenewalTime)
 
-            member = await StudyVCGuildObj.fetch_member(q.discordID)
+            member = StudyVCGuildObj.get_member(q.discordID)
             if datetime.now(EST) >= dateObj:
                 if member.voice:
                     await member.move_to(None)
