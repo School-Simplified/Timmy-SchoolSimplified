@@ -50,9 +50,9 @@ class AdminAPI(commands.Cog):
         ctx: discord.Interaction,
         firstname: str,
         lastname: str,
-        organizationunit: Literal(
-            ["Personal Account", "Team Account"]
-        ),
+        organizationunit: Literal[
+            "Personal Account", "Team Account"
+        ],
     ):
         HR_Role = discord.utils.get(ctx.guild.roles, id=HR_ID.r_hrStaff)
         if HR_Role not in ctx.author.roles:

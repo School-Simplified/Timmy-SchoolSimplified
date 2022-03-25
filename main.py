@@ -1,6 +1,5 @@
 """
 Copyright (C) School Simplified - All Rights Reserved
- * Unauthorized self-hosting of this application is strictly prohibited.
  * Permission is granted to use this application as a code reference for educational purposes.
  * Written by School Simplified, IT Dept. <timmy@schoolsimplified.org>, March 2022
 """
