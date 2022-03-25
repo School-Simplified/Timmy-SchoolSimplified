@@ -16,6 +16,10 @@ class BlacklistCMD(commands.Cog, Group):
         )
         self.bot = bot
 
+    @property
+    def display_emoji(self) -> discord.PartialEmoji:
+        return discord.PartialEmoji(name='\N{LOCK}')
+
     @command()
     @slash_is_bot_admin_4()
     async def add(self, interaction: discord.Interaction, user: discord.User):

@@ -90,6 +90,11 @@ class SimulatorProfile:
 class SituationCreator(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
+        self.__cog_name__ = "Situation Simulator"
+
+    @property
+    def display_emoji(self) -> discord.PartialEmoji:
+        return discord.PartialEmoji(name='\N{TEST TUBE}')
 
     @commands.group(invoke_without_command=True)
     @commands.has_any_role()
