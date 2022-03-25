@@ -61,7 +61,7 @@ class ConfigcatClient:
     )
 
 
-async def rawExport(self, channel, response, user: discord.User):
+async def rawExport(channel, response, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
 
     if transcript is None:
