@@ -8,14 +8,9 @@ import itertools
 from typing import Any, Dict, List, Optional, Set, Union
 from discord import app_commands
 import discord
-from discord.app_commands import command
+from discord.app_commands import command, describe
 from discord.ext import commands, menus
 from core.common import Others
-
-
-class Help(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
 
 
 class RoboPages(discord.ui.View):
@@ -417,9 +412,10 @@ class FrontPageSource(menus.PageSource):
         return embed
 
 
-class HelpCommand(commands.Cog):
+class Help(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        bot.help_command.cog = self
 
     @staticmethod
     async def _filter_commands(
@@ -620,14 +616,20 @@ class HelpCommand(commands.Cog):
         pass
 
     @property
-    def display_emoji(self) -> str:
-        return ""
+    def display_emoji(self) -> discord.PartialEmoji:
+        return discord.PartialEmoji(name='\N{WHITE QUESTION MARK ORNAMENT}')
 
     @command()
+    @describe(command="Name of command, cog or command group")
     async def help(
             self,
-            ctx,
-            command: Optional[str] = None,
+            interaction:
+            discord.Interaction,
+            command: Optional[str] = None
     ):
-        await self._command_callback(ctx, _command=command)
+        await self._command_callback(interaction, _command=command)
         # Maybe add autocomplete for commands in the future
+
+
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Help(bot))
