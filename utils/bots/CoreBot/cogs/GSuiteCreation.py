@@ -2,12 +2,13 @@ from __future__ import print_function
 
 import random
 import string
+from typing import Literal
 
 import discord
 from discord.ext import commands
 from googleapiclient.discovery import build
 from core.common import HR_ID, access_secret
-
+from discord.app_commands import command, describe
 
 def get_random_string(length=13):
     # choose from all lowercase letter
@@ -38,18 +39,19 @@ class AdminAPI(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @discord.slash_command(
+    @command(
         name="gsuite-create",
         description="Create a GSuite Account",
         guild_ids=[HR_ID.g_hr],
     )
+    @describe(organizationunit='Select the organization unit this user will be in.')
     async def create_gsuite(
         self,
-        ctx: commands.Context,
-        firstname,
-        lastname,
-        organizationunit: discord.Option(
-            str, "Choose an account type.", choices=["Personal Account", "Team Account"]
+        ctx: discord.Interaction,
+        firstname: str,
+        lastname: str,
+        organizationunit: Literal(
+            ["Personal Account", "Team Account"]
         ),
     ):
         HR_Role = discord.utils.get(ctx.guild.roles, id=HR_ID.r_hrStaff)

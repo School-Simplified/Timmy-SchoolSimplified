@@ -158,6 +158,7 @@ query.save()
 database.db.close()
 
 
+
 # class TimmyCommandTree(discord.app_commands.CommandTree):
 #     def __init__(self, client: commands.Bot):
 #         super().__init__(client)
@@ -169,6 +170,18 @@ database.db.close()
 #             error: AppCommandError,
 #     ) -> None:
 #         ...
+@bot.event
+async def on_guild_join(guild: discord.Guild):
+    query = database.AuthorizedGuilds.select().where(database.AuthorizedGuilds.guildID == guild.id)
+    if not query.exists():
+        embed = discord.Embed(title="Unable to join guild!", description="This guild is not authorized to use Timmy!", color=discord.Color.brand_red())
+        embed.set_thumbnail(url=Others.timmyDog_png)
+        embed.set_footer(text="Please contact an IT administrator for help.")
+        for channel in guild.channels:
+            if channel.permissions_for(guild.me).send_messages:
+                await channel.send(embed=embed)
+                break
+        await guild.leave()
 
 
 

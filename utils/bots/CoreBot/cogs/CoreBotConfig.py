@@ -25,7 +25,7 @@ class CoreBotConfig(commands.Cog):
         self.bot = bot
 
     @commands.group(aliases=["f"])
-    async def filter(self):
+    async def filters(self):
         pass
 
     @commands.command()
@@ -73,7 +73,7 @@ class CoreBotConfig(commands.Cog):
 
         await ctx.send(f"Field: {databaseValues[num]} has been set to {str(val)}")
 
-    @filter.command()
+    @filters.command()
     async def list(self, ctx):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
