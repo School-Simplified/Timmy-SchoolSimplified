@@ -6,9 +6,8 @@ from core.checks import is_botAdmin
 from core import database
 
 
-class BotRequestModal(ui.Modal):
+class BotRequestModal(ui.Modal, title="Bot Development Request"):
     def __init__(self, bot: commands.Bot) -> None:
-        super().__init__(title="Bot Development Request")
         self.bot = bot
 
     titleTI = ui.TextInput(
@@ -43,7 +42,7 @@ class BotRequestModal(ui.Modal):
     )
 
 
-    async def callback(self, interaction: discord.Interaction):
+    async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.send_message(
             content="Got it! Please wait while I create your ticket.", ephemeral=True
         )
