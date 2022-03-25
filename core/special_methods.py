@@ -424,6 +424,7 @@ async def main_mode_check_(ctx: commands.Context):
         return CheckDB_CC.elseSituation
 
 def initializeDB(bot):
+    database.db.connect(reuse_if_open=True)
     UpQ = database.Uptime.select().where(database.Uptime.id == 1)
     CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)
     BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)
@@ -464,7 +465,6 @@ def initializeDB(bot):
         )
         print("Created SandboxConfig Entry.")
 
-    database.db.connect(reuse_if_open=True)
     q: database.Uptime = database.Uptime.select().where(database.Uptime.id == 1).get()
     q.UpStart = time.time()
     q.save()
