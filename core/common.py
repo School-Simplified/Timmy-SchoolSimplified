@@ -1547,7 +1547,7 @@ class TechnicalCommissionConfirm(discord.ui.View):
             self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         TranscriptLOG = self.bot.get_channel(TECH_ID.ch_ticketLog)
-        ch = await self.bot.get_channel(interaction.channel_id)
+        ch = self.bot.get_channel(interaction.channel_id)
 
         await rawExport(self, ch, TranscriptLOG, interaction.user)
         await ch.delete()
@@ -1576,7 +1576,7 @@ class LockButton(discord.ui.View):
     )
     async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.value = True
-        ch = await self.bot.get_channel(interaction.channel_id)
+        ch = self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TechnicalCommissionConfirm(self.bot)
 
         msg = await ch.send(
@@ -1661,7 +1661,7 @@ class TicketLockButton(discord.ui.View):
     )
     async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.value = True
-        ch = await self.bot.get_channel(interaction.channel_id)
+        ch = self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TicketTempConfirm()
 
         msg = await ch.send(

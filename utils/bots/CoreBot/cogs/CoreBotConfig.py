@@ -252,7 +252,7 @@ class CoreBotConfig(commands.Cog):
             database.Administrators.TierLevel == 1
         )
         for admin in query1:
-            user = await self.bot.fetch_user(admin.discordID)
+            user = self.bot.get_user(admin.discordID)
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL1 = "\n".join(adminList)
@@ -262,7 +262,7 @@ class CoreBotConfig(commands.Cog):
             database.Administrators.TierLevel == 2
         )
         for admin in query2:
-            user = await self.bot.fetch_user(admin.discordID)
+            user = self.bot.get_user(admin.discordID)
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL2 = "\n".join(adminList)
@@ -272,7 +272,7 @@ class CoreBotConfig(commands.Cog):
             database.Administrators.TierLevel == 3
         )
         for admin in query3:
-            user = await self.bot.fetch_user(admin.discordID)
+            user = self.bot.get_user(admin.discordID)
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL3 = "\n".join(adminList)
@@ -282,7 +282,7 @@ class CoreBotConfig(commands.Cog):
             database.Administrators.TierLevel == 4
         )
         for admin in query4:
-            user = await self.bot.fetch_user(admin.discordID)
+            user = self.bot.get_user(admin.discordID)
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL4 = "\n".join(adminList)

@@ -417,13 +417,13 @@ class StudyToDo(commands.Cog):
     @studytodo.command(aliases=["lb"])
     async def leaderboard(self, ctx):
 
-        guild = await self.bot.fetch_guild(self.StudyVCGuildID)
+        guild = self.bot.get_guild(self.StudyVCGuildID)
 
         lbList = []
         i = 1
         for entry in database.StudyVCLeaderboard.select().order_by(database.StudyVCLeaderboard.totalXP.desc(),
                                                                    database.StudyVCLeaderboard.xp.desc()):
-            member = await guild.fetch_member(entry.discordID)
+            member = guild.get_member(entry.discordID)
             print(entry, member)
             if member:
 

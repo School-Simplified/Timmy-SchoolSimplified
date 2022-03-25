@@ -45,7 +45,7 @@ class TutorMain(commands.Cog):
                     )
                     timestamp = int(datetime.timestamp(datetime_session))
 
-                    student_user = await self.bot.fetch_user(entry.StudentID)
+                    student_user = self.bot.get_user(entry.StudentID)
                     list_ten.append(
                         f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{timestamp}:F> -> "
                         f"{student_user.name} {self.ExpireEmoji[entry.GracePeriod_Status]} "
@@ -68,7 +68,7 @@ class TutorMain(commands.Cog):
             if entry.exists():
                 entry = entry.get()
 
-                student_user = await self.bot.fetch_user(entry.StudentID)
+                student_user = self.bot.get_user(entry.StudentID)
                 datetime_session = pytz.timezone("America/New_York").localize(
                     entry.Date
                 )
@@ -136,7 +136,7 @@ class TutorMain(commands.Cog):
                 )
                 timestamp = int(datetime.timestamp(datetime_session))
 
-                student_user = await self.bot.fetch_user(entry.StudentID)
+                student_user = self.bot.get_user(entry.StudentID)
                 list_ten.append(
                     f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{timestamp}:F> -> {student_user.name} "
                     f"{self.ExpireEmoji[entry.GracePeriod_Status]}"
