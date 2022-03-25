@@ -476,7 +476,7 @@ class Help(commands.Cog):
             return _cog.qualified_name if _cog else '\U0010ffff'
 
         # sort guild and global slash commands, regular commands
-        entries: List[commands.Command] = await self._filter_commands(
+        entries: Union[Set[...], List[Union[commands.Command, app_commands.Command]]] = await self._filter_commands(
             [
                 x for x in (self.bot.tree.walk_commands(guild=discord.Object(interaction.guild.id)),
                             self.bot.tree.walk_commands(),
