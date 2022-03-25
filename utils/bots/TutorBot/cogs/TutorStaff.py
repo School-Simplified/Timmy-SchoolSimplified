@@ -29,7 +29,7 @@ class TutorBotStaffCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(
+    @command(
         name="schedule",
         description="Create a Tutor Session",
     )  # SLASH CMD FOR MAIN SERVER
