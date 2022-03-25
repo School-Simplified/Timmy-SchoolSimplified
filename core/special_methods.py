@@ -2,6 +2,7 @@ import collections
 import json
 import os
 import subprocess
+import time
 import traceback
 from datetime import datetime
 from difflib import get_close_matches
@@ -26,7 +27,7 @@ from common import (
 from utils.bots.mktCommissions.ADCommissions import CommissionADButton
 from utils.events.TicketDropdown import TicketButton
 from utils.events.VerificationStaff import VerifyButton
-from utils.events.AutoThreadUnarchive import CommissionTechButton
+from utils.bots.CoreBot.cogs.techCommissions import CommissionTechButton
 from pathlib import Path
 
 
@@ -421,3 +422,56 @@ async def main_mode_check_(ctx: commands.Context):
     # Else...
     else:
         return CheckDB_CC.elseSituation
+
+def initializeDB(bot):
+    UpQ = database.Uptime.select().where(database.Uptime.id == 1)
+    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)
+    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)
+    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)
+
+    if not UpQ.exists():
+        database.Uptime.create(UpStart="1")
+        print("Created Uptime Entry.")
+
+    if not CIQ.exists():
+        database.CheckInformation.create(
+            MasterMaintenance=False,
+            guildNone=False,
+            externalGuild=True,
+            ModRoleBypass=True,
+            ruleBypass=True,
+            publicCategories=True,
+            elseSituation=True,
+            PersistantChange=False,
+        )
+        print("Created CheckInformation Entry.")
+
+    if len(database.Administrators) == 0:
+        for person in bot.owner_ids:
+            database.Administrators.create(discordID=person, TierLevel=4)
+            print("Created Administrator Entry.")
+        database.Administrators.create(discordID=409152798609899530, TierLevel=4)
+
+    if not BTE.exists():
+        database.BaseTickerInfo.create(
+            counter=0,
+        )
+        print("Created BaseTickerInfo Entry.")
+
+    if not SM.exists():
+        database.SandboxConfig.create(
+            mode="None",
+        )
+        print("Created SandboxConfig Entry.")
+
+    database.db.connect(reuse_if_open=True)
+    q: database.Uptime = database.Uptime.select().where(database.Uptime.id == 1).get()
+    q.UpStart = time.time()
+    q.save()
+
+    query: database.CheckInformation = (
+        database.CheckInformation.select().where(database.CheckInformation.id == 1).get()
+    )
+    query.PersistantChange = False
+    query.save()
+    database.db.close()

@@ -36,6 +36,7 @@ from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
 from oauth2client.service_account import ServiceAccountCredentials
 from core import database
+from main import Timmy
 
 load_dotenv()
 
