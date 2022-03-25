@@ -17,7 +17,7 @@ class SuggestionCMD(commands.Cog):
             description="Are you sure you want to submit this suggestion? Creating irrelevant "
             "suggestions will warrant a blacklist and you will be subject to a "
             "warning/mute.",
-            color=discord.Colour.teal(),
+            color=discord.Colour.blurple(),
         )
         embed.add_field(name="Suggestion Collected", value=suggestion)
         embed.set_footer(

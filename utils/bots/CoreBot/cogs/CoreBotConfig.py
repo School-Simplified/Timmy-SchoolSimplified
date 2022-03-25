@@ -22,7 +22,12 @@ def get_extensions():
 
 class CoreBotConfig(commands.Cog):
     def __init__(self, bot):
+        self.__cog_name__ = "Core Bot Config"
         self.bot = bot
+
+    @property
+    def display_emoji(self) -> discord.PartialEmoji:
+        return discord.PartialEmoji(name='\N{GEAR}')
 
     @commands.group(aliases=["f"])
     async def filters(self):
