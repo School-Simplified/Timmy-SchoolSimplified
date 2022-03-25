@@ -80,7 +80,7 @@ class BlacklistCMD(commands.Cog, Group):
             description=blacklist_list,
             color=discord.Color.brand_red(),
         )
-        interaction.followup(embed=embed)
+        await interaction.followup.send(embed=embed)
 
 
 async def setup(bot):
