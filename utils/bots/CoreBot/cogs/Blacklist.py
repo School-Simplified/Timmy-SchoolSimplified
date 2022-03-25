@@ -3,7 +3,7 @@ from core import database
 from core.checks import slash_is_bot_admin_4, slash_is_bot_admin_3
 from discord.ext import commands
 from dotenv import load_dotenv
-from discord.app_commands import Group, command, guilds
+from discord.app_commands import Group, command
 
 load_dotenv()
 
