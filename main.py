@@ -107,14 +107,17 @@ class Timmy(commands.Bot):
     async def setup_hook(self) -> None:
         for guild in self.guilds:
             await self.tree.sync(guild=guild)
-        for ext in get_extensions():
-            try:
-                await bot.load_extension(ext)
-            except commands.ExtensionAlreadyLoaded:
-                await bot.unload_extension(ext)
-                await bot.load_extension(ext)
-            except commands.ExtensionNotFound:
-                raise commands.ExtensionNotFound(ext)
+
+        with alive_bar(len(get_extensions()), ctrl_c=False, bar="bubbles", title=f"Initializing Cogs:") as bar:
+            for ext in get_extensions():
+                try:
+                    await bot.load_extension(ext)
+                except commands.ExtensionAlreadyLoaded:
+                    await bot.unload_extension(ext)
+                    await bot.load_extension(ext)
+                except commands.ExtensionNotFound:
+                    raise commands.ExtensionNotFound(ext)
+                bar()
 
     async def on_ready(self):
         now = datetime.now()
@@ -501,20 +504,6 @@ query.save()
 database.db.close()
 
 
-with alive_bar(
-    len(get_extensions()), ctrl_c=False, bar="bubbles", title=f"Initializing Cogs:"
-) as bar:
-    for ext in get_extensions():
-        try:
-            bot.load_extension(ext)
-        except discord.ExtensionAlreadyLoaded:
-            bot.unload_extension(ext)
-            bot.load_extension(ext)
-        except discord.ExtensionNotFound:
-            raise discord.ExtensionNotFound(ext)
-        bar()
-
-
 @bot.check
 async def main_mode_check(ctx: commands.Context):
     """MT = discord.utils.get(ctx.guild.roles, name="Moderator")
@@ -576,5 +565,15 @@ async def main_mode_check(ctx: commands.Context):
     else:
         return CheckDB_CC.elseSituation
 
+class Tree(discord.app_commands.CommandTree):
+    def __init__(self, client: commands.Bot):
+        super().__init__(client)
+
+    async def on_error(
+        self,
+        interaction: Interaction,
+        command: Optional[Union[ContextMenu, Command[Any, ..., Any]]],
+        error: AppCommandError,
+    ) -> None:
 
 bot.run(os.getenv("TOKEN"))
