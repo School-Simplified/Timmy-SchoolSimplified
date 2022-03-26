@@ -661,7 +661,7 @@ class Help(commands.Cog):
         return "❔"
 
     @command()
-    @describe(command="Name of command, cog or command group")
+    @describe(object="Name of command, cog or command group")
     async def help(
             self,
             interaction:
