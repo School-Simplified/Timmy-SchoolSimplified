@@ -67,69 +67,69 @@ def delete_blob(blob_name):
 
     print("Blob {} deleted.".format(blob_name))
 
-
-def transcribe(drive_service, name: str, audio_f, total_users: int, primary_email: str):
-    client = speech.SpeechClient()
-
-    with open(audio_f, "rb") as audio_file:
-        content = audio_file.read()
-    audio = speech.RecognitionAudio(content=content)
-
-    diarization_config = speech.SpeakerDiarizationConfig(
-        enable_speaker_diarization=True,
-        min_speaker_count=2,
-        max_speaker_count=total_users,
-    )
-
-    config = speech.RecognitionConfig(
-        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=8000,
-        language_code="en-US",
-        diarization_config=diarization_config,
-    )
-
-    response = client.recognize(config=config, audio=audio)
-    result = response.results[-1]
-    words_info = result.alternatives[0].words
-
-    list_cleanup = []
-    for word_info in words_info:
-        list_cleanup.append(
-            u"Speaker {}: {}".format(word_info.speaker_tag, word_info.word)
-        )
-    transcript_list = "\n".join(list_cleanup)
-
-    # END TRANSCRIBE MODULE
-    # BEGIN UPDATE DOCUMENT MODULE
-
-    body = {"name": name}
-    drive_response = drive_service.files().copy(fileId=DOCUMENT_ID, body=body).execute()
-    document_copy_id = drive_response.get("id")
-
-    requests = [
-        {
-            "insertText": {
-                "location": {
-                    "index": 25,
-                },
-                "text": transcript_list,
-            }
-        }
-    ]
-
-    result = (
-        drive_service.documents()
-        .batchUpdate(documentId=document_copy_id, body={"requests": requests})
-        .execute()
-    )
-
-    batch = drive_service.new_batch_http_request(callback=callback)
-    user_permission = {"type": "user", "role": "writer", "emailAddress": primary_email}
-    batch.add(
-        drive_service.permissions().create(
-            fileId=document_copy_id,
-            body=user_permission,
-            fields="id",
-        )
-    )
-    batch.execute()
+#
+# def transcribe(drive_service, name: str, audio_f, total_users: int, primary_email: str):
+#     client = speech.SpeechClient()
+#
+#     with open(audio_f, "rb") as audio_file:
+#         content = audio_file.read()
+#     audio = speech.RecognitionAudio(content=content)
+#
+#     diarization_config = speech.SpeakerDiarizationConfig(
+#         enable_speaker_diarization=True,
+#         min_speaker_count=2,
+#         max_speaker_count=total_users,
+#     )
+#
+#     config = speech.RecognitionConfig(
+#         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+#         sample_rate_hertz=8000,
+#         language_code="en-US",
+#         diarization_config=diarization_config,
+#     )
+#
+#     response = client.recognize(config=config, audio=audio)
+#     result = response.results[-1]
+#     words_info = result.alternatives[0].words
+#
+#     list_cleanup = []
+#     for word_info in words_info:
+#         list_cleanup.append(
+#             u"Speaker {}: {}".format(word_info.speaker_tag, word_info.word)
+#         )
+#     transcript_list = "\n".join(list_cleanup)
+#
+#     # END TRANSCRIBE MODULE
+#     # BEGIN UPDATE DOCUMENT MODULE
+#
+#     body = {"name": name}
+#     drive_response = drive_service.files().copy(fileId=DOCUMENT_ID, body=body).execute()
+#     document_copy_id = drive_response.get("id")
+#
+#     requests = [
+#         {
+#             "insertText": {
+#                 "location": {
+#                     "index": 25,
+#                 },
+#                 "text": transcript_list,
+#             }
+#         }
+#     ]
+#
+#     result = (
+#         drive_service.documents()
+#         .batchUpdate(documentId=document_copy_id, body={"requests": requests})
+#         .execute()
+#     )
+#
+#     batch = drive_service.new_batch_http_request(callback=callback)
+#     user_permission = {"type": "user", "role": "writer", "emailAddress": primary_email}
+#     batch.add(
+#         drive_service.permissions().create(
+#             fileId=document_copy_id,
+#             body=user_permission,
+#             fields="id",
+#         )
+#     )
+#     batch.execute()
