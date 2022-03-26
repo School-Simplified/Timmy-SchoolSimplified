@@ -422,11 +422,11 @@ class Help(commands.Cog):
 
     @staticmethod
     async def _filter_commands(
-            _commands: Union[Set[...], List[Union[app_commands.Command, commands.Command, ...]]],
+            _commands: Union[Set[Any], List[Union[app_commands.Command, commands.Command, Any]]],
             *,
             sort=False,
             key=None
-    ) -> List[Union[app_commands.Command, commands.Command, ...]]:
+    ) -> List[Union[app_commands.Command, commands.Command, Any]]:
         """|coro|
         Returns a filtered list of commands and optionally sorts them.
         This takes into account the :attr:`verify_checks` and :attr:`show_hidden`
@@ -454,7 +454,7 @@ class Help(commands.Cog):
         # iterator = commands if show_hidden else filter(lambda c: not c.hidden, commands)
         #
         # async def predicate(
-        #         cmd: Union[app_commands.Command[...], commands.Command[Any, ..., Any]]
+        #         cmd: Union[app_commands.Command[Any], commands.Command[Any, Any, Any]]
         # ) -> bool:
         #     try:
         #         return await cmd.can_run()
@@ -499,7 +499,7 @@ class Help(commands.Cog):
             return _cog.qualified_name if _cog else '\U0010ffff'
 
         # sort guild and global slash commands, regular commands
-        entries: Union[Set[...], List[Union[commands.Command, app_commands.Command]]] = await self._filter_commands(
+        entries: Union[Set[Any], List[Union[commands.Command, app_commands.Command]]] = await self._filter_commands(
             [
                 x for x in (self.bot.tree.walk_commands(guild=discord.Object(interaction.guild.id)),
                             self.bot.tree.walk_commands(),
@@ -510,7 +510,7 @@ class Help(commands.Cog):
             key=key
         )
 
-        all_commands: Dict[commands.Cog, Union[Set[...], List[Union[commands.Command, app_commands.Command, ...]]]] = {}
+        all_commands: Dict[commands.Cog, Union[Set[Any], List[Union[commands.Command, app_commands.Command, Any]]]] = {}
         for name, children in itertools.groupby(entries, key=key):
             if name == '\U0010ffff':
                 continue
@@ -537,7 +537,7 @@ class Help(commands.Cog):
     async def _send_command_help(
             self,
             interaction: discord.Interaction,
-            _command: Union[commands.Command, app_commands.Command, ...]
+            _command: Union[commands.Command, app_commands.Command, Any]
     ):
         # No pagination necessary for a single command.
         embed = discord.Embed(colour=discord.Colour.fuchsia())
@@ -553,7 +553,7 @@ class Help(commands.Cog):
     async def _send_group_help(
             self,
             interaction: discord.Interaction,
-            group: Union[List[...], Set[...], app_commands.Group, commands.Group]
+            group: Union[List[Any], Set[Any], app_commands.Group, commands.Group]
     ):
         if isinstance(group, app_commands.Group):
             subcommands = group.commands
@@ -637,7 +637,7 @@ class Help(commands.Cog):
             self,
             interaction: discord.Interaction,
             _command=None
-    ) -> Union[None, Coroutine, List[commands.Command, ..., app_commands.Command]]:
+    ) -> Union[None, Coroutine, List[commands.Command, Any, app_commands.Command]]:
         """|coro|
         A low level method that can be used to prepare the help command
         before it does anything. For example, if you need to prepare
