@@ -36,7 +36,6 @@ from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
 from oauth2client.service_account import ServiceAccountCredentials
 from core import database
-from main import Timmy
 
 load_dotenv()
 
@@ -1435,7 +1434,7 @@ class TechnicalCommissionConfirm(discord.ui.View):
         custom_id="persistent_view:tempconfirm",
     )
     async def confirm(
-            self, button: discord.ui.Button, interaction: discord.Interaction
+            self, interaction: discord.Interaction, button: discord.ui.Button,
     ):
         TranscriptLOG = self.bot.get_channel(TECH_ID.ch_ticketLog)
         ch = self.bot.get_channel(interaction.channel_id)
@@ -1444,7 +1443,7 @@ class TechnicalCommissionConfirm(discord.ui.View):
         await ch.delete()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.message.delete()
         await interaction.response.send_message(
             "ok, not removing this channel.", ephemeral=True
@@ -1465,7 +1464,7 @@ class LockButton(discord.ui.View):
         custom_id="persistent_view:lock",
         emoji="🔒",
     )
-    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
         ch = self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TechnicalCommissionConfirm(self.bot)
@@ -1486,7 +1485,7 @@ class GSuiteVerify(discord.ui.View):
         custom_id="persistent_view:gsuiteverify",
         emoji=Emoji.gsuitelogo,
     )
-    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button,):
         self.value = True
 
 
@@ -1502,13 +1501,13 @@ class TempConfirm(discord.ui.View):
         custom_id="persistent_view:tempconfirm",
     )
     async def confirm(
-            self, button: discord.ui.Button, interaction: discord.Interaction
+            self, interaction: discord.Interaction, button: discord.ui.Button,
     ):
         self.value = True
         self.stop()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
@@ -1524,7 +1523,7 @@ class NitroConfirmFake(discord.ui.View):
         style=discord.ButtonStyle.green,
         custom_id="persistent_view:nitrofake",
     )
-    async def claim(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def claim(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
             await interaction.response.send_message(
                 "https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4",
@@ -1550,7 +1549,7 @@ class TicketLockButton(discord.ui.View):
         custom_id="persistent_view:lock",
         emoji="🔒",
     )
-    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
         ch = self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TicketTempConfirm()
@@ -1572,13 +1571,13 @@ class TicketTempConfirm(discord.ui.View):
         custom_id="persistent_view:tempconfirm",
     )
     async def confirm(
-            self, button: discord.ui.Button, interaction: discord.Interaction
+            self, interaction: discord.Interaction, button: discord.ui.Button,
     ):
         self.value = True
         self.stop()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
@@ -1646,7 +1645,7 @@ class FeedbackButton(discord.ui.View):
         emoji="📝",
     )
     async def feedback_button(
-            self, button: discord.ui.Button, interaction: discord.Interaction
+            self, interaction: discord.Interaction, button: discord.ui.Button,
     ):
         modal = FeedbackModel()
         return await interaction.response.send_modal(modal)

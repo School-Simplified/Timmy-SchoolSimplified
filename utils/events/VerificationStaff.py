@@ -42,7 +42,7 @@ class VerifyButton(discord.ui.View):
         custom_id="persistent_view:verify",
         emoji="✅",
     )
-    async def verify(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):
         self.value = True
 
 
