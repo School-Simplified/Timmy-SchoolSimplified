@@ -55,7 +55,7 @@ class AdminAPI(commands.Cog):
         lastname: str,
         organizationunit: Literal["Personal Account", "Team Account"],
     ):
-        HR_Role = discord.utils.get(ctx.guild.roles, id=HR_ID.r_hrStaff)
+        HR_Role = discord.utils.get(interaction.user.guild.roles, id=HR_ID.r_hrStaff)
         if HR_Role not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the required permissions to use this command."
