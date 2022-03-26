@@ -400,8 +400,8 @@ class Engagement(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.__cog_name__ = "Student Engagement"
-        self.__cog_app_commands__.append(Suggest)
-        self.__cog_app_commands__.append(SetSuggestBlacklist)
+        self.__cog_app_commands__.append(Suggest(bot))
+        self.__cog_app_commands__.append(SetSuggestBlacklist(bot))
 
     @property
     def display_emoji(self) -> str:
@@ -411,10 +411,10 @@ class Engagement(commands.Cog):
         for user_id in database.ResponseSpamBlacklist:
             blacklist.append(user_id)
 
-    @command(name="acceptance_letter")
+    @command(name="acceptance-letter")
     @spammer_check()
     @guilds(MAIN_ID.g_main)
-    async def __college_accept(self, interaction: discord.Interaction, file: discord.Attachment):
+    async def _college_accept(self, interaction: discord.Interaction, file: discord.Attachment):
         embed = discord.Embed(
             title="College Acceptance Letter",
             color=0xa4d1de,
@@ -426,7 +426,7 @@ class Engagement(commands.Cog):
         channel = self.bot.get_channel(SET_ID.ch_college_acceptance)
         await channel.send(embed=embed)
 
-    @command(name="puzzle_guess")
+    @command(name="puzzle-guess")
     @spammer_check()
     @guilds(MAIN_ID.g_main)
     async def _guess(self, interaction: discord.Interaction, guess: str):

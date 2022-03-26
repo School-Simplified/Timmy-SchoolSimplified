@@ -36,7 +36,7 @@ class CoreBotConfig(commands.Cog):
         return "⚙️"
 
     @commands.group(aliases=["f"])
-    async def filters(self):
+    async def filters(self, ctx):
         pass
 
     @commands.command()
