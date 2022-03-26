@@ -6,8 +6,9 @@ from core.checks import is_botAdmin
 from core import database
 
 
-class BotRequestModal(ui.Modal, title="Bot Development Request"):
+class BotRequestModal(ui.Modal):
     def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(title="Bot Development Request")
         self.bot = bot
 
     titleTI = ui.TextInput(

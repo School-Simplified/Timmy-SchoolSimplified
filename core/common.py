@@ -127,8 +127,7 @@ async def paginate_embed(
 
 
 def get_extensions():
-    extensions = []
-    extensions.append("jishaku")
+    extensions = ["jishaku"]
     if sys.platform == "win32" or sys.platform == "cygwin":
         dirpath = "\\"
     else:
@@ -924,6 +923,10 @@ class LEADER_ID:
     ch_mktAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_mktannouncements", 942792208841588837))
     ch_ssdAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_ssdannouncements", 947656507162525698))
     ch_mainAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_mainannouncements", 936464173687259226))
+    ch_announcements = int(ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362))
+    ch_acadAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557))
+    ch_techAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
+    ch_leadershipAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_leadershipannouncements", 819009569979629569))
 
     # *** Roles ***
     r_corporateOfficer = int(ConfigcatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444))
@@ -937,14 +940,6 @@ class LEADER_ID:
 
     # *** Roles **
     r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
-
-    # *** Channels ***
-    ch_announcements = int(ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362))
-    ch_mktAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_mktannouncements", 816733579660754944))
-    ch_acadAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557))
-    ch_techAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
-    ch_leadershipAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_leadershipannouncements", 819009569979629569))
 
 
 class SET_ID:
@@ -971,110 +966,6 @@ class SET_ID:
     ch_college_acceptance = int(
         ConfigcatClient.SET_ID_CC.get_value("ch_college_acceptance", 955960683785236540)
     )
-
-
-
-
-class LEADER_ID:
-    """
-    IDs of the Leadership Lounge server.
-    NOTE: If you want to add IDs, please use the format as below.
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    # *** Guilds ***
-    g_leader = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154)
-    )
-
-    # *** Channels ***
-    ch_staffAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_staffannouncements", 936134263777148949
-        )
-    )
-    ch_envAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_envannouncements", 942572395640782909
-        )
-    )
-    ch_rebrandAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_rebrandannouncements", 946180039630782474
-        )
-    )
-    ch_workonlyAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_workonlyannouncements", 890993285940789299
-        )
-    )
-    ch_financeAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_financeannouncements", 919341240280023060
-        )
-    )
-    ch_mktAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_mktannouncements", 942792208841588837
-        )
-    )
-    ch_ssdAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_ssdannouncements", 947656507162525698
-        )
-    )
-    ch_mainAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_mainannouncements", 936464173687259226
-        )
-    )
-    ch_announcements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362)
-    )
-    ch_acadAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557)
-    )
-    ch_techAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421)
-    )
-    ch_leadershipAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value(
-            "ch_leadershipannouncements", 819009569979629569
-        )
-    )
-
-    # *** Roles ***
-    r_corporateOfficer = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444)
-    )
-    r_president = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_president", 900940957783056444)
-    )
-    r_vicePresident = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_vicepresident", 888929996175978508)
-    )
-    r_boardMember = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_boardmember", 888929996188549189)
-    )
-    r_director = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_director", 892531463482900480)
-    )
-    r_ssDigitalCommittee = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "r_ssdigitalcommittee", 912472488594771968
-        )
-    )
-    r_informationTechnologyManager = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "r_informationtechnologymanager", 943942441357172758
-        )
-    )
-    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
 
 
 class CheckDB_CC:
@@ -1549,7 +1440,7 @@ class TechnicalCommissionConfirm(discord.ui.View):
         TranscriptLOG = self.bot.get_channel(TECH_ID.ch_ticketLog)
         ch = self.bot.get_channel(interaction.channel_id)
 
-        await rawExport(self, ch, TranscriptLOG, interaction.user)
+        await rawExport( ch, TranscriptLOG, interaction.user)
         await ch.delete()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")

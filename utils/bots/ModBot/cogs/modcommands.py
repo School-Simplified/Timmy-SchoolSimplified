@@ -3,34 +3,6 @@ from discord.ext import commands
 from core.common import Emoji
 
 
-class User(commands.Converter):
-    async def convert(self, ctx, argument):
-        try:
-            int(argument)
-        except ValueError:
-            try:
-                member_converter = commands.UserConverter()
-                member = await member_converter.convert(ctx, argument)
-            except commands.UserNotFound:
-                member = discord.utils.find(
-                    lambda m: m.name.lower().startswith(argument), self.bot.users
-                )
-            if member is None:
-                raise commands.UserNotFound(argument)
-        else:
-            try:
-                member_converter = commands.UserConverter()
-                user = await member_converter.convert(ctx, argument)
-            except commands.UserNotFound:
-                user = discord.utils.find(
-                    lambda m: m.name.lower().startswith(argument), ctx.guild.members
-                )
-            if user is None:
-                raise commands.UserNotFound(argument)
-
-        return member
-
-
 class InfoCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

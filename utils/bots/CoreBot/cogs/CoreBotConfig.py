@@ -11,8 +11,7 @@ load_dotenv()
 
 
 def get_extensions():
-    extensions = []
-    extensions.append("jishaku")
+    extensions = ["jishaku"]
     for file in Path("utils").glob("**/*.py"):
         if "!" in file.name or "DEV" in file.name:
             continue

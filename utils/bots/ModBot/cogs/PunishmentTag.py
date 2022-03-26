@@ -1,5 +1,6 @@
 import math
 
+import peewee
 import discord
 from core import common, database
 from core.common import hexColors
@@ -12,6 +13,7 @@ class PunishmentTag(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @staticmethod
     def get_by_index(self, index):
         for i, t in enumerate(database.PunishmentTag.select()):
             if i + 1 == index:
@@ -35,7 +37,7 @@ class PunishmentTag(commands.Cog):
                 title=tag.embed_title, description=tag.text, color=hexColors.mod_blurple
             )
             await ctx.send(embed=embed)
-        except database.DoesNotExist:
+        except peewee.DoesNotExist:
             await ctx.send("Tag not found, please try again.")
         finally:
             database.db.close()
@@ -58,7 +60,7 @@ class PunishmentTag(commands.Cog):
             tag.embed_title = title
             tag.save()
             await ctx.send(f"Tag {tag.tag_name} has been modified successfully.")
-        except database.DoesNotExist:
+        except peewee.DoesNotExist:
             try:
                 database.db.connect(reuse_if_open=True)
                 tag: database.PunishmentTag = database.PunishmentTag.create(
@@ -66,7 +68,7 @@ class PunishmentTag(commands.Cog):
                 )
                 tag.save()
                 await ctx.send(f"Tag {tag.tag_name} has been created successfully.")
-            except database.IntegrityError:
+            except peewee.IntegrityError:
                 await ctx.send("That tag name is already taken!")
         finally:
             database.db.close()
@@ -90,7 +92,7 @@ class PunishmentTag(commands.Cog):
                 )
             tag.delete_instance()
             await ctx.send(f"{tag.tag_name} has been deleted.")
-        except database.DoesNotExist:
+        except peewee.DoesNotExist:
             await ctx.send("Tag not found, please try again.")
         finally:
             database.db.close()
