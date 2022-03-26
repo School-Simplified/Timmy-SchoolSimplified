@@ -3,7 +3,7 @@ import math
 import peewee
 import discord
 from core import common, database
-from core.common import HexColors, Emoji
+from core.common import Colors, Emoji
 from discord.ext import commands
 
 
@@ -39,7 +39,7 @@ class PunishmentTag(commands.Cog):
                     .get()
                 )
             embed = discord.Embed(
-                title=tag.embed_title, description=tag.text, color=HexColors.mod_blurple
+                title=tag.embed_title, description=tag.text, color=Colors.mod_blurple
             )
             await ctx.send(embed=embed)
         except peewee.DoesNotExist:
