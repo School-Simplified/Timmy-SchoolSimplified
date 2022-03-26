@@ -652,9 +652,9 @@ class Help(commands.Cog):
             self,
             interaction:
             discord.Interaction,
-            command: Optional[str] = None
+            object: Optional[str] = None
     ):
-        await self._command_callback(interaction, _command=command)
+        await self._command_callback(interaction, _command=object)
         # Maybe add autocomplete for commands in the future
 
 
