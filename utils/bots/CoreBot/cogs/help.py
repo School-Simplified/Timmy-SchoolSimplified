@@ -418,7 +418,7 @@ class Help(commands.Cog):
     """
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.bot.help_command.cog
+        self.bot.help_command.cog = self
 
     @staticmethod
     async def _filter_commands(
