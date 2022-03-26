@@ -331,9 +331,9 @@ async def endSession(member: discord.Member):
     return True
 
 
-class StudyVC(commands.Cog, Group):
+class StudyToDo(commands.Cog, Group):
     def __init__(self, bot: commands.Bot):
-        super().__init__(name="studyvc", description="Study ToDo Commands")
+        super().__init__(name="studytodo", description="Study ToDo Commands")
         self.bot = bot
 
         self.StudyVCGuildID = TECH_ID.g_tech
@@ -362,6 +362,26 @@ class StudyVC(commands.Cog, Group):
     #         )
     #         await ctx.send(embed=embed)
 
+    @command()
+    async def set(self, interaction: discord.Interaction, *, item: str):
+        """
+        Adds an item to the study to-do list of the author/owner.
+        """
+
+        query: database.StudyVCDB = database.StudyVCDB.select().where(database.StudyVCDB.discordID == interaction.user.id)
+        if query.exists():
+            query = query.get()
+            query.studyTodo = item
+            query.save()
+            embed = discord.Embed(
+                title="Successfully Added Item!",
+                description=f"`{item}` has been added successfully with the id `{str(query.id)}`.",
+                color=Colors.green,
+            )
+            embed.set_footer(text="StudyBot")
+            await interaction.response.send_message(embed=embed)
+        else:
+            return await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
     @command()
     async def end(self, interaction: discord.Interaction):
@@ -377,6 +397,25 @@ class StudyVC(commands.Cog, Group):
         else:
             await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
+    @command()
+    async def list(self, interaction: discord.Interaction):
+        query = database.StudyToDo.select().where(
+            database.StudyToDo.discordID == interaction.user.id
+        )
+        if query.exists():
+            query = query.get()
+            embed = discord.Embed(
+                title="Study To-Do List",
+                description=f"Your current goal: {query.studyTodo}",
+                color=Colors.ss_blurple,
+            )
+            embed.set_footer(
+                text="You can use +studytodo set (item) to modify this!"
+            )
+            await interaction.response.send_message(embed=embed)
+
+        else:
+            return await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
     @command()
     async def leaderboard(self, interaction: discord.Interaction):
