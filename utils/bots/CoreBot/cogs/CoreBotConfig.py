@@ -1,4 +1,3 @@
-import collections
 import subprocess
 import sys
 from pathlib import Path
@@ -136,7 +135,7 @@ class CoreBotConfig(commands.Cog):
     @prefix.command()
     async def list(self, ctx):
 
-        PrefixDB: collections.Iterable = database.WhitelistedPrefix
+        PrefixDB = database.WhitelistedPrefix
         response = []
 
         for entry in PrefixDB:
