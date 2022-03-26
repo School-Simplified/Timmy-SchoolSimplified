@@ -606,7 +606,7 @@ for deprecationFile in deprecatedFiles:
         print(f"{bcolors.WARNING}Authentication via {deprecationFile} is deprecated. Consider removing this file and using sstimmy.json instead.{bcolors.ENDC}")
 
 async def _on_message_(message: discord.Message):
-    if not message.guild.id == MAIN_ID.g_main:
+    if not message.guild:
         return
     if not message.author.id == 752984497259151370:
         return
@@ -615,14 +615,16 @@ async def _on_message_(message: discord.Message):
 
 
 @bot.command()
-async def annoyrachel(ctx, tf: bool):
+async def annoyrachel(ctx: commands.Context, tf: bool):
     if not ctx.author.id == 747126643587416174:
         return
     if tf:
         bot.add_listener(_on_message_, "on_message")
+        await ctx.send("added listener")
     if tf is False:
         bot.remove_listener(_on_message_, "on_message")
-
+        await ctx.send("removed listener")
+        
 
 @bot.slash_command(description="Play a game of TicTacToe with someone!")
 async def tictactoe(ctx, user: Option(discord.Member, "Enter an opponent you want")):
