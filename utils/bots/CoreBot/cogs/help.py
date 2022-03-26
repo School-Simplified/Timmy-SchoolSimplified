@@ -446,17 +446,13 @@ class Help(commands.Cog):
 
         if sort and key is None:
             key = lambda c: c.qualified_name
-
+        #
         iterator = _commands
-        # iterator = commands if self.show_hidden else filter(lambda c: not c.hidden, commands)
+        # iterator = commands if show_hidden else filter(lambda c: not c.hidden, commands)
         #
-        # if self.verify_checks is False:
-        #     # if we do not need to verify the checks then we can just
-        #     # run it straight through normally without using await.
-        #     return sorted(iterator, key=key) if sort else list(iterator)
-        #
-        #
-        # async def predicate(cmd: commands.Command[Any, ..., Any]) -> bool:
+        # async def predicate(
+        #         cmd: Union[app_commands.Command[...], commands.Command[Any, ..., Any]]
+        # ) -> bool:
         #     try:
         #         return await cmd.can_run()
         #     except commands.CommandError:
