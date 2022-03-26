@@ -678,7 +678,7 @@ class MiscCMD(commands.Cog):
     @commands.command(hidden=True)
     @is_botAdmin
     async def purgemasa(self, ctx, num: int = 10):
-        user = await self.bot.fetch_user(736765405728735232)
+        user = self.bot.get_user(736765405728735232)
         await ctx.channel.purge(check=lambda m: m.author == user, limit=num)
 
     @app_commands.command(description="Play a game of TicTacToe with someone!")

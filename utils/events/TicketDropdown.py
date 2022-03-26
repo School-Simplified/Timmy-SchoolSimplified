@@ -103,7 +103,7 @@ async def TicketExport(
         .where(database.TicketInfo.ChannelID == channel.id)
         .get()
     )
-    TicketOwner = await self.bot.fetch_user(query.authorID)
+    TicketOwner = self.bot.get_user(query.authorID)
 
     if transcript is None:
         return
@@ -337,7 +337,7 @@ class TicketBT(discord.ui.Button):
                 "Sorry, you are being rate limited.", ephemeral=True
             )
         else:
-            channel = await self.bot.fetch_channel(interaction.channel_id)
+            channel = self.bot.get_channel(interaction.channel_id)
             guild = interaction.message.guild
             author = interaction.user
             DMChannel = await author.create_dm()
@@ -833,7 +833,7 @@ class DropdownTickets(commands.Cog):
             )
 
             try:
-                TicketOwner = await guild.fetch_member(query.authorID)
+                TicketOwner = guild.get_member(query.authorID)
             except discord.NotFound:
                 await channel.send(
                     f"{author.mention} The ticket owner has left the server."
@@ -895,7 +895,7 @@ class DropdownTickets(commands.Cog):
             await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_C":
-            channel = await self.bot.fetch_channel(interaction.channel_id)
+            channel = self.bot.get_channel(interaction.channel_id)
             author = interaction.user
 
             try:
@@ -912,7 +912,7 @@ class DropdownTickets(commands.Cog):
             """
             Re-open Ticket
             """
-            channel = await self.bot.fetch_channel(interaction.channel_id)
+            channel = self.bot.get_channel(interaction.channel_id)
             author = interaction.user
             guild = interaction.message.guild
             query = (
@@ -921,7 +921,7 @@ class DropdownTickets(commands.Cog):
                 .get()
             )
             try:
-                TicketOwner = await guild.fetch_member(query.authorID)
+                TicketOwner = guild.get_member(query.authorID)
             except discord.NotFound:
                 await channel.send(
                     f"{author.mention} Sorry, but the ticket owner has left the server."
@@ -942,11 +942,11 @@ class DropdownTickets(commands.Cog):
         elif InteractionResponse["custom_id"] == "ch_lock_T":
             channel = interaction.channel
             if interaction.guild.id == MAIN_ID.g_main:
-                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
                     MAIN_ID.ch_transcriptLogs
                 )
             else:
-                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
                     TECH_ID.ch_ticketLog
                 )
             author = interaction.user
@@ -1001,14 +1001,14 @@ class DropdownTickets(commands.Cog):
             )
 
         elif InteractionResponse["custom_id"] == "ch_lock_C&D":
-            channel = await self.bot.fetch_channel(interaction.channel_id)
+            channel = self.bot.get_channel(interaction.channel_id)
             author = interaction.user
             if interaction.guild.id == MAIN_ID.g_main:
-                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
                     MAIN_ID.ch_transcriptLogs
                 )
             else:
-                ResponseLogChannel: discord.TextChannel = await self.bot.fetch_channel(
+                ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
                     TECH_ID.ch_ticketLog
                 )
             query = (
@@ -1019,7 +1019,7 @@ class DropdownTickets(commands.Cog):
             msgO = await interaction.channel.send(
                 f"{author.mention}\nPlease wait, generating a transcript {Emoji.loadingGIF2}\n**THIS MAY TAKE SOME TIME**"
             )
-            TicketOwner = await self.bot.fetch_user(query.authorID)
+            TicketOwner = self.bot.get_user(query.authorID)
 
             messages = await channel.history(limit=None).flatten()
             authorList = []
@@ -1123,15 +1123,15 @@ class DropdownTickets(commands.Cog):
         TicketInfoTB = database.TicketInfo
         for entry in TicketInfoTB:
             try:
-                channel: discord.TextChannel = await self.bot.fetch_channel(
+                channel: discord.TextChannel = self.bot.get_channel(
                     entry.ChannelID
                 )
             except Exception as e:
                 continue
             fetchMessage = await channel.history(limit=1).flatten()
-            TicketOwner = await self.bot.fetch_user(entry.authorID)
+            TicketOwner = self.bot.get_user(entry.authorID)
             messages = await channel.history(limit=None).flatten()
-            LogCH = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
+            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)
             authorList = []
             if len(messages) == 0:
                 continue
@@ -1175,7 +1175,7 @@ class DropdownTickets(commands.Cog):
                     )
                 )
                 overwrite = discord.PermissionOverwrite()
-                overwrite.read_messages = False
+                overwrite.update(read_messages=False)
                 print(channel, overwrite)
                 await channel.set_permissions(
                     TicketOwner, overwrite=overwrite, reason="Ticket Perms Close (User)"

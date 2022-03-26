@@ -146,7 +146,7 @@ class RedirectClient:
             domain (str, optional): The domain to use. Defaults to None.
 
         Raises:
-            InvalidAuth: [description]
+            InvalidAuth: Invalid authorization key passed in.
 
         Returns:
             typing.Union[dict, int]: Returns a dict of the redirect or an int of the status code.

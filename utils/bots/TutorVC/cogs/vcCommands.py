@@ -224,7 +224,7 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                channel: discord.VoiceChannel = self.bot.get_channel(
                     int(query.ChannelID)
                 )
                 view = discord.ui.View()
@@ -284,7 +284,7 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                channel: discord.VoiceChannel = self.bot.get_channel(
                     q.ChannelID
                 )
 
@@ -296,9 +296,7 @@ class TutorVCCMD(commands.Cog):
                     select_user=ctx.author,
                 )
                 view.add_item(var)
-                await ctx.send(
-                    "Select a game from the dropdown you wish to initiate.", view=view
-                )
+                await ctx.send("Select a game from the dropdown you wish to initiate.", view=view)
                 timeout = await view.wait()
                 if not timeout:
                     SelectedGame = var.view_response
@@ -338,7 +336,7 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                channel: discord.VoiceChannel = self.bot.get_channel(
                     int(query.ChannelID)
                 )
                 GameLink = str(await channel.create_activity_invite(880218394199220334))
@@ -380,7 +378,7 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                channel: discord.VoiceChannel = self.bot.get_channel(
                     q.ChannelID
                 )
 
@@ -582,7 +580,7 @@ class TutorVCCMD(commands.Cog):
                 nowSTR = int(now.timestamp())
                 day = str(day)
 
-                channel = await self.bot.fetch_channel(int(query.ChannelID))
+                channel = self.bot.get_channel(int(query.ChannelID))
 
                 embed = discord.Embed(
                     title=f"{Emoji.archive} Ended Session",
@@ -607,10 +605,10 @@ class TutorVCCMD(commands.Cog):
                 if tutorSession.exists():
                     tutorSession = tutorSession.get()
 
-                    student = await self.bot.fetch_user(tutorSession.StudentID)
-                    tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                    student = self.bot.get_user(tutorSession.StudentID)
+                    tutor = self.bot.get_user(tutorSession.TutorID)
 
-                    HOURCH = await self.bot.fetch_channel(self.TutorLogID)
+                    HOURCH = self.bot.get_channel(self.TutorLogID)
 
                     hourlog = discord.Embed(
                         title="Hour Log",
@@ -704,10 +702,10 @@ class TutorVCCMD(commands.Cog):
                 if tutorSession.exists():
                     tutorSession = tutorSession.get()
 
-                    student = await self.bot.fetch_user(tutorSession.StudentID)
-                    tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                    student = self.bot.get_user(tutorSession.StudentID)
+                    tutor = self.bot.get_user(tutorSession.TutorID)
 
-                    HOURCH = await self.bot.fetch_channel(self.TutorLogID)
+                    HOURCH = self.bot.get_user(self.TutorLogID)
 
                     hourlog = discord.Embed(
                         title="Hour Log",
@@ -799,7 +797,7 @@ class TutorVCCMD(commands.Cog):
     )
     async def forceend(self, ctx, channel):
         database.db.connect(reuse_if_open=True)
-        channel = await self.bot.fetch_channel(channel)
+        channel = self.bot.get_channel(channel)
         print(channel)
 
         if channel.id in self.presetChannels:
@@ -1036,8 +1034,8 @@ class TutorVCCMD(commands.Cog):
                     )
                     if query.exists():
                         query = query.get()
-                        student = await self.bot.fetch_user(tutorSession.StudentID)
-                        tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                        student = self.bot.get_user(tutorSession.StudentID)
+                        tutor = self.bot.get_user(tutorSession.TutorID)
                         ts = int(tutorSession.Date.timestamp())
 
                         query.TutorBotSessionID = tutorcode

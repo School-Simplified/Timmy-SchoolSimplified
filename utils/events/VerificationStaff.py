@@ -42,7 +42,7 @@ class VerifyButton(discord.ui.View):
         custom_id="persistent_view:verify",
         emoji="✅",
     )
-    async def verify(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):
         self.value = True
 
 
@@ -73,7 +73,7 @@ class VerificationStaff(commands.Cog):
         ):
             print(interaction.user.id)
 
-            staffServer: discord.Guild = await self.bot.fetch_guild(
+            staffServer: discord.Guild = self.bot.get_guild(
                 interaction.guild_id
             )
             print(staffServer)
@@ -84,7 +84,7 @@ class VerificationStaff(commands.Cog):
             print(StaffServerMember)
             if StaffServerMember is None:
                 print("h")
-                StaffServerMember: discord.Member = await staffServer.fetch_member(
+                StaffServerMember: discord.Member = staffServer.get_member(
                     interaction.user.id
                 )
                 print(StaffServerMember)
@@ -113,7 +113,7 @@ class VerificationStaff(commands.Cog):
                     return
 
             VerificationChannel = interaction.channel
-            logchannel = await self.bot.fetch_channel(
+            logchannel = self.bot.get_channel(
                 self.staffServer[interaction.guild_id]
             )
 
@@ -121,9 +121,9 @@ class VerificationStaff(commands.Cog):
             VerifiedGuilds = []
 
             for ID in self.ServerIDs:
-                server: discord.Guild = await self.bot.fetch_guild(ID)
+                server: discord.Guild = self.bot.get_guild(ID)
                 try:
-                    ServerMember: discord.Member = await server.fetch_member(
+                    ServerMember: discord.Member = server.get_member(
                         interaction.user.id
                     )
 

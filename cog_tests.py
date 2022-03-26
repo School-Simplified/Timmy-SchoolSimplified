@@ -34,7 +34,7 @@ def bot(event_loop):
 async def test_cogs(bot):
     os.environ["PyTestMODE"] = "True"
     for ext in get_extensions():
-        bot.load_extension(ext)
+        await bot.load_extension(ext)
 
 
 def pytest_sessionfinish():

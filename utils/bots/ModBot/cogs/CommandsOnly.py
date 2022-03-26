@@ -1,9 +1,7 @@
 import discord
 from core import database
 from core.common import rulesDict
-from discord import Option, slash_command
 from discord.ext import commands
-from discord.app_commands import command
 from core.common import MAIN_ID
 
 MESSAGEC = "Go chit chat somewhere else, this is for commands only."

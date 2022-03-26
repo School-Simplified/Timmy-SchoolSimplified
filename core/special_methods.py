@@ -24,7 +24,6 @@ from common import (
     CheckDB_CC,
     Emoji,
 )
-from utils.bots.mktCommissions.ADCommissions import CommissionADButton
 from utils.events.TicketDropdown import TicketButton
 from utils.events.VerificationStaff import VerifyButton
 from utils.bots.CoreBot.cogs.techCommissions import CommissionTechButton
@@ -77,7 +76,6 @@ async def on_ready_(bot: commands.Bot):
         bot.add_view(GSuiteVerify())
         bot.add_view(CommissionTechButton(bot))
         bot.add_view(TicketButton(bot))
-        bot.add_view(CommissionADButton(bot))
         query.PersistantChange = True
         query.save()
 
@@ -424,6 +422,9 @@ async def main_mode_check_(ctx: commands.Context):
         return CheckDB_CC.elseSituation
 
 def initializeDB(bot):
+    """
+    Initializes the database, and creates the needed table data if they don't exist.
+    """
     database.db.connect(reuse_if_open=True)
     UpQ = database.Uptime.select().where(database.Uptime.id == 1)
     CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)

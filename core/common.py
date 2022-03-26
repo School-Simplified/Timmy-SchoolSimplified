@@ -36,7 +36,6 @@ from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
 from oauth2client.service_account import ServiceAccountCredentials
 from core import database
-from main import Timmy
 
 load_dotenv()
 
@@ -127,8 +126,7 @@ async def paginate_embed(
 
 
 def get_extensions():
-    extensions = []
-    extensions.append("jishaku")
+    extensions = ["jishaku"]
     if sys.platform == "win32" or sys.platform == "cygwin":
         dirpath = "\\"
     else:
@@ -924,6 +922,10 @@ class LEADER_ID:
     ch_mktAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_mktannouncements", 942792208841588837))
     ch_ssdAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_ssdannouncements", 947656507162525698))
     ch_mainAnnouncements = int(ConfigcatClient.LEADER_ID_CC.get_value("ch_mainannouncements", 936464173687259226))
+    ch_announcements = int(ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362))
+    ch_acadAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557))
+    ch_techAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
+    ch_leadershipAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_leadershipannouncements", 819009569979629569))
 
     # *** Roles ***
     r_corporateOfficer = int(ConfigcatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444))
@@ -937,14 +939,6 @@ class LEADER_ID:
 
     # *** Roles **
     r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
-
-    # *** Channels ***
-    ch_announcements = int(ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362))
-    ch_mktAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_mktannouncements", 816733579660754944))
-    ch_acadAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557))
-    ch_techAnnouncements = int(ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
-    ch_leadershipAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_leadershipannouncements", 819009569979629569))
 
 
 class SET_ID:
@@ -971,110 +965,6 @@ class SET_ID:
     ch_college_acceptance = int(
         ConfigcatClient.SET_ID_CC.get_value("ch_college_acceptance", 955960683785236540)
     )
-
-
-
-
-class LEADER_ID:
-    """
-    IDs of the Leadership Lounge server.
-    NOTE: If you want to add IDs, please use the format as below.
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    # *** Guilds ***
-    g_leader = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154)
-    )
-
-    # *** Channels ***
-    ch_staffAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_staffannouncements", 936134263777148949
-        )
-    )
-    ch_envAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_envannouncements", 942572395640782909
-        )
-    )
-    ch_rebrandAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_rebrandannouncements", 946180039630782474
-        )
-    )
-    ch_workonlyAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_workonlyannouncements", 890993285940789299
-        )
-    )
-    ch_financeAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_financeannouncements", 919341240280023060
-        )
-    )
-    ch_mktAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_mktannouncements", 942792208841588837
-        )
-    )
-    ch_ssdAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_ssdannouncements", 947656507162525698
-        )
-    )
-    ch_mainAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_mainannouncements", 936464173687259226
-        )
-    )
-    ch_announcements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362)
-    )
-    ch_acadAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557)
-    )
-    ch_techAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421)
-    )
-    ch_leadershipAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value(
-            "ch_leadershipannouncements", 819009569979629569
-        )
-    )
-
-    # *** Roles ***
-    r_corporateOfficer = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444)
-    )
-    r_president = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_president", 900940957783056444)
-    )
-    r_vicePresident = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_vicepresident", 888929996175978508)
-    )
-    r_boardMember = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_boardmember", 888929996188549189)
-    )
-    r_director = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_director", 892531463482900480)
-    )
-    r_ssDigitalCommittee = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "r_ssdigitalcommittee", 912472488594771968
-        )
-    )
-    r_informationTechnologyManager = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "r_informationtechnologymanager", 943942441357172758
-        )
-    )
-    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
 
 
 class CheckDB_CC:
@@ -1544,16 +1434,16 @@ class TechnicalCommissionConfirm(discord.ui.View):
         custom_id="persistent_view:tempconfirm",
     )
     async def confirm(
-            self, button: discord.ui.Button, interaction: discord.Interaction
+            self, interaction: discord.Interaction, button: discord.ui.Button,
     ):
         TranscriptLOG = self.bot.get_channel(TECH_ID.ch_ticketLog)
-        ch = await self.bot.get_channel(interaction.channel_id)
+        ch = self.bot.get_channel(interaction.channel_id)
 
-        await rawExport(self, ch, TranscriptLOG, interaction.user)
+        await rawExport( ch, TranscriptLOG, interaction.user)
         await ch.delete()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.message.delete()
         await interaction.response.send_message(
             "ok, not removing this channel.", ephemeral=True
@@ -1574,9 +1464,9 @@ class LockButton(discord.ui.View):
         custom_id="persistent_view:lock",
         emoji="🔒",
     )
-    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
-        ch = await self.bot.get_channel(interaction.channel_id)
+        ch = self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TechnicalCommissionConfirm(self.bot)
 
         msg = await ch.send(
@@ -1595,7 +1485,7 @@ class GSuiteVerify(discord.ui.View):
         custom_id="persistent_view:gsuiteverify",
         emoji=Emoji.gsuitelogo,
     )
-    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button,):
         self.value = True
 
 
@@ -1611,13 +1501,13 @@ class TempConfirm(discord.ui.View):
         custom_id="persistent_view:tempconfirm",
     )
     async def confirm(
-            self, button: discord.ui.Button, interaction: discord.Interaction
+            self, interaction: discord.Interaction, button: discord.ui.Button,
     ):
         self.value = True
         self.stop()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
@@ -1633,7 +1523,7 @@ class NitroConfirmFake(discord.ui.View):
         style=discord.ButtonStyle.green,
         custom_id="persistent_view:nitrofake",
     )
-    async def claim(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def claim(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
             await interaction.response.send_message(
                 "https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4",
@@ -1659,9 +1549,9 @@ class TicketLockButton(discord.ui.View):
         custom_id="persistent_view:lock",
         emoji="🔒",
     )
-    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
-        ch = await self.bot.get_channel(interaction.channel_id)
+        ch = self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TicketTempConfirm()
 
         msg = await ch.send(
@@ -1681,13 +1571,13 @@ class TicketTempConfirm(discord.ui.View):
         custom_id="persistent_view:tempconfirm",
     )
     async def confirm(
-            self, button: discord.ui.Button, interaction: discord.Interaction
+            self, interaction: discord.Interaction, button: discord.ui.Button,
     ):
         self.value = True
         self.stop()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
@@ -1755,7 +1645,7 @@ class FeedbackButton(discord.ui.View):
         emoji="📝",
     )
     async def feedback_button(
-            self, button: discord.ui.Button, interaction: discord.Interaction
+            self, interaction: discord.Interaction, button: discord.ui.Button,
     ):
         modal = FeedbackModel()
         return await interaction.response.send_modal(modal)

@@ -89,7 +89,7 @@ class CommissionTechButton(discord.ui.View):
         custom_id="persistent_view:tech_pjt",
         emoji="📝",
     )
-    async def verify(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):
         modal = BotRequestModal(self.bot)
         return await interaction.response.send_modal(modal)
 

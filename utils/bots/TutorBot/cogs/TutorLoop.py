@@ -31,9 +31,9 @@ class TutorBotLoop(commands.Cog):
                 student = self.bot.get_user(entry.StudentID)
 
                 if tutor is None:
-                    tutor = await self.bot.fetch_user(entry.TutorID)
+                    tutor = self.bot.get_user(entry.TutorID)
                 if student is None:
-                    student = await self.bot.fetch_user(entry.StudentID)
+                    student = self.bot.get_user(entry.StudentID)
 
                 print(tutor, student)
                 botch = self.bot.get_channel(TUT_ID.ch_botCommands)
