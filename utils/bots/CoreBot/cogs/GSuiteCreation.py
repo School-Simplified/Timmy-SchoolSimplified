@@ -39,8 +39,16 @@ service = build("admin", "directory_v1", credentials=creds)
 
 
 class AdminAPI(commands.Cog):
+    """
+    HR Commands
+    """
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.__cog_name__ = "Human Resources"
+
+    @property
+    def display_emoji(self) -> discord.PartialEmoji:
+        return discord.PartialEmoji(name="SS_HumanResources", id=957312207895535626)
 
     @app_commands.command(
         name="gsuite-create",
