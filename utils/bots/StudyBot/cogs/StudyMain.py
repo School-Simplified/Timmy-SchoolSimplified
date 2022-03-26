@@ -333,7 +333,7 @@ async def endSession(member: discord.Member):
 
 class StudyToDo(commands.Cog, Group):
     def __init__(self, bot: commands.Bot):
-        super().__init__(name="Study ToDo", description="Study ToDo Commands")
+        super().__init__(name="studytodo", description="Study ToDo Commands")
         self.bot = bot
 
         self.StudyVCGuildID = TECH_ID.g_tech
@@ -342,14 +342,14 @@ class StudyToDo(commands.Cog, Group):
     def display_emoji(self) -> str:
         return Emoji.timmyBook
 
-    # @commands.group(aliaseS=["study-todo"])
+    # @commands.group(aliases=["study-todo"])
     # async def studytodo(self, ctx: commands.Context):
     #     if ctx.message.content == "+studytodo":
     #         subcommands = "/".join(
     #             sorted(subcommand.name for subcommand in self.studytodo.commands)
     #         )
     #         signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
-    # 
+    #
     #         embed = discord.Embed(
     #             color=Colors.red,
     #             title="Missing/Extra Required Arguments Passed In!",
@@ -363,7 +363,7 @@ class StudyToDo(commands.Cog, Group):
     #         await ctx.send(embed=embed)
 
     @command()
-    async def set(self, interaction: discord.Interaction, *, item):
+    async def set(self, interaction: discord.Interaction, *, item: str):
         """
         Adds an item to the study to-do list of the author/owner.
         """
