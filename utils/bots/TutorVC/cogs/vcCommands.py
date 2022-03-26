@@ -16,6 +16,8 @@ from core.common import (
 from discord.ext import commands
 
 # global variables
+from discord.http import Route
+
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 EST = pytz.timezone("US/Eastern")
 
@@ -187,16 +189,21 @@ class TutorVCCMD(commands.Cog):
             TECH_ID.g_tech: q.ch_tv_startvc,
         }
 
+    async def _create_invite(self, voice, app_id: int, max_age=86400):
+
+        r = Route("POST", "/channels/{channel_id}/invites", channel_id=voice.channel.id)
+        payload = {"max_age": max_age, "target_type": 2, "target_application_id": app_id}
+        code = (await self.bot.http.request(r, json=payload))["code"]
+        return code
+
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def startmusic(self, ctx: commands.Context):
         voice_state = ctx.author.voice
         if voice_state is None:
             return await ctx.send("You are not in a voice channel.")
-        GameLink = str(
-            await voice_state.channel.create_activity_invite(880218394199220334)
-        )
-        await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+        code = self._create_invite(voice_state, 880218394199220334)
+        await ctx.send(f"**Click the link to get started!**\nhttps://discord.gg/{code}")
 
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -237,16 +244,16 @@ class TutorVCCMD(commands.Cog):
                 else:
                     return await ctx.send("Timed out, try again later.")
                 GameID = GameDict[SelectedGame]
-                GameLink = str(await channel.create_activity_invite(GameID))
+                code = str(await self._create_invite(ctx.author.voice, GameID))
                 await ctx.send("Loading...")
-                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+                await ctx.send(f"**Click the link to get started!**\nhttps://discord.gg/{code}")
 
             else:
                 embed = discord.Embed(
                     title=f"{Emoji.deny} Ownership Check Failed",
                     description=f"You are not the owner of this voice channel, "
                     f"please ask the original owner to start a game!",
-                    color=discord.Colour.red(),
+                    color=discord.Colour.brand_red(),
                 )
                 return await ctx.send(embed=embed)
 
@@ -256,7 +263,7 @@ class TutorVCCMD(commands.Cog):
                 description="You are not allowed to delete these channels!"
                 "\n\n**Error Detection:**"
                 "\n**1)** Detected Static Channels",
-                color=discord.Colour.dark_red(),
+                color=discord.Colour.brand_red(),
             )
             return await ctx.send(embed=embed)
 
@@ -299,15 +306,15 @@ class TutorVCCMD(commands.Cog):
                     return await ctx.send("Timed out, try again later.")
                 print(SelectedGame)
                 GameID = GameDict[SelectedGame]
-                GameLink = str(await channel.create_activity_invite(GameID))
-                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+                code = str(await self._create_invite(ctx.author.voice, GameID))
+                await ctx.send(f"**Click the link to get started!**\nhttps://discord.gg/{code}")
 
             else:
                 embed = discord.Embed(
                     title=f"{Emoji.deny} Ownership Check Failed",
                     description=f"You are not the owner of this voice channel, "
                     f"please ask the original owner to start a game!",
-                    color=discord.Colour.red(),
+                    color=discord.Colour.brand_red(),
                 )
                 return await ctx.send(embed=embed)
         database.db.close()
