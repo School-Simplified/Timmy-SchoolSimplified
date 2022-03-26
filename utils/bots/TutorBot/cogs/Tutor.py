@@ -7,7 +7,7 @@ import pytz
 
 import discord
 from core import database
-from core.common import MAIN_ID, TUT_ID, Others
+from core.common import MAIN_ID, TUT_ID, Others, Emoji
 from discord.app_commands import command, describe, guilds
 from discord.ext import commands
 
@@ -33,8 +33,8 @@ class TutorBotStaffCMD(commands.Cog):
         self.__cog_name__ = "Tutor"
 
     @property
-    def display_emoji(self) -> discord.PartialEmoji:
-        return discord.PartialEmoji(name="tutoring", id=957059360822026250)
+    def display_emoji(self) -> str:
+        return Emoji.timmyTutoring
 
     @command(name="view")
     @guilds(MAIN_ID.g_main, TUT_ID.g_tut)

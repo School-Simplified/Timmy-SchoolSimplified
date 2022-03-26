@@ -93,8 +93,8 @@ class SituationCreator(commands.Cog):
         self.__cog_name__ = "Situation Simulator"
 
     @property
-    def display_emoji(self) -> discord.PartialEmoji:
-        return discord.PartialEmoji(name='\N{TEST TUBE}')
+    def display_emoji(self) -> str:
+        return "🧪"
 
     @commands.group(invoke_without_command=True)
     @commands.has_any_role()

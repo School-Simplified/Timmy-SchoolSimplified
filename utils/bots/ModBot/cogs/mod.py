@@ -3,7 +3,7 @@ import math
 import peewee
 import discord
 from core import common, database
-from core.common import hexColors, Emoji
+from core.common import HexColors, Emoji
 from discord.ext import commands
 
 
@@ -15,8 +15,8 @@ class PunishmentTag(commands.Cog):
         self.__cog_name__ = "Moderation"
 
     @property
-    def display_emoji(self) -> discord.PartialEmoji:
-        return discord.PartialEmoji(name="modshield", id=957316915158728827)
+    def display_emoji(self) -> str:
+        return Emoji.modshield
 
     @staticmethod
     def get_by_index(index):
@@ -39,7 +39,7 @@ class PunishmentTag(commands.Cog):
                     .get()
                 )
             embed = discord.Embed(
-                title=tag.embed_title, description=tag.text, color=hexColors.mod_blurple
+                title=tag.embed_title, description=tag.text, color=HexColors.mod_blurple
             )
             await ctx.send(embed=embed)
         except peewee.DoesNotExist:

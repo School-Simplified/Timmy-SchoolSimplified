@@ -13,12 +13,12 @@ from core.common import (
     ButtonHandler,
     MAIN_ID,
     TECH_ID,
-    hexColors,
+    HexColors,
     Others,
     Emoji,
     NitroConfirmFake,
     SelectMenuHandler,
-    hexColors,
+    HexColors,
     Others,
     MAIN_ID,
 )
@@ -93,8 +93,8 @@ class MiscCMD(commands.Cog):
         ]
 
     @property
-    def display_emoji(self) -> discord.PartialEmoji:
-        return discord.PartialEmoji(name="SchoolSimplified", id=957040389745938442)
+    def display_emoji(self) -> str:
+        return Emoji.schoolsimplified
 
     @commands.command(aliases=["ttc", "tictactoe"])
     async def tic(self, ctx: commands.Context, user: discord.User = None):
@@ -197,7 +197,7 @@ class MiscCMD(commands.Cog):
         )
 
         embedDonate = discord.Embed(
-            color=hexColors.ss_blurple,
+            color=HexColors.ss_blurple,
             title=f"Donate",
             description=f"Thank you for your generosity in donating to School Simplified. "
                         f"We do not charge anything for our services, and your support helps to further our mission "
@@ -226,7 +226,7 @@ class MiscCMD(commands.Cog):
             embed = discord.Embed(
                 title="Unable to Debate Ban this User",
                 description="Why are you trying to ban me?",
-                color=hexColors.red_error,
+                color=HexColors.red_error,
             )
             return await ctx.send(embed=embed)
 
@@ -234,7 +234,7 @@ class MiscCMD(commands.Cog):
             embed = discord.Embed(
                 title="Unable to Debate Ban this User",
                 description="Why are you trying to ban yourself?",
-                color=hexColors.red_error,
+                color=HexColors.red_error,
             )
             return await ctx.send(embed=embed)
 
@@ -254,7 +254,7 @@ class MiscCMD(commands.Cog):
                     title="Debate Banned!",
                     description=f"{Emoji.confirm} {member.display_name} has been debate banned!"
                                 f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=hexColors.yellow_ticketBan,
+                    color=HexColors.yellow_ticketBan,
                 )
                 await ctx.send(embed=embed)
 
@@ -272,7 +272,7 @@ class MiscCMD(commands.Cog):
                     title="Debate Unbanned!",
                     description=f"{Emoji.confirm} {member.display_name} has been debate unbanned!"
                                 f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=hexColors.yellow_ticketBan,
+                    color=HexColors.yellow_ticketBan,
                 )
                 await ctx.send(embed=embed)
 
@@ -292,7 +292,7 @@ class MiscCMD(commands.Cog):
             embed = discord.Embed(
                 title="Unable to CountBan this User",
                 description="Why are you trying to CountBan me?",
-                color=hexColors.red_error,
+                color=HexColors.red_error,
             )
             return await ctx.send(embed=embed)
 
@@ -300,7 +300,7 @@ class MiscCMD(commands.Cog):
             embed = discord.Embed(
                 title="Unable to CountBan this User",
                 description="Why are you trying to CountBan yourself?",
-                color=hexColors.red_error,
+                color=HexColors.red_error,
             )
             return await ctx.send(embed=embed)
 
@@ -320,7 +320,7 @@ class MiscCMD(commands.Cog):
                     title="Count Banned!",
                     description=f"{Emoji.confirm} {member.display_name} has been count banned!"
                                 f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=hexColors.yellow_ticketBan,
+                    color=HexColors.yellow_ticketBan,
                 )
                 await ctx.send(embed=embed)
 
@@ -338,7 +338,7 @@ class MiscCMD(commands.Cog):
                     title="Count Unbanned!",
                     description=f"{Emoji.confirm} {member.display_name} has been count unbanned!"
                                 f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=hexColors.yellow_ticketBan,
+                    color=HexColors.yellow_ticketBan,
                 )
                 await ctx.send(embed=embed)
 
@@ -426,7 +426,7 @@ class MiscCMD(commands.Cog):
         embed = discord.Embed(
             title="A WILD GIFT APPEARS!",
             description="**Nitro:**\nExpires in 48 hours.",
-            color=hexColors.dark_gray,
+            color=HexColors.dark_gray,
         )
         embed.set_thumbnail(url=Others.nitro_png)
         await ctx.send(embed=embed, view=NitroConfirmFake())

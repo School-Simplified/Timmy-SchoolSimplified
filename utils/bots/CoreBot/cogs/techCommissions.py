@@ -1,7 +1,7 @@
 import discord
 from discord import ui
 from discord.ext import commands, tasks
-from core.common import TECH_ID
+from core.common import TECH_ID, Emoji
 from core.checks import is_botAdmin
 from core import database
 
@@ -104,8 +104,8 @@ class TechProjectCMD(commands.Cog):
         self.__cog_name__ = "Bot Commissions"
 
     @property
-    def display_emoji(self) -> discord.PartialEmoji:
-        return discord.PartialEmoji(name="python", id=957308413652639754)
+    def display_emoji(self) -> str:
+        return Emoji.pythonLogo
 
     async def cog_unload(self):
         self.autoUnarchiveThread.cancel()

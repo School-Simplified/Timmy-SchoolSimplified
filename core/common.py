@@ -338,10 +338,7 @@ class MAIN_ID:
     cat_mathTicket = int(
         ConfigcatClient.MAIN_ID_CC.get_value("cat_mathticket", 800472371973980181)
     )
-    cat_socialStudiesTicket = int(
-        ConfigcatClient.MAIN_ID_CC.get_value(
-            "cat_socialstudiesticket", 800481237608824882
-        )
+    cat_socialStudiesTicket = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_socialstudiesticket", 800481237608824882)
     )
     cat_englishTicket = int(
         ConfigcatClient.MAIN_ID_CC.get_value("cat_englishticket", 800475854353596469)
@@ -398,10 +395,7 @@ class MAIN_ID:
         ConfigcatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369)
     )
 
-    r_tutor = 778453090956738580
-
     # *** Messages ***
-    # Tutoring
     msg_math = int(ConfigcatClient.MAIN_ID_CC.get_value("msg_math", 866904767568543744))
     msg_science = int(
         ConfigcatClient.MAIN_ID_CC.get_value("msg_science", 866904901174427678)
@@ -1050,7 +1044,6 @@ class Emoji:
     lock = "<:lock:860926195087835137>"
     unlock = "<:unlock:860926246937427989>"
     time = "<:time:860926238737825793>"
-    loading = None
     redissue = "<:issue:860587949263290368>"
     archive = "<:file:861794167578689547>"
     cycle = "<:cycle:861794132585611324>"
@@ -1075,14 +1068,21 @@ class Emoji:
     pythonLogo = "<:python:945410067887435846>"
     javascriptLogo = "<:javascript:945410211752054816>"
     blobamused = "<:blobamused:895125015719194655>"
-
-    timmyBook = "<:timmy_book:880875405962264667>"
+    modshield = "<:modshield:957316876168474644>"
     loadingGIF = "<a:Loading:904192577094426626>"
     loadingGIF2 = "<a:Loading:905563298089541673>"
     gsuitelogo = "<:gsuitelogo:932034284724834384>"
+    turtlesmirk = "<:TurtleSmirk:879119619737124914>"
+
+    # SS Emojis
+    schoolsimplified = "<:SchoolSimplified:830689765329993807>"
+    ssarrow = "<:SS:865715703545069568>"
+    humanresources = "<:SS_HumanResources:907766589972181043>"
+    timmyBook = "<:timmy_book:933043045493010453>"
+    timmyTutoring = "<:tutoring:933043045950164992>"
 
 
-class hexColors:
+class HexColors:
     """
     Hex colors for the bot.
     """
@@ -1125,6 +1125,24 @@ class Others:
     space_character = "　"
     TICKET_INACTIVE_TIME = 1440
     CHID_DEFAULT = 905217698865225728
+
+
+# Game IDs (constants)
+GameDict = {
+    "Awkword": 879863881349087252,
+    "Betrayal": 773336526917861400,
+    "CG4": 832025144389533716,
+    "Chess in the Park": 832012774040141894,
+    "Doodle Crew": 878067389634314250,
+    "Letter Tile": 879863686565621790,
+    "Fishington": 814288819477020702,
+    "Poker Night": 755827207812677713,
+    "Putts": 832012854282158180,
+    "Sketchy Artist": 879864070101172255,
+    "Spell Cast": 852509694341283871,
+    "Youtube Together": 755600276941176913,
+    "Word Snacks": 879863976006127627,
+}
 
 
 CHHelperRoles = {

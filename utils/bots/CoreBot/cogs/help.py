@@ -657,8 +657,8 @@ class Help(commands.Cog):
         pass
 
     @property
-    def display_emoji(self) -> discord.PartialEmoji:
-        return discord.PartialEmoji(name='\N{WHITE QUESTION MARK ORNAMENT}')
+    def display_emoji(self) -> str:
+        return "❔"
 
     @command()
     @describe(command="Name of command, cog or command group")

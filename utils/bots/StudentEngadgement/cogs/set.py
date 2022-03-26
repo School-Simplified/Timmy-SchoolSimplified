@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.app_commands import command, describe, Group, guilds, check
 import discord
 from core import database
-from core.common import MAIN_ID, SET_ID
+from core.common import MAIN_ID, SET_ID, Emoji
 
 blacklist = []
 
@@ -403,8 +403,8 @@ class Engagement(commands.Cog):
         self.__cog_app_commands__.append(Suggest, SetSuggestBlacklist)
 
     @property
-    def display_emoji(self) -> discord.PartialEmoji:
-        return discord.PartialEmoji(name="TurtleSmirk", id=957074334084644874)
+    def display_emoji(self) -> str:
+        return Emoji.turtlesmirk
 
     async def cog_load(self) -> None:
         for user_id in database.ResponseSpamBlacklist:
