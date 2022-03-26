@@ -412,7 +412,7 @@ class Engagement(commands.Cog):
 
     @command(name="acceptance_letter")
     @spammer_check()
-    @guilds(discord.Object(MAIN_ID.g_main))
+    @guilds(MAIN_ID.g_main)
     async def __college_accept(self, interaction: discord.Interaction, file: discord.Attachment):
         embed = discord.Embed(
             title="College Acceptance Letter",
@@ -427,7 +427,7 @@ class Engagement(commands.Cog):
 
     @command(name="puzzle_guess")
     @spammer_check()
-    @guilds(discord.Object(MAIN_ID.g_main))
+    @guilds(MAIN_ID.g_main)
     async def _guess(self, interaction: discord.Interaction, guess: str):
         """
         :param guess: The guess you are making to the weekly puzzle
