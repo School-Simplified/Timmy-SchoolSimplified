@@ -422,6 +422,9 @@ async def main_mode_check_(ctx: commands.Context):
         return CheckDB_CC.elseSituation
 
 def initializeDB(bot):
+    """
+    Initializes the database, and creates the needed table data if they don't exist.
+    """
     database.db.connect(reuse_if_open=True)
     UpQ = database.Uptime.select().where(database.Uptime.id == 1)
     CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)
