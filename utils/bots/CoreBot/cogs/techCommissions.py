@@ -95,9 +95,17 @@ class CommissionTechButton(discord.ui.View):
 
 
 class TechProjectCMD(commands.Cog):
+    """
+    Commands for bot commissions
+    """
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.autoUnarchiveThread.start()
+        self.__cog_name__ = "Bot Commissions"
+
+    @property
+    def display_emoji(self) -> discord.PartialEmoji:
+        return discord.PartialEmoji(name="python", id=957308413652639754)
 
     async def cog_unload(self):
         self.autoUnarchiveThread.cancel()
