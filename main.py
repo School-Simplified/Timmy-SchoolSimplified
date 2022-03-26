@@ -66,7 +66,7 @@ class Timmy(commands.Bot):
         for guild in self.guilds:
             await self.tree.sync(guild=guild)
 
-        with alive_bar(len(get_extensions()), ctrl_c=False, bar="bubbles", title=f"Initializing Cogs:") as bar:
+        with alive_bar(len(get_extensions()), ctrl_c=False, bar="bubbles", title="Initializing Cogs:") as bar:
             for ext in get_extensions():
                 try:
                     await bot.load_extension(ext)
