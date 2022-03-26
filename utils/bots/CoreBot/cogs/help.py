@@ -637,7 +637,7 @@ class Help(commands.Cog):
             self,
             interaction: discord.Interaction,
             _command=None
-    ) -> Union[None, Coroutine, List[commands.Command, Any, app_commands.Command]]:
+    ) -> Union[None, Coroutine, List[Union[commands.Command, Any, app_commands.Command]]]:
         """|coro|
         A low level method that can be used to prepare the help command
         before it does anything. For example, if you need to prepare
