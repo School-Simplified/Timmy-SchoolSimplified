@@ -6,9 +6,17 @@ from core.common import hexColors
 
 
 class TodoCMD(commands.Cog):
+    """
+    Todo list management
+    """
     def __init__(self, bot):
         self.bot = bot
         self.interaction = []
+        self.__cog_name__ = "Todo"
+
+    @property
+    def display_emoji(self) -> discord.PartialEmoji:
+        return discord.PartialEmoji(name="\N{SCROLL}")
 
     @commands.group()
     async def todo(self, ctx):
