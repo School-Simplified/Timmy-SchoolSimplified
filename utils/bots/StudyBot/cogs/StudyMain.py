@@ -459,4 +459,4 @@ class StudyToDo(commands.Cog, Group):
 
 
 async def setup(bot):
-    await bot.add_cog(StudyVC(bot))
+    await bot.add_cog(StudyToDo(bot))
