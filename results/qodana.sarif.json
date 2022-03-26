@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1936,13 +1936,13 @@
                 ]
               },
               {
-                "id": "PyChainedComparisonsInspection",
+                "id": "PyMethodParametersInspection",
                 "shortDescription": {
-                  "text": "Too complex chained comparisons"
+                  "text": "Improper first parameter"
                 },
                 "fullDescription": {
-                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
-                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
+                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
+                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1970,13 +1970,13 @@
                 ]
               },
               {
-                "id": "PyMethodParametersInspection",
+                "id": "PyChainedComparisonsInspection",
                 "shortDescription": {
-                  "text": "Improper first parameter"
+                  "text": "Too complex chained comparisons"
                 },
                 "fullDescription": {
-                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
-                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
+                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
+                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -2344,19 +2344,19 @@
                 ]
               },
               {
-                "id": "CythonUsageBeforeDeclarationInspection",
+                "id": "PyArgumentEqualDefaultInspection",
                 "shortDescription": {
-                  "text": "Cython variable is used before its declaration"
+                  "text": "The function argument is equal to the default parameter value"
                 },
                 "fullDescription": {
-                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
-                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
+                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2378,19 +2378,19 @@
                 ]
               },
               {
-                "id": "PyArgumentEqualDefaultInspection",
+                "id": "CythonUsageBeforeDeclarationInspection",
                 "shortDescription": {
-                  "text": "The function argument is equal to the default parameter value"
+                  "text": "Cython variable is used before its declaration"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
-                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
+                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
+                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -4464,40 +4464,6 @@
                 ]
               },
               {
-                "id": "JsonSchemaDeprecation",
-                "shortDescription": {
-                  "text": "Deprecated JSON property"
-                },
-                "fullDescription": {
-                  "text": "Reports a deprecated property in a JSON file. Note that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'.",
-                  "markdown": "Reports a deprecated property in a JSON file.  \nNote that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JSON and JSON5",
-                      "index": 4,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "XmlDuplicatedId",
                 "shortDescription": {
                   "text": "Duplicate 'id' attribute"
@@ -4521,6 +4487,40 @@
                     "target": {
                       "id": "XML",
                       "index": 3,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "JsonSchemaDeprecation",
+                "shortDescription": {
+                  "text": "Deprecated JSON property"
+                },
+                "fullDescription": {
+                  "text": "Reports a deprecated property in a JSON file. Note that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'.",
+                  "markdown": "Reports a deprecated property in a JSON file.  \nNote that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JSON and JSON5",
+                      "index": 4,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -4702,40 +4702,6 @@
                 ]
               },
               {
-                "id": "DuplicatedCode",
-                "shortDescription": {
-                  "text": "Duplicated code fragment"
-                },
-                "fullDescription": {
-                  "text": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in File | Settings | Editor | Duplicates.",
-                  "markdown": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in [File \\| Settings \\| Editor \\| Duplicates](settings://duplicates.index)."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "General",
-                      "index": 9,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RequiredAttributes",
                 "shortDescription": {
                   "text": "Missing required attribute"
@@ -4759,6 +4725,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DuplicatedCode",
+                "shortDescription": {
+                  "text": "Duplicated code fragment"
+                },
+                "fullDescription": {
+                  "text": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in File | Settings | Editor | Duplicates.",
+                  "markdown": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in [File \\| Settings \\| Editor \\| Duplicates](settings://duplicates.index)."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "General",
+                      "index": 9,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5586,40 +5586,6 @@
                 ]
               },
               {
-                "id": "RegExpRedundantNestedCharacterClass",
-                "shortDescription": {
-                  "text": "Redundant nested character class"
-                },
-                "fullDescription": {
-                  "text": "Reports unnecessary nested character classes. Example: '[a-c[x-z]]' After the quick-fix is applied: '[a-cx-z]' New in 2020.2",
-                  "markdown": "Reports unnecessary nested character classes.\n\n**Example:**\n\n\n      [a-c[x-z]]\n\nAfter the quick-fix is applied:\n\n\n      [a-cx-z]\n\nNew in 2020.2"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RegExp",
-                      "index": 5,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "XmlDeprecatedElement",
                 "shortDescription": {
                   "text": "Deprecated symbol"
@@ -5643,6 +5609,40 @@
                     "target": {
                       "id": "XML",
                       "index": 3,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "RegExpRedundantNestedCharacterClass",
+                "shortDescription": {
+                  "text": "Redundant nested character class"
+                },
+                "fullDescription": {
+                  "text": "Reports unnecessary nested character classes. Example: '[a-c[x-z]]' After the quick-fix is applied: '[a-cx-z]' New in 2020.2",
+                  "markdown": "Reports unnecessary nested character classes.\n\n**Example:**\n\n\n      [a-c[x-z]]\n\nAfter the quick-fix is applied:\n\n\n      [a-cx-z]\n\nNew in 2020.2"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RegExp",
+                      "index": 5,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5756,40 +5756,6 @@
                 ]
               },
               {
-                "id": "HtmlUnknownAnchorTarget",
-                "shortDescription": {
-                  "text": "Unresolved fragment in a link"
-                },
-                "fullDescription": {
-                  "text": "Reports an unresolved last part of an URL after the '#' sign.",
-                  "markdown": "Reports an unresolved last part of an URL after the `#` sign."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "UnusedDefine",
                 "shortDescription": {
                   "text": "Unused define"
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "RELAX NG",
                       "index": 11,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "HtmlUnknownAnchorTarget",
+                "shortDescription": {
+                  "text": "Unresolved fragment in a link"
+                },
+                "fullDescription": {
+                  "text": "Reports an unresolved last part of an URL after the '#' sign.",
+                  "markdown": "Reports an unresolved last part of an URL after the `#` sign."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "2cde091a828178ac25319e73e02359fe80ce32a1",
+          "revisionId": "ff918f51a17cc6f592f5b4f558b26bf48f945296",
           "branch": "162-move-to-dpy",
           "properties": {
             "lastAuthorName": "Eric",
@@ -7512,7 +7512,7 @@
                 "region": {
                   "startLine": 311,
                   "startColumn": 67,
-                  "charOffset": 10036,
+                  "charOffset": 10051,
                   "charLength": 10,
                   "snippet": {
                     "text": "\"-a\", \"-c\""
@@ -7522,7 +7522,7 @@
                 "contextRegion": {
                   "startLine": 309,
                   "startColumn": 1,
-                  "charOffset": 9919,
+                  "charOffset": 9934,
                   "charLength": 199,
                   "snippet": {
                     "text": "    @slash_is_bot_admin_2()\n    async def gitpull(\n            self, interaction: discord.Interaction, mode: Literal[\"-a\", \"-c\"] = \"-a\", sync_commands: bool = False\n    ) -> None:\n        output = \"\""
@@ -7538,7 +7538,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "c4c129842beb3c4ebdbc4e37b241bfbb0c581c6ab97b0697f6288afce8f75a95"
+            "equalIndicator/v1": "3f1fb3c26aba8ad04cac59d6c4795b3e8c5422132f95d066d6948a258a12b8e1"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -11116,7 +11116,7 @@
                 "region": {
                   "startLine": 521,
                   "startColumn": 13,
-                  "charOffset": 17100,
+                  "charOffset": 17115,
                   "charLength": 6,
                   "snippet": {
                     "text": "result"
@@ -11126,7 +11126,7 @@
                 "contextRegion": {
                   "startLine": 519,
                   "startColumn": 1,
-                  "charOffset": 17074,
+                  "charOffset": 17089,
                   "charLength": 122,
                   "snippet": {
                     "text": "        try:\n\n            result = subprocess.run(\n                f\"cd && cd {main_or_beta}\",\n                shell=True,"
@@ -11142,7 +11142,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "311894bee4d982820ec971243952c0141ad593a134823190cdffb702e1932424"
+            "equalIndicator/v1": "55a7d1bb778e7395efc6300152f9009e17be1c988c43275dddc1c677d2d0b158"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -12640,86 +12640,33 @@
           "kind": "fail",
           "level": "note",
           "message": {
-            "text": "Parameter 'self' value is not used",
-            "markdown": "Parameter 'self' value is not used"
+            "text": "Local variable 'val' value is not used",
+            "markdown": "Local variable 'val' value is not used"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 25,
-                  "startColumn": 25,
-                  "charOffset": 379,
-                  "charLength": 4,
-                  "snippet": {
-                    "text": "self"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 23,
-                  "startColumn": 1,
-                  "charOffset": 353,
-                  "charLength": 119,
-                  "snippet": {
-                    "text": "\n\nasync def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Member):\n    check = getEqualRank(name)\n"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "239ec687121a450eab6b22fee4883a9317c0efe032bef58d03021bb257f9b7e1"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyUnusedLocalInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Parameter 'interaction' value is not used",
-            "markdown": "Parameter 'interaction' value is not used"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
+                  "uri": "utils/events/verifystaffGsuite.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
                   "startLine": 45,
-                  "startColumn": 28,
-                  "charOffset": 991,
-                  "charLength": 32,
+                  "startColumn": 13,
+                  "charOffset": 1404,
+                  "charLength": 3,
                   "snippet": {
-                    "text": "interaction: discord.Interaction"
+                    "text": "val"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
                   "startLine": 43,
                   "startColumn": 1,
-                  "charOffset": 939,
-                  "charLength": 141,
+                  "charOffset": 1378,
+                  "charLength": 108,
                   "snippet": {
-                    "text": "        emoji=\"✅\",\n    )\n    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):\n        self.value = True\n"
+                    "text": "\n        try:\n            val = InteractionResponse[\"custom_id\"]\n        except KeyError:\n            return"
                   }
                 }
               },
@@ -12732,7 +12679,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "30b139d7e972a43cf0ceb558395b40055571ef5d0dbe1e32b705937452c65028"
+            "equalIndicator/v1": "011ceafe698db24801aeede2f12e21b66d4e79a6c1db1cc61ce5f07bb7f1176e"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -12746,33 +12693,33 @@
           "kind": "fail",
           "level": "note",
           "message": {
-            "text": "Parameter 'button' value is not used",
-            "markdown": "Parameter 'button' value is not used"
+            "text": "Local variable 'channel' value is not used",
+            "markdown": "Local variable 'channel' value is not used"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
+                  "uri": "utils/events/verifystaffGsuite.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 45,
-                  "startColumn": 62,
-                  "charOffset": 1025,
-                  "charLength": 25,
+                  "startLine": 58,
+                  "startColumn": 13,
+                  "charOffset": 1789,
+                  "charLength": 7,
                   "snippet": {
-                    "text": "button: discord.ui.Button"
+                    "text": "channel"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 43,
+                  "startLine": 56,
                   "startColumn": 1,
-                  "charOffset": 939,
-                  "charLength": 141,
+                  "charOffset": 1758,
+                  "charLength": 169,
                   "snippet": {
-                    "text": "        emoji=\"✅\",\n    )\n    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):\n        self.value = True\n"
+                    "text": "                )\n\n            channel = self.bot.get_channel(interaction.channel_id)\n            guild = interaction.message.guild\n            author = interaction.user"
                   }
                 }
               },
@@ -12785,60 +12732,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "f1c075f12a26461d1b62ba4d8490ec7357617f93877397949b93f666feb30560"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyUnusedLocalInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Local variable 'InteractionResponse' value is not used",
-            "markdown": "Local variable 'InteractionResponse' value is not used"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 65,
-                  "startColumn": 9,
-                  "charOffset": 1676,
-                  "charLength": 19,
-                  "snippet": {
-                    "text": "InteractionResponse"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 63,
-                  "startColumn": 1,
-                  "charOffset": 1550,
-                  "charLength": 205,
-                  "snippet": {
-                    "text": "    @commands.Cog.listener(\"on_interaction\")\n    async def StaffVerification(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n\n        if interaction.message is None:"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "c695ee93b5380a49a10383863026f508ec8de4110da09c253cfec2e94ecf79fc"
+            "equalIndicator/v1": "49dc3876f776220d5fe9438091b8f783136f1b8c011e90c7cc64d0455d92a43f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -12859,13 +12753,13 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
+                  "uri": "utils/events/verifystaffGsuite.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 130,
-                  "startColumn": 37,
-                  "charOffset": 4291,
+                  "startLine": 110,
+                  "startColumn": 41,
+                  "charOffset": 4207,
                   "charLength": 1,
                   "snippet": {
                     "text": "e"
@@ -12873,12 +12767,12 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 128,
+                  "startLine": 108,
                   "startColumn": 1,
-                  "charOffset": 4232,
-                  "charLength": 136,
+                  "charOffset": 4074,
+                  "charLength": 250,
                   "snippet": {
-                    "text": "                    )\n\n                except Exception as e:\n                    print(\"member not found\")\n                    continue"
+                    "text": "                    try:\n                        self.flow.fetch_token(code=answer1.content)\n                    except Exception as e:\n                        return await dm_channel.send(\"Invalid code, try again later...\")\n                    else:"
                   }
                 }
               },
@@ -12891,7 +12785,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "5d639a5ddf47e64899a6b8cbf69ceea09249656e8397bc56408a44d6c811c2b1"
+            "equalIndicator/v1": "ad83e3cabddfddd78211e41cbce2dc60021fbefe7c8ec99e492b00a1249d0297"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -13700,33 +13594,33 @@
           "kind": "fail",
           "level": "note",
           "message": {
-            "text": "Local variable 'val' value is not used",
-            "markdown": "Local variable 'val' value is not used"
+            "text": "Parameter 'self' value is not used",
+            "markdown": "Parameter 'self' value is not used"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uri": "utils/events/VerificationStaff.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 45,
-                  "startColumn": 13,
-                  "charOffset": 1404,
-                  "charLength": 3,
+                  "startLine": 25,
+                  "startColumn": 25,
+                  "charOffset": 379,
+                  "charLength": 4,
                   "snippet": {
-                    "text": "val"
+                    "text": "self"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 43,
+                  "startLine": 23,
                   "startColumn": 1,
-                  "charOffset": 1378,
-                  "charLength": 108,
+                  "charOffset": 353,
+                  "charLength": 119,
                   "snippet": {
-                    "text": "\n        try:\n            val = InteractionResponse[\"custom_id\"]\n        except KeyError:\n            return"
+                    "text": "\n\nasync def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Member):\n    check = getEqualRank(name)\n"
                   }
                 }
               },
@@ -13739,7 +13633,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "011ceafe698db24801aeede2f12e21b66d4e79a6c1db1cc61ce5f07bb7f1176e"
+            "equalIndicator/v1": "239ec687121a450eab6b22fee4883a9317c0efe032bef58d03021bb257f9b7e1"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -13753,33 +13647,33 @@
           "kind": "fail",
           "level": "note",
           "message": {
-            "text": "Local variable 'channel' value is not used",
-            "markdown": "Local variable 'channel' value is not used"
+            "text": "Parameter 'interaction' value is not used",
+            "markdown": "Parameter 'interaction' value is not used"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uri": "utils/events/VerificationStaff.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 58,
-                  "startColumn": 13,
-                  "charOffset": 1789,
-                  "charLength": 7,
+                  "startLine": 45,
+                  "startColumn": 28,
+                  "charOffset": 991,
+                  "charLength": 32,
                   "snippet": {
-                    "text": "channel"
+                    "text": "interaction: discord.Interaction"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 56,
+                  "startLine": 43,
                   "startColumn": 1,
-                  "charOffset": 1758,
-                  "charLength": 169,
+                  "charOffset": 939,
+                  "charLength": 141,
                   "snippet": {
-                    "text": "                )\n\n            channel = self.bot.get_channel(interaction.channel_id)\n            guild = interaction.message.guild\n            author = interaction.user"
+                    "text": "        emoji=\"✅\",\n    )\n    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):\n        self.value = True\n"
                   }
                 }
               },
@@ -13792,7 +13686,113 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "49dc3876f776220d5fe9438091b8f783136f1b8c011e90c7cc64d0455d92a43f"
+            "equalIndicator/v1": "30b139d7e972a43cf0ceb558395b40055571ef5d0dbe1e32b705937452c65028"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyUnusedLocalInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Parameter 'button' value is not used",
+            "markdown": "Parameter 'button' value is not used"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 45,
+                  "startColumn": 62,
+                  "charOffset": 1025,
+                  "charLength": 25,
+                  "snippet": {
+                    "text": "button: discord.ui.Button"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 43,
+                  "startColumn": 1,
+                  "charOffset": 939,
+                  "charLength": 141,
+                  "snippet": {
+                    "text": "        emoji=\"✅\",\n    )\n    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):\n        self.value = True\n"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "f1c075f12a26461d1b62ba4d8490ec7357617f93877397949b93f666feb30560"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyUnusedLocalInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Local variable 'InteractionResponse' value is not used",
+            "markdown": "Local variable 'InteractionResponse' value is not used"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 9,
+                  "charOffset": 1676,
+                  "charLength": 19,
+                  "snippet": {
+                    "text": "InteractionResponse"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 63,
+                  "startColumn": 1,
+                  "charOffset": 1550,
+                  "charLength": 205,
+                  "snippet": {
+                    "text": "    @commands.Cog.listener(\"on_interaction\")\n    async def StaffVerification(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n\n        if interaction.message is None:"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "c695ee93b5380a49a10383863026f508ec8de4110da09c253cfec2e94ecf79fc"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -13813,13 +13813,13 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uri": "utils/events/VerificationStaff.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 110,
-                  "startColumn": 41,
-                  "charOffset": 4207,
+                  "startLine": 130,
+                  "startColumn": 37,
+                  "charOffset": 4291,
                   "charLength": 1,
                   "snippet": {
                     "text": "e"
@@ -13827,12 +13827,12 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 108,
+                  "startLine": 128,
                   "startColumn": 1,
-                  "charOffset": 4074,
-                  "charLength": 250,
+                  "charOffset": 4232,
+                  "charLength": 136,
                   "snippet": {
-                    "text": "                    try:\n                        self.flow.fetch_token(code=answer1.content)\n                    except Exception as e:\n                        return await dm_channel.send(\"Invalid code, try again later...\")\n                    else:"
+                    "text": "                    )\n\n                except Exception as e:\n                    print(\"member not found\")\n                    continue"
                   }
                 }
               },
@@ -13845,7 +13845,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "ad83e3cabddfddd78211e41cbce2dc60021fbefe7c8ec99e492b00a1249d0297"
+            "equalIndicator/v1": "5d639a5ddf47e64899a6b8cbf69ceea09249656e8397bc56408a44d6c811c2b1"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -21822,7 +21822,7 @@
                 "region": {
                   "startLine": 253,
                   "startColumn": 9,
-                  "charOffset": 8081,
+                  "charOffset": 8096,
                   "charLength": 7,
                   "snippet": {
                     "text": "hostDir"
@@ -21832,7 +21832,7 @@
                 "contextRegion": {
                   "startLine": 251,
                   "startColumn": 1,
-                  "charOffset": 8052,
+                  "charOffset": 8067,
                   "charLength": 124,
                   "snippet": {
                     "text": "        output = \"\"\n\n        hostDir = getHostDir()\n        if hostDir == \"/home/timmya\":\n            branch = \"origin/main\""
@@ -21848,7 +21848,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "f593ee72ba7fcb60e00ac533752d5b045010c01730b5ac15784a5d7048be060f"
+            "equalIndicator/v1": "1c0a76151c9188fd364334c237b4071c56f969a36fac2a201f165e8a9cb6886f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -21875,7 +21875,7 @@
                 "region": {
                   "startLine": 315,
                   "startColumn": 9,
-                  "charOffset": 10128,
+                  "charOffset": 10143,
                   "charLength": 7,
                   "snippet": {
                     "text": "hostDir"
@@ -21885,7 +21885,7 @@
                 "contextRegion": {
                   "startLine": 313,
                   "startColumn": 1,
-                  "charOffset": 10099,
+                  "charOffset": 10114,
                   "charLength": 124,
                   "snippet": {
                     "text": "        output = \"\"\n\n        hostDir = getHostDir()\n        if hostDir == \"/home/timmya\":\n            branch = \"origin/main\""
@@ -21901,7 +21901,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "7d4e08f5af75276a48bbf7043696a24c89746b905730206c36392d08019b26a5"
+            "equalIndicator/v1": "f1cdf255b6b99872d2407772e1cd55cc5b41f28d3e89ea1c9805f0ea7918113f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -21928,7 +21928,7 @@
                 "region": {
                   "startLine": 394,
                   "startColumn": 9,
-                  "charOffset": 12896,
+                  "charOffset": 12911,
                   "charLength": 9,
                   "snippet": {
                     "text": "adminList"
@@ -21938,7 +21938,7 @@
                 "contextRegion": {
                   "startLine": 392,
                   "startColumn": 1,
-                  "charOffset": 12840,
+                  "charOffset": 12855,
                   "charLength": 128,
                   "snippet": {
                     "text": "    @is_botAdmin\n    async def list(self, ctx):\n        adminList = []\n\n        query1 = database.Administrators.select().where("
@@ -21954,7 +21954,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "11014551fe15687d2a1a763cf6c14d54ae8bf6c61b1e7dec31722656be2018ae"
+            "equalIndicator/v1": "9d999470efa7ba5f626c300667002e093815d85d833ee8b13426ecd025e502fe"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -21981,7 +21981,7 @@
                 "region": {
                   "startLine": 403,
                   "startColumn": 9,
-                  "charOffset": 13184,
+                  "charOffset": 13199,
                   "charLength": 11,
                   "snippet": {
                     "text": "adminLEVEL1"
@@ -21991,7 +21991,7 @@
                 "contextRegion": {
                   "startLine": 401,
                   "startColumn": 1,
-                  "charOffset": 13113,
+                  "charOffset": 13128,
                   "charLength": 129,
                   "snippet": {
                     "text": "            adminList.append(f\"`{user.name}` -> `{user.id}`\")\n\n        adminLEVEL1 = \"\\n\".join(adminList)\n\n        adminList = []"
@@ -22007,7 +22007,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "f4335d4890277bc0748babcaf47597a3590454c4726e5314791fc312aa7da45b"
+            "equalIndicator/v1": "ec9801764a99f42a302c74ebfe5a21c3a00e84a50ecf8ca9cce7bb1a7c731bd0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -22034,7 +22034,7 @@
                 "region": {
                   "startLine": 405,
                   "startColumn": 9,
-                  "charOffset": 13228,
+                  "charOffset": 13243,
                   "charLength": 9,
                   "snippet": {
                     "text": "adminList"
@@ -22044,7 +22044,7 @@
                 "contextRegion": {
                   "startLine": 403,
                   "startColumn": 1,
-                  "charOffset": 13176,
+                  "charOffset": 13191,
                   "charLength": 174,
                   "snippet": {
                     "text": "        adminLEVEL1 = \"\\n\".join(adminList)\n\n        adminList = []\n        query2 = database.Administrators.select().where(\n            database.Administrators.TierLevel == 2"
@@ -22060,7 +22060,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "fe45b777e9d168f11ac6080fad83b8bb8eab86ff411ac2254a69146873502c07"
+            "equalIndicator/v1": "a3bf01d85efe934f1d77c569c4019f466a33998fe7473cdc1bac3aa4318683b1"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -22087,7 +22087,7 @@
                 "region": {
                   "startLine": 413,
                   "startColumn": 9,
-                  "charOffset": 13515,
+                  "charOffset": 13530,
                   "charLength": 11,
                   "snippet": {
                     "text": "adminLEVEL2"
@@ -22097,7 +22097,7 @@
                 "contextRegion": {
                   "startLine": 411,
                   "startColumn": 1,
-                  "charOffset": 13444,
+                  "charOffset": 13459,
                   "charLength": 129,
                   "snippet": {
                     "text": "            adminList.append(f\"`{user.name}` -> `{user.id}`\")\n\n        adminLEVEL2 = \"\\n\".join(adminList)\n\n        adminList = []"
@@ -22113,7 +22113,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "b0ba08a955b9643f55363b16755c63d90a8da01520c7bd05ce0523a9272b5964"
+            "equalIndicator/v1": "bbc84f24925bf2d4a3ebc5602d7a654c3c7971e1d58adb6d37837c6836de89c2"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -22140,7 +22140,7 @@
                 "region": {
                   "startLine": 415,
                   "startColumn": 9,
-                  "charOffset": 13559,
+                  "charOffset": 13574,
                   "charLength": 9,
                   "snippet": {
                     "text": "adminList"
@@ -22150,7 +22150,7 @@
                 "contextRegion": {
                   "startLine": 413,
                   "startColumn": 1,
-                  "charOffset": 13507,
+                  "charOffset": 13522,
                   "charLength": 174,
                   "snippet": {
                     "text": "        adminLEVEL2 = \"\\n\".join(adminList)\n\n        adminList = []\n        query3 = database.Administrators.select().where(\n            database.Administrators.TierLevel == 3"
@@ -22166,7 +22166,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "81a8edca7f806e006ddd51dc3277aa41880730f6baf51e0099858ffcbd28104f"
+            "equalIndicator/v1": "0fa1cf040368d73b3c03c8c4ef38b76748e6b865349b52683662a52eb6b761dc"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -22193,7 +22193,7 @@
                 "region": {
                   "startLine": 423,
                   "startColumn": 9,
-                  "charOffset": 13846,
+                  "charOffset": 13861,
                   "charLength": 11,
                   "snippet": {
                     "text": "adminLEVEL3"
@@ -22203,7 +22203,7 @@
                 "contextRegion": {
                   "startLine": 421,
                   "startColumn": 1,
-                  "charOffset": 13775,
+                  "charOffset": 13790,
                   "charLength": 129,
                   "snippet": {
                     "text": "            adminList.append(f\"`{user.name}` -> `{user.id}`\")\n\n        adminLEVEL3 = \"\\n\".join(adminList)\n\n        adminList = []"
@@ -22219,7 +22219,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "67c5bc85cab957e94374e272eccd9fa837f3a19d4cc1c962792e214015fb62c8"
+            "equalIndicator/v1": "6c228e7d0ffb1341d86d6d1b5a3b1cf9168ebe18af701935a00df020005b6005"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -22246,7 +22246,7 @@
                 "region": {
                   "startLine": 425,
                   "startColumn": 9,
-                  "charOffset": 13890,
+                  "charOffset": 13905,
                   "charLength": 9,
                   "snippet": {
                     "text": "adminList"
@@ -22256,7 +22256,7 @@
                 "contextRegion": {
                   "startLine": 423,
                   "startColumn": 1,
-                  "charOffset": 13838,
+                  "charOffset": 13853,
                   "charLength": 174,
                   "snippet": {
                     "text": "        adminLEVEL3 = \"\\n\".join(adminList)\n\n        adminList = []\n        query4 = database.Administrators.select().where(\n            database.Administrators.TierLevel == 4"
@@ -22272,7 +22272,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "a9c1b33b807710f6382875b6ab601432207b03a1188ac3cfcb7a40b6376b7e6d"
+            "equalIndicator/v1": "2e74c0dbbc8aba58576f2c9986470697e06e31db7d905bba4a1a50bcd93ee128"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -22299,7 +22299,7 @@
                 "region": {
                   "startLine": 433,
                   "startColumn": 9,
-                  "charOffset": 14177,
+                  "charOffset": 14192,
                   "charLength": 11,
                   "snippet": {
                     "text": "adminLEVEL4"
@@ -22309,7 +22309,7 @@
                 "contextRegion": {
                   "startLine": 431,
                   "startColumn": 1,
-                  "charOffset": 14106,
+                  "charOffset": 14121,
                   "charLength": 137,
                   "snippet": {
                     "text": "            adminList.append(f\"`{user.name}` -> `{user.id}`\")\n\n        adminLEVEL4 = \"\\n\".join(adminList)\n\n        embed = discord.Embed("
@@ -22325,7 +22325,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "2911ef9870ccfd00a4df6ffe7f739528a70b1e29a0e99412d5b07f252dff4fd8"
+            "equalIndicator/v1": "cb2832a3406fb5954d4c24746e4459638f17eda0384fb197185afbffcf9fe03c"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -22352,7 +22352,7 @@
                 "region": {
                   "startLine": 456,
                   "startColumn": 33,
-                  "charOffset": 15080,
+                  "charOffset": 15095,
                   "charLength": 16,
                   "snippet": {
                     "text": "ID: discord.User"
@@ -22362,7 +22362,7 @@
                 "contextRegion": {
                   "startLine": 454,
                   "startColumn": 1,
-                  "charOffset": 15013,
+                  "charOffset": 15028,
                   "charLength": 134,
                   "snippet": {
                     "text": "    @w.command()\n    @is_botAdmin4\n    async def remove(self, ctx, ID: discord.User):\n        database.db.connect(reuse_if_open=True)\n"
@@ -22378,7 +22378,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "e42692882d52e9bf4250c3bf509ff31c086b26a5b7ac99d42b5d5d66e8d64384"
+            "equalIndicator/v1": "dc87020a75848c24186d968dfa9d916f8e5024654331f2095f8d28a0f436e83a"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -22405,7 +22405,7 @@
                 "region": {
                   "startLine": 486,
                   "startColumn": 30,
-                  "charOffset": 15977,
+                  "charOffset": 15992,
                   "charLength": 16,
                   "snippet": {
                     "text": "ID: discord.User"
@@ -22415,7 +22415,7 @@
                 "contextRegion": {
                   "startLine": 484,
                   "startColumn": 1,
-                  "charOffset": 15913,
+                  "charOffset": 15928,
                   "charLength": 143,
                   "snippet": {
                     "text": "    @w.command()\n    @is_botAdmin4\n    async def add(self, ctx, ID: discord.User, level: int):\n        database.db.connect(reuse_if_open=True)\n"
@@ -22431,7 +22431,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8adb50bf64b9006d65b4e028e8bb9cdecc1f121fb4728cdcd71b08c2ca365f5f"
+            "equalIndicator/v1": "15b7d8776f22c59901274eb0b3a176a49b6c525b393b2a561ac81afe08ee4c3d"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -22458,7 +22458,7 @@
                 "region": {
                   "startLine": 530,
                   "startColumn": 13,
-                  "charOffset": 17384,
+                  "charOffset": 17399,
                   "charLength": 9,
                   "snippet": {
                     "text": "runThread"
@@ -22468,7 +22468,7 @@
                 "contextRegion": {
                   "startLine": 528,
                   "startColumn": 1,
-                  "charOffset": 17303,
+                  "charOffset": 17318,
                   "charLength": 158,
                   "snippet": {
                     "text": "            theproc = subprocess.Popen([sys.executable, \"main.py\"])\n\n            runThread = Thread(target=theproc.communicate)\n            runThread.start()\n"
@@ -22484,7 +22484,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "ca9e250b3301479ef47db078e1135aa8886a4d3703b8cc8386ecdbea619ef2d3"
+            "equalIndicator/v1": "205547bc5e82d0eb7bcd3b4e34bd0870df411f75ae88e1fdc7e1bea87ca18ee4"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -33105,26 +33105,26 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
+                  "uri": "utils/events/verifystaffGsuite.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 18,
-                  "startColumn": 5,
-                  "charOffset": 239,
+                  "startLine": 39,
+                  "startColumn": 15,
+                  "charOffset": 1218,
                   "charLength": 12,
                   "snippet": {
-                    "text": "getEqualRank"
+                    "text": "GSuiteVerify"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 16,
+                  "startLine": 37,
                   "startColumn": 1,
-                  "charOffset": 233,
-                  "charLength": 74,
+                  "charOffset": 1158,
+                  "charLength": 200,
                   "snippet": {
-                    "text": "\n\ndef getEqualRank(query):\n    if query not in config:\n        return None"
+                    "text": "\n    @commands.Cog.listener(\"on_interaction\")\n    async def GSuiteVerify(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n        if interaction.message is None:"
                   }
                 }
               },
@@ -33137,113 +33137,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "20430101a6e25da72c819a3bf8e41d232fbba479f81685a1a555653ec241ae31"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Function name should be lowercase",
-            "markdown": "Function name should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 25,
-                  "startColumn": 11,
-                  "charOffset": 365,
-                  "charLength": 13,
-                  "snippet": {
-                    "text": "roleNameCheck"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 23,
-                  "startColumn": 1,
-                  "charOffset": 353,
-                  "charLength": 119,
-                  "snippet": {
-                    "text": "\n\nasync def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Member):\n    check = getEqualRank(name)\n"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "12eae5bddf3593637315973a273dd332bdec25bb5ae55bf15efbcb098ce06b10"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Function name should be lowercase",
-            "markdown": "Function name should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 64,
-                  "startColumn": 15,
-                  "charOffset": 1609,
-                  "charLength": 17,
-                  "snippet": {
-                    "text": "StaffVerification"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 62,
-                  "startColumn": 1,
-                  "charOffset": 1549,
-                  "charLength": 166,
-                  "snippet": {
-                    "text": "\n    @commands.Cog.listener(\"on_interaction\")\n    async def StaffVerification(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "856ccf70d2d2569ff4d112ee033450f57901501d0e88cc1f9236ef9a6400913b"
+            "equalIndicator/v1": "e0db664ed9d3a6f977b746e007a78d2934da1019901ff8d31e58cd2edf3cd1a3"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -33264,13 +33158,13 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
+                  "uri": "utils/events/verifystaffGsuite.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 65,
+                  "startLine": 40,
                   "startColumn": 9,
-                  "charOffset": 1676,
+                  "charOffset": 1280,
                   "charLength": 19,
                   "snippet": {
                     "text": "InteractionResponse"
@@ -33278,12 +33172,12 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 63,
+                  "startLine": 38,
                   "startColumn": 1,
-                  "charOffset": 1550,
-                  "charLength": 205,
+                  "charOffset": 1159,
+                  "charLength": 218,
                   "snippet": {
-                    "text": "    @commands.Cog.listener(\"on_interaction\")\n    async def StaffVerification(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n\n        if interaction.message is None:"
+                    "text": "    @commands.Cog.listener(\"on_interaction\")\n    async def GSuiteVerify(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n        if interaction.message is None:\n            return"
                   }
                 }
               },
@@ -33296,7 +33190,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "21c5cd7e7a59428dcd808af507c075dda6f21b292e41152111e10f9aa38a0191"
+            "equalIndicator/v1": "2c96d0baada745254d3dd55f28008f844776e1737d120c2f32a4b3f8415da2a7"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -33310,86 +33204,33 @@
           "kind": "fail",
           "level": "note",
           "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
+            "text": "Function name should be lowercase",
+            "markdown": "Function name should be lowercase"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
+                  "uri": "utils/events/verifystaffGsuite.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 76,
-                  "startColumn": 13,
-                  "charOffset": 1971,
-                  "charLength": 11,
-                  "snippet": {
-                    "text": "staffServer"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 74,
-                  "startColumn": 1,
-                  "charOffset": 1919,
-                  "charLength": 151,
-                  "snippet": {
-                    "text": "            print(interaction.user.id)\n\n            staffServer: discord.Guild = self.bot.get_guild(\n                interaction.guild_id\n            )"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "1dbfb209cdf583f9352396a94740ada362cea1d9cf1f2385a2ef82f0058d7d8c"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 80,
-                  "startColumn": 13,
-                  "charOffset": 2114,
+                  "startLine": 177,
+                  "startColumn": 15,
+                  "charOffset": 7666,
                   "charLength": 17,
                   "snippet": {
-                    "text": "StaffServerMember"
+                    "text": "pasteGSuiteButton"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 78,
+                  "startLine": 175,
                   "startColumn": 1,
-                  "charOffset": 2057,
+                  "charOffset": 7611,
                   "charLength": 166,
                   "snippet": {
-                    "text": "            )\n            print(staffServer)\n            StaffServerMember: discord.Member = staffServer.get_member(\n                interaction.user.id\n            )"
+                    "text": "    @commands.command()\n    @is_botAdmin\n    async def pasteGSuiteButton(self, ctx):\n        embed = discord.Embed(\n            title=\"Alternate Verification Method\","
                   }
                 }
               },
@@ -33402,7 +33243,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0558841137f9da6b267eaac804751abbcb7db950b45538d46c498c4c6584a10a"
+            "equalIndicator/v1": "b3e67bb850947ed992a12e03e7c9c0896f95f4ed4c398e17fcbd715da4bcf89c"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -33423,556 +33264,26 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
+                  "uri": "utils/events/verifystaffGsuite.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 87,
-                  "startColumn": 17,
-                  "charOffset": 2347,
-                  "charLength": 17,
-                  "snippet": {
-                    "text": "StaffServerMember"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 85,
-                  "startColumn": 1,
-                  "charOffset": 2262,
-                  "charLength": 202,
-                  "snippet": {
-                    "text": "            if StaffServerMember is None:\n                print(\"h\")\n                StaffServerMember: discord.Member = staffServer.get_member(\n                    interaction.user.id\n                )"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "c059a0cb9aff1076ed3c4cbe1e23f841668865268f7ea5d5841ef97d9aad873b"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 115,
-                  "startColumn": 13,
-                  "charOffset": 3773,
-                  "charLength": 19,
-                  "snippet": {
-                    "text": "VerificationChannel"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 113,
-                  "startColumn": 1,
-                  "charOffset": 3733,
-                  "charLength": 183,
-                  "snippet": {
-                    "text": "                    return\n\n            VerificationChannel = interaction.channel\n            logchannel = self.bot.get_channel(\n                self.staffServer[interaction.guild_id]"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "32ff02b65f2ea189ee505fdbd9c4cd5e9fd584481bba8337c42c1369d6ba0ae3"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 120,
-                  "startColumn": 13,
-                  "charOffset": 3944,
-                  "charLength": 13,
-                  "snippet": {
-                    "text": "VerifiedRoles"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 118,
-                  "startColumn": 1,
-                  "charOffset": 3917,
-                  "charLength": 78,
-                  "snippet": {
-                    "text": "            )\n\n            VerifiedRoles = []\n            VerifiedGuilds = []\n"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "22d731606aa1a29b45b5c6e3fdf38776613ae9a209982ea6f1283864e8ccceaa"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 121,
-                  "startColumn": 13,
-                  "charOffset": 3975,
-                  "charLength": 14,
-                  "snippet": {
-                    "text": "VerifiedGuilds"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 119,
-                  "startColumn": 1,
-                  "charOffset": 3931,
-                  "charLength": 102,
-                  "snippet": {
-                    "text": "\n            VerifiedRoles = []\n            VerifiedGuilds = []\n\n            for ID in self.ServerIDs:"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "be383a5276531820e814e34185563c6554db190fb72a8c8aec1ce987d8af5bf6"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 126,
-                  "startColumn": 21,
-                  "charOffset": 4138,
+                  "startLine": 184,
+                  "startColumn": 9,
+                  "charOffset": 7979,
                   "charLength": 12,
                   "snippet": {
-                    "text": "ServerMember"
+                    "text": "GSuiteButton"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 124,
-                  "startColumn": 1,
-                  "charOffset": 4034,
-                  "charLength": 219,
-                  "snippet": {
-                    "text": "                server: discord.Guild = self.bot.get_guild(ID)\n                try:\n                    ServerMember: discord.Member = server.get_member(\n                        interaction.user.id\n                    )"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "db85cfc4684ee8614ec2dc4e28b6eaf174d3a63299bcb44b52a9a6193bc64ef3"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 135,
-                  "startColumn": 21,
-                  "charOffset": 4412,
-                  "charLength": 9,
-                  "snippet": {
-                    "text": "roleNames"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 133,
-                  "startColumn": 1,
-                  "charOffset": 4369,
-                  "charLength": 136,
-                  "snippet": {
-                    "text": "\n                else:\n                    roleNames = [role for role in ServerMember.roles]\n\n                    for role in roleNames:"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "b05927e504784e5999f7643a1c63185767701a85ba1fb611aba46b9f28c203f8"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 142,
-                  "startColumn": 29,
-                  "charOffset": 4686,
-                  "charLength": 8,
-                  "snippet": {
-                    "text": "checkSTR"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 140,
-                  "startColumn": 1,
-                  "charOffset": 4611,
-                  "charLength": 243,
-                  "snippet": {
-                    "text": "\n                        if check is not None:\n                            checkSTR = \", \".join(check)\n                            markdownRole = f\"`{checkSTR}` -> *{server.name}*\"\n                            markdownGuild = f\"`{server.name}`\""
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "596cccde1a2bef9edca1346cd7129a2f1abb0910c9080ca6a33c6deccdd3748c"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 143,
-                  "startColumn": 29,
-                  "charOffset": 4742,
-                  "charLength": 12,
-                  "snippet": {
-                    "text": "markdownRole"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 141,
-                  "startColumn": 1,
-                  "charOffset": 4612,
-                  "charLength": 243,
-                  "snippet": {
-                    "text": "                        if check is not None:\n                            checkSTR = \", \".join(check)\n                            markdownRole = f\"`{checkSTR}` -> *{server.name}*\"\n                            markdownGuild = f\"`{server.name}`\"\n"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "b9f3df79605f08f1d662998eada445962acb4a5e99836d30fa2dac3c7b508213"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 144,
-                  "startColumn": 29,
-                  "charOffset": 4820,
-                  "charLength": 13,
-                  "snippet": {
-                    "text": "markdownGuild"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 142,
-                  "startColumn": 1,
-                  "charOffset": 4658,
-                  "charLength": 263,
-                  "snippet": {
-                    "text": "                            checkSTR = \", \".join(check)\n                            markdownRole = f\"`{checkSTR}` -> *{server.name}*\"\n                            markdownGuild = f\"`{server.name}`\"\n\n                            if markdownRole not in VerifiedRoles:"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "fa7bb89a89f27433f40a7adbb7f748840cd8c742a4287aee4ab98e7ca0d4d3a1"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 153,
-                  "startColumn": 37,
-                  "charOffset": 5323,
-                  "charLength": 8,
-                  "snippet": {
-                    "text": "jsonROLE"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 151,
-                  "startColumn": 1,
-                  "charOffset": 5154,
-                  "charLength": 305,
-                  "snippet": {
-                    "text": "                            for elem in check:\n                                if elem in [role.name for role in staffServer.roles]:\n                                    jsonROLE = discord.utils.get(\n                                        staffServer.roles, name=elem\n                                    )"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "bba31177a461424231a29bdbc8e2269e5ded14b02106f929d0080a50d77bf8b7"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
                   "startLine": 182,
-                  "startColumn": 17,
-                  "charOffset": 6772,
-                  "charLength": 12,
-                  "snippet": {
-                    "text": "VerifiedRole"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 180,
                   "startColumn": 1,
-                  "charOffset": 6704,
-                  "charLength": 186,
+                  "charOffset": 7920,
+                  "charLength": 144,
                   "snippet": {
-                    "text": "                await logchannel.send(embed=embed)\n\n                VerifiedRole: discord.Role = discord.utils.get(\n                    staffServer.roles, name=\"Member\"\n                )"
+                    "text": "            color=discord.Color.green(),\n        )\n        GSuiteButton = GSuiteVerify()\n        await ctx.send(embed=embed, view=GSuiteButton)\n"
                   }
                 }
               },
@@ -33985,113 +33296,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "e4f9c5fe55b90a2432eae760682ba07762e0bb6baaf9457751907c0b8070a520"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Function name should be lowercase",
-            "markdown": "Function name should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 245,
-                  "startColumn": 15,
-                  "charOffset": 9599,
-                  "charLength": 23,
-                  "snippet": {
-                    "text": "pasteVerificationButton"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 243,
-                  "startColumn": 1,
-                  "charOffset": 9560,
-                  "charLength": 166,
-                  "snippet": {
-                    "text": "\n    @commands.command()\n    async def pasteVerificationButton(self, ctx):\n        button = VerifyButton()\n        await ctx.send(\"Click here to verify\", view=button)"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "8689742979a324a4749717efbf7b42c51bc09abd0c6435a56b3127e68b17eef9"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Function name should be lowercase",
-            "markdown": "Function name should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 250,
-                  "startColumn": 15,
-                  "charOffset": 9766,
-                  "charLength": 22,
-                  "snippet": {
-                    "text": "pasteVerificationEmbed"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 248,
-                  "startColumn": 1,
-                  "charOffset": 9727,
-                  "charLength": 156,
-                  "snippet": {
-                    "text": "\n    @commands.command()\n    async def pasteVerificationEmbed(self, ctx: commands.Context):\n        embed = discord.Embed(\n            title=\"Verification\","
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "12af5d8a9d0eb77380b86d132e7fab5be14eb33cba3faa768422e575dbb224f5"
+            "equalIndicator/v1": "66d3e5794585cedd98f0eab98a4498e9de048faf3043bba40b16e2e085f543dc"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -37822,26 +37027,26 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uri": "utils/events/VerificationStaff.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 39,
-                  "startColumn": 15,
-                  "charOffset": 1218,
+                  "startLine": 18,
+                  "startColumn": 5,
+                  "charOffset": 239,
                   "charLength": 12,
                   "snippet": {
-                    "text": "GSuiteVerify"
+                    "text": "getEqualRank"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 37,
+                  "startLine": 16,
                   "startColumn": 1,
-                  "charOffset": 1158,
-                  "charLength": 200,
+                  "charOffset": 233,
+                  "charLength": 74,
                   "snippet": {
-                    "text": "\n    @commands.Cog.listener(\"on_interaction\")\n    async def GSuiteVerify(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n        if interaction.message is None:"
+                    "text": "\n\ndef getEqualRank(query):\n    if query not in config:\n        return None"
                   }
                 }
               },
@@ -37854,60 +37059,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "e0db664ed9d3a6f977b746e007a78d2934da1019901ff8d31e58cd2edf3cd1a3"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 40,
-                  "startColumn": 9,
-                  "charOffset": 1280,
-                  "charLength": 19,
-                  "snippet": {
-                    "text": "InteractionResponse"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 38,
-                  "startColumn": 1,
-                  "charOffset": 1159,
-                  "charLength": 218,
-                  "snippet": {
-                    "text": "    @commands.Cog.listener(\"on_interaction\")\n    async def GSuiteVerify(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n        if interaction.message is None:\n            return"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "2c96d0baada745254d3dd55f28008f844776e1737d120c2f32a4b3f8415da2a7"
+            "equalIndicator/v1": "20430101a6e25da72c819a3bf8e41d232fbba479f81685a1a555653ec241ae31"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -37928,26 +37080,26 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uri": "utils/events/VerificationStaff.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 177,
-                  "startColumn": 15,
-                  "charOffset": 7666,
-                  "charLength": 17,
+                  "startLine": 25,
+                  "startColumn": 11,
+                  "charOffset": 365,
+                  "charLength": 13,
                   "snippet": {
-                    "text": "pasteGSuiteButton"
+                    "text": "roleNameCheck"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 175,
+                  "startLine": 23,
                   "startColumn": 1,
-                  "charOffset": 7611,
-                  "charLength": 166,
+                  "charOffset": 353,
+                  "charLength": 119,
                   "snippet": {
-                    "text": "    @commands.command()\n    @is_botAdmin\n    async def pasteGSuiteButton(self, ctx):\n        embed = discord.Embed(\n            title=\"Alternate Verification Method\","
+                    "text": "\n\nasync def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Member):\n    check = getEqualRank(name)\n"
                   }
                 }
               },
@@ -37960,7 +37112,60 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "b3e67bb850947ed992a12e03e7c9c0896f95f4ed4c398e17fcbd715da4bcf89c"
+            "equalIndicator/v1": "12eae5bddf3593637315973a273dd332bdec25bb5ae55bf15efbcb098ce06b10"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Function name should be lowercase",
+            "markdown": "Function name should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 64,
+                  "startColumn": 15,
+                  "charOffset": 1609,
+                  "charLength": 17,
+                  "snippet": {
+                    "text": "StaffVerification"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 62,
+                  "startColumn": 1,
+                  "charOffset": 1549,
+                  "charLength": 166,
+                  "snippet": {
+                    "text": "\n    @commands.Cog.listener(\"on_interaction\")\n    async def StaffVerification(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "856ccf70d2d2569ff4d112ee033450f57901501d0e88cc1f9236ef9a6400913b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -37981,26 +37186,26 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uri": "utils/events/VerificationStaff.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 184,
+                  "startLine": 65,
                   "startColumn": 9,
-                  "charOffset": 7979,
-                  "charLength": 12,
+                  "charOffset": 1676,
+                  "charLength": 19,
                   "snippet": {
-                    "text": "GSuiteButton"
+                    "text": "InteractionResponse"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 182,
+                  "startLine": 63,
                   "startColumn": 1,
-                  "charOffset": 7920,
-                  "charLength": 144,
+                  "charOffset": 1550,
+                  "charLength": 205,
                   "snippet": {
-                    "text": "            color=discord.Color.green(),\n        )\n        GSuiteButton = GSuiteVerify()\n        await ctx.send(embed=embed, view=GSuiteButton)\n"
+                    "text": "    @commands.Cog.listener(\"on_interaction\")\n    async def StaffVerification(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n\n        if interaction.message is None:"
                   }
                 }
               },
@@ -38013,7 +37218,802 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "66d3e5794585cedd98f0eab98a4498e9de048faf3043bba40b16e2e085f543dc"
+            "equalIndicator/v1": "21c5cd7e7a59428dcd808af507c075dda6f21b292e41152111e10f9aa38a0191"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 76,
+                  "startColumn": 13,
+                  "charOffset": 1971,
+                  "charLength": 11,
+                  "snippet": {
+                    "text": "staffServer"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 74,
+                  "startColumn": 1,
+                  "charOffset": 1919,
+                  "charLength": 151,
+                  "snippet": {
+                    "text": "            print(interaction.user.id)\n\n            staffServer: discord.Guild = self.bot.get_guild(\n                interaction.guild_id\n            )"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "1dbfb209cdf583f9352396a94740ada362cea1d9cf1f2385a2ef82f0058d7d8c"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 13,
+                  "charOffset": 2114,
+                  "charLength": 17,
+                  "snippet": {
+                    "text": "StaffServerMember"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 78,
+                  "startColumn": 1,
+                  "charOffset": 2057,
+                  "charLength": 166,
+                  "snippet": {
+                    "text": "            )\n            print(staffServer)\n            StaffServerMember: discord.Member = staffServer.get_member(\n                interaction.user.id\n            )"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "0558841137f9da6b267eaac804751abbcb7db950b45538d46c498c4c6584a10a"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 87,
+                  "startColumn": 17,
+                  "charOffset": 2347,
+                  "charLength": 17,
+                  "snippet": {
+                    "text": "StaffServerMember"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 85,
+                  "startColumn": 1,
+                  "charOffset": 2262,
+                  "charLength": 202,
+                  "snippet": {
+                    "text": "            if StaffServerMember is None:\n                print(\"h\")\n                StaffServerMember: discord.Member = staffServer.get_member(\n                    interaction.user.id\n                )"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "c059a0cb9aff1076ed3c4cbe1e23f841668865268f7ea5d5841ef97d9aad873b"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 115,
+                  "startColumn": 13,
+                  "charOffset": 3773,
+                  "charLength": 19,
+                  "snippet": {
+                    "text": "VerificationChannel"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 113,
+                  "startColumn": 1,
+                  "charOffset": 3733,
+                  "charLength": 183,
+                  "snippet": {
+                    "text": "                    return\n\n            VerificationChannel = interaction.channel\n            logchannel = self.bot.get_channel(\n                self.staffServer[interaction.guild_id]"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "32ff02b65f2ea189ee505fdbd9c4cd5e9fd584481bba8337c42c1369d6ba0ae3"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 120,
+                  "startColumn": 13,
+                  "charOffset": 3944,
+                  "charLength": 13,
+                  "snippet": {
+                    "text": "VerifiedRoles"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 118,
+                  "startColumn": 1,
+                  "charOffset": 3917,
+                  "charLength": 78,
+                  "snippet": {
+                    "text": "            )\n\n            VerifiedRoles = []\n            VerifiedGuilds = []\n"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "22d731606aa1a29b45b5c6e3fdf38776613ae9a209982ea6f1283864e8ccceaa"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 121,
+                  "startColumn": 13,
+                  "charOffset": 3975,
+                  "charLength": 14,
+                  "snippet": {
+                    "text": "VerifiedGuilds"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 119,
+                  "startColumn": 1,
+                  "charOffset": 3931,
+                  "charLength": 102,
+                  "snippet": {
+                    "text": "\n            VerifiedRoles = []\n            VerifiedGuilds = []\n\n            for ID in self.ServerIDs:"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "be383a5276531820e814e34185563c6554db190fb72a8c8aec1ce987d8af5bf6"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 126,
+                  "startColumn": 21,
+                  "charOffset": 4138,
+                  "charLength": 12,
+                  "snippet": {
+                    "text": "ServerMember"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 124,
+                  "startColumn": 1,
+                  "charOffset": 4034,
+                  "charLength": 219,
+                  "snippet": {
+                    "text": "                server: discord.Guild = self.bot.get_guild(ID)\n                try:\n                    ServerMember: discord.Member = server.get_member(\n                        interaction.user.id\n                    )"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "db85cfc4684ee8614ec2dc4e28b6eaf174d3a63299bcb44b52a9a6193bc64ef3"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 135,
+                  "startColumn": 21,
+                  "charOffset": 4412,
+                  "charLength": 9,
+                  "snippet": {
+                    "text": "roleNames"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 133,
+                  "startColumn": 1,
+                  "charOffset": 4369,
+                  "charLength": 136,
+                  "snippet": {
+                    "text": "\n                else:\n                    roleNames = [role for role in ServerMember.roles]\n\n                    for role in roleNames:"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "b05927e504784e5999f7643a1c63185767701a85ba1fb611aba46b9f28c203f8"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 142,
+                  "startColumn": 29,
+                  "charOffset": 4686,
+                  "charLength": 8,
+                  "snippet": {
+                    "text": "checkSTR"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 140,
+                  "startColumn": 1,
+                  "charOffset": 4611,
+                  "charLength": 243,
+                  "snippet": {
+                    "text": "\n                        if check is not None:\n                            checkSTR = \", \".join(check)\n                            markdownRole = f\"`{checkSTR}` -> *{server.name}*\"\n                            markdownGuild = f\"`{server.name}`\""
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "596cccde1a2bef9edca1346cd7129a2f1abb0910c9080ca6a33c6deccdd3748c"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 143,
+                  "startColumn": 29,
+                  "charOffset": 4742,
+                  "charLength": 12,
+                  "snippet": {
+                    "text": "markdownRole"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 141,
+                  "startColumn": 1,
+                  "charOffset": 4612,
+                  "charLength": 243,
+                  "snippet": {
+                    "text": "                        if check is not None:\n                            checkSTR = \", \".join(check)\n                            markdownRole = f\"`{checkSTR}` -> *{server.name}*\"\n                            markdownGuild = f\"`{server.name}`\"\n"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "b9f3df79605f08f1d662998eada445962acb4a5e99836d30fa2dac3c7b508213"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 144,
+                  "startColumn": 29,
+                  "charOffset": 4820,
+                  "charLength": 13,
+                  "snippet": {
+                    "text": "markdownGuild"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 142,
+                  "startColumn": 1,
+                  "charOffset": 4658,
+                  "charLength": 263,
+                  "snippet": {
+                    "text": "                            checkSTR = \", \".join(check)\n                            markdownRole = f\"`{checkSTR}` -> *{server.name}*\"\n                            markdownGuild = f\"`{server.name}`\"\n\n                            if markdownRole not in VerifiedRoles:"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "fa7bb89a89f27433f40a7adbb7f748840cd8c742a4287aee4ab98e7ca0d4d3a1"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 153,
+                  "startColumn": 37,
+                  "charOffset": 5323,
+                  "charLength": 8,
+                  "snippet": {
+                    "text": "jsonROLE"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 151,
+                  "startColumn": 1,
+                  "charOffset": 5154,
+                  "charLength": 305,
+                  "snippet": {
+                    "text": "                            for elem in check:\n                                if elem in [role.name for role in staffServer.roles]:\n                                    jsonROLE = discord.utils.get(\n                                        staffServer.roles, name=elem\n                                    )"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "bba31177a461424231a29bdbc8e2269e5ded14b02106f929d0080a50d77bf8b7"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 182,
+                  "startColumn": 17,
+                  "charOffset": 6772,
+                  "charLength": 12,
+                  "snippet": {
+                    "text": "VerifiedRole"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 180,
+                  "startColumn": 1,
+                  "charOffset": 6704,
+                  "charLength": 186,
+                  "snippet": {
+                    "text": "                await logchannel.send(embed=embed)\n\n                VerifiedRole: discord.Role = discord.utils.get(\n                    staffServer.roles, name=\"Member\"\n                )"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "e4f9c5fe55b90a2432eae760682ba07762e0bb6baaf9457751907c0b8070a520"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Function name should be lowercase",
+            "markdown": "Function name should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 245,
+                  "startColumn": 15,
+                  "charOffset": 9599,
+                  "charLength": 23,
+                  "snippet": {
+                    "text": "pasteVerificationButton"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 243,
+                  "startColumn": 1,
+                  "charOffset": 9560,
+                  "charLength": 166,
+                  "snippet": {
+                    "text": "\n    @commands.command()\n    async def pasteVerificationButton(self, ctx):\n        button = VerifyButton()\n        await ctx.send(\"Click here to verify\", view=button)"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "8689742979a324a4749717efbf7b42c51bc09abd0c6435a56b3127e68b17eef9"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Function name should be lowercase",
+            "markdown": "Function name should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 250,
+                  "startColumn": 15,
+                  "charOffset": 9766,
+                  "charLength": 22,
+                  "snippet": {
+                    "text": "pasteVerificationEmbed"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 248,
+                  "startColumn": 1,
+                  "charOffset": 9727,
+                  "charLength": 156,
+                  "snippet": {
+                    "text": "\n    @commands.command()\n    async def pasteVerificationEmbed(self, ctx: commands.Context):\n        embed = discord.Embed(\n            title=\"Verification\","
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "12af5d8a9d0eb77380b86d132e7fab5be14eb33cba3faa768422e575dbb224f5"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -39253,165 +39253,6 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 105,
-                  "startColumn": 21,
-                  "charOffset": 3301,
-                  "charLength": 6,
-                  "snippet": {
-                    "text": "except"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 103,
-                  "startColumn": 1,
-                  "charOffset": 3211,
-                  "charLength": 267,
-                  "snippet": {
-                    "text": "                            ephemeral=True,\n                        )\n                    except:\n                        await interaction.channel.send(\n                            f\"{interaction.user.mention} <:sadturtl:879197443600834600> An error occurred while \""
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "9a5adca5646e82c79687f90e5ae00033e796329967f5cf6cb308d0ccbf424155"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyBroadExceptionInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Too broad exception clause",
-            "markdown": "Too broad exception clause"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 198,
-                  "startColumn": 21,
-                  "charOffset": 7469,
-                  "charLength": 6,
-                  "snippet": {
-                    "text": "except"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 196,
-                  "startColumn": 1,
-                  "charOffset": 7353,
-                  "charLength": 262,
-                  "snippet": {
-                    "text": "                            \"You have been verified!\", ephemeral=True\n                        )\n                    except:\n                        await VerificationChannel.send(\n                            f\"{interaction.user.mention} You have been verified!\","
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "314f5eb75206a0eb9ce96bb37e362fa3b1dc2c2f6a0d2e93cf9e325fd5f9d116"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyBroadExceptionInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Too broad exception clause",
-            "markdown": "Too broad exception clause"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/VerificationStaff.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 237,
-                  "startColumn": 21,
-                  "charOffset": 9234,
-                  "charLength": 6,
-                  "snippet": {
-                    "text": "except"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 235,
-                  "startColumn": 1,
-                  "charOffset": 9144,
-                  "charLength": 268,
-                  "snippet": {
-                    "text": "                            ephemeral=True,\n                        )\n                    except:\n                        await VerificationChannel.send(\n                            f\"{interaction.user.mention} I didn't seem to find any roles to give you, please try \""
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "22ec26c937d4ce1d8a8387debd6fe80babf8c822684ebe91fb03e7ee89ee4c50"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyBroadExceptionInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Too broad exception clause",
-            "markdown": "Too broad exception clause"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
                   "uri": "utils/events/TicketDropdown.py",
                   "uriBaseId": "SRCROOT"
                 },
@@ -39551,6 +39392,165 @@
           ],
           "partialFingerprints": {
             "equalIndicator/v1": "76f2e5ebb194a83eb0bbbe38428ea89dcd2c5930e7e6158c58bb1ebdc96a52de"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyBroadExceptionInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Too broad exception clause",
+            "markdown": "Too broad exception clause"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 105,
+                  "startColumn": 21,
+                  "charOffset": 3301,
+                  "charLength": 6,
+                  "snippet": {
+                    "text": "except"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 103,
+                  "startColumn": 1,
+                  "charOffset": 3211,
+                  "charLength": 267,
+                  "snippet": {
+                    "text": "                            ephemeral=True,\n                        )\n                    except:\n                        await interaction.channel.send(\n                            f\"{interaction.user.mention} <:sadturtl:879197443600834600> An error occurred while \""
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "9a5adca5646e82c79687f90e5ae00033e796329967f5cf6cb308d0ccbf424155"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyBroadExceptionInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Too broad exception clause",
+            "markdown": "Too broad exception clause"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 198,
+                  "startColumn": 21,
+                  "charOffset": 7469,
+                  "charLength": 6,
+                  "snippet": {
+                    "text": "except"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 196,
+                  "startColumn": 1,
+                  "charOffset": 7353,
+                  "charLength": 262,
+                  "snippet": {
+                    "text": "                            \"You have been verified!\", ephemeral=True\n                        )\n                    except:\n                        await VerificationChannel.send(\n                            f\"{interaction.user.mention} You have been verified!\","
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "314f5eb75206a0eb9ce96bb37e362fa3b1dc2c2f6a0d2e93cf9e325fd5f9d116"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyBroadExceptionInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Too broad exception clause",
+            "markdown": "Too broad exception clause"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/VerificationStaff.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 237,
+                  "startColumn": 21,
+                  "charOffset": 9234,
+                  "charLength": 6,
+                  "snippet": {
+                    "text": "except"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 235,
+                  "startColumn": 1,
+                  "charOffset": 9144,
+                  "charLength": 268,
+                  "snippet": {
+                    "text": "                            ephemeral=True,\n                        )\n                    except:\n                        await VerificationChannel.send(\n                            f\"{interaction.user.mention} I didn't seem to find any roles to give you, please try \""
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "22ec26c937d4ce1d8a8387debd6fe80babf8c822684ebe91fb03e7ee89ee4c50"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -40410,7 +40410,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-03-26",
-        "guid": "0218dc09-8166-4cde-a10d-cce592733a4f"
+        "guid": "6830bb39-48fd-4944-a976-78c9dac163a8"
       },
       "newlineSequences": [
         "\r\n",
@@ -41087,7 +41087,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 18333,
+                    "charLength": 18348,
                     "snippet": {
                       "text": "import subprocess import sys from pathlib import Path from threading import Thread from typing impor..."
                     },
@@ -41112,7 +41112,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "f0ac5683e30f867115bcdd4d1b48c94b40db9d6ffc38634cd6cb54f057bbd2c9"
+              "equalIndicator/v1": "e3b2ab43b3cc6d0ad5a808199a7b53efe4abe7b387f5fb7470b2ae146dafc65b"
             },
             "properties": {
               "ideaSeverity": "ERROR"
