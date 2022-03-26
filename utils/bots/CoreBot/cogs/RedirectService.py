@@ -19,8 +19,8 @@ class RedirectURL(commands.Cog):
         self.__cog_name__ = "Redirect URL"
 
     @property
-    def display_emoji(self) -> discord.PartialEmoji:
-        return discord.PartialEmoji(name="\N{LINKED PAPERCLIPS}")
+    def display_emoji(self) -> str:
+        return "🖇️"
 
     @commands.command(alliases=["redirectadd", "addredirect"])
     @is_botAdmin

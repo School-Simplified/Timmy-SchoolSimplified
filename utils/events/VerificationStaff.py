@@ -92,19 +92,19 @@ class VerificationStaff(commands.Cog):
             if StaffServerMember is None:
                 try:
                     await interaction.response.send_message(
-                        "<:sadturtl:879197443600834600> An error occurred while trying to verify your status, please contact a staff member! (Error Code: TM-NOMEMBERFOUND)",
+                        "An error occurred while trying to verify your status, please contact a staff member! (Error Code: TM-NOMEMBERFOUND)",
                         ephemeral=True,
                     )
                 except discord.InteractionResponded:
                     try:
                         await interaction.followup.send(
-                            "<:sadturtl:879197443600834600> An error occurred while trying to verify your status, "
+                            "An error occurred while trying to verify your status, "
                             "please contact a staff member! (Error Code: TM-NOMEMBERFOUND)",
                             ephemeral=True,
                         )
                     except:
                         await interaction.channel.send(
-                            f"{interaction.user.mention} <:sadturtl:879197443600834600> An error occurred while "
+                            f"{interaction.user.mention} An error occurred while "
                             f"trying to verify your status, please contact a staff member! (Error Code: "
                             f"TM-NOMEMBERFOUND)",
                             delete_after=10.0,

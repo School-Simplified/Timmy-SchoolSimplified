@@ -12,6 +12,7 @@ from core.common import (
     TUT_ID,
     SandboxConfig,
     SelectMenuHandler,
+    GameDict
 )
 from discord.ext import commands
 
@@ -72,22 +73,6 @@ VCGamesList = [  # TODO add emojis and descriptions to these items
     discord.SelectOption(label="Youtube Together"),
     discord.SelectOption(label="Word Snacks"),
 ]
-
-GameDict = {
-    "Awkword": 879863881349087252,
-    "Betrayal": 773336526917861400,
-    "CG4": 832025144389533716,
-    "Chess in the Park": 832012774040141894,
-    "Doodle Crew": 878067389634314250,
-    "Letter Tile": 879863686565621790,
-    "Fishington": 814288819477020702,
-    "Poker Night": 755827207812677713,
-    "Putts": 832012854282158180,
-    "Sketchy Artist": 879864070101172255,
-    "Spell Cast": 852509694341283871,
-    "Youtube Together": 755600276941176913,
-    "Word Snacks": 879863976006127627,
-}
 
 
 class TutorVCCMD(commands.Cog):
@@ -190,7 +175,6 @@ class TutorVCCMD(commands.Cog):
         }
 
     async def _create_invite(self, voice, app_id: int, max_age=86400):
-
         r = Route("POST", "/channels/{channel_id}/invites", channel_id=voice.channel.id)
         payload = {"max_age": max_age, "target_type": 2, "target_application_id": app_id}
         code = (await self.bot.http.request(r, json=payload))["code"]

@@ -1225,12 +1225,12 @@ class DropdownTickets(commands.Cog):
             )
         )
         await ctx.send(
-            """**Note:** *Make sure to allow direct messages from server members!*\n
-        <:SchoolSimplified:820705120429277194> **__How to Get School Help:__**
-            > <:SS:865715703545069568> Click on the button to start the process.
-            > <:SS:865715703545069568> In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
-            > <:SS:865715703545069568> Send the question in your direct messages as per the bot instructions.
-            > <:SS:865715703545069568> Send a picture of your assignment title in your direct messages as per the bot instructions.""",
+            f"""**Note:** *Make sure to allow direct messages from server members!*\n
+        {Emoji.schoolsimplified} **__How to Get School Help:__**
+            > {Emoji.ssarrow} Click on the button to start the process.
+            > {Emoji.ssarrow} In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
+            > {Emoji.ssarrow}Send the question in your direct messages as per the bot instructions.
+            > {Emoji.ssarrow} Send a picture of your assignment title in your direct messages as per the bot instructions.""",
             view=TicketButton(self.bot),
         )
 

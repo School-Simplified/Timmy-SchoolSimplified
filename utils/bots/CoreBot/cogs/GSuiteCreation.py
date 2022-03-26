@@ -10,7 +10,7 @@ from discord import app_commands
 
 from googleapiclient.discovery import build
 
-from core.common import HR_ID, access_secret
+from core.common import HR_ID, access_secret, Emoji
 
 
 def get_random_string(length=13):
@@ -47,8 +47,8 @@ class AdminAPI(commands.Cog):
         self.__cog_name__ = "Human Resources"
 
     @property
-    def display_emoji(self) -> discord.PartialEmoji:
-        return discord.PartialEmoji(name="SS_HumanResources", id=957312207895535626)
+    def display_emoji(self) -> str:
+        return Emoji.humanresources
 
     @app_commands.command(
         name="gsuite-create",

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import discord
 import pytz
 from core import database
-from core.common import hexColors
+from core.common import HexColors, Emoji
 from core.common import TECH_ID
 from discord.app_commands import command, Group
 from discord.ext import commands
@@ -339,8 +339,8 @@ class StudyToDo(commands.Cog, Group):
         self.StudyVCGuildID = TECH_ID.g_tech
 
     @property
-    def display_emoji(self) -> discord.PartialEmoji:
-        return discord.PartialEmoji(name="timmy_book", id=957320422267969566)
+    def display_emoji(self) -> str:
+        return Emoji.timmyBook
 
     # @commands.group(aliaseS=["study-todo"])
     # async def studytodo(self, ctx: commands.Context):
@@ -351,7 +351,7 @@ class StudyToDo(commands.Cog, Group):
     #         signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
     # 
     #         embed = discord.Embed(
-    #             color=hexColors.red_error,
+    #             color=HexColors.red_error,
     #             title="Missing/Extra Required Arguments Passed In!",
     #             description=f"You have missed one or several arguments in this command"
     #                         f"\n\nUsage:"
@@ -376,7 +376,7 @@ class StudyToDo(commands.Cog, Group):
             embed = discord.Embed(
                 title="Successfully Added Item!",
                 description=f"`{item}` has been added successfully with the id `{str(query.id)}`.",
-                color=hexColors.green_confirm,
+                color=HexColors.green_confirm,
             )
             embed.set_footer(text="StudyBot")
             await interaction.response.send_message(embed=embed)
@@ -407,7 +407,7 @@ class StudyToDo(commands.Cog, Group):
             embed = discord.Embed(
                 title="Study To-Do List",
                 description=f"Your current goal: {query.studyTodo}",
-                color=hexColors.ss_blurple,
+                color=HexColors.ss_blurple,
             )
             embed.set_footer(
                 text="You can use +studytodo set (item) to modify this!"
@@ -450,7 +450,7 @@ class StudyToDo(commands.Cog, Group):
         embed = discord.Embed(
             title="Study Leaderboard",
             description=f"{FormattedList}",
-            color=hexColors.ss_blurple,
+            color=HexColors.ss_blurple,
         )
         embed.set_footer(
             text="StudyBot"
