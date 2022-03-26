@@ -11,9 +11,11 @@ __author_email__ = "timmy@schoolsimplified.org"
 import faulthandler
 import logging
 import os
+from typing import Optional, Union
 
 import discord
 from alive_progress import alive_bar
+from discord import app_commands
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
@@ -47,6 +49,7 @@ class Timmy(commands.Bot):
             command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
             intents=intents,
             case_insensitive=True,
+            tree_cls=TimmyCommandTree,
             activity=discord.Activity(
                 type=discord.ActivityType.watching,
                 name="+help | timmy.schoolsimplified.org",
@@ -110,6 +113,7 @@ if os.getenv("DSN_SENTRY") is not None:
 
 initializeDB(bot)
 
+
 @bot.event
 async def on_guild_join(guild: discord.Guild):
     """
@@ -117,7 +121,8 @@ async def on_guild_join(guild: discord.Guild):
     """
     query = database.AuthorizedGuilds.select().where(database.AuthorizedGuilds.guildID == guild.id)
     if not query.exists():
-        embed = discord.Embed(title="Unable to join guild!", description="This guild is not authorized to use Timmy!", color=discord.Color.brand_red())
+        embed = discord.Embed(title="Unable to join guild!", description="This guild is not authorized to use Timmy!",
+                              color=discord.Color.brand_red())
         embed.set_thumbnail(url=Others.timmyDog_png)
         embed.set_footer(text="Please contact an IT administrator for help.")
         for channel in guild.channels:
@@ -126,16 +131,27 @@ async def on_guild_join(guild: discord.Guild):
                 break
         await guild.leave()
 
+
 bot.run(os.getenv("TOKEN"))
 
-# class TimmyCommandTree(discord.app_commands.CommandTree):
-#     def __init__(self, client: commands.Bot):
-#         super().__init__(client)
-#
-#     async def on_error(
-#             self,
-#             interaction: discord.Interaction,
-#             command: Optional[Union[ContextMenu, Command[Any, ..., Any]]],
-#             error: AppCommandError,
-#     ) -> None:
-#         ...
+
+class TimmyCommandTree(app_commands.CommandTree):
+    def __init__(self, client: commands.Bot):
+        super().__init__(client)
+
+    async def on_error(
+            self,
+            interaction: discord.Interaction,
+            command: Optional[Union[app_commands.ContextMenu, app_commands.Command]],
+            error: app_commands.AppCommandError,
+    ) -> None:
+        ...
+    # Implement error system
+
+    async def interaction_check(
+            self,
+            interaction: discord.Interaction,
+            /
+    ) -> bool:
+        ...
+    #  Implement blacklist check for spammers
