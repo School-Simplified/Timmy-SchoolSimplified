@@ -5,6 +5,7 @@ import pytz
 from core import database
 from core.common import hexColors
 from core.common import TECH_ID
+from discord.app_commands import command, Group
 from discord.ext import commands
 
 """
@@ -25,7 +26,6 @@ TODO
 - Rank command
     - Rankcard like Mee6
 """
-
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 EST = pytz.timezone("US/Eastern")
@@ -93,7 +93,7 @@ def _shortNumber(number: int) -> str:
     :return: The string with the number and if needed with the abbreviation: str
     """
 
-    numberStr = ...     # type: str
+    numberStr = ...  # type: str
 
     if number < 1000:
         numberStr = f"{number}"
@@ -138,7 +138,8 @@ async def addLeaderboardProgress(member: discord.Member):
     if StudySessionQ.exists():
         StudySessionQ = StudySessionQ.get()
         totalmin, now = showTotalMinutes(StudySessionQ.StartTime)
-        leaderboardQuery = database.StudyVCLeaderboard.select().where(database.StudyVCLeaderboard.discordID == member.id)
+        leaderboardQuery = database.StudyVCLeaderboard.select().where(
+            database.StudyVCLeaderboard.discordID == member.id)
 
         isNewLvl = False
         if leaderboardQuery.exists():
@@ -330,40 +331,44 @@ async def endSession(member: discord.Member):
     return True
 
 
-class StudyToDo(commands.Cog):
+class StudyToDo(commands.Cog, Group):
     def __init__(self, bot: commands.Bot):
+        super().__init__(name="Study ToDo", description="Study ToDo Commands")
         self.bot = bot
 
         self.StudyVCGuildID = TECH_ID.g_tech
 
+    @property
+    def display_emoji(self) -> discord.PartialEmoji:
+        return discord.PartialEmoji(name="timmy_book", id=957320422267969566)
 
-    @commands.group(aliaseS=["study-todo"])
-    async def studytodo(self, ctx: commands.Context):
-        if ctx.message.content == "+studytodo":
-            subcommands = "/".join(
-                sorted(subcommand.name for subcommand in self.studytodo.commands)
-            )
-            signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
+    # @commands.group(aliaseS=["study-todo"])
+    # async def studytodo(self, ctx: commands.Context):
+    #     if ctx.message.content == "+studytodo":
+    #         subcommands = "/".join(
+    #             sorted(subcommand.name for subcommand in self.studytodo.commands)
+    #         )
+    #         signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
+    # 
+    #         embed = discord.Embed(
+    #             color=hexColors.red_error,
+    #             title="Missing/Extra Required Arguments Passed In!",
+    #             description=f"You have missed one or several arguments in this command"
+    #                         f"\n\nUsage:"
+    #                         f"\n`{signature}`",
+    #         )
+    #         embed.set_footer(
+    #             text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
+    #         )
+    #         await ctx.send(embed=embed)
 
-            embed = discord.Embed(
-                color=hexColors.red_error,
-                title="Missing/Extra Required Arguments Passed In!",
-                description=f"You have missed one or several arguments in this command"
-                f"\n\nUsage:"
-                f"\n`{signature}`",
-            )
-            embed.set_footer(
-                text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
-            )
-            await ctx.send(embed=embed)
-
-    @studytodo.command()
-    async def set(self, ctx: commands.Context, *, item):
+    @command()
+    async def set(self, interaction: discord.Interaction, *, item):
         """
         Adds an item to the study to-do list of the author/owner.
         """
 
-        query: database.StudyVCDB = database.StudyVCDB.select().where(database.StudyVCDB.discordID==ctx.author.id)
+        query: database.StudyVCDB = database.StudyVCDB.select().where(database.StudyVCDB.discordID == interaction.user.id)
         if query.exists():
             query = query.get()
             query.studyTodo = item
@@ -374,30 +379,28 @@ class StudyToDo(commands.Cog):
                 color=hexColors.green_confirm,
             )
             embed.set_footer(text="StudyBot")
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
         else:
-            return await ctx.send(f"You don't have a study session yet! Make one by joining any StudyVC!")
+            return await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
-
-    @studytodo.command()
-    async def end(self, ctx: commands.Context):
+    @command()
+    async def end(self, interaction: discord.Interaction):
         """
         Removes an item from the study to-do list of the author/owner.
         """
-        isInDatabase = await addLeaderboardProgress(ctx.author)
+        isInDatabase = await addLeaderboardProgress(interaction.user)
 
         if isInDatabase:
-            await endSession(ctx.author)
-            await ctx.send(f"{ctx.author.mention} Your study session ended. To make one again, join any StudyVC!")
+            await endSession(interaction.user)
+            await interaction.response.send_message(f"{interaction.user.mention} Your study session ended. To make one again, join any StudyVC!")
 
         else:
-            await ctx.send(f"You don't have a study session yet! Make one by joining any StudyVC!")
+            await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
-
-    @studytodo.command()
-    async def list(self, ctx):
+    @command()
+    async def list(self, interaction: discord.Interaction):
         query = database.StudyToDo.select().where(
-            database.StudyToDo.discordID == ctx.author.id
+            database.StudyToDo.discordID == interaction.user.id
         )
         if query.exists():
             query = query.get()
@@ -409,13 +412,13 @@ class StudyToDo(commands.Cog):
             embed.set_footer(
                 text="You can use +studytodo set (item) to modify this!"
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         else:
-            return await ctx.send(f"You don't have a study session yet! Make one by joining any StudyVC!")
-    
-    @studytodo.command(aliases=["lb"])
-    async def leaderboard(self, ctx):
+            return await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
+
+    @command()
+    async def leaderboard(self, interaction: discord.Interaction):
 
         guild = self.bot.get_guild(self.StudyVCGuildID)
 
@@ -452,8 +455,7 @@ class StudyToDo(commands.Cog):
         embed.set_footer(
             text="StudyBot"
         )
-        await ctx.send(embed=embed)
-
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):

@@ -29,18 +29,19 @@ class CommandsOnly(commands.Cog):
                     embed = discord.Embed(
                         title="Commands ONLY",
                         description=MESSAGEMASA,
-                        color=discord.Colour.red(),
+                        color=discord.Colour.brand_red(),
                     )
                 else:
                     embed = discord.Embed(
                         title="Commands ONLY",
                         description=MESSAGEC,
-                        color=discord.Colour.red(),
+                        color=discord.Colour.brand_red(),
                     )
 
                 await message.channel.send(
                     message.author.mention, embed=embed, delete_after=5.0
                 )
+
 
 async def setup(bot):
     await bot.add_cog(CommandsOnly(bot))
