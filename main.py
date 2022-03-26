@@ -23,10 +23,14 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
-from core.common import Others, get_extensions
-from core.special_methods import (before_invoke_, initializeDB,
-                                  main_mode_check_, on_command_error_,
-                                  on_ready_)
+from core.common import get_extensions
+from core.special_methods import (
+    before_invoke_,
+    initializeDB,
+    main_mode_check_,
+    on_command_error_,
+    on_ready_
+)
 
 load_dotenv()
 faulthandler.enable()
@@ -98,45 +102,6 @@ class Timmy(commands.Bot):
 
 bot = Timmy()
 
-if os.getenv("DSN_SENTRY") is not None:
-    sentry_logging = LoggingIntegration(
-        level=logging.INFO,  # Capture info and above as breadcrumbs
-        event_level=logging.ERROR,  # Send errors as events
-    )
-
-    use_sentry(
-        bot,  # Traceback tracking, DO NOT MODIFY THIS
-        dsn=os.getenv("DSN_SENTRY"),
-        traces_sample_rate=1.0,
-        integrations=[FlaskIntegration(), sentry_logging],
-    )
-
-initializeDB(bot)
-
-
-@bot.event
-async def on_guild_join(guild: discord.Guild):
-    """
-    This event triggers when the bot joins a guild; Used to verify if the guild is approved.
-    """
-    query = database.AuthorizedGuilds.select().where(database.AuthorizedGuilds.guildID == guild.id)
-    if not query.exists():
-        embed = discord.Embed(
-            title="Unable to join guild!",
-            description="This guild is not authorized to use Timmy!",
-            color=discord.Color.brand_red()
-        )
-        embed.set_thumbnail(url=Others.timmyDog_png)
-        embed.set_footer(text="Please contact an IT administrator for help.")
-        for channel in guild.channels:
-            if channel.permissions_for(guild.me).send_messages:
-                await channel.send(embed=embed)
-                break
-        await guild.leave()
-
-
-bot.run(os.getenv("TOKEN"))
-
 
 class TimmyCommandTree(app_commands.CommandTree):
     def __init__(self, client: commands.Bot):
@@ -159,3 +124,21 @@ class TimmyCommandTree(app_commands.CommandTree):
     ) -> bool:
         ...
     #  Implement blacklist check for spammers
+
+
+if os.getenv("DSN_SENTRY") is not None:
+    sentry_logging = LoggingIntegration(
+        level=logging.INFO,  # Capture info and above as breadcrumbs
+        event_level=logging.ERROR,  # Send errors as events
+    )
+
+    use_sentry(
+        bot,  # Traceback tracking, DO NOT MODIFY THIS
+        dsn=os.getenv("DSN_SENTRY"),
+        traces_sample_rate=1.0,
+        integrations=[FlaskIntegration(), sentry_logging],
+    )
+initializeDB(bot)
+
+
+bot.run(os.getenv("TOKEN"))
