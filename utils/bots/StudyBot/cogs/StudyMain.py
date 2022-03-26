@@ -362,7 +362,7 @@ class StudyToDo(commands.Cog, Group):
             )
             await ctx.send(embed=embed)
 
-    @command()
+    @studytodo.command()
     async def set(self, interaction: discord.Interaction, *, item):
         """
         Adds an item to the study to-do list of the author/owner.
@@ -383,7 +383,7 @@ class StudyToDo(commands.Cog, Group):
         else:
             return await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
-    @command()
+    @studytodo.command()
     async def end(self, interaction: discord.Interaction):
         """
         Removes an item from the study to-do list of the author/owner.
@@ -397,7 +397,7 @@ class StudyToDo(commands.Cog, Group):
         else:
             await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
-    @command()
+    @studytodo.command()
     async def list(self, interaction: discord.Interaction):
         query = database.StudyToDo.select().where(
             database.StudyToDo.discordID == interaction.user.id
@@ -417,7 +417,7 @@ class StudyToDo(commands.Cog, Group):
         else:
             return await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
-    @command()
+    @studytodo.command()
     async def leaderboard(self, interaction: discord.Interaction):
 
         guild = self.bot.get_guild(self.StudyVCGuildID)
