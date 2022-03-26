@@ -42,6 +42,29 @@ logger.warning("Started Timmy")
 print("Starting Timmy...")
 
 
+class TimmyCommandTree(app_commands.CommandTree):
+    def __init__(self, client: commands.Bot):
+        super().__init__(client)
+
+    async def on_error(
+            self,
+            interaction: discord.Interaction,
+            command: Optional[Union[app_commands.ContextMenu, app_commands.Command]],
+            error: app_commands.AppCommandError,
+    ) -> None:
+        ...
+
+    # Implement error system
+
+    async def interaction_check(
+            self,
+            interaction: discord.Interaction,
+            /
+    ) -> bool:
+        ...
+    #  Implement blacklist check for spammers
+
+
 class Timmy(commands.Bot):
     """
     Generates a Timmy Instance.
@@ -101,29 +124,6 @@ class Timmy(commands.Bot):
 
 
 bot = Timmy()
-
-
-class TimmyCommandTree(app_commands.CommandTree):
-    def __init__(self, client: commands.Bot):
-        super().__init__(client)
-
-    async def on_error(
-            self,
-            interaction: discord.Interaction,
-            command: Optional[Union[app_commands.ContextMenu, app_commands.Command]],
-            error: app_commands.AppCommandError,
-    ) -> None:
-        ...
-
-    # Implement error system
-
-    async def interaction_check(
-            self,
-            interaction: discord.Interaction,
-            /
-    ) -> bool:
-        ...
-    #  Implement blacklist check for spammers
 
 
 if os.getenv("DSN_SENTRY") is not None:

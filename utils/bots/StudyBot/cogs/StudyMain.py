@@ -342,25 +342,25 @@ class StudyToDo(commands.Cog, Group):
     def display_emoji(self) -> str:
         return Emoji.timmyBook
 
-    # @commands.group(aliaseS=["study-todo"])
-    # async def studytodo(self, ctx: commands.Context):
-    #     if ctx.message.content == "+studytodo":
-    #         subcommands = "/".join(
-    #             sorted(subcommand.name for subcommand in self.studytodo.commands)
-    #         )
-    #         signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
-    # 
-    #         embed = discord.Embed(
-    #             color=Colors.red,
-    #             title="Missing/Extra Required Arguments Passed In!",
-    #             description=f"You have missed one or several arguments in this command"
-    #                         f"\n\nUsage:"
-    #                         f"\n`{signature}`",
-    #         )
-    #         embed.set_footer(
-    #             text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
-    #         )
-    #         await ctx.send(embed=embed)
+    @commands.group(aliaseS=["study-todo"])
+    async def studytodo(self, ctx: commands.Context):
+        if ctx.message.content == "+studytodo":
+            subcommands = "/".join(
+                sorted(subcommand.name for subcommand in self.studytodo.commands)
+            )
+            signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
+
+            embed = discord.Embed(
+                color=Colors.red,
+                title="Missing/Extra Required Arguments Passed In!",
+                description=f"You have missed one or several arguments in this command"
+                            f"\n\nUsage:"
+                            f"\n`{signature}`",
+            )
+            embed.set_footer(
+                text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
+            )
+            await ctx.send(embed=embed)
 
     @command()
     async def set(self, interaction: discord.Interaction, *, item):
