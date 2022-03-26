@@ -8,7 +8,7 @@ import discord
 from core import database
 from core.common import CheckDB_CC
 from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4, slash_is_bot_admin_2
-from core.common import Emoji, HexColors
+from core.common import Emoji, Colors
 from discord.app_commands import command
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -170,14 +170,14 @@ class CoreBotConfig(commands.Cog):
             embed = discord.Embed(
                 title="Cogs - Unload",
                 description=f"Unloaded cog: {ext}",
-                color=HexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
                 title="Cogs Reloaded",
                 description=f"Cog '{ext}' not found",
-                color=HexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
 
@@ -191,14 +191,14 @@ class CoreBotConfig(commands.Cog):
             embed = discord.Embed(
                 title="Cogs - Load",
                 description=f"Loaded cog: {ext}",
-                color=HexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
                 title="Cogs - Load",
                 description=f"Cog '{ext}' not found.",
-                color=HexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
 
@@ -209,7 +209,7 @@ class CoreBotConfig(commands.Cog):
             embed = discord.Embed(
                 title="Cogs - Reload",
                 description="Reloaded all cogs",
-                color=HexColors.light_purple,
+                color=Colors.light_purple,
             )
             for extension in get_extensions():
                 await self.bot.reload_extension(extension)
@@ -224,7 +224,7 @@ class CoreBotConfig(commands.Cog):
             embed = discord.Embed(
                 title="Cogs - Reload",
                 description=f"Reloaded cog: {ext}",
-                color=HexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
 
@@ -232,7 +232,7 @@ class CoreBotConfig(commands.Cog):
             embed = discord.Embed(
                 title="Cogs - Reload",
                 description=f"Cog '{ext}' not found.",
-                color=HexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
 
@@ -241,7 +241,7 @@ class CoreBotConfig(commands.Cog):
     async def view(self, ctx):
         msg = " ".join(get_extensions())
         embed = discord.Embed(
-            title="Cogs - View", description=msg, color=HexColors.light_purple
+            title="Cogs - View", description=msg, color=Colors.light_purple
         )
         await ctx.send(embed=embed)
 
@@ -290,7 +290,7 @@ class CoreBotConfig(commands.Cog):
         embed = discord.Embed(
             title="GitHub Local Reset",
             description=f"Local Files changed to match {branch}",
-            color=HexColors.green_general,
+            color=Colors.green,
         )
         embed.add_field(name="Shell Output", value=f"```shell\n$ {output}\n```")
         if mode == "-a":

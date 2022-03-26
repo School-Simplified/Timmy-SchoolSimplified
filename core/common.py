@@ -1082,24 +1082,22 @@ class Emoji:
     timmyTutoring = "<:tutoring:933043045950164992>"
 
 
-class HexColors:
+class Colors:
     """
-    Hex colors for the bot.
+    Colors for the bot. Can be custom hex colors or built-in colors.
     """
 
     # *** Standard Colors ***
-    yellow = 0xF5DD42
-    orange = 0xFCBA03
-    blurple = 0x6C7DFE
-    light_purple = 0xD6B4E8
-    dark_gray = 0x2F3136
+    blurple = discord.Color.blurple()
+    green = discord.Color.brand_green()
+    yellow = discord.Color.yellow()
+    fuchsia = discord.Color.fuchsia()
+    red = discord.Color.brand_red()
 
-    yellow_ticketBan = 0xEFFA16
-    green_general = 0x3AF250
-    green_confirm = 0x37E32B
-    red_cancel = 0xE02F2F
-    red_error = 0xF5160A
-    orange_error = 0xFC3D03
+    # *** Hex Colors ***
+    orange = 0xFCBA03
+    dark_gray = 0x2F3136
+    light_purple = 0xD6B4E8
     mod_blurple = 0x4DBEFF
     ss_blurple = 0x7080FA
 

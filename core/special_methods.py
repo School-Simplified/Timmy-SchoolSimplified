@@ -16,7 +16,7 @@ from common import (
     bcolors,
     FeedbackButton,
     GSuiteVerify,
-    HexColors,
+    Colors,
     LockButton,
     Others,
     MAIN_ID,
@@ -178,7 +178,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                             f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the ["
                             f"documentation "
                             f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
-                color=HexColors.red_error,
+                color=Colors.red,
             )
             em.set_thumbnail(url=Others.error_png)
             em.set_footer(
@@ -191,7 +191,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                 description="You have missed one or several arguments in this command"
                             "\n\nUsage:"
                             f"\n`{signature}`",
-                color=HexColors.red_error,
+                color=Colors.red,
             )
             em.set_thumbnail(url=Others.error_png)
             em.set_footer(
@@ -214,7 +214,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
             title="Invalid Permissions!",
             description="You do not have the associated role in order to successfully invoke this command! "
                         "Contact an administrator/developer if you believe this is invalid.",
-            color=HexColors.red_error,
+            color=Colors.red,
         )
         em.set_thumbnail(url=Others.error_png)
         em.set_footer(
@@ -233,7 +233,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                             f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
                             f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
                             f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
-                color=HexColors.red_error,
+                color=Colors.red,
             )
             em.set_thumbnail(url=Others.error_png)
             em.set_footer(
@@ -244,7 +244,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
             em = discord.Embed(
                 title="Bad Argument!",
                 description=f"Unable to parse arguments, check what arguments you provided.\n\nUsage:\n`{signature}`",
-                color=HexColors.red_error,
+                color=Colors.red,
             )
             em.set_thumbnail(url=Others.error_png)
             em.set_footer(
@@ -307,7 +307,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                     description="Timmy here has ran into an error!\nPlease check what you sent and/or check out "
                                 "the "
                                 "help command!",
-                    color=HexColors.orange_error,
+                    color=Colors.red,
                 )
                 embed.set_thumbnail(url=Others.timmyDog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
@@ -316,7 +316,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                 embed = discord.Embed(
                     title="Traceback Detected!",
                     description="Timmy here has ran into an error!\nTraceback has been attached below.",
-                    color=HexColors.orange_error,
+                    color=Colors.red,
                 )
                 embed.add_field(name="GIST URL", value=gisturl)
                 embed.set_thumbnail(url=Others.timmyDog_png)
@@ -332,7 +332,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                             f"**Server:** {ctx.message.guild.name}\n"
                             f"**User:** {ctx.message.author.mention}\n"
                             f"**Command:** {ctx.command.name}",
-                color=HexColors.orange_error,
+                color=Colors.red,
             )
             embed2.add_field(
                 name="Gist URL",
