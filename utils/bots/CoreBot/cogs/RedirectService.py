@@ -16,6 +16,11 @@ class RedirectURL(commands.Cog):
         self.raOBJ = redirect_sdk.RedirectClient(
             os.getenv("RP_TK"), domain="https://rs.schoolsimplified.org"
         )
+        self.__cog_name__ = "Redirect URL"
+
+    @property
+    def display_emoji(self) -> discord.PartialEmoji:
+        return discord.PartialEmoji(name="\N{LINKED PAPERCLIPS}")
 
     @commands.command(alliases=["redirectadd", "addredirect"])
     @is_botAdmin
