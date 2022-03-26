@@ -371,7 +371,7 @@ class FrontPageSource(menus.PageSource):
         return self
 
     def format_page(self, menu: HelpMenu, page):
-        embed = discord.Embed(title='Bot Help', colour=discord.Colour.gold()())
+        embed = discord.Embed(title='Bot Help', colour=discord.Colour.gold())
         embed.description = inspect.cleandoc(
             f"""
             Hello! Welcome to the help page.
