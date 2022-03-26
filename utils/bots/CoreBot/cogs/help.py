@@ -606,7 +606,7 @@ class Help(commands.Cog):
         # passes an invalid subcommand, we need to walk through
         # the command group chain ourselves.
 
-        slash, _ = (
+        slash, *_ = (
             self.bot.tree.get_command(
                 _command,
                 guild=interaction.guild,
