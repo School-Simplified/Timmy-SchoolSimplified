@@ -7,7 +7,7 @@ import pytz
 
 import discord
 from core import database
-from core.common import MAIN_ID, TUT_ID
+from core.common import MAIN_ID, TUT_ID, Others
 from discord.app_commands import command, describe, guilds
 from discord.ext import commands
 
@@ -28,6 +28,159 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
 class TutorBotStaffCMD(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.RepeatEmoji = {False: "\U00002b1b", True: "🔁"}
+        self.ExpireEmoji = {False: "", True: "| ⚠️"}
+        self.__cog_name__ = "Tutor"
+
+    @property
+    def display_emoji(self) -> discord.PartialEmoji:
+        return discord.PartialEmoji(name="tutoring", id=957059360822026250)
+
+    @command(name="view")
+    @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
+    async def view(self, interaction: discord.Interaction, id=None):
+        if id is None:
+            query: database.TutorBot_Sessions = (
+                database.TutorBot_Sessions.select().where(
+                    database.TutorBot_Sessions.TutorID == interaction.user.id
+                )
+            )
+
+            embed = discord.Embed(
+                title="Scheduled Tutor Sessions", color=discord.Color.dark_blue()
+            )
+            embed.add_field(name="Schedule:", value=f"{interaction.user.name}'s Schedule:")
+
+            if query.count() == 0:
+                embed.add_field(
+                    name="List:", value="You have no tutor sessions yet!", inline=False
+                )
+
+            else:
+                list_ten = []
+                i = 0
+                for entry in query:
+                    if not isinstance(entry.Date, datetime):
+                        entry.Date = datetime.fromisoformat(entry.Date)
+                    datetime_session = pytz.timezone("America/New_York").localize(
+                        entry.Date
+                    )
+                    timestamp = int(datetime.timestamp(datetime_session))
+
+                    student_user = await self.bot.fetch_user(entry.StudentID)
+                    list_ten.append(
+                        f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{timestamp}:F> -> "
+                        f"{student_user.name} {self.ExpireEmoji[entry.GracePeriod_Status]} "
+                    )
+
+                embed.add_field(name="List:", value="\n".join(list_ten), inline=False)
+            embed.set_thumbnail(url=Others.timmyTeacher_png)
+            embed.set_footer(
+                text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
+                     "these sessions with a warning sign next to them."
+            )
+            try:
+                await interaction.response.send_message(embed=embed)
+            except:
+                await interaction.channel.send(embed=embed)
+        else:
+            entry = database.TutorBot_Sessions.select().where(
+                database.TutorBot_Sessions.SessionID == id
+            )
+            if entry.exists():
+                entry = entry.get()
+
+                student_user = await self.bot.fetch_user(entry.StudentID)
+                datetime_session = pytz.timezone("America/New_York").localize(
+                    entry.Date
+                )
+                timestamp = int(datetime.timestamp(datetime_session))
+
+                embed = discord.Embed(
+                    title="Tutor Session Query",
+                    description=f"Here are the query results for {id}",
+                )
+                embed.add_field(
+                    name="Values",
+                    value=f"**Session ID:** `{entry.SessionID}`"
+                          f"\n**Student:** `{student_user.name}`"
+                          f"\n**Tutor:** `{interaction.user.name}`"
+                          f"\n**Date:** <t:{timestamp}:d>"
+                          f"\n**Time:** <t:{timestamp}:t>"
+                          f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
+                )
+                embed.set_footer(text=f"Subject: {entry.Subject}")
+                try:
+                    await interaction.response.send_message(embed=embed)
+                except:
+                    await interaction.channel.send(embed=embed)
+            else:
+                embed = discord.Embed(
+                    title="Invalid Session",
+                    description="This session does not exist, please check the ID you've provided!",
+                    color=discord.Color.red(),
+                )
+                try:
+                    await interaction.response.send_message(embed=embed)
+                except:
+                    await interaction.channel.send(embed=embed)
+
+    @command(
+        name="mview",
+        description="View someone else's tutor sessions",
+    )
+    @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
+    # @permissions.has_role("Tutoring Director")
+    async def mview(self, interaction: discord.Interaction, user: discord.User):
+        query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
+            database.TutorBot_Sessions.TutorID == user.id
+        )
+
+        embed = discord.Embed(
+            title="Scheduled Tutor Sessions", color=discord.Color.dark_blue()
+        )
+        embed.add_field(name="Schedule:", value=f"{user.name}'s Schedule:")
+
+        if query.count() == 0:
+            embed.add_field(
+                name="List:", value="This user has no tutor sessions yet!", inline=False
+            )
+
+        else:
+            list_ten = []
+            i = 0
+            for entry in query:
+
+                if not isinstance(entry.Date, datetime):
+                    entry.Date = datetime.fromisoformat(entry.Date)
+                datetime_session = pytz.timezone("America/New_York").localize(
+                    entry.Date
+                )
+                timestamp = int(datetime.timestamp(datetime_session))
+
+                student_user = await self.bot.fetch_user(entry.StudentID)
+                list_ten.append(
+                    f"{self.RepeatEmoji[entry.Repeat]} `{entry.SessionID}`- - <t:{timestamp}:F> -> {student_user.name} "
+                    f"{self.ExpireEmoji[entry.GracePeriod_Status]}"
+                )
+
+            embed.add_field(name="List:", value="\n".join(list_ten), inline=False)
+        embed.set_thumbnail(url=Others.timmyTeacher_png)
+
+        embed.set_footer(
+            text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
+                 "these sessions with a warning sign next to them."
+        )
+        await interaction.response.send_message(embed=embed)
+
+    @commands.command()
+    async def ticketdropdown(self, ctx):
+        view = DropdownView()
+        await ctx.send("Select a ticket via the dropdown here!:", view=view)
+        await view.wait()
+
+        dropdownclass = view.InteractionClass.values
+        await ctx.send(dropdownclass)
 
     @command(
         name="schedule",
@@ -339,3 +492,75 @@ class TutorBotStaffCMD(commands.Cog):
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(TutorBotStaffCMD(bot))
+
+
+class Dropdown(discord.ui.Select):
+    def __init__(self):
+
+        options = [
+            discord.SelectOption(
+                label="Math Helpers",
+                description="If you need help with Math, click here!",
+                emoji="✖️",
+            ),
+            discord.SelectOption(
+                label="Science Helpers",
+                description="If you need help with Science, click here!",
+                emoji="🧪",
+            ),
+            discord.SelectOption(
+                label="Social Studies Helpers",
+                description="If you need help with Social Studies, click here!",
+                emoji="📙",
+            ),
+            discord.SelectOption(
+                label="English Helpers",
+                description="If you need help with English, click here!",
+                emoji="📖",
+            ),
+            discord.SelectOption(
+                label="Essay Helpers",
+                description="If you need help with an Essay, click here!",
+                emoji="✍️",
+            ),
+            discord.SelectOption(
+                label="Language Helpers",
+                description="If you need help with a Language, click here!",
+                emoji="🗣",
+            ),
+            discord.SelectOption(
+                label="Computer Science Helpers",
+                description="If you need help with Computer Science, click here!",
+                emoji="💻",
+            ),
+            discord.SelectOption(
+                label="Fine Art Helpers",
+                description="If you need help with Fine Arts, click here!",
+                emoji="🎨",
+            ),
+            discord.SelectOption(
+                label="Other Helpers",
+                description="If you need help with anything else, click here!",
+                emoji="🧐",
+            ),
+        ]
+
+        super().__init__(
+            placeholder="Select a subject you need help with!",
+            min_values=1,
+            max_values=1,
+            options=options,
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        self.view.stop()
+
+
+class DropdownView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        DropdownClass = Dropdown()
+
+        self.add_item(DropdownClass)
+        self.InteractionClass = DropdownClass
+

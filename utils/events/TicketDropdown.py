@@ -1175,7 +1175,7 @@ class DropdownTickets(commands.Cog):
                     )
                 )
                 overwrite = discord.PermissionOverwrite()
-                overwrite.read_messages = False
+                overwrite.update(read_messages=False)
                 print(channel, overwrite)
                 await channel.set_permissions(
                     TicketOwner, overwrite=overwrite, reason="Ticket Perms Close (User)"

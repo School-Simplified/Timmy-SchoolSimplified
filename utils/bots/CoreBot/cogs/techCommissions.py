@@ -8,6 +8,7 @@ from core import database
 
 class BotRequestModal(ui.Modal, title="Bot Development Request"):
     def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(timeout=None)
         self.bot = bot
 
     titleTI = ui.TextInput(
@@ -40,7 +41,6 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
         required=False,
         max_length=1024,
     )
-
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.send_message(
@@ -102,12 +102,11 @@ class TechProjectCMD(commands.Cog):
     async def cog_unload(self):
         self.autoUnarchiveThread.cancel()
 
-
     @commands.command()
     @is_botAdmin
     async def techEmbed(self, ctx):
         embed = discord.Embed(
-            title="Bot Developer Commissions", color=discord.Color.green()
+            title="Bot Developer Commissions", color=discord.Color.brand_green()
         )
         embed.add_field(
             name="Get Started",
@@ -120,7 +119,6 @@ class TechProjectCMD(commands.Cog):
         )
         view = CommissionTechButton(self.bot)
         await ctx.send(embed=embed, view=view)
-
 
     @commands.command()
     async def closeThread(self, ctx: commands.Context):
@@ -135,7 +133,6 @@ class TechProjectCMD(commands.Cog):
             await thread.edit(archived=True)
         else:
             await ctx.send("Not a valid thread.")
-
 
     @commands.command()
     async def openThread(self, ctx: commands.Context):
@@ -156,7 +153,6 @@ class TechProjectCMD(commands.Cog):
         else:
             await ctx.send("Not a valid thread.")
 
-
     @tasks.loop(seconds=60.0)
     async def autoUnarchiveThread(self):
         """
@@ -166,15 +162,17 @@ class TechProjectCMD(commands.Cog):
         guild = TECH_ID.g_tech
         channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
 
-        thread = ...    # type: discord.Thread
+        thread = ...  # type: discord.Thread
         for thread in guild.threads:
             query = (
-                database.TechCommissionArchiveLog.select().where(database.TechCommissionArchiveLog.ThreadID == thread.id)
+                database.TechCommissionArchiveLog.select().where(
+                    database.TechCommissionArchiveLog.ThreadID == thread.id)
             )
             if query.exists():
 
                 if thread.archived:
                     await thread.edit(archived=False)
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(TechProjectCMD(bot))

@@ -404,7 +404,7 @@ class StudyToDo(commands.Cog):
             embed = discord.Embed(
                 title="Study To-Do List",
                 description=f"Your current goal: {query.studyTodo}",
-                color=hexColors.blue_main,
+                color=hexColors.ss_blurple,
             )
             embed.set_footer(
                 text="You can use +studytodo set (item) to modify this!"
@@ -456,5 +456,5 @@ class StudyToDo(commands.Cog):
 
 
 
-def setup(bot):
-    bot.add_cog(StudyToDo(bot))
+async def setup(bot):
+    await bot.add_cog(StudyToDo(bot))
