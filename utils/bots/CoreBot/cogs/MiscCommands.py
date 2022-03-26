@@ -22,7 +22,6 @@ from core.common import (
     Others,
     MAIN_ID,
 )
-from core.common import getHostDir, force_restart
 from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk import Hub
@@ -496,66 +495,6 @@ class MiscCMD(commands.Cog):
                 "Looks like you didn't react in time, automatically aborted system exit!"
             )
             await message.delete()
-
-    @commands.command()
-    @is_botAdmin2
-    async def gitpull(self, ctx, mode="-a"):
-        output = ""
-
-        hostDir = getHostDir()
-        if hostDir == "/home/timmya":
-            branch = "origin/main"
-            directory = "TimmyMain-SS"
-
-        elif hostDir == "/home/timmy-beta":
-            branch = "origin/beta"
-            directory = "TimmyBeta-SS"
-
-        else:
-            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
-
-        try:
-            p = subprocess.run(
-                "git fetch --all",
-                shell=True,
-                text=True,
-                capture_output=True,
-                check=True,
-            )
-            output += p.stdout
-        except Exception as e:
-            await ctx.send("⛔️ Unable to fetch the Current Repo Header!")
-            await ctx.send(f"**Error:**\n{e}")
-        try:
-            p = subprocess.run(
-                f"git reset --hard {branch}",
-                shell=True,
-                text=True,
-                capture_output=True,
-                check=True,
-            )
-            output += p.stdout
-        except Exception as e:
-            await ctx.send("⛔️ Unable to apply changes!")
-            await ctx.send(f"**Error:**\n{e}")
-
-        embed = discord.Embed(
-            title="GitHub Local Reset",
-            description=f"Local Files changed to match {branch}",
-            color=hexColors.green_general,
-        )
-        embed.add_field(name="Shell Output", value=f"```shell\n$ {output}\n```")
-        if mode == "-a":
-            embed.set_footer(text="Attempting to restart the bot...")
-        elif mode == "-c":
-            embed.set_footer(text="Attempting to reloading cogs...")
-
-        await ctx.send(embed=embed)
-
-        if mode == "-a":
-            await force_restart(ctx, directory)
-        elif mode == "-c":
-            await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
 
     @commands.command()
     @is_botAdmin2
