@@ -4,6 +4,10 @@ Copyright (C) School Simplified - All Rights Reserved
  * Written by School Simplified, IT Dept. <timmy@schoolsimplified.org>, March 2022
 """
 
+__version__ = "3.0.0"
+__author__ = "School Simplified, IT Dept."
+__author_email__ = "timmy@schoolsimplified.org"
+
 import faulthandler
 import logging
 import os
@@ -78,13 +82,10 @@ class Timmy(commands.Bot):
                 bar()
 
     async def is_owner(self, user: discord.User):
-        admin_ids = []
-
         query = database.Administrators.select().where(
             database.Administrators.TierLevel >= 3
         )
-        for admin in query:
-            admin_ids.append(admin.discordID)
+        admin_ids = [admin for admin in query if admin.discordID == user.id]
 
         if user.id in admin_ids:
             return True
@@ -109,19 +110,11 @@ if os.getenv("DSN_SENTRY") is not None:
 
 initializeDB(bot)
 
-# class TimmyCommandTree(discord.app_commands.CommandTree):
-#     def __init__(self, client: commands.Bot):
-#         super().__init__(client)
-#
-#     async def on_error(
-#             self,
-#             interaction: discord.Interaction,
-#             command: Optional[Union[ContextMenu, Command[Any, ..., Any]]],
-#             error: AppCommandError,
-#     ) -> None:
-#         ...
 @bot.event
 async def on_guild_join(guild: discord.Guild):
+    """
+    This event triggers when the bot joins a guild; Used to verify if the guild is approved.
+    """
     query = database.AuthorizedGuilds.select().where(database.AuthorizedGuilds.guildID == guild.id)
     if not query.exists():
         embed = discord.Embed(title="Unable to join guild!", description="This guild is not authorized to use Timmy!", color=discord.Color.brand_red())
@@ -134,3 +127,15 @@ async def on_guild_join(guild: discord.Guild):
         await guild.leave()
 
 bot.run(os.getenv("TOKEN"))
+
+# class TimmyCommandTree(discord.app_commands.CommandTree):
+#     def __init__(self, client: commands.Bot):
+#         super().__init__(client)
+#
+#     async def on_error(
+#             self,
+#             interaction: discord.Interaction,
+#             command: Optional[Union[ContextMenu, Command[Any, ..., Any]]],
+#             error: AppCommandError,
+#     ) -> None:
+#         ...
