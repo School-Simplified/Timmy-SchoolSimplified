@@ -400,8 +400,8 @@ class Engagement(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.__cog_name__ = "Student Engagement"
-        self.__cog_app_commands__.append(Suggest)
-        self.__cog_app_commands__.append(SetSuggestBlacklist)
+        self.__cog_app_commands__.append(Suggest(bot))
+        self.__cog_app_commands__.append(SetSuggestBlacklist(bot))
 
     @property
     def display_emoji(self) -> str:
