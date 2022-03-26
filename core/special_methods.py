@@ -7,12 +7,12 @@ import traceback
 from datetime import datetime
 from difflib import get_close_matches
 
-import database
 import discord
 from discord.ext import commands
 import sentry_sdk
 import requests
-from common import (
+from core import database
+from core.common import (
     bcolors,
     FeedbackButton,
     GSuiteVerify,
