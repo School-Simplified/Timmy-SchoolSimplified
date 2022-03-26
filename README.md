@@ -1,8 +1,8 @@
 # SchoolSimplified-Utils (Timmy)
 
-[![Pylint](https://github.com/School-Simplified/Timmy-SchoolSimplified/actions/workflows/pylint.yml/badge.svg?branch=beta)](https://github.com/School-Simplified/Timmy-SchoolSimplified/actions/workflows/pylint.yml)
+
 ![Response Time](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/School-Simplified/Timmy-StatusPage/master/api/timmy/response-time.json)
-[![DeepSource](https://deepsource.io/gh/School-Simplified/Timmy-SchoolSimplified.svg/?label=active+issues&show_trend=true&token=8ONkqti5_BCVZ-Wg2CObMOa_)](https://deepsource.io/gh/School-Simplified/Timmy-SchoolSimplified/?ref=repository-badge)
+[![Qodana](https://github.com/School-Simplified/Timmy-SchoolSimplified/actions/workflows/code_quality.yml/badge.svg?branch=162-move-to-dpy)](https://github.com/School-Simplified/Timmy-SchoolSimplified/actions/workflows/code_quality.yml)
 
 Help Page: https://timmy.schoolsimplified.org
 
