@@ -606,25 +606,33 @@ class Help(commands.Cog):
         # passes an invalid subcommand, we need to walk through
         # the command group chain ourselves.
 
-        slash_cmd = [
-            x for x in self.bot.tree.walk_commands() if x.name == _command and isinstance(x, app_commands.Command)
-        ]
-        slash_group = [
-            x for x in self.bot.tree.walk_commands() if x.name == _command and isinstance(x, app_commands.Group)
-        ]
+        slash = (
+            self.bot.tree.get_command(
+                _command,
+                guild=interaction.guild,
+                type=discord.AppCommandType.chat_input
+            ), self.bot.tree.get_command(
+                _command,
+                guild=None,
+                type=discord.AppCommandType.chat_input
+            )
+        )
 
         regular_command = self.bot.get_command(_command)
+        cog = self.bot.get_cog(_command)
 
-        if slash_cmd:
-            return await self._send_command_help(interaction, slash_cmd)
+        if isinstance(slash, app_commands.Command):
+            return await self._send_command_help(interaction, slash)
+        if isinstance(slash, app_commands.Group):
+            return await self._send_group_help(interaction, slash)
         if isinstance(regular_command, commands.Command):
             return await self._send_command_help(interaction, regular_command)
         if isinstance(regular_command, commands.Group):
             return await self._send_group_help(interaction, regular_command)
-        if slash_group:
-            return await self._send_group_help(interaction, slash_group)
-        if not slash_group and not slash_cmd and not regular_command:
-            return await interaction.response.send_message("Couldn't find command")
+        if cog:
+            return await self._send_cog_help(interaction, cog)
+        if not slash and not regular_command and not cog:
+            return await interaction.response.send_message("Couldn't find command or cog")
 
     async def prepare_help_command(
             self,
