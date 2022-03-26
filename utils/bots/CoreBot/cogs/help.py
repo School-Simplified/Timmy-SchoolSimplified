@@ -5,7 +5,7 @@
 import asyncio
 import inspect
 import itertools
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Coroutine, Dict, List, Optional, Set, Union
 from discord import app_commands
 import discord
 from discord.app_commands import command, describe
@@ -413,6 +413,9 @@ class FrontPageSource(menus.PageSource):
 
 
 class Help(commands.Cog):
+    """
+    Help command
+    """
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         bot.help_command.cog = self
@@ -616,7 +619,11 @@ class Help(commands.Cog):
         if not slash_group and not slash_cmd:
             return await interaction.response.send_message("Couldn't find command")
 
-    async def prepare_help_command(self, interaction: discord.Interaction, _command=None):
+    async def prepare_help_command(
+            self,
+            interaction: discord.Interaction,
+            _command=None
+    ) -> Union[None, Coroutine, List[commands.Command, ..., app_commands.Command]]:
         """|coro|
         A low level method that can be used to prepare the help command
         before it does anything. For example, if you need to prepare
