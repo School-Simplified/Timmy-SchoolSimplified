@@ -245,9 +245,9 @@ class CoreBotConfig(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(name="gitpull")
     @is_botAdmin2
-    async def gitpull(self, ctx, mode="-a"):
+    async def _gitpull(self, ctx, mode="-a"):
         output = ""
 
         hostDir = getHostDir()
