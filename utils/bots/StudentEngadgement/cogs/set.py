@@ -393,6 +393,10 @@ class SuggestModal(discord.ui.Modal):
 
 
 class Engagement(commands.Cog):
+    """
+    Commands for Student Engagement
+    """
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.__cog_name__ = "Student Engagement"

@@ -5,7 +5,7 @@
 import asyncio
 import inspect
 import itertools
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Coroutine, Dict, List, Optional, Set, Union
 from discord import app_commands
 import discord
 from discord.app_commands import command, describe
@@ -413,6 +413,9 @@ class FrontPageSource(menus.PageSource):
 
 
 class Help(commands.Cog):
+    """
+    Help command
+    """
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         bot.help_command.cog = self
@@ -446,17 +449,13 @@ class Help(commands.Cog):
 
         if sort and key is None:
             key = lambda c: c.qualified_name
-
+        #
         iterator = _commands
-        # iterator = commands if self.show_hidden else filter(lambda c: not c.hidden, commands)
+        # iterator = commands if show_hidden else filter(lambda c: not c.hidden, commands)
         #
-        # if self.verify_checks is False:
-        #     # if we do not need to verify the checks then we can just
-        #     # run it straight through normally without using await.
-        #     return sorted(iterator, key=key) if sort else list(iterator)
-        #
-        #
-        # async def predicate(cmd: commands.Command[Any, ..., Any]) -> bool:
+        # async def predicate(
+        #         cmd: Union[app_commands.Command[...], commands.Command[Any, ..., Any]]
+        # ) -> bool:
         #     try:
         #         return await cmd.can_run()
         #     except commands.CommandError:
@@ -620,7 +619,11 @@ class Help(commands.Cog):
         if not slash_group and not slash_cmd:
             return await interaction.response.send_message("Couldn't find command")
 
-    async def prepare_help_command(self, interaction: discord.Interaction, _command=None):
+    async def prepare_help_command(
+            self,
+            interaction: discord.Interaction,
+            _command=None
+    ) -> Union[None, Coroutine, List[commands.Command, ..., app_commands.Command]]:
         """|coro|
         A low level method that can be used to prepare the help command
         before it does anything. For example, if you need to prepare
