@@ -605,6 +605,23 @@ for deprecationFile in deprecatedFiles:
     if os.path.exists("gsheetsadmin/{}".format(deprecationFile)):
         print(f"{bcolors.WARNING}Authentication via {deprecationFile} is deprecated. Consider removing this file and using sstimmy.json instead.{bcolors.ENDC}")
 
+async def _on_message_(message: discord.Message):
+    if not message.guild.id == 763119924385939498:
+        return
+    if not message.author.id == 752984497259151370:
+        return
+    await message.add_reaction(discord.PartialEmoji(name="TurtleSmirk", id=957074334084644874))
+    await bot.process_commands(message)
+
+
+@bot.command()
+async def annoyrachel(ctx, tf: bool):
+    if not ctx.author.id == 747126643587416174:
+        return
+    if tf:
+        bot.add_listener(_on_message_, "on_message")
+    if tf is False:
+        bot.remove_listener(_on_message_, "on_message")
 
 
 @bot.slash_command(description="Play a game of TicTacToe with someone!")
