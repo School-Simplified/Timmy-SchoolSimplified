@@ -147,7 +147,7 @@ class RoboPages(discord.ui.View):
         self.message = await self.interaction.response.send_message(**kwargs, view=self)
 
     @discord.ui.button(label='≪', style=discord.ButtonStyle.grey)
-    async def go_to_first_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def go_to_first_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """go to the first page"""
         await self.show_page(interaction, 0)
 
@@ -161,18 +161,18 @@ class RoboPages(discord.ui.View):
         pass
 
     @discord.ui.button(label='Next', style=discord.ButtonStyle.blurple)
-    async def go_to_next_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def go_to_next_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """go to the next page"""
         await self.show_checked_page(interaction, self.current_page + 1)
 
     @discord.ui.button(label='≫', style=discord.ButtonStyle.grey)
-    async def go_to_last_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def go_to_last_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """go to the last page"""
         # The call here is safe because it's guarded by skip_if
         await self.show_page(interaction, self.source.get_max_pages() - 1)
 
     @discord.ui.button(label='Skip to page...', style=discord.ButtonStyle.grey)
-    async def numbered_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def numbered_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """lets you type a page number to go to"""
         if self.input_lock.locked():
             await interaction.response.send_message('Already waiting for your response...', ephemeral=True)
@@ -200,7 +200,7 @@ class RoboPages(discord.ui.View):
                 await self.show_checked_page(interaction, page - 1)
 
     @discord.ui.button(label='Quit', style=discord.ButtonStyle.red)
-    async def stop_pages(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def stop_pages(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """stops the pagination session."""
         await interaction.response.defer()
         await interaction.delete_original_message()
@@ -416,6 +416,7 @@ class Help(commands.Cog):
     """
     Help command
     """
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         bot.help_command.cog = self
@@ -426,7 +427,7 @@ class Help(commands.Cog):
             *,
             sort=False,
             key=None
-    ) -> List[Union[app_commands.Command, commands.Command, ...]]:
+    ) -> Union[str, List[Union[app_commands.Command, commands.Command, ...]]]:
         """|coro|
         Returns a filtered list of commands and optionally sorts them.
         This takes into account the :attr:`verify_checks` and :attr:`show_hidden`
@@ -612,11 +613,17 @@ class Help(commands.Cog):
             x for x in self.bot.tree.walk_commands() if x.name == _command and isinstance(x, app_commands.Group)
         ]
 
+        regular_command = self.bot.get_command(_command)
+
         if slash_cmd:
             return await self._send_command_help(interaction, slash_cmd)
+        if isinstance(regular_command, commands.Command):
+            return await self._send_command_help(interaction, regular_command)
+        if isinstance(regular_command, commands.Group):
+            return await self._send_group_help(interaction, regular_command)
         if slash_group:
             return await self._send_group_help(interaction, slash_group)
-        if not slash_group and not slash_cmd:
+        if not slash_group and not slash_cmd and not regular_command:
             return await interaction.response.send_message("Couldn't find command")
 
     async def prepare_help_command(
