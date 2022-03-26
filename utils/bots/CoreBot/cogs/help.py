@@ -250,14 +250,14 @@ class GroupHelpPageSource(menus.ListPageSource):
     ) -> discord.Embed:
 
         embed = discord.Embed(title=self.title, description=self.description, colour=discord.Colour.fuchsia())
-        for command in _commands:
-            if isinstance(command, commands.Command):
-                signature = f'{command.qualified_name} {command.signature}'
-                embed.add_field(name=signature, value=command.short_doc or 'No help given...', inline=False)
-            elif isinstance(command, app_commands.Command):
-                params = self.slash_param_signature(command)
-                signature = f'{command.root_parent} {command.name} {params[:256]}'
-                embed.add_field(name=signature, value=command.description or 'No help given...', inline=False)
+        for _command in _commands:
+            if isinstance(_command, commands.Command):
+                signature = f'{_command.qualified_name} {_command.signature}'
+                embed.add_field(name=signature, value=_command.short_doc or 'No help given...', inline=False)
+            elif isinstance(_command, app_commands.Command):
+                params = self.slash_param_signature(_command)
+                signature = f'{_command.root_parent} {_command.name} {params[:256]}'
+                embed.add_field(name=signature, value=_command.description or 'No help given...', inline=False)
 
         maximum = self.get_max_pages()
         if maximum > 1:
