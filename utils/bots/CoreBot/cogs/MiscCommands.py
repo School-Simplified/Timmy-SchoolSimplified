@@ -4,6 +4,7 @@ import subprocess
 import sys
 import time
 from datetime import timedelta
+from typing import List
 
 import discord
 import psutil
