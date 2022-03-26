@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1800,19 +1800,19 @@
                 ]
               },
               {
-                "id": "PyComparisonWithNoneInspection",
+                "id": "CommandLineInspection",
                 "shortDescription": {
-                  "text": "Using equality operators to compare with None"
+                  "text": "Incorrect CLI syntax"
                 },
                 "fullDescription": {
-                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
-                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
+                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
+                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1834,19 +1834,19 @@
                 ]
               },
               {
-                "id": "CommandLineInspection",
+                "id": "PyComparisonWithNoneInspection",
                 "shortDescription": {
-                  "text": "Incorrect CLI syntax"
+                  "text": "Using equality operators to compare with None"
                 },
                 "fullDescription": {
-                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
-                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
+                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
+                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1936,13 +1936,13 @@
                 ]
               },
               {
-                "id": "PyMethodParametersInspection",
+                "id": "PyChainedComparisonsInspection",
                 "shortDescription": {
-                  "text": "Improper first parameter"
+                  "text": "Too complex chained comparisons"
                 },
                 "fullDescription": {
-                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
-                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
+                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
+                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1970,13 +1970,13 @@
                 ]
               },
               {
-                "id": "PyChainedComparisonsInspection",
+                "id": "PyMethodParametersInspection",
                 "shortDescription": {
-                  "text": "Too complex chained comparisons"
+                  "text": "Improper first parameter"
                 },
                 "fullDescription": {
-                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
-                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
+                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
+                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -2888,40 +2888,6 @@
                 ]
               },
               {
-                "id": "PyRedundantParenthesesInspection",
-                "shortDescription": {
-                  "text": "Redundant parentheses"
-                },
-                "fullDescription": {
-                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
-                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "PyTrailingSemicolonInspection",
                 "shortDescription": {
                   "text": "Prohibited trailing semicolon in a statement"
@@ -2956,13 +2922,13 @@
                 ]
               },
               {
-                "id": "PyAbstractClassInspection",
+                "id": "PyRedundantParenthesesInspection",
                 "shortDescription": {
-                  "text": "Class must implement all abstract methods"
+                  "text": "Redundant parentheses"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when not all abstract properties or methods are defined in a subclass. Example: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n When the quick-fix is applied, the IDE implements an abstract method for the 'Triangle' class: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass",
-                  "markdown": "Reports cases when not all abstract properties or methods are defined in\na subclass.\n\n**Example:**\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n```\n\nWhen the quick-fix is applied, the IDE implements an abstract method for the `Triangle` class:\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass\n```"
+                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
+                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -3003,6 +2969,40 @@
                   "level": "warning",
                   "parameters": {
                     "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyAbstractClassInspection",
+                "shortDescription": {
+                  "text": "Class must implement all abstract methods"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when not all abstract properties or methods are defined in a subclass. Example: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n When the quick-fix is applied, the IDE implements an abstract method for the 'Triangle' class: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass",
+                  "markdown": "Reports cases when not all abstract properties or methods are defined in\na subclass.\n\n**Example:**\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n```\n\nWhen the quick-fix is applied, the IDE implements an abstract method for the `Triangle` class:\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass\n```"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -4464,40 +4464,6 @@
                 ]
               },
               {
-                "id": "JsonSchemaDeprecation",
-                "shortDescription": {
-                  "text": "Deprecated JSON property"
-                },
-                "fullDescription": {
-                  "text": "Reports a deprecated property in a JSON file. Note that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'.",
-                  "markdown": "Reports a deprecated property in a JSON file.  \nNote that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JSON and JSON5",
-                      "index": 4,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "XmlDuplicatedId",
                 "shortDescription": {
                   "text": "Duplicate 'id' attribute"
@@ -4521,6 +4487,40 @@
                     "target": {
                       "id": "XML",
                       "index": 3,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "JsonSchemaDeprecation",
+                "shortDescription": {
+                  "text": "Deprecated JSON property"
+                },
+                "fullDescription": {
+                  "text": "Reports a deprecated property in a JSON file. Note that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'.",
+                  "markdown": "Reports a deprecated property in a JSON file.  \nNote that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JSON and JSON5",
+                      "index": 4,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6130,40 +6130,6 @@
                 ]
               },
               {
-                "id": "LossyEncoding",
-                "shortDescription": {
-                  "text": "Lossy encoding"
-                },
-                "fullDescription": {
-                  "text": "Reports characters that cannot be displayed because of the current document encoding. Examples: If you type international characters in a document with the US-ASCII charset, some characters will be lost on save. If you load a UTF-8-encoded file using the ISO-8859-1 one-byte charset, some characters will be displayed incorrectly. You can fix this by changing the file encoding either by specifying the encoding directly in the file, e.g. by editing 'encoding=' attribute in the XML prolog of XML file, or by changing the corresponding options in Settings | Editor | File Encodings.",
-                  "markdown": "Reports characters that cannot be displayed because of the current document encoding.\n\nExamples:\n\n* If you type international characters in a document with the **US-ASCII** charset, some characters will be lost on save.\n* If you load a **UTF-8** -encoded file using the **ISO-8859-1** one-byte charset, some characters will be displayed incorrectly.\n\nYou can fix this by changing the file encoding\neither by specifying the encoding directly in the file, e.g. by editing `encoding=` attribute in the XML prolog of XML file,\nor by changing the corresponding options in **Settings \\| Editor \\| File Encodings**."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Internationalization",
-                      "index": 14,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpEscapedMetaCharacter",
                 "shortDescription": {
                   "text": "Escaped meta character"
@@ -6187,6 +6153,40 @@
                     "target": {
                       "id": "RegExp",
                       "index": 5,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "LossyEncoding",
+                "shortDescription": {
+                  "text": "Lossy encoding"
+                },
+                "fullDescription": {
+                  "text": "Reports characters that cannot be displayed because of the current document encoding. Examples: If you type international characters in a document with the US-ASCII charset, some characters will be lost on save. If you load a UTF-8-encoded file using the ISO-8859-1 one-byte charset, some characters will be displayed incorrectly. You can fix this by changing the file encoding either by specifying the encoding directly in the file, e.g. by editing 'encoding=' attribute in the XML prolog of XML file, or by changing the corresponding options in Settings | Editor | File Encodings.",
+                  "markdown": "Reports characters that cannot be displayed because of the current document encoding.\n\nExamples:\n\n* If you type international characters in a document with the **US-ASCII** charset, some characters will be lost on save.\n* If you load a **UTF-8** -encoded file using the **ISO-8859-1** one-byte charset, some characters will be displayed incorrectly.\n\nYou can fix this by changing the file encoding\neither by specifying the encoding directly in the file, e.g. by editing `encoding=` attribute in the XML prolog of XML file,\nor by changing the corresponding options in **Settings \\| Editor \\| File Encodings**."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Internationalization",
+                      "index": 14,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "58083dab2c4c404768acc1ffc8af7ba3925c0765",
+          "revisionId": "f3587ce2713d3eac495e6da2506527a118b2f513",
           "branch": "162-move-to-dpy",
           "properties": {
             "lastAuthorName": "Puncher",
@@ -31733,7 +31733,7 @@
                 "region": {
                   "startLine": 391,
                   "startColumn": 9,
-                  "charOffset": 11428,
+                  "charOffset": 11423,
                   "charLength": 12,
                   "snippet": {
                     "text": "isInDatabase"
@@ -31743,7 +31743,7 @@
                 "contextRegion": {
                   "startLine": 389,
                   "startColumn": 1,
-                  "charOffset": 11337,
+                  "charOffset": 11332,
                   "charLength": 178,
                   "snippet": {
                     "text": "        Removes an item from the study to-do list of the author/owner.\n        \"\"\"\n        isInDatabase = await addLeaderboardProgress(interaction.user)\n\n        if isInDatabase:"
@@ -31759,7 +31759,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "44c0402e7214909b4731ce91f19641ae8b1528d8e319f1028e0171f1c4067a7e"
+            "equalIndicator/v1": "15050f6e5df5a61a1b7f273062f63fee24335caee85c79e3875f7bb0eafffd7b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -31786,7 +31786,7 @@
                 "region": {
                   "startLine": 425,
                   "startColumn": 9,
-                  "charOffset": 12788,
+                  "charOffset": 12783,
                   "charLength": 6,
                   "snippet": {
                     "text": "lbList"
@@ -31796,7 +31796,7 @@
                 "contextRegion": {
                   "startLine": 423,
                   "startColumn": 1,
-                  "charOffset": 12723,
+                  "charOffset": 12718,
                   "charLength": 201,
                   "snippet": {
                     "text": "        guild = self.bot.get_guild(self.StudyVCGuildID)\n\n        lbList = []\n        i = 1\n        for entry in database.StudyVCLeaderboard.select().order_by(database.StudyVCLeaderboard.totalXP.desc(),"
@@ -31812,7 +31812,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "ec74963e856eb8cda7b820e33a608eca57d69b9a8672bb0bfa72202283e195ed"
+            "equalIndicator/v1": "3ea01a7c753023d9f285369c4fc8cba38189d65270ec6093a8f279bc60f76abf"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -31839,7 +31839,7 @@
                 "region": {
                   "startLine": 445,
                   "startColumn": 17,
-                  "charOffset": 13409,
+                  "charOffset": 13404,
                   "charLength": 10,
                   "snippet": {
                     "text": "totalXPStr"
@@ -31849,7 +31849,7 @@
                 "contextRegion": {
                   "startLine": 443,
                   "startColumn": 1,
-                  "charOffset": 13353,
+                  "charOffset": 13348,
                   "charLength": 193,
                   "snippet": {
                     "text": "                    place = f\"`{i}th`\"\n\n                totalXPStr = _shortNumber(entry.totalXP)\n                lbList.append(f\"{place} **{member}**: `{totalXPStr} XP`\")\n                i += 1"
@@ -31865,7 +31865,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "575bc383dc72fbbc6592ac38f3a289b7ad9b35964a38fe2507148117199aedc0"
+            "equalIndicator/v1": "2004064e68b6ea17411c115921d670a3862769f6b5ebac7a27c32be8c00e7b71"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -31892,7 +31892,7 @@
                 "region": {
                   "startLine": 449,
                   "startColumn": 9,
-                  "charOffset": 13577,
+                  "charOffset": 13572,
                   "charLength": 13,
                   "snippet": {
                     "text": "FormattedList"
@@ -31902,7 +31902,7 @@
                 "contextRegion": {
                   "startLine": 447,
                   "startColumn": 1,
-                  "charOffset": 13524,
+                  "charOffset": 13519,
                   "charLength": 156,
                   "snippet": {
                     "text": "                i += 1\n        print(lbList)\n        FormattedList = \"\\n\".join(lbList)\n        embed = discord.Embed(\n            title=\"Study Leaderboard\","
@@ -31918,7 +31918,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "6e988d6afc9871de324e4fc8e5eb7ecf030872ebda3578ca91433dacce9e0e83"
+            "equalIndicator/v1": "1e735a7b37e4308018ba1b5da7ab17839b80c0fecac0f656a974cb2f32867a4f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -40728,7 +40728,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-03-26",
-        "guid": "ac8d2f7c-ac02-43ac-8950-a0bd5de0acf0"
+        "guid": "d3bc53f2-cb19-47a9-b560-471495eb4f6c"
       },
       "newlineSequences": [
         "\r\n",
@@ -41755,7 +41755,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 13959,
+                    "charLength": 13952,
                     "snippet": {
                       "text": "from datetime import datetime, timedelta import discord import pytz from core import database from ..."
                     },
@@ -41780,7 +41780,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "f78b5fff04128be8878eebe8d64ae63b02d4337efc1b2890a9d58ec58486d5a8"
+              "equalIndicator/v1": "ca9573b14516822e0ff70ac44d143793f5394faee392b701ccd1a21c45e08439"
             },
             "properties": {
               "ideaSeverity": "ERROR"
