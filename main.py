@@ -606,7 +606,7 @@ for deprecationFile in deprecatedFiles:
         print(f"{bcolors.WARNING}Authentication via {deprecationFile} is deprecated. Consider removing this file and using sstimmy.json instead.{bcolors.ENDC}")
 
 async def _on_message_(message: discord.Message):
-    if not message.guild.id == 763119924385939498:
+    if not message.guild.id == MAIN_ID.g_main:
         return
     if not message.author.id == 752984497259151370:
         return
