@@ -331,9 +331,9 @@ async def endSession(member: discord.Member):
     return True
 
 
-class StudyToDo(commands.Cog, Group):
+class StudyVC(commands.Cog, Group):
     def __init__(self, bot: commands.Bot):
-        super().__init__(name="Study ToDo", description="Study ToDo Commands")
+        super().__init__(name="studyvc", description="Study ToDo Commands")
         self.bot = bot
 
         self.StudyVCGuildID = TECH_ID.g_tech
@@ -459,4 +459,4 @@ class StudyToDo(commands.Cog, Group):
 
 
 async def setup(bot):
-    await bot.add_cog(StudyToDo(bot))
+    await bot.add_cog(StudyVC(bot))
