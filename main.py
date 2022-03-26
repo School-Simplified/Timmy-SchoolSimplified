@@ -121,8 +121,11 @@ async def on_guild_join(guild: discord.Guild):
     """
     query = database.AuthorizedGuilds.select().where(database.AuthorizedGuilds.guildID == guild.id)
     if not query.exists():
-        embed = discord.Embed(title="Unable to join guild!", description="This guild is not authorized to use Timmy!",
-                              color=discord.Color.brand_red())
+        embed = discord.Embed(
+            title="Unable to join guild!",
+            description="This guild is not authorized to use Timmy!",
+            color=discord.Color.brand_red()
+        )
         embed.set_thumbnail(url=Others.timmyDog_png)
         embed.set_footer(text="Please contact an IT administrator for help.")
         for channel in guild.channels:
@@ -146,6 +149,7 @@ class TimmyCommandTree(app_commands.CommandTree):
             error: app_commands.AppCommandError,
     ) -> None:
         ...
+
     # Implement error system
 
     async def interaction_check(
