@@ -494,7 +494,10 @@ class Help(commands.Cog):
     async def _send_bot_help(self, interaction: discord.Interaction) -> None:
 
         def key(_command: Union[app_commands.Command, commands.Command]) -> str:
-            _cog = _command.cog
+            if isinstance(_command, app_commands.Command):
+                _cog: commands.Cog = _command.binding
+            else:
+                _cog: commands.Cog = _command.cog
             return _cog.qualified_name if _cog else '\U0010ffff'
 
         # sort guild and global slash commands, regular commands
