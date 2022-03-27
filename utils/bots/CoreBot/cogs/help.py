@@ -136,7 +136,7 @@ class RoboPages(discord.ui.View):
             print(error)
 
     async def start(self) -> None:
-        if self.check_embeds and not self.interaction.channel.permissions_for(self.interaction.client).embed_links:
+        if self.check_embeds and not self.interaction.channel.permissions_for(self.interaction.guild.me).embed_links:
             await self.interaction.response.send_message('Bot does not have embed links permission in this channel.')
             return
 
