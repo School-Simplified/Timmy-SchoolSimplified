@@ -55,7 +55,7 @@ class GSuiteLogin(commands.Cog):
                     and m.author.id is author.id
                 )
 
-            channel = await self.bot.fetch_channel(interaction.channel_id)
+            channel = self.bot.get_channel(interaction.channel_id)
             guild = interaction.message.guild
             author = interaction.user
             dm_channel = await author.create_dm()
@@ -144,9 +144,7 @@ class GSuiteLogin(commands.Cog):
                             now = now.astimezone(pytz.timezone("US/Eastern")).strftime(
                                 "%m/%d/%Y %I:%-M %p"
                             )
-                            logchannel: discord.TextChannel = (
-                                await self.bot.fetch_channel(self.logchannel)
-                            )
+                            logchannel: discord.TextChannel = self.bot.get_channel(self.logchannel)
 
                             embed = discord.Embed(
                                 title="GSuite Authentication",
@@ -187,5 +185,5 @@ class GSuiteLogin(commands.Cog):
         await ctx.send(embed=embed, view=GSuiteButton)
 
 
-def setup(bot):
-    bot.add_cog(GSuiteLogin(bot))
+async def setup(bot):
+    await bot.add_cog(GSuiteLogin(bot))

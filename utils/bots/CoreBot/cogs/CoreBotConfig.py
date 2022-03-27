@@ -1,18 +1,24 @@
+import subprocess
+import sys
 from pathlib import Path
+from threading import Thread
+from typing import Literal
+
 import discord
 from core import database
 from core.common import CheckDB_CC
-from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4
-from core.common import Emoji, hexColors
+from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4, slash_is_bot_admin_2
+from core.common import Emoji, Colors
+from discord.app_commands import command
 from discord.ext import commands
 from dotenv import load_dotenv
+from core.common import getHostDir, force_restart
 
 load_dotenv()
 
 
 def get_extensions():
-    extensions = []
-    extensions.append("jishaku")
+    extensions = ["jishaku"]
     for file in Path("utils").glob("**/*.py"):
         if "!" in file.name or "DEV" in file.name:
             continue
@@ -21,11 +27,16 @@ def get_extensions():
 
 
 class CoreBotConfig(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
+        self.__cog_name__ = "Core Bot Config"
         self.bot = bot
 
+    @property
+    def display_emoji(self) -> str:
+        return "⚙️"
+
     @commands.group(aliases=["f"])
-    async def filter(self):
+    async def filters(self, ctx):
         pass
 
     @commands.command()
@@ -33,8 +44,8 @@ class CoreBotConfig(commands.Cog):
     async def Fmodify(self, ctx, num: int, val: bool):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
-            .where(database.CheckInformation.id == 1)
-            .get()
+                .where(database.CheckInformation.id == 1)
+                .get()
         )
 
         databaseValues = {
@@ -73,12 +84,12 @@ class CoreBotConfig(commands.Cog):
 
         await ctx.send(f"Field: {databaseValues[num]} has been set to {str(val)}")
 
-    @filter.command()
+    @filters.command()
     async def list(self, ctx):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
-            .where(database.CheckInformation.id == 1)
-            .get()
+                .where(database.CheckInformation.id == 1)
+                .get()
         )
 
         embed = discord.Embed(
@@ -89,12 +100,12 @@ class CoreBotConfig(commands.Cog):
         embed.add_field(
             name="Checks",
             value=f"1) `Maintenance Mode`\n{Emoji.barrow} {CheckDB_CC.MasterMaintenance}"
-            f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB_CC.guildNone}"
-            f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB_CC.externalGuild}"
-            f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB_CC.ModRoleBypass}"
-            f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB_CC.ruleBypass}"
-            f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB_CC.publicCategories}"
-            f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB_CC.elseSituation}",
+                  f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB_CC.guildNone}"
+                  f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB_CC.externalGuild}"
+                  f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB_CC.ModRoleBypass}"
+                  f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB_CC.ruleBypass}"
+                  f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB_CC.publicCategories}"
+                  f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB_CC.elseSituation}",
         )
         await ctx.send(embed=embed)
 
@@ -107,8 +118,8 @@ class CoreBotConfig(commands.Cog):
     async def delete(self, ctx, num: int):
         WhitelistedPrefix: database.WhitelistedPrefix = (
             database.WhitelistedPrefix.select()
-            .where(database.WhitelistedPrefix.id == num)
-            .get()
+                .where(database.WhitelistedPrefix.id == num)
+                .get()
         )
         WhitelistedPrefix.delete_instance()
         await ctx.send(f"Field: {WhitelistedPrefix.prefix} has been deleted")
@@ -155,18 +166,18 @@ class CoreBotConfig(commands.Cog):
         if "cogs." not in ext:
             ext = f"cogs.{ext}"
         if ext in get_extensions():
-            self.bot.unload_extension(ext)
+            await self.bot.unload_extension(ext)
             embed = discord.Embed(
                 title="Cogs - Unload",
                 description=f"Unloaded cog: {ext}",
-                color=hexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
                 title="Cogs Reloaded",
                 description=f"Cog '{ext}' not found",
-                color=hexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
 
@@ -176,18 +187,18 @@ class CoreBotConfig(commands.Cog):
         if "cogs." not in ext:
             ext = f"cogs.{ext}"
         if ext in get_extensions():
-            self.bot.load_extension(ext)
+            await self.bot.load_extension(ext)
             embed = discord.Embed(
                 title="Cogs - Load",
                 description=f"Loaded cog: {ext}",
-                color=hexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
                 title="Cogs - Load",
                 description=f"Cog '{ext}' not found.",
-                color=hexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
 
@@ -198,10 +209,10 @@ class CoreBotConfig(commands.Cog):
             embed = discord.Embed(
                 title="Cogs - Reload",
                 description="Reloaded all cogs",
-                color=hexColors.light_purple,
+                color=Colors.light_purple,
             )
             for extension in get_extensions():
-                self.bot.reload_extension(extension)
+                await self.bot.reload_extension(extension)
             await ctx.send(embed=embed)
             return
 
@@ -209,11 +220,11 @@ class CoreBotConfig(commands.Cog):
             ext = f"cogs.{ext}"
 
         if ext in get_extensions():
-            self.bot.reload_extension(ext)
+            await self.bot.reload_extension(ext)
             embed = discord.Embed(
                 title="Cogs - Reload",
                 description=f"Reloaded cog: {ext}",
-                color=hexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
 
@@ -221,7 +232,7 @@ class CoreBotConfig(commands.Cog):
             embed = discord.Embed(
                 title="Cogs - Reload",
                 description=f"Cog '{ext}' not found.",
-                color=hexColors.light_purple,
+                color=Colors.light_purple,
             )
             await ctx.send(embed=embed)
 
@@ -230,9 +241,148 @@ class CoreBotConfig(commands.Cog):
     async def view(self, ctx):
         msg = " ".join(get_extensions())
         embed = discord.Embed(
-            title="Cogs - View", description=msg, color=hexColors.light_purple
+            title="Cogs - View", description=msg, color=Colors.light_purple
         )
         await ctx.send(embed=embed)
+
+    @commands.command(name="gitpull")
+    @is_botAdmin2
+    async def _gitpull(self, ctx, mode="-a"):
+        output = ""
+
+        hostDir = getHostDir()
+        if hostDir == "/home/timmya":
+            branch = "origin/main"
+            directory = "TimmyMain-SS"
+
+        elif hostDir == "/home/timmy-beta":
+            branch = "origin/beta"
+            directory = "TimmyBeta-SS"
+
+        else:
+            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
+
+        try:
+            p = subprocess.run(
+                "git fetch --all",
+                shell=True,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            output += p.stdout
+        except Exception as e:
+            await ctx.send("⛔️ Unable to fetch the Current Repo Header!")
+            await ctx.send(f"**Error:**\n{e}")
+        try:
+            p = subprocess.run(
+                f"git reset --hard {branch}",
+                shell=True,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            output += p.stdout
+        except Exception as e:
+            await ctx.send("⛔️ Unable to apply changes!")
+            await ctx.send(f"**Error:**\n{e}")
+
+        embed = discord.Embed(
+            title="GitHub Local Reset",
+            description=f"Local Files changed to match {branch}",
+            color=Colors.green,
+        )
+        embed.add_field(name="Shell Output", value=f"```shell\n$ {output}\n```")
+        if mode == "-a":
+            embed.set_footer(text="Attempting to restart the bot...")
+        elif mode == "-c":
+            embed.set_footer(text="Attempting to reloading cogs...")
+
+        await ctx.send(embed=embed)
+
+        if mode == "-a":
+            await force_restart(ctx, directory)
+        elif mode == "-c":
+            await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
+
+    @command()
+    @slash_is_bot_admin_2()
+    async def gitpull(
+            self, interaction: discord.Interaction, mode: Literal["-a", "-c"] = "-a", sync_commands: bool = False
+    ) -> None:
+        output = ""
+
+        hostDir = getHostDir()
+        if hostDir == "/home/timmya":
+            branch = "origin/main"
+            directory = "TimmyMain-SS"
+
+        elif hostDir == "/home/timmy-beta":
+            branch = "origin/beta"
+            directory = "TimmyBeta-SS"
+
+        else:
+            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
+
+        try:
+            p = subprocess.run(
+                "git fetch --all",
+                shell=True,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            output += p.stdout
+        except Exception as e:
+            await interaction.response.send_message(f"⛔️ Unable to fetch the Current Repo Header!\n**Error:**\n{e}")
+        try:
+            p = subprocess.run(
+                f"git reset --hard {branch}",
+                shell=True,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            output += p.stdout
+        except Exception as e:
+            await interaction.response.send_message(f"⛔️ Unable to apply changes!\n**Error:**\n{e}")
+
+        embed = discord.Embed(
+            title="GitHub Local Reset",
+            description=f"Local Files changed to match {branch}",
+            color=discord.Color.brand_green(),
+        )
+        embed.add_field(name="Shell Output", value=f"```shell\n$ {output}\n```")
+        if mode == "-a":
+            embed.set_footer(text="Attempting to restart the bot...")
+        elif mode == "-c":
+            embed.set_footer(text="Attempting to reloading cogs...")
+
+        await interaction.response.send_message(embed=embed)
+
+        if mode == "-a":
+            await self._force_restart(interaction, directory)
+        elif mode == "-c":
+            try:
+                embed = discord.Embed(
+                    title="Cogs - Reload",
+                    description="Reloaded all cogs",
+                    color=discord.Color.brand_green(),
+                )
+                for extension in get_extensions():
+                    await self.bot.reload_extension(extension)
+                return await interaction.channel.send(embed=embed)
+            except commands.ExtensionError:
+                embed = discord.Embed(
+                    title="Cogs - Reload",
+                    description="Failed to reload cogs",
+                    color=discord.Color.brand_red(),
+                )
+                return await interaction.channel.send(embed=embed)
+
+        if sync_commands:
+            for guild in self.bot.guilds:
+                await self.bot.tree.sync(guild=guild)
 
     @commands.group()
     async def w(self, ctx):
@@ -247,7 +397,7 @@ class CoreBotConfig(commands.Cog):
             database.Administrators.TierLevel == 1
         )
         for admin in query1:
-            user = await self.bot.fetch_user(admin.discordID)
+            user = self.bot.get_user(admin.discordID)
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL1 = "\n".join(adminList)
@@ -257,7 +407,7 @@ class CoreBotConfig(commands.Cog):
             database.Administrators.TierLevel == 2
         )
         for admin in query2:
-            user = await self.bot.fetch_user(admin.discordID)
+            user = self.bot.get_user(admin.discordID)
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL2 = "\n".join(adminList)
@@ -267,7 +417,7 @@ class CoreBotConfig(commands.Cog):
             database.Administrators.TierLevel == 3
         )
         for admin in query3:
-            user = await self.bot.fetch_user(admin.discordID)
+            user = self.bot.get_user(admin.discordID)
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL3 = "\n".join(adminList)
@@ -277,7 +427,7 @@ class CoreBotConfig(commands.Cog):
             database.Administrators.TierLevel == 4
         )
         for admin in query4:
-            user = await self.bot.fetch_user(admin.discordID)
+            user = self.bot.get_user(admin.discordID)
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL4 = "\n".join(adminList)
@@ -290,10 +440,10 @@ class CoreBotConfig(commands.Cog):
         embed.add_field(
             name="Whitelisted Users",
             value=f"Format:\n**Username** -> **ID**"
-            f"\n\n**Permit 4:** *Owners*\n{adminLEVEL4}"
-            f"\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}"
-            f"\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}"
-            f"\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}",
+                  f"\n\n**Permit 4:** *Owners*\n{adminLEVEL4}"
+                  f"\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}"
+                  f"\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}"
+                  f"\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}",
         )
         embed.set_footer(
             text="Only Owners/Permit 4's can modify Bot Administrators. | Permit 4 is the HIGHEST Authorization Level"
@@ -350,6 +500,60 @@ class CoreBotConfig(commands.Cog):
 
         database.db.close()
 
+    @staticmethod
+    async def _force_restart(interaction: discord.Interaction, main_or_beta):
+        p = subprocess.run(
+            "git status -uno", shell=True, text=True, capture_output=True, check=True
+        )
 
-def setup(bot):
-    bot.add_cog(CoreBotConfig(bot))
+        embed = discord.Embed(
+            title="Restarting...",
+            description="Doing GIT Operation (1/3)",
+            color=discord.Color.brand_green(),
+        )
+        embed.add_field(
+            name="Checking GIT (1/3)", value=f"**Git Output:**\n```shell\n{p.stdout}\n```"
+        )
+
+        msg = await interaction.channel.send(embed=embed)
+        try:
+
+            result = subprocess.run(
+                f"cd && cd {main_or_beta}",
+                shell=True,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            theproc = subprocess.Popen([sys.executable, "main.py"])
+
+            runThread = Thread(target=theproc.communicate)
+            runThread.start()
+
+            embed.add_field(
+                name="Started Environment and Additional Process (2/3)",
+                value="Executed `source` and `nohup`.",
+                inline=False,
+            )
+            await msg.edit(embed=embed)
+
+        except Exception as e:
+            embed = discord.Embed(
+                title="Operation Failed", description=e, color=discord.Color.brand_red()
+            )
+            embed.set_footer(text="Main bot process will be terminated.")
+
+            await interaction.channel.send(embed=embed)
+
+        else:
+            embed.add_field(
+                name="Killing Old Bot Process (3/3)",
+                value="Executing `sys.exit(0)` now...",
+                inline=False,
+            )
+            await msg.edit(embed=embed)
+            sys.exit(0)
+
+
+async def setup(bot):
+    await bot.add_cog(CoreBotConfig(bot))

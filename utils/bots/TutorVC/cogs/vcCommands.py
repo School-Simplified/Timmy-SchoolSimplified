@@ -12,10 +12,13 @@ from core.common import (
     TUT_ID,
     SandboxConfig,
     SelectMenuHandler,
+    GameDict
 )
 from discord.ext import commands
 
 # global variables
+from discord.http import Route
+
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 EST = pytz.timezone("US/Eastern")
 
@@ -71,29 +74,18 @@ VCGamesList = [  # TODO add emojis and descriptions to these items
     discord.SelectOption(label="Word Snacks"),
 ]
 
-GameDict = {
-    "Awkword": 879863881349087252,
-    "Betrayal": 773336526917861400,
-    "CG4": 832025144389533716,
-    "Chess in the Park": 832012774040141894,
-    "Doodle Crew": 878067389634314250,
-    "Letter Tile": 879863686565621790,
-    "Fishington": 814288819477020702,
-    "Poker Night": 755827207812677713,
-    "Putts": 832012854282158180,
-    "Sketchy Artist": 879864070101172255,
-    "Spell Cast": 852509694341283871,
-    "Youtube Together": 755600276941176913,
-    "Word Snacks": 879863976006127627,
-}
-
 
 class TutorVCCMD(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        q: database.SandboxConfig = (
-            database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
-        )
+        try:
+            q: database.SandboxConfig = (
+                database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+            )
+        except:
+            q = database.SandboxConfig.create(mode="None")
+            q.save()
+
 
         self.channel_id = MAIN_ID.ch_controlPanel
         self.categoryID = [
@@ -187,16 +179,20 @@ class TutorVCCMD(commands.Cog):
             TECH_ID.g_tech: q.ch_tv_startvc,
         }
 
+    async def _create_invite(self, voice, app_id: int, max_age=86400):
+        r = Route("POST", "/channels/{channel_id}/invites", channel_id=voice.channel.id)
+        payload = {"max_age": max_age, "target_type": 2, "target_application_id": app_id}
+        code = (await self.bot.http.request(r, json=payload))["code"]
+        return code
+
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def startmusic(self, ctx: commands.Context):
         voice_state = ctx.author.voice
         if voice_state is None:
             return await ctx.send("You are not in a voice channel.")
-        GameLink = str(
-            await voice_state.channel.create_activity_invite(880218394199220334)
-        )
-        await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+        code = self._create_invite(voice_state, 880218394199220334)
+        await ctx.send(f"**Click the link to get started!**\nhttps://discord.gg/{code}")
 
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -217,7 +213,7 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                channel: discord.VoiceChannel = self.bot.get_channel(
                     int(query.ChannelID)
                 )
                 view = discord.ui.View()
@@ -237,16 +233,16 @@ class TutorVCCMD(commands.Cog):
                 else:
                     return await ctx.send("Timed out, try again later.")
                 GameID = GameDict[SelectedGame]
-                GameLink = str(await channel.create_activity_invite(GameID))
+                code = str(await self._create_invite(ctx.author.voice, GameID))
                 await ctx.send("Loading...")
-                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+                await ctx.send(f"**Click the link to get started!**\nhttps://discord.gg/{code}")
 
             else:
                 embed = discord.Embed(
                     title=f"{Emoji.deny} Ownership Check Failed",
                     description=f"You are not the owner of this voice channel, "
                     f"please ask the original owner to start a game!",
-                    color=discord.Colour.red(),
+                    color=discord.Colour.brand_red(),
                 )
                 return await ctx.send(embed=embed)
 
@@ -256,7 +252,7 @@ class TutorVCCMD(commands.Cog):
                 description="You are not allowed to delete these channels!"
                 "\n\n**Error Detection:**"
                 "\n**1)** Detected Static Channels",
-                color=discord.Colour.dark_red(),
+                color=discord.Colour.brand_red(),
             )
             return await ctx.send(embed=embed)
 
@@ -277,7 +273,7 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                channel: discord.VoiceChannel = self.bot.get_channel(
                     q.ChannelID
                 )
 
@@ -289,9 +285,7 @@ class TutorVCCMD(commands.Cog):
                     select_user=ctx.author,
                 )
                 view.add_item(var)
-                await ctx.send(
-                    "Select a game from the dropdown you wish to initiate.", view=view
-                )
+                await ctx.send("Select a game from the dropdown you wish to initiate.", view=view)
                 timeout = await view.wait()
                 if not timeout:
                     SelectedGame = var.view_response
@@ -299,15 +293,15 @@ class TutorVCCMD(commands.Cog):
                     return await ctx.send("Timed out, try again later.")
                 print(SelectedGame)
                 GameID = GameDict[SelectedGame]
-                GameLink = str(await channel.create_activity_invite(GameID))
-                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+                code = str(await self._create_invite(ctx.author.voice, GameID))
+                await ctx.send(f"**Click the link to get started!**\nhttps://discord.gg/{code}")
 
             else:
                 embed = discord.Embed(
                     title=f"{Emoji.deny} Ownership Check Failed",
                     description=f"You are not the owner of this voice channel, "
                     f"please ask the original owner to start a game!",
-                    color=discord.Colour.red(),
+                    color=discord.Colour.brand_red(),
                 )
                 return await ctx.send(embed=embed)
         database.db.close()
@@ -331,7 +325,7 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                channel: discord.VoiceChannel = self.bot.get_channel(
                     int(query.ChannelID)
                 )
                 GameLink = str(await channel.create_activity_invite(880218394199220334))
@@ -373,7 +367,7 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = await self.bot.fetch_channel(
+                channel: discord.VoiceChannel = self.bot.get_channel(
                     q.ChannelID
                 )
 
@@ -575,7 +569,7 @@ class TutorVCCMD(commands.Cog):
                 nowSTR = int(now.timestamp())
                 day = str(day)
 
-                channel = await self.bot.fetch_channel(int(query.ChannelID))
+                channel = self.bot.get_channel(int(query.ChannelID))
 
                 embed = discord.Embed(
                     title=f"{Emoji.archive} Ended Session",
@@ -600,10 +594,10 @@ class TutorVCCMD(commands.Cog):
                 if tutorSession.exists():
                     tutorSession = tutorSession.get()
 
-                    student = await self.bot.fetch_user(tutorSession.StudentID)
-                    tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                    student = self.bot.get_user(tutorSession.StudentID)
+                    tutor = self.bot.get_user(tutorSession.TutorID)
 
-                    HOURCH = await self.bot.fetch_channel(self.TutorLogID)
+                    HOURCH = self.bot.get_channel(self.TutorLogID)
 
                     hourlog = discord.Embed(
                         title="Hour Log",
@@ -697,10 +691,10 @@ class TutorVCCMD(commands.Cog):
                 if tutorSession.exists():
                     tutorSession = tutorSession.get()
 
-                    student = await self.bot.fetch_user(tutorSession.StudentID)
-                    tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                    student = self.bot.get_user(tutorSession.StudentID)
+                    tutor = self.bot.get_user(tutorSession.TutorID)
 
-                    HOURCH = await self.bot.fetch_channel(self.TutorLogID)
+                    HOURCH = self.bot.get_user(self.TutorLogID)
 
                     hourlog = discord.Embed(
                         title="Hour Log",
@@ -792,7 +786,7 @@ class TutorVCCMD(commands.Cog):
     )
     async def forceend(self, ctx, channel):
         database.db.connect(reuse_if_open=True)
-        channel = await self.bot.fetch_channel(channel)
+        channel = self.bot.get_channel(channel)
         print(channel)
 
         if channel.id in self.presetChannels:
@@ -1029,8 +1023,8 @@ class TutorVCCMD(commands.Cog):
                     )
                     if query.exists():
                         query = query.get()
-                        student = await self.bot.fetch_user(tutorSession.StudentID)
-                        tutor = await self.bot.fetch_user(tutorSession.TutorID)
+                        student = self.bot.get_user(tutorSession.StudentID)
+                        tutor = self.bot.get_user(tutorSession.TutorID)
                         ts = int(tutorSession.Date.timestamp())
 
                         query.TutorBotSessionID = tutorcode
@@ -1586,5 +1580,5 @@ class TutorVCCMD(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(TutorVCCMD(bot))
+async def setup(bot):
+    await bot.add_cog(TutorVCCMD(bot))

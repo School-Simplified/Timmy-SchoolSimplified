@@ -102,7 +102,7 @@ class BanUpdate(commands.Cog):
 
             sheet.insert_row(row, 2)  # Insert data, and boom. We done!
 
-            ModChannel = await self.bot.fetch_channel(self.ModLogID)
+            ModChannel = self.bot.get_channel(self.ModLogID)
 
             embed = discord.Embed(
                 title="Successful Ban Entry",
@@ -121,5 +121,5 @@ class BanUpdate(commands.Cog):
             break
 
 
-def setup(bot):
-    bot.add_cog(BanUpdate(bot))
+async def setup(bot):
+    await bot.add_cog(BanUpdate(bot))

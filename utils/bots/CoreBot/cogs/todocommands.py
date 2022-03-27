@@ -2,13 +2,21 @@ import discord
 from core import database
 from discord.ext import commands
 
-from core.common import hexColors
+from core.common import Colors
 
 
 class TodoCMD(commands.Cog):
+    """
+    Todo list management
+    """
     def __init__(self, bot):
         self.bot = bot
         self.interaction = []
+        self.__cog_name__ = "Todo"
+
+    @property
+    def display_emoji(self) -> str:
+        return "📜"
 
     @commands.group()
     async def todo(self, ctx):
@@ -19,7 +27,7 @@ class TodoCMD(commands.Cog):
             signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
 
             embed = discord.Embed(
-                color=hexColors.red_error,
+                color=Colors.red,
                 title="Missing/Extra Required Arguments Passed In!",
                 description=f"You have missed one or several arguments in this command"
                 f"\n\nUsage:"
@@ -95,5 +103,5 @@ class TodoCMD(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(TodoCMD(bot))
+async def setup(bot):
+    await bot.add_cog(TodoCMD(bot))

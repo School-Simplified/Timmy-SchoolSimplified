@@ -1,3 +1,4 @@
+import collections
 import os
 import sys
 from datetime import datetime
@@ -23,10 +24,10 @@ useDB = True
 
 if not os.getenv("PyTestMODE"):
     useDB = input(
-        "Do you want to use MySQL? (y/n)\nThis option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications."
+        "Do you want to use MySQL? (y/n)\nThis option should be avoided if you are testing new database structures, "
+        "do not use MySQL Production if you are testing table modifications. "
     )
     useDB = strtobool(useDB)
-
 
 """
 Change to a SqliteDatabase if you don't have any MySQL Credentials.
@@ -306,7 +307,7 @@ class CheckInformation(BaseModel):
 
     `MasterMaintenance`: BooleanField()
     Ultimate Check; If this is enabled no one except Permit 4+ users are allowed to use the bot.\n
-    >>> **NOTE:** This attribute must always have a bypass to prevent lockouts, otherwise this check will ALWAYS return False.
+    '>>> **NOTE:** This attribute must always have a bypass to prevent lockouts, otherwise this check will ALWAYS return False.
 
     `guildNone`: BooleanField()
     If commands executed outside of guilds (DMs) are allowed.
@@ -346,6 +347,23 @@ class Blacklist(BaseModel):
     """
     # Blacklist:
     List of users who are blacklisted on the bot.
+
+    `id`: AutoField()
+    Database Entry
+
+    `discordID`: BigIntegerField()
+    Discord ID
+    """
+
+    id = AutoField()
+
+    discordID = BigIntegerField(unique=True)
+
+
+class ResponseSpamBlacklist(BaseModel):
+    """
+    # Blacklist:
+    List of users who are blacklisted from suggesting to the SET team.
 
     `id`: AutoField()
     Database Entry
@@ -580,17 +598,17 @@ class SandboxConfig(BaseModel):
     id = AutoField()
     mode = TextField()
 
-    cat_mathticket = BigIntegerField()
-    cat_scienceticket = BigIntegerField()
-    cat_socialstudiesticket = BigIntegerField()
-    cat_essayticket = BigIntegerField()
-    cat_englishticket = BigIntegerField()
-    cat_otherticket = BigIntegerField()
-    cat_fineartsticket = BigIntegerField()
-    cat_languageticket = BigIntegerField()
+    cat_mathticket = BigIntegerField(default=0)
+    cat_scienceticket = BigIntegerField(default=0)
+    cat_socialstudiesticket = BigIntegerField(default=0)
+    cat_essayticket = BigIntegerField(default=0)
+    cat_englishticket = BigIntegerField(default=0)
+    cat_otherticket = BigIntegerField(default=0)
+    cat_fineartsticket = BigIntegerField(default=0)
+    cat_languageticket = BigIntegerField(default=0)
 
-    ch_tv_console = BigIntegerField()
-    ch_tv_startvc = BigIntegerField()
+    ch_tv_console = BigIntegerField(default=0)
+    ch_tv_startvc = BigIntegerField(default=0)
 
 
 class Voting(BaseModel):
@@ -689,7 +707,6 @@ class StudyVCLeaderboard(BaseModel):
     level = IntegerField(default=0)
     xp = BigIntegerField(default=0)
     totalXP = BigIntegerField(default=0)
-
 
 app = Flask(__name__)
 

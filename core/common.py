@@ -38,7 +38,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 from core import database
 
 load_dotenv()
-# global variables
+
+# module variables
 coroutineType = Callable[[Any, Any], Awaitable[Any]]
 
 
@@ -59,7 +60,7 @@ class ConfigcatClient:
     )
 
 
-async def rawExport(self, channel, response, user: discord.User):
+async def rawExport(channel, response, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
 
     if transcript is None:
@@ -125,8 +126,7 @@ async def paginate_embed(
 
 
 def get_extensions():
-    extensions = []
-    extensions.append("jishaku")
+    extensions = ["jishaku"]
     if sys.platform == "win32" or sys.platform == "cygwin":
         dirpath = "\\"
     else:
@@ -188,8 +188,13 @@ def access_secret(
     Returns:
         Credential Object: Returns a credential object that allows you to authenticate with APIs.
     """
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gsheetsadmin/sstimmy.json"
-    client = secretmanager.SecretManagerServiceClient()
+    if os.path.exists("gsheetsadmin/sstimmy.json"):
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gsheetsadmin/sstimmy.json"
+        client = secretmanager.SecretManagerServiceClient()
+    else:
+        rawcreds = json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(rawcreds)
+        client = secretmanager.SecretManagerServiceClient(credentials=creds)
 
     name = f"projects/ss-timmy/secrets/{secret_id}/versions/latest"
     response = client.access_secret_version(request={"name": name})
@@ -338,10 +343,7 @@ class MAIN_ID:
     cat_mathTicket = int(
         ConfigcatClient.MAIN_ID_CC.get_value("cat_mathticket", 800472371973980181)
     )
-    cat_socialStudiesTicket = int(
-        ConfigcatClient.MAIN_ID_CC.get_value(
-            "cat_socialstudiesticket", 800481237608824882
-        )
+    cat_socialStudiesTicket = int(ConfigcatClient.MAIN_ID_CC.get_value("cat_socialstudiesticket", 800481237608824882)
     )
     cat_englishTicket = int(
         ConfigcatClient.MAIN_ID_CC.get_value("cat_englishticket", 800475854353596469)
@@ -398,10 +400,7 @@ class MAIN_ID:
         ConfigcatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369)
     )
 
-    r_tutor = 778453090956738580
-
     # *** Messages ***
-    # Tutoring
     msg_math = int(ConfigcatClient.MAIN_ID_CC.get_value("msg_math", 866904767568543744))
     msg_science = int(
         ConfigcatClient.MAIN_ID_CC.get_value("msg_science", 866904901174427678)
@@ -975,7 +974,7 @@ class SET_ID:
 
 class LEADER_ID:
     """
-    IDs of the Leadership Lounge server.
+    IDs of the SSD SET SERVER
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
@@ -984,42 +983,15 @@ class LEADER_ID:
         r: discord.Role
         msg: discord.Message
     """
-
     # *** Guilds ***
-    g_leader = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154)
-    )
+    g_set = int(ConfigcatClient.SET_ID_CC.get_value("g_set", 950799439625355294))
 
     # *** Channels ***
-    ch_staffAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_staffannouncements", 936134263777148949
-        )
+    ch_suggestions = int(
+        ConfigcatClient.SET_ID_CC.get_value("ch_suggestions", 954190487026274344)
     )
-    ch_envAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_envannouncements", 942572395640782909
-        )
-    )
-    ch_rebrandAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_rebrandannouncements", 946180039630782474
-        )
-    )
-    ch_workonlyAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_workonlyannouncements", 890993285940789299
-        )
-    )
-    ch_financeAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_financeannouncements", 919341240280023060
-        )
-    )
-    ch_mktAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_mktannouncements", 942792208841588837
-        )
+    ch_puzzle = int(
+        ConfigcatClient.SET_ID_CC.get_value("ch_puzzle", 952402735167320084)
     )
     ch_ssdAnnouncements = int(
         ConfigcatClient.LEADER_ID_CC.get_value(
@@ -1158,7 +1130,6 @@ class Emoji:
     lock = "<:lock:860926195087835137>"
     unlock = "<:unlock:860926246937427989>"
     time = "<:time:860926238737825793>"
-    loading = None
     redissue = "<:issue:860587949263290368>"
     archive = "<:file:861794167578689547>"
     cycle = "<:cycle:861794132585611324>"
@@ -1183,31 +1154,36 @@ class Emoji:
     pythonLogo = "<:python:945410067887435846>"
     javascriptLogo = "<:javascript:945410211752054816>"
     blobamused = "<:blobamused:895125015719194655>"
-
-    timmyBook = "<:timmy_book:880875405962264667>"
+    modshield = "<:modshield:957316876168474644>"
     loadingGIF = "<a:Loading:904192577094426626>"
     loadingGIF2 = "<a:Loading:905563298089541673>"
     gsuitelogo = "<:gsuitelogo:932034284724834384>"
+    turtlesmirk = "<:TurtleSmirk:879119619737124914>"
+
+    # SS Emojis
+    schoolsimplified = "<:SchoolSimplified:830689765329993807>"
+    ssarrow = "<:SS:865715703545069568>"
+    humanresources = "<:SS_HumanResources:907766589972181043>"
+    timmyBook = "<:timmy_book:933043045493010453>"
+    timmyTutoring = "<:tutoring:933043045950164992>"
 
 
-class hexColors:
+class Colors:
     """
-    Hex colors for the bot.
+    Colors for the bot. Can be custom hex colors or built-in colors.
     """
 
     # *** Standard Colors ***
-    yellow = 0xF5DD42
-    orange = 0xFCBA03
-    blurple = 0x6C7DFE
-    light_purple = 0xD6B4E8
-    dark_gray = 0x2F3136
+    blurple = discord.Color.blurple()
+    green = discord.Color.brand_green()
+    yellow = discord.Color.yellow()
+    fuchsia = discord.Color.fuchsia()
+    red = discord.Color.brand_red()
 
-    yellow_ticketBan = 0xEFFA16
-    green_general = 0x3AF250
-    green_confirm = 0x37E32B
-    red_cancel = 0xE02F2F
-    red_error = 0xF5160A
-    orange_error = 0xFC3D03
+    # *** Hex Colors ***
+    orange = 0xFCBA03
+    dark_gray = 0x2F3136
+    light_purple = 0xD6B4E8
     mod_blurple = 0x4DBEFF
     ss_blurple = 0x7080FA
 
@@ -1233,6 +1209,24 @@ class Others:
     space_character = "　"
     TICKET_INACTIVE_TIME = 1440
     CHID_DEFAULT = 905217698865225728
+
+
+# Game IDs (constants)
+GameDict = {
+    "Awkword": 879863881349087252,
+    "Betrayal": 773336526917861400,
+    "CG4": 832025144389533716,
+    "Chess in the Park": 832012774040141894,
+    "Doodle Crew": 878067389634314250,
+    "Letter Tile": 879863686565621790,
+    "Fishington": 814288819477020702,
+    "Poker Night": 755827207812677713,
+    "Putts": 832012854282158180,
+    "Sketchy Artist": 879864070101172255,
+    "Spell Cast": 852509694341283871,
+    "Youtube Together": 755600276941176913,
+    "Word Snacks": 879863976006127627,
+}
 
 
 CHHelperRoles = {
@@ -1549,11 +1543,11 @@ class TechnicalCommissionConfirm(discord.ui.View):
         TranscriptLOG = self.bot.get_channel(TECH_ID.ch_ticketLog)
         ch = await self.bot.get_channel(interaction.channel_id)
 
-        await rawExport(self, ch, TranscriptLOG, interaction.user)
+        await rawExport( ch, TranscriptLOG, interaction.user)
         await ch.delete()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.message.delete()
         await interaction.response.send_message(
             "ok, not removing this channel.", ephemeral=True
@@ -1574,7 +1568,7 @@ class LockButton(discord.ui.View):
         custom_id="persistent_view:lock",
         emoji="🔒",
     )
-    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
         ch = await self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TechnicalCommissionConfirm(self.bot)
@@ -1595,7 +1589,7 @@ class GSuiteVerify(discord.ui.View):
         custom_id="persistent_view:gsuiteverify",
         emoji=Emoji.gsuitelogo,
     )
-    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button,):
         self.value = True
 
 
@@ -1617,7 +1611,7 @@ class TempConfirm(discord.ui.View):
         self.stop()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
@@ -1633,7 +1627,7 @@ class NitroConfirmFake(discord.ui.View):
         style=discord.ButtonStyle.green,
         custom_id="persistent_view:nitrofake",
     )
-    async def claim(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def claim(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
             await interaction.response.send_message(
                 "https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4",
@@ -1659,7 +1653,7 @@ class TicketLockButton(discord.ui.View):
         custom_id="persistent_view:lock",
         emoji="🔒",
     )
-    async def lock(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
         ch = await self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TicketTempConfirm()
@@ -1687,49 +1681,49 @@ class TicketTempConfirm(discord.ui.View):
         self.stop()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
-    async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
 
 
-class FeedbackModel(discord.ui.Modal):
+class FeedbackModel(discord.ui.Modal, title="Submit Feedback"):
     def __init__(self) -> None:
-        super().__init__("Submit Feedback")
+        super().__init__()
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="What did you try to do?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Describe the steps to reproduce the issue",
-                style=discord.InputTextStyle.short,
+                style=discord.TextStyle.short,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="What happened?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="What was supposed to happen?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
             )
         )
         self.add_item(
-            discord.ui.InputText(
+            discord.ui.TextInput(
                 label="Anything else?",
-                style=discord.InputTextStyle.long,
+                style=discord.TextStyle.long,
                 required=False,
             )
         )
 
     async def callback(self, interaction: discord.Interaction):
-        response = f"User Action: {self.children[0].value}\nSteps to reproduce the issue: {self.children[1].value}\nWhat happened: {self.children[2].value}\nExpected Result: {self.children[3].value}\nAnything else: {self.children[4].value}"
+        response = f"User Action: {self.children[0]}\nSteps to reproduce the issue: {self.children[1]}\nWhat happened: {self.children[2]}\nExpected Result: {self.children[3]}\nAnything else: {self.children[4]}"
         url = f"https://sentry.io/api/0/projects/schoolsimplified/timmy/user-feedback/"
         headers = {"Authorization": f'Bearer {os.getenv("FDB_SENTRY")}'}
 

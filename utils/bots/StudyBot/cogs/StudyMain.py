@@ -26,7 +26,6 @@ TODO
     - Rankcard like Mee6
 """
 
-
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 EST = pytz.timezone("US/Eastern")
 
@@ -329,9 +328,109 @@ async def endSession(member: discord.Member):
 
     return True
 
+        elif newLvl < 40:
+            role = None  # TODO: get lvl 30 role and add to user
 
-class StudyToDo(commands.Cog):
+            if currentLvl < 30:
+                roleStr = f"\nYou've earned a new role: {role}"
+            pass
+
+        elif newLvl < 50:
+            role = None  # TODO: get lvl 40 role and add to user
+
+            if currentLvl < 40:
+                roleStr = f"\nYou've earned a new role: {role}"
+            pass
+
+        elif newLvl < 60:
+            role = None  # TODO: get lvl 50 role and add to user
+
+            if currentLvl < 50:
+                roleStr = f"\nYou've earned a new role: {role}"
+            pass
+
+        elif newLvl < 70:
+            role = None  # TODO: get lvl 60 role and add to user
+
+            if currentLvl < 60:
+                roleStr = f"\nYou've earned a new role: {role}"
+            pass
+
+        elif newLvl < 80:
+            role = None  # TODO: get lvl 70 role and add to user
+
+            if currentLvl < 70:
+                roleStr = f"\nYou've earned a new role: {role}"
+            pass
+
+        elif newLvl < 90:
+            role = None  # TODO: get lvl 80 role and add to user
+
+            if currentLvl < 80:
+                roleStr = f"\nYou've earned a new role: {role}"
+            pass
+
+        elif newLvl < 100:
+            role = None  # TODO: get lvl 90 role and add to user
+
+            if currentLvl < 90:
+                roleStr = f"\nYou've earned a new role: {role}"
+            pass
+
+        elif newLvl >= 100:
+            role = None  # TODO: get lvl 100 role and add to user
+
+            if currentLvl < 100:
+                roleStr = f"\nYou've earned a new role: {role}"
+            pass
+
+        if isNewLvl:
+
+            dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
+                    f"{roleStr}"
+            try:
+                await member.send(dmMSG)
+            except:
+                pass
+
+    else:
+        return False
+
+    StudySessionQ = StudySessionQ.get()
+    StudySessionQ.StartTime = datetime.now(EST)
+    StudySessionQ.Paused = True
+    StudySessionQ.save()
+
+    return True
+
+
+async def endSession(member: discord.Member):
+    """
+    Ends the session by kicking the user out of the voice channel and removing the user from the database table `StudyVCDB`.
+
+    :param member: The member which should get removed from the database.
+
+    :return: Whenever the user has been found in the database: bool
+    """
+
+    StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
+    if StudySessionQ.exists():
+        StudySessionQ = StudySessionQ.get()
+        StudySessionQ.delete_instance()
+        StudySessionQ.save()
+
+        if member.voice:
+            await member.move_to(None)
+
+    else:
+        return False
+
+    return True
+
+
+class StudyToDo(commands.Cog, Group):
     def __init__(self, bot: commands.Bot):
+        super().__init__(name="studytodo", description="Study ToDo Commands")
         self.bot = bot
 
         self.StudyVCGuildID = TECH_ID.g_tech
@@ -345,17 +444,9 @@ class StudyToDo(commands.Cog):
             )
             signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
 
-            embed = discord.Embed(
-                color=hexColors.red_error,
-                title="Missing/Extra Required Arguments Passed In!",
-                description=f"You have missed one or several arguments in this command"
-                f"\n\nUsage:"
-                f"\n`{signature}`",
-            )
-            embed.set_footer(
-                text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
-            )
-            await ctx.send(embed=embed)
+    @property
+    def display_emoji(self) -> str:
+        return Emoji.timmyBook
 
     @studytodo.command()
     async def set(self, ctx: commands.Context, *, item):

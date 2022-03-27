@@ -16,6 +16,11 @@ class RedirectURL(commands.Cog):
         self.raOBJ = redirect_sdk.RedirectClient(
             os.getenv("RP_TK"), domain="https://rs.schoolsimplified.org"
         )
+        self.__cog_name__ = "Redirect URL"
+
+    @property
+    def display_emoji(self) -> str:
+        return "🖇️"
 
     @commands.command(alliases=["redirectadd", "addredirect"])
     @is_botAdmin
@@ -48,5 +53,5 @@ class RedirectURL(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(RedirectURL(bot))
+async def setup(bot):
+    await bot.add_cog(RedirectURL(bot))
