@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -2344,19 +2344,19 @@
                 ]
               },
               {
-                "id": "PyArgumentEqualDefaultInspection",
+                "id": "CythonUsageBeforeDeclarationInspection",
                 "shortDescription": {
-                  "text": "The function argument is equal to the default parameter value"
+                  "text": "Cython variable is used before its declaration"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
-                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
+                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
+                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2378,19 +2378,19 @@
                 ]
               },
               {
-                "id": "CythonUsageBeforeDeclarationInspection",
+                "id": "PyArgumentEqualDefaultInspection",
                 "shortDescription": {
-                  "text": "Cython variable is used before its declaration"
+                  "text": "The function argument is equal to the default parameter value"
                 },
                 "fullDescription": {
-                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
-                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
+                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3602,19 +3602,19 @@
                 ]
               },
               {
-                "id": "DjangoCloseTagInspection",
+                "id": "PyProtectedMemberInspection",
                 "shortDescription": {
-                  "text": "Mismatched opening and closing tags"
+                  "text": "Accessing a protected member of a class or a module"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
-                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
+                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
+                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3623,8 +3623,8 @@
                 "relationships": [
                   {
                     "target": {
-                      "id": "Django",
-                      "index": 7,
+                      "id": "Python",
+                      "index": 2,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -3670,19 +3670,19 @@
                 ]
               },
               {
-                "id": "PyProtectedMemberInspection",
+                "id": "DjangoCloseTagInspection",
                 "shortDescription": {
-                  "text": "Accessing a protected member of a class or a module"
+                  "text": "Mismatched opening and closing tags"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
-                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
+                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
+                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3691,8 +3691,8 @@
                 "relationships": [
                   {
                     "target": {
-                      "id": "Python",
-                      "index": 2,
+                      "id": "Django",
+                      "index": 7,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -4464,40 +4464,6 @@
                 ]
               },
               {
-                "id": "JsonSchemaDeprecation",
-                "shortDescription": {
-                  "text": "Deprecated JSON property"
-                },
-                "fullDescription": {
-                  "text": "Reports a deprecated property in a JSON file. Note that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'.",
-                  "markdown": "Reports a deprecated property in a JSON file.  \nNote that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JSON and JSON5",
-                      "index": 4,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "XmlDuplicatedId",
                 "shortDescription": {
                   "text": "Duplicate 'id' attribute"
@@ -4521,6 +4487,40 @@
                     "target": {
                       "id": "XML",
                       "index": 3,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "JsonSchemaDeprecation",
+                "shortDescription": {
+                  "text": "Deprecated JSON property"
+                },
+                "fullDescription": {
+                  "text": "Reports a deprecated property in a JSON file. Note that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'.",
+                  "markdown": "Reports a deprecated property in a JSON file.  \nNote that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JSON and JSON5",
+                      "index": 4,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -4702,40 +4702,6 @@
                 ]
               },
               {
-                "id": "RequiredAttributes",
-                "shortDescription": {
-                  "text": "Missing required attribute"
-                },
-                "fullDescription": {
-                  "text": "Reports a missing mandatory attribute in an XML/HTML tag. Suggests configuring attributes that should not be reported.",
-                  "markdown": "Reports a missing mandatory attribute in an XML/HTML tag. Suggests configuring attributes that should not be reported."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "DuplicatedCode",
                 "shortDescription": {
                   "text": "Duplicated code fragment"
@@ -4759,6 +4725,40 @@
                     "target": {
                       "id": "General",
                       "index": 9,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "RequiredAttributes",
+                "shortDescription": {
+                  "text": "Missing required attribute"
+                },
+                "fullDescription": {
+                  "text": "Reports a missing mandatory attribute in an XML/HTML tag. Suggests configuring attributes that should not be reported.",
+                  "markdown": "Reports a missing mandatory attribute in an XML/HTML tag. Suggests configuring attributes that should not be reported."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5688,40 +5688,6 @@
                 ]
               },
               {
-                "id": "RegExpOctalEscape",
-                "shortDescription": {
-                  "text": "Octal escape"
-                },
-                "fullDescription": {
-                  "text": "Reports octal escapes, which are easily confused with back references. Use hexadecimal escapes to avoid confusion. Example: '\\07' After the quick-fix is applied: '\\x07' New in 2017.1",
-                  "markdown": "Reports octal escapes, which are easily confused with back references. Use hexadecimal escapes to avoid confusion.\n\n**Example:**\n\n\n      \\07\n\nAfter the quick-fix is applied:\n\n\n      \\x07\n\nNew in 2017.1"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "INFORMATION",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RegExp",
-                      "index": 5,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "HtmlExtraClosingTag",
                 "shortDescription": {
                   "text": "Redundant closing tag"
@@ -5745,6 +5711,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "RegExpOctalEscape",
+                "shortDescription": {
+                  "text": "Octal escape"
+                },
+                "fullDescription": {
+                  "text": "Reports octal escapes, which are easily confused with back references. Use hexadecimal escapes to avoid confusion. Example: '\\07' After the quick-fix is applied: '\\x07' New in 2017.1",
+                  "markdown": "Reports octal escapes, which are easily confused with back references. Use hexadecimal escapes to avoid confusion.\n\n**Example:**\n\n\n      \\07\n\nAfter the quick-fix is applied:\n\n\n      \\x07\n\nNew in 2017.1"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "INFORMATION",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RegExp",
+                      "index": 5,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6198,13 +6198,13 @@
                 ]
               },
               {
-                "id": "RegExpDuplicateAlternationBranch",
+                "id": "RegExpRepeatedSpace",
                 "shortDescription": {
-                  "text": "Duplicate branch in alternation"
+                  "text": "Consecutive spaces"
                 },
                 "fullDescription": {
-                  "text": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression. Example: '(alpha|bravo|charlie|alpha)' After the quick-fix is applied: '(alpha|bravo|charlie)' New in 2017.1",
-                  "markdown": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression.\n\n**Example:**\n\n\n      (alpha|bravo|charlie|alpha)\n\nAfter the quick-fix is applied:\n\n\n      (alpha|bravo|charlie)\n\nNew in 2017.1"
+                  "text": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier. Example: '(     )' After the quick-fix is applied: '( {5})' New in 2017.1",
+                  "markdown": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier.\n\n**Example:**\n\n\n      (     )\n\nAfter the quick-fix is applied:\n\n\n      ( {5})\n\n\nNew in 2017.1"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -6232,13 +6232,13 @@
                 ]
               },
               {
-                "id": "RegExpRepeatedSpace",
+                "id": "RegExpDuplicateAlternationBranch",
                 "shortDescription": {
-                  "text": "Consecutive spaces"
+                  "text": "Duplicate branch in alternation"
                 },
                 "fullDescription": {
-                  "text": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier. Example: '(     )' After the quick-fix is applied: '( {5})' New in 2017.1",
-                  "markdown": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier.\n\n**Example:**\n\n\n      (     )\n\nAfter the quick-fix is applied:\n\n\n      ( {5})\n\n\nNew in 2017.1"
+                  "text": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression. Example: '(alpha|bravo|charlie|alpha)' After the quick-fix is applied: '(alpha|bravo|charlie)' New in 2017.1",
+                  "markdown": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression.\n\n**Example:**\n\n\n      (alpha|bravo|charlie|alpha)\n\nAfter the quick-fix is applied:\n\n\n      (alpha|bravo|charlie)\n\nNew in 2017.1"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "1de06b873fe74bcda78112245b0b3181a16244c7",
+          "revisionId": "77338c34ca82002e728516e5492d29f588eef57f",
           "branch": "162-move-to-dpy",
           "properties": {
             "lastAuthorName": "SpaceT0",
@@ -40781,7 +40781,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-03-27",
-        "guid": "6501b12b-1fbd-4058-bffb-5dad48d867e3"
+        "guid": "5efeb3b5-c70c-453f-9a4d-d108ec03ec24"
       },
       "newlineSequences": [
         "\r\n",
