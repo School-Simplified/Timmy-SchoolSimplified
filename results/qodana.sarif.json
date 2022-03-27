@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1800,19 +1800,19 @@
                 ]
               },
               {
-                "id": "PyComparisonWithNoneInspection",
+                "id": "CommandLineInspection",
                 "shortDescription": {
-                  "text": "Using equality operators to compare with None"
+                  "text": "Incorrect CLI syntax"
                 },
                 "fullDescription": {
-                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
-                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
+                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
+                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1834,19 +1834,19 @@
                 ]
               },
               {
-                "id": "CommandLineInspection",
+                "id": "PyComparisonWithNoneInspection",
                 "shortDescription": {
-                  "text": "Incorrect CLI syntax"
+                  "text": "Using equality operators to compare with None"
                 },
                 "fullDescription": {
-                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
-                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
+                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
+                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1936,13 +1936,13 @@
                 ]
               },
               {
-                "id": "PyChainedComparisonsInspection",
+                "id": "PyMethodParametersInspection",
                 "shortDescription": {
-                  "text": "Too complex chained comparisons"
+                  "text": "Improper first parameter"
                 },
                 "fullDescription": {
-                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
-                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
+                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
+                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1970,13 +1970,13 @@
                 ]
               },
               {
-                "id": "PyMethodParametersInspection",
+                "id": "PyChainedComparisonsInspection",
                 "shortDescription": {
-                  "text": "Improper first parameter"
+                  "text": "Too complex chained comparisons"
                 },
                 "fullDescription": {
-                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
-                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
+                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
+                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -3602,40 +3602,6 @@
                 ]
               },
               {
-                "id": "PyStubPackagesCompatibilityInspection",
-                "shortDescription": {
-                  "text": "Incompatible stub packages"
-                },
-                "fullDescription": {
-                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
-                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "DjangoCloseTagInspection",
                 "shortDescription": {
                   "text": "Mismatched opening and closing tags"
@@ -3659,6 +3625,40 @@
                     "target": {
                       "id": "Django",
                       "index": 7,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyStubPackagesCompatibilityInspection",
+                "shortDescription": {
+                  "text": "Incompatible stub packages"
+                },
+                "fullDescription": {
+                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
+                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5688,40 +5688,6 @@
                 ]
               },
               {
-                "id": "HtmlExtraClosingTag",
-                "shortDescription": {
-                  "text": "Redundant closing tag"
-                },
-                "fullDescription": {
-                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
-                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "ideaSeverity": "ERROR",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpOctalEscape",
                 "shortDescription": {
                   "text": "Octal escape"
@@ -5756,19 +5722,19 @@
                 ]
               },
               {
-                "id": "UnusedDefine",
+                "id": "HtmlExtraClosingTag",
                 "shortDescription": {
-                  "text": "Unused define"
+                  "text": "Redundant closing tag"
                 },
                 "fullDescription": {
-                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
-                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
+                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
+                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "error",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "ERROR",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -5777,8 +5743,8 @@
                 "relationships": [
                   {
                     "target": {
-                      "id": "RELAX NG",
-                      "index": 11,
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "UnusedDefine",
+                "shortDescription": {
+                  "text": "Unused define"
+                },
+                "fullDescription": {
+                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
+                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RELAX NG",
+                      "index": 11,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,12 +6737,12 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "ffc3c39877b593775bdd810649f5959b8767209d",
+          "revisionId": "25470c6d70fa0a0a23cefae6bf8f851d9eda49c5",
           "branch": "162-move-to-dpy",
           "properties": {
-            "lastAuthorName": "Eric",
+            "lastAuthorName": "SpaceT0",
             "vcsType": "Git",
-            "lastAuthorEmail": "88685021+pandabear189@users.noreply.github.com",
+            "lastAuthorEmail": "space@spaceturtle.tech",
             "tags": [
               "lastAuthorEmail",
               "lastAuthorName",
@@ -40728,7 +40728,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-03-27",
-        "guid": "d722e463-b8a3-4539-923d-44734bdbe5f2"
+        "guid": "377f9314-7ce7-4c30-9498-6da6da25fb68"
       },
       "newlineSequences": [
         "\r\n",
