@@ -770,42 +770,6 @@ class MiscCMD(commands.Cog):
             view=TicTacToe(interaction.user, user),
         )
 
-    @app_commands.context_menu(name="Are they short?")
-    async def short(self, interaction: discord.Interaction, member: discord.Member):
-        if random.randint(0, 1) == 1:
-            await interaction.response.send_message(f"{member.mention} is short!")
-        else:
-            await interaction.response.send_message(f"{member.mention} is tall!")
-
-    @app_commands.command(description="Check's if a user is short!")
-    @app_commands.describe(member="The user's height you want to check.")
-    async def short_detector(
-            self, interaction: discord.Interaction, member: discord.Member
-    ):
-        if random.randint(0, 1) == 1:
-            await interaction.response.send_message(f"{member.mention} is short!")
-        else:
-            await interaction.response.send_message(f"{member.mention} is tall!")
-
-    @app_commands.context_menu(name="Play TicTacToe with them!")
-    @app_commands.describe(member='The user you want to play with.')
-    async def tictactoe_ctx_menu(self, interaction: discord.Interaction, member: discord.Member):
-        if member is None:
-            return await interaction.response.send_message(
-                "lonely :(, sorry but you need a person to play against!"
-            )
-        elif member == self.bot.user:
-            return await interaction.response.send_message("i'm good.")
-        elif member == interaction.user:
-            return await interaction.response.send_message(
-                "lonely :(, sorry but you need an actual person to play against, not yourself!"
-            )
-
-        await interaction.response.send_message(
-            f"Tic Tac Toe: {interaction.user.mention} goes first",
-            view=TicTacToe(interaction.user, member),
-        )
-
     @commands.command()
     @is_botAdmin
     async def say(self, ctx, *, message):

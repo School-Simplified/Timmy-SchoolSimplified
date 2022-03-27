@@ -38,8 +38,8 @@ class TutorBotStaffCMD(commands.Cog):
 
     @command(name="view")
     @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
-    async def view(self, interaction: discord.Interaction, id=None):
-        if id is None:
+    async def view(self, interaction: discord.Interaction, session_id: str = None):
+        if session_id is None:
             query: database.TutorBot_Sessions = (
                 database.TutorBot_Sessions.select().where(
                     database.TutorBot_Sessions.TutorID == interaction.user.id
@@ -85,7 +85,7 @@ class TutorBotStaffCMD(commands.Cog):
                 await interaction.channel.send(embed=embed)
         else:
             entry = database.TutorBot_Sessions.select().where(
-                database.TutorBot_Sessions.SessionID == id
+                database.TutorBot_Sessions.SessionID == session_id
             )
             if entry.exists():
                 entry = entry.get()
@@ -98,7 +98,7 @@ class TutorBotStaffCMD(commands.Cog):
 
                 embed = discord.Embed(
                     title="Tutor Session Query",
-                    description=f"Here are the query results for {id}",
+                    description=f"Here are the query results for {session_id}",
                 )
                 embed.add_field(
                     name="Values",
