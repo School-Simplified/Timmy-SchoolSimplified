@@ -98,7 +98,7 @@ class AdminAPI(commands.Cog):
         description="Suspend/Delete a GSuite Account",
     )
     @app_commands.guilds(HR_ID.g_hr)
-    async def delete_gsuite(self, interaction: discord.Interaction, email):
+    async def delete_gsuite(self, interaction: discord.Interaction, email: str):
         HR_Role = discord.utils.get(interaction.guild.roles, id=HR_ID.r_hrStaff)
         if HR_Role not in interaction.user.roles:
             return await interaction.response.send_message(

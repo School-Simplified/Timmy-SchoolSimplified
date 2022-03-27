@@ -188,8 +188,12 @@ def access_secret(
     Returns:
         Credential Object: Returns a credential object that allows you to authenticate with APIs.
     """
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gsheetsadmin/sstimmy.json"
-    client = secretmanager.SecretManagerServiceClient()
+    if os.path.exists("gsheetsadmin/sstimmy.json"):
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gsheetsadmin/sstimmy.json"
+        client = secretmanager.SecretManagerServiceClient()
+    else:
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(dict(os.getenv("GOOGLE_APPLICATION_CREDENTIALS")))
+        client = secretmanager.SecretManagerServiceClient(credentials=creds)
 
     name = f"projects/ss-timmy/secrets/{secret_id}/versions/latest"
     response = client.access_secret_version(request={"name": name})

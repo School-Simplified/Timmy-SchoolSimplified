@@ -31,20 +31,6 @@ async def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Mem
             await user.add_roles(helper)
 
 
-class VerifyButton(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.value = None
-
-    @discord.ui.button(
-        label="Verify",
-        style=discord.ButtonStyle.blurple,
-        custom_id="persistent_view:verify",
-        emoji="✅",
-    )
-    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):
-        self.value = True
-
 
 class VerificationStaff(commands.Cog):
     def __init__(self, bot):

@@ -78,9 +78,14 @@ VCGamesList = [  # TODO add emojis and descriptions to these items
 class TutorVCCMD(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        q: database.SandboxConfig = (
-            database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
-        )
+        try:
+            q: database.SandboxConfig = (
+                database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+            )
+        except:
+            q = database.SandboxConfig.create(mode="None")
+            q.save()
+
 
         self.channel_id = MAIN_ID.ch_controlPanel
         self.categoryID = [

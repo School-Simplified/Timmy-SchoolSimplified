@@ -25,10 +25,22 @@ from core.common import (
     Emoji,
 )
 from utils.events.TicketDropdown import TicketButton
-from utils.events.VerificationStaff import VerifyButton
 from utils.bots.CoreBot.cogs.techCommissions import CommissionTechButton
 from pathlib import Path
 
+class VerifyButton(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.value = None
+
+    @discord.ui.button(
+        label="Verify",
+        style=discord.ButtonStyle.blurple,
+        custom_id="persistent_view:verify",
+        emoji="✅",
+    )
+    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):
+        self.value = True
 
 async def before_invoke_(ctx: commands.Context):
     sentry_sdk.set_user(None)
