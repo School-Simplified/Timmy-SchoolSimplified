@@ -56,12 +56,12 @@ class TimmyCommandTree(app_commands.CommandTree):
 
     # Implement error system
 
-    async def interaction_check(
-            self,
-            interaction: discord.Interaction,
-            /
-    ) -> bool:
-        ...
+    # async def interaction_check(
+    #         self,
+    #         interaction: discord.Interaction,
+    #         /
+    # ) -> bool:
+    #     ...
     #  Implement blacklist check for spammers
 
 
