@@ -481,7 +481,7 @@ class Help(commands.Cog):
         if isinstance(_command, commands.Command):
             parent = _command.full_parent_name
             if len(_command.aliases) > 0:
-                aliases = '|'.join(_command.aliases)
+                aliases = ' | '.join(_command.aliases)
                 fmt = f'[{_command.name}|{aliases}]'
                 if parent:
                     fmt = f'{parent} {fmt}'
