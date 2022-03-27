@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1800,19 +1800,19 @@
                 ]
               },
               {
-                "id": "CommandLineInspection",
+                "id": "PyComparisonWithNoneInspection",
                 "shortDescription": {
-                  "text": "Incorrect CLI syntax"
+                  "text": "Using equality operators to compare with None"
                 },
                 "fullDescription": {
-                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
-                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
+                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
+                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1834,19 +1834,19 @@
                 ]
               },
               {
-                "id": "PyComparisonWithNoneInspection",
+                "id": "CommandLineInspection",
                 "shortDescription": {
-                  "text": "Using equality operators to compare with None"
+                  "text": "Incorrect CLI syntax"
                 },
                 "fullDescription": {
-                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
-                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
+                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
+                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2344,19 +2344,19 @@
                 ]
               },
               {
-                "id": "PyArgumentEqualDefaultInspection",
+                "id": "CythonUsageBeforeDeclarationInspection",
                 "shortDescription": {
-                  "text": "The function argument is equal to the default parameter value"
+                  "text": "Cython variable is used before its declaration"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
-                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
+                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
+                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2378,19 +2378,19 @@
                 ]
               },
               {
-                "id": "CythonUsageBeforeDeclarationInspection",
+                "id": "PyArgumentEqualDefaultInspection",
                 "shortDescription": {
-                  "text": "Cython variable is used before its declaration"
+                  "text": "The function argument is equal to the default parameter value"
                 },
                 "fullDescription": {
-                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
-                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
+                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -4464,40 +4464,6 @@
                 ]
               },
               {
-                "id": "XmlDuplicatedId",
-                "shortDescription": {
-                  "text": "Duplicate 'id' attribute"
-                },
-                "fullDescription": {
-                  "text": "Reports a duplicate 'id' attribute in XML.",
-                  "markdown": "Reports a duplicate `id` attribute in XML."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "ideaSeverity": "ERROR",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "XML",
-                      "index": 3,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "JsonSchemaDeprecation",
                 "shortDescription": {
                   "text": "Deprecated JSON property"
@@ -4521,6 +4487,40 @@
                     "target": {
                       "id": "JSON and JSON5",
                       "index": 4,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "XmlDuplicatedId",
+                "shortDescription": {
+                  "text": "Duplicate 'id' attribute"
+                },
+                "fullDescription": {
+                  "text": "Reports a duplicate 'id' attribute in XML.",
+                  "markdown": "Reports a duplicate `id` attribute in XML."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "error",
+                  "parameters": {
+                    "ideaSeverity": "ERROR",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "XML",
+                      "index": 3,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5586,40 +5586,6 @@
                 ]
               },
               {
-                "id": "RegExpRedundantNestedCharacterClass",
-                "shortDescription": {
-                  "text": "Redundant nested character class"
-                },
-                "fullDescription": {
-                  "text": "Reports unnecessary nested character classes. Example: '[a-c[x-z]]' After the quick-fix is applied: '[a-cx-z]' New in 2020.2",
-                  "markdown": "Reports unnecessary nested character classes.\n\n**Example:**\n\n\n      [a-c[x-z]]\n\nAfter the quick-fix is applied:\n\n\n      [a-cx-z]\n\nNew in 2020.2"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RegExp",
-                      "index": 5,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "XmlDeprecatedElement",
                 "shortDescription": {
                   "text": "Deprecated symbol"
@@ -5643,6 +5609,40 @@
                     "target": {
                       "id": "XML",
                       "index": 3,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "RegExpRedundantNestedCharacterClass",
+                "shortDescription": {
+                  "text": "Redundant nested character class"
+                },
+                "fullDescription": {
+                  "text": "Reports unnecessary nested character classes. Example: '[a-c[x-z]]' After the quick-fix is applied: '[a-cx-z]' New in 2020.2",
+                  "markdown": "Reports unnecessary nested character classes.\n\n**Example:**\n\n\n      [a-c[x-z]]\n\nAfter the quick-fix is applied:\n\n\n      [a-cx-z]\n\nNew in 2020.2"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RegExp",
+                      "index": 5,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5756,40 +5756,6 @@
                 ]
               },
               {
-                "id": "UnusedDefine",
-                "shortDescription": {
-                  "text": "Unused define"
-                },
-                "fullDescription": {
-                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
-                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RELAX NG",
-                      "index": 11,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "HtmlUnknownAnchorTarget",
                 "shortDescription": {
                   "text": "Unresolved fragment in a link"
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "UnusedDefine",
+                "shortDescription": {
+                  "text": "Unused define"
+                },
+                "fullDescription": {
+                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
+                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RELAX NG",
+                      "index": 11,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "8eccdd47a79dcd0287ccb4ec18209b76a0b017e5",
+          "revisionId": "7b42971c13e962b2a18d67ef9cb480db5072d831",
           "branch": "beta",
           "properties": {
             "lastAuthorName": "Puncher",
@@ -7618,7 +7618,7 @@
                 "region": {
                   "startLine": 204,
                   "startColumn": 23,
-                  "charOffset": 7853,
+                  "charOffset": 7829,
                   "charLength": 10,
                   "snippet": {
                     "text": "\"AM\", \"PM\""
@@ -7628,7 +7628,7 @@
                 "contextRegion": {
                   "startLine": 202,
                   "startColumn": 1,
-                  "charOffset": 7793,
+                  "charOffset": 7769,
                   "charLength": 128,
                   "snippet": {
                     "text": "        date: str,\n        time: str,\n        ampm: Literal[\"AM\", \"PM\"],\n        student: discord.Member,\n        repeats: bool,"
@@ -7644,7 +7644,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "ed5fbb8f40bdead9b544ea8cd96f61431dadc77cec2debd3df970e2ecd7310f8"
+            "equalIndicator/v1": "4410c571f09910dd6ac04176dbfc12da71dda88d0d854d19a34ac071bc2133b1"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -7671,7 +7671,7 @@
                 "region": {
                   "startLine": 336,
                   "startColumn": 23,
-                  "charOffset": 12521,
+                  "charOffset": 12497,
                   "charLength": 10,
                   "snippet": {
                     "text": "\"AM\", \"PM\""
@@ -7681,7 +7681,7 @@
                 "contextRegion": {
                   "startLine": 334,
                   "startColumn": 1,
-                  "charOffset": 12461,
+                  "charOffset": 12437,
                   "charLength": 117,
                   "snippet": {
                     "text": "        date: str,\n        time: str,\n        ampm: Literal[\"AM\", \"PM\"],\n        student: str,\n        repeats: bool,"
@@ -7697,7 +7697,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "632ac248210d89f708ff36b7dce0d925d267abe0d58dc6accd0b163886468907"
+            "equalIndicator/v1": "31cdca4c6f70696751ab5f19463a938d424f79146f8e186d03e78e357c3042be"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -12600,7 +12600,7 @@
                 "region": {
                   "startLine": 151,
                   "startColumn": 13,
-                  "charOffset": 5815,
+                  "charOffset": 5799,
                   "charLength": 1,
                   "snippet": {
                     "text": "i"
@@ -12610,7 +12610,7 @@
                 "contextRegion": {
                   "startLine": 149,
                   "startColumn": 1,
-                  "charOffset": 5763,
+                  "charOffset": 5747,
                   "charLength": 90,
                   "snippet": {
                     "text": "        else:\n            list_ten = []\n            i = 0\n            for entry in query:\n"
@@ -12626,7 +12626,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "4e54b07dfcaf0b799221aa375320d2bcdec0ddb63f6b1467a9b51621ed28b2b6"
+            "equalIndicator/v1": "d5d608ac0755bb643244cbf83726402b35efd3e4596ae5458c6c5430c9d3857a"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -12653,7 +12653,7 @@
                 "region": {
                   "startLine": 555,
                   "startColumn": 30,
-                  "charOffset": 20471,
+                  "charOffset": 20447,
                   "charLength": 32,
                   "snippet": {
                     "text": "interaction: discord.Interaction"
@@ -12663,7 +12663,7 @@
                 "contextRegion": {
                   "startLine": 553,
                   "startColumn": 1,
-                  "charOffset": 20431,
+                  "charOffset": 20407,
                   "charLength": 100,
                   "snippet": {
                     "text": "        )\n\n    async def callback(self, interaction: discord.Interaction):\n        self.view.stop()\n"
@@ -12679,7 +12679,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "a5c868cdc2e19d26b0d6e760b057ce29e3ee34125c29abb4a9ac790c7f354c95"
+            "equalIndicator/v1": "bc3fef277a0f021b8a9e05d49f29209c27c4c82ab00013164ff05ac235dcbaf6"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -14190,7 +14190,7 @@
                 "region": {
                   "startLine": 584,
                   "startColumn": 20,
-                  "charOffset": 21056,
+                  "charOffset": 21040,
                   "charLength": 8,
                   "snippet": {
                     "text": "reaction"
@@ -14200,7 +14200,7 @@
                 "contextRegion": {
                   "startLine": 582,
                   "startColumn": 1,
-                  "charOffset": 20990,
+                  "charOffset": 20974,
                   "charLength": 203,
                   "snippet": {
                     "text": "            await message.add_reaction(emoji)\n\n        def check2(reaction, user):\n            return user == ctx.author and (\n                    str(reaction.emoji) == \"✅\" or str(reaction.emoji) == \"❌\""
@@ -14216,7 +14216,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "bfc9b3f1555102e49c514ad9d50425f055da0a1e8cbd4ca5a245fe044ef975a1"
+            "equalIndicator/v1": "736bd339c4adb9f8928aa1aaab28047f2c9a00f0b0ed515b734d971b68cb1375"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -14243,7 +14243,7 @@
                 "region": {
                   "startLine": 584,
                   "startColumn": 30,
-                  "charOffset": 21066,
+                  "charOffset": 21050,
                   "charLength": 4,
                   "snippet": {
                     "text": "user"
@@ -14253,7 +14253,7 @@
                 "contextRegion": {
                   "startLine": 582,
                   "startColumn": 1,
-                  "charOffset": 20990,
+                  "charOffset": 20974,
                   "charLength": 203,
                   "snippet": {
                     "text": "            await message.add_reaction(emoji)\n\n        def check2(reaction, user):\n            return user == ctx.author and (\n                    str(reaction.emoji) == \"✅\" or str(reaction.emoji) == \"❌\""
@@ -14269,7 +14269,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0b163bbf619aee3cfed3e0da6ba1e921c0885e9c96b82145c76b4157de4ba524"
+            "equalIndicator/v1": "efa3a69ac4c567117d0b7c4d6ea728b47604f6d2e849159cddb5c7214503d49b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -14296,7 +14296,7 @@
                 "region": {
                   "startLine": 830,
                   "startColumn": 30,
-                  "charOffset": 29488,
+                  "charOffset": 29472,
                   "charLength": 1,
                   "snippet": {
                     "text": "e"
@@ -14306,7 +14306,7 @@
                 "contextRegion": {
                   "startLine": 828,
                   "startColumn": 1,
-                  "charOffset": 29386,
+                  "charOffset": 29370,
                   "charLength": 152,
                   "snippet": {
                     "text": "            vc.play(\n                discord.FFmpegPCMAudio(\"text.mp3\"),\n                after=lambda e: print(f\"Finished playing: {e}\"),\n            )\n"
@@ -14322,7 +14322,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "375b6c6992e537839d822a9c11038931746497e044933fd49a09bb8a3cf2b60c"
+            "equalIndicator/v1": "89c0a8b1b1104cce05c1803ec9afef5f9d7e0fc07d19b0873a4189db4178a19b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24260,7 +24260,7 @@
                 "region": {
                   "startLine": 321,
                   "startColumn": 9,
-                  "charOffset": 10829,
+                  "charOffset": 10813,
                   "charLength": 17,
                   "snippet": {
                     "text": "timmyDonation_png"
@@ -24270,7 +24270,7 @@
                 "contextRegion": {
                   "startLine": 319,
                   "startColumn": 1,
-                  "charOffset": 10713,
+                  "charOffset": 10697,
                   "charLength": 232,
                   "snippet": {
                     "text": "    @commands.cooldown(1, 10, commands.BucketType.guild)\n    async def donate(self, ctx: commands.Context):\n        timmyDonation_png = discord.File(\n            Others.timmyDonation_path, filename=Others.timmyDonation_png\n        )"
@@ -24286,7 +24286,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8145b2359d58b569ea446843af85886172618fe3644ba02833aea33bf8ecb7d8"
+            "equalIndicator/v1": "bef19523994daf6adcd0ad373d536be76e182479aa9c5e451efe830d82456da4"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24313,7 +24313,7 @@
                 "region": {
                   "startLine": 325,
                   "startColumn": 9,
-                  "charOffset": 10955,
+                  "charOffset": 10939,
                   "charLength": 11,
                   "snippet": {
                     "text": "embedDonate"
@@ -24323,7 +24323,7 @@
                 "contextRegion": {
                   "startLine": 323,
                   "startColumn": 1,
-                  "charOffset": 10936,
+                  "charOffset": 10920,
                   "charLength": 113,
                   "snippet": {
                     "text": "        )\n\n        embedDonate = discord.Embed(\n            color=Colors.ss_blurple,\n            title=f\"Donate\","
@@ -24339,7 +24339,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "10d53cc655e3ef6d5d1b1a50fd825cee31047303d2b4090a3c912f4285eff2ae"
+            "equalIndicator/v1": "64ed8e8a0c37d3970d76021744d3833844aff4a24e080c8f5116916a1cb8f6e6"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24366,7 +24366,7 @@
                 "region": {
                   "startLine": 349,
                   "startColumn": 9,
-                  "charOffset": 12108,
+                  "charOffset": 12092,
                   "charLength": 9,
                   "snippet": {
                     "text": "DebateBan"
@@ -24376,7 +24376,7 @@
                 "contextRegion": {
                   "startLine": 347,
                   "startColumn": 1,
-                  "charOffset": 11984,
+                  "charOffset": 11968,
                   "charLength": 230,
                   "snippet": {
                     "text": "    @commands.has_any_role(\"Moderator\")\n    async def debateban(self, ctx, member: discord.Member, *, reason=None):\n        DebateBan = discord.utils.get(ctx.guild.roles, name=\"NoDebate\")\n\n        if member.id == self.bot.user.id:"
@@ -24392,7 +24392,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "22936f132cbff03b0076eb4e133bd6df5697cbfefea9249a71e03e24e6e0e33f"
+            "equalIndicator/v1": "134f6734b6805d7f5257d04d2293d192e9aa377dc80820faaf0f8bba444b8013"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24419,7 +24419,7 @@
                 "region": {
                   "startLine": 373,
                   "startColumn": 17,
-                  "charOffset": 12977,
+                  "charOffset": 12961,
                   "charLength": 12,
                   "snippet": {
                     "text": "UpdateReason"
@@ -24429,7 +24429,7 @@
                 "contextRegion": {
                   "startLine": 371,
                   "startColumn": 1,
-                  "charOffset": 12933,
+                  "charOffset": 12917,
                   "charLength": 235,
                   "snippet": {
                     "text": "                    return\n\n                UpdateReason = f\"DebateBan requested by {ctx.author.display_name} | Reason: {reason}\"\n                await member.add_roles(DebateBan, reason=UpdateReason)\n            except Exception as e:"
@@ -24445,7 +24445,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "149e4763565162fa67a7f7e47d0883111e9af4cd92a13df5fca3648163226400"
+            "equalIndicator/v1": "805b538d6a1f80cff12e85a3492626685e814225576c3e8fa9b60afc8ad03763"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24472,7 +24472,7 @@
                 "region": {
                   "startLine": 392,
                   "startColumn": 17,
-                  "charOffset": 13747,
+                  "charOffset": 13731,
                   "charLength": 12,
                   "snippet": {
                     "text": "UpdateReason"
@@ -24482,7 +24482,7 @@
                 "contextRegion": {
                   "startLine": 390,
                   "startColumn": 1,
-                  "charOffset": 13683,
+                  "charOffset": 13667,
                   "charLength": 261,
                   "snippet": {
                     "text": "                    reason = \"No Reason Given\"\n\n                UpdateReason = f\"Debate UnBan requested by {ctx.author.display_name} | Reason: {reason}\"\n                await member.remove_roles(DebateBan, reason=UpdateReason)\n            except Exception as e:"
@@ -24498,7 +24498,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "40f1c041c7e473c2504e825a5632e0146b2e94ca89b51f5755793f28b45a1480"
+            "equalIndicator/v1": "d57bb965ce6e2033b1b956e8e76f20cdd1a8bb143954f47ab83a7aba7e872b9e"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24525,7 +24525,7 @@
                 "region": {
                   "startLine": 415,
                   "startColumn": 9,
-                  "charOffset": 14765,
+                  "charOffset": 14749,
                   "charLength": 7,
                   "snippet": {
                     "text": "NoCount"
@@ -24535,7 +24535,7 @@
                 "contextRegion": {
                   "startLine": 413,
                   "startColumn": 1,
-                  "charOffset": 14642,
+                  "charOffset": 14626,
                   "charLength": 229,
                   "snippet": {
                     "text": "    @commands.has_any_role(\"Moderator\")\n    async def countban(self, ctx, member: discord.Member, *, reason=None):\n        NoCount = discord.utils.get(ctx.guild.roles, name=\"NoCounting\")\n\n        if member.id == self.bot.user.id:"
@@ -24551,7 +24551,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "617142a9490db4e2fc7fa8b8bad008b5c351e63acb4e22f1ada6120e27004529"
+            "equalIndicator/v1": "ab3b4546a29c68f04dd0d1914ca659bedf8d6ecd3a45a5c8d3502fd8b6f43cac"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24578,7 +24578,7 @@
                 "region": {
                   "startLine": 439,
                   "startColumn": 17,
-                  "charOffset": 15637,
+                  "charOffset": 15621,
                   "charLength": 12,
                   "snippet": {
                     "text": "UpdateReason"
@@ -24588,7 +24588,7 @@
                 "contextRegion": {
                   "startLine": 437,
                   "startColumn": 1,
-                  "charOffset": 15593,
+                  "charOffset": 15577,
                   "charLength": 232,
                   "snippet": {
                     "text": "                    return\n\n                UpdateReason = f\"CountBan requested by {ctx.author.display_name} | Reason: {reason}\"\n                await member.add_roles(NoCount, reason=UpdateReason)\n            except Exception as e:"
@@ -24604,7 +24604,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "426440231700ea7d3554cf1a1402e7b0cb542dbbf769c61eefcfeb08af7e8666"
+            "equalIndicator/v1": "4debe0469b7be6ecdbfd4e3a272c9854d5a8cc88282fc2c72594e9421cfa84cb"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24631,7 +24631,7 @@
                 "region": {
                   "startLine": 458,
                   "startColumn": 17,
-                  "charOffset": 16402,
+                  "charOffset": 16386,
                   "charLength": 12,
                   "snippet": {
                     "text": "UpdateReason"
@@ -24641,7 +24641,7 @@
                 "contextRegion": {
                   "startLine": 456,
                   "startColumn": 1,
-                  "charOffset": 16338,
+                  "charOffset": 16322,
                   "charLength": 258,
                   "snippet": {
                     "text": "                    reason = \"No Reason Given\"\n\n                UpdateReason = f\"Count UnBan requested by {ctx.author.display_name} | Reason: {reason}\"\n                await member.remove_roles(NoCount, reason=UpdateReason)\n            except Exception as e:"
@@ -24657,7 +24657,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "7fba787d63b93311778e9b628d5147707eeab87a5ac109e0c357ed102b1c9ca6"
+            "equalIndicator/v1": "7db19693c67240935eef92cd1dc3e784ae50e922f5695aa40981d4516e693f8b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24684,7 +24684,7 @@
                 "region": {
                   "startLine": 601,
                   "startColumn": 17,
-                  "charOffset": 21638,
+                  "charOffset": 21622,
                   "charLength": 2,
                   "snippet": {
                     "text": "NE"
@@ -24694,7 +24694,7 @@
                 "contextRegion": {
                   "startLine": 599,
                   "startColumn": 1,
-                  "charOffset": 21527,
+                  "charOffset": 21511,
                   "charLength": 222,
                   "snippet": {
                     "text": "                await message.delete()\n                database.db.connect(reuse_if_open=True)\n                NE = database.AdminLogging.create(\n                    discordID=ctx.author.id, action=\"KILL\"\n                )"
@@ -24710,7 +24710,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "258449d8b6075f5eab46714637732e36166583b7244276c244337594ca816f67"
+            "equalIndicator/v1": "26f121fc445214926aa319b4170ce294900344b8dfef53b36aa07aafa86a7174"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24737,7 +24737,7 @@
                 "region": {
                   "startLine": 640,
                   "startColumn": 9,
-                  "charOffset": 22804,
+                  "charOffset": 22788,
                   "charLength": 7,
                   "snippet": {
                     "text": "userObj"
@@ -24747,7 +24747,7 @@
                 "contextRegion": {
                   "startLine": 638,
                   "startColumn": 1,
-                  "charOffset": 22770,
+                  "charOffset": 22754,
                   "charLength": 73,
                   "snippet": {
                     "text": "\n        userinput = None\n        userObj = None\n\n        await ctx.send("
@@ -24763,7 +24763,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "c7b13742862d9cd8ad27101e685a44d09f62ca6b3c541df0b226d92234ae0734"
+            "equalIndicator/v1": "3a9e4b0ed00b545014dcc9e7c0877587d5ae2665768e4ac34dcf20f502ddd9c1"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24790,7 +24790,7 @@
                 "region": {
                   "startLine": 647,
                   "startColumn": 13,
-                  "charOffset": 23030,
+                  "charOffset": 23014,
                   "charLength": 8,
                   "snippet": {
                     "text": "inputMSG"
@@ -24800,7 +24800,7 @@
                 "contextRegion": {
                   "startLine": 645,
                   "startColumn": 1,
-                  "charOffset": 22974,
+                  "charOffset": 22958,
                   "charLength": 193,
                   "snippet": {
                     "text": "\n        while userinput != str(randomnum):\n            inputMSG = await self.bot.wait_for(\"message\", check=check)\n            userinput = inputMSG.content\n            userObj = inputMSG.author"
@@ -24816,7 +24816,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0bcb9254037d55ad81d12a9002f49a97171cca26a5247b1d8bb03852c1d1eda6"
+            "equalIndicator/v1": "7f1d3629fe3482a9f52faa67a241a93b1a6afd77f71e1fdabd5662db34362baf"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24843,7 +24843,7 @@
                 "region": {
                   "startLine": 649,
                   "startColumn": 13,
-                  "charOffset": 23142,
+                  "charOffset": 23126,
                   "charLength": 7,
                   "snippet": {
                     "text": "userObj"
@@ -24853,7 +24853,7 @@
                 "contextRegion": {
                   "startLine": 647,
                   "startColumn": 1,
-                  "charOffset": 23018,
+                  "charOffset": 23002,
                   "charLength": 174,
                   "snippet": {
                     "text": "            inputMSG = await self.bot.wait_for(\"message\", check=check)\n            userinput = inputMSG.content\n            userObj = inputMSG.author\n\n        await ctx.send("
@@ -24869,7 +24869,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "31ee82180ec732fbb8f8e9ef1f333017133cfdc256e75829b8f1308c13ed283f"
+            "equalIndicator/v1": "35d4f3ba8b4b887021a4c2ff304afdccb94ccd3994eb8098fb79c1bd0bd71220"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24896,7 +24896,7 @@
                 "region": {
                   "startLine": 705,
                   "startColumn": 9,
-                  "charOffset": 24972,
+                  "charOffset": 24956,
                   "charLength": 8,
                   "snippet": {
                     "text": "UserList"
@@ -24906,7 +24906,7 @@
                 "contextRegion": {
                   "startLine": 703,
                   "startColumn": 1,
-                  "charOffset": 24953,
+                  "charOffset": 24937,
                   "charLength": 55,
                   "snippet": {
                     "text": "        )\n\n        UserList = []\n        RoleList = []\n"
@@ -24922,7 +24922,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "34ee3652e5bf20d187dd0e3c3dd6cbd8e587445b16f01556912ccbd52c79cd10"
+            "equalIndicator/v1": "8ecb4ae5d6b36e4dfeeefdb5e9e6b2ca6ec4fd978726f177fc7c1f9bcefddeeb"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -24949,7 +24949,7 @@
                 "region": {
                   "startLine": 706,
                   "startColumn": 9,
-                  "charOffset": 24994,
+                  "charOffset": 24978,
                   "charLength": 8,
                   "snippet": {
                     "text": "RoleList"
@@ -24959,7 +24959,7 @@
                 "contextRegion": {
                   "startLine": 704,
                   "startColumn": 1,
-                  "charOffset": 24963,
+                  "charOffset": 24947,
                   "charLength": 72,
                   "snippet": {
                     "text": "\n        UserList = []\n        RoleList = []\n\n        for user in users:"
@@ -24975,7 +24975,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "2432a7f0cbc9279536ee42a44542e0ab89ee8d639161eb412456f4e5dd486544"
+            "equalIndicator/v1": "0ae67d6514ed72edf02f0680ebcbd3c69c5b83804d89a0a8bc672b1b656475c6"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -25002,7 +25002,7 @@
                 "region": {
                   "startLine": 713,
                   "startColumn": 9,
-                  "charOffset": 25156,
+                  "charOffset": 25140,
                   "charLength": 8,
                   "snippet": {
                     "text": "UserList"
@@ -25012,7 +25012,7 @@
                 "contextRegion": {
                   "startLine": 711,
                   "startColumn": 1,
-                  "charOffset": 25105,
+                  "charOffset": 25089,
                   "charLength": 121,
                   "snippet": {
                     "text": "            RoleList.append(role.mention)\n\n        UserList = \", \".join(UserList)\n        RoleList = \", \".join(RoleList)\n"
@@ -25028,7 +25028,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "54626b6c300a9db08ef0980b443f4ff79b1d8d6827b765d0b58fb38a540de1da"
+            "equalIndicator/v1": "64cfe85459e777fcd3639cbcdb2d56e4ec301718aafe40cf236e6bda0fe4bb0f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -25055,7 +25055,7 @@
                 "region": {
                   "startLine": 714,
                   "startColumn": 9,
-                  "charOffset": 25195,
+                  "charOffset": 25179,
                   "charLength": 8,
                   "snippet": {
                     "text": "RoleList"
@@ -25065,7 +25065,7 @@
                 "contextRegion": {
                   "startLine": 712,
                   "startColumn": 1,
-                  "charOffset": 25147,
+                  "charOffset": 25131,
                   "charLength": 104,
                   "snippet": {
                     "text": "\n        UserList = \", \".join(UserList)\n        RoleList = \", \".join(RoleList)\n\n        embed.add_field("
@@ -25081,7 +25081,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "c285468becc81de571a4e05ee4478ea3dc224e248813eef89f1e6340477d37b0"
+            "equalIndicator/v1": "0db491824b47fd84ac196dbdbf948b79fcd78d5673a60bf00988992190bdbc81"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -25108,7 +25108,7 @@
                 "region": {
                   "startLine": 739,
                   "startColumn": 9,
-                  "charOffset": 26025,
+                  "charOffset": 26009,
                   "charLength": 12,
                   "snippet": {
                     "text": "ViewResponse"
@@ -25118,7 +25118,7 @@
                 "contextRegion": {
                   "startLine": 737,
                   "startColumn": 1,
-                  "charOffset": 25964,
+                  "charOffset": 25948,
                   "charLength": 202,
                   "snippet": {
                     "text": "        await view.wait()\n        await msg.delete()\n        ViewResponse = str(view.children[0].values)\n        RoleID = self.decodeDict[ViewResponse]\n        await ctx.send(f\"<@&{RoleID}>\\n{message}\")"
@@ -25134,7 +25134,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "f0c447fd3ad066495fc36d3db270da54dea72c84faf5d6953c9b50350f845ef9"
+            "equalIndicator/v1": "46256100c7b574bab28146368f8d4fd3ad0a25aaede61a3c067beae3c22d6ee6"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -25161,7 +25161,7 @@
                 "region": {
                   "startLine": 740,
                   "startColumn": 9,
-                  "charOffset": 26077,
+                  "charOffset": 26061,
                   "charLength": 6,
                   "snippet": {
                     "text": "RoleID"
@@ -25171,7 +25171,7 @@
                 "contextRegion": {
                   "startLine": 738,
                   "startColumn": 1,
-                  "charOffset": 25990,
+                  "charOffset": 25974,
                   "charLength": 177,
                   "snippet": {
                     "text": "        await msg.delete()\n        ViewResponse = str(view.children[0].values)\n        RoleID = self.decodeDict[ViewResponse]\n        await ctx.send(f\"<@&{RoleID}>\\n{message}\")\n"
@@ -25187,7 +25187,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "067e45d2d0c212328955f2a390df8a096d631a40a7144e2b80908e93552bf464"
+            "equalIndicator/v1": "c575c16b9759b31128e9a37a73c098674e197e72f9c19372e9216f8256ed6fef"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -25214,7 +25214,7 @@
                 "region": {
                   "startLine": 776,
                   "startColumn": 9,
-                  "charOffset": 27663,
+                  "charOffset": 27647,
                   "charLength": 2,
                   "snippet": {
                     "text": "NE"
@@ -25224,7 +25224,7 @@
                 "contextRegion": {
                   "startLine": 774,
                   "startColumn": 1,
-                  "charOffset": 27596,
+                  "charOffset": 27580,
                   "charLength": 178,
                   "snippet": {
                     "text": "    @is_botAdmin\n    async def say(self, ctx, *, message):\n        NE = database.AdminLogging.create(\n            discordID=ctx.author.id, action=\"SAY\", content=message\n        )"
@@ -25240,7 +25240,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "959fd868e7387f87de88fd140870844c4a017f4c8d2b4054634c0ec517902d95"
+            "equalIndicator/v1": "48c0369a857278b75666cd01c2c26a99c3b19a25057be4c7abaf95a7b9799e62"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -25267,7 +25267,7 @@
                 "region": {
                   "startLine": 804,
                   "startColumn": 9,
-                  "charOffset": 28511,
+                  "charOffset": 28495,
                   "charLength": 2,
                   "snippet": {
                     "text": "NE"
@@ -25277,7 +25277,7 @@
                 "contextRegion": {
                   "startLine": 802,
                   "startColumn": 1,
-                  "charOffset": 28483,
+                  "charOffset": 28467,
                   "charLength": 138,
                   "snippet": {
                     "text": "            return\n\n        NE = database.AdminLogging.create(\n            discordID=ctx.author.id, action=\"SAYVC\", content=text\n        )"
@@ -25293,7 +25293,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "9e489308757d11b6dd163aea7834a6d14371097060a805a9546408df5e2d21f7"
+            "equalIndicator/v1": "19e9744c457423dd6b7aace79037e24db299380444d3bf8a2ea7dab8d684ecc0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -25320,7 +25320,7 @@
                 "region": {
                   "startLine": 810,
                   "startColumn": 9,
-                  "charOffset": 28711,
+                  "charOffset": 28695,
                   "charLength": 9,
                   "snippet": {
                     "text": "TTSClient"
@@ -25330,7 +25330,7 @@
                 "contextRegion": {
                   "startLine": 808,
                   "startColumn": 1,
-                  "charOffset": 28640,
+                  "charOffset": 28624,
                   "charLength": 184,
                   "snippet": {
                     "text": "\n        # Lets prepare our text, and then save the audio file\n        TTSClient = texttospeech.TextToSpeechClient(\n            credentials=access_secret(\"ttscreds\", True, 2)\n        )"
@@ -25346,7 +25346,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "e028bfaab3a5bd68a9e327b75fe547ec9242033479cc01cd551de1724130f987"
+            "equalIndicator/v1": "39684116b030eca11c7b0f9bdaeba926a5488984ce8c3af72c315eaf938431c3"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -36662,7 +36662,7 @@
                 "region": {
                   "startLine": 562,
                   "startColumn": 9,
-                  "charOffset": 20629,
+                  "charOffset": 20605,
                   "charLength": 13,
                   "snippet": {
                     "text": "DropdownClass"
@@ -36672,7 +36672,7 @@
                 "contextRegion": {
                   "startLine": 560,
                   "startColumn": 1,
-                  "charOffset": 20570,
+                  "charOffset": 20546,
                   "charLength": 123,
                   "snippet": {
                     "text": "    def __init__(self):\n        super().__init__()\n        DropdownClass = Dropdown()\n\n        self.add_item(DropdownClass)"
@@ -36688,7 +36688,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "3bc37cfe27e5b2b7b6d246d35495b76ab08bf801f1863b4915c12cf0b692090a"
+            "equalIndicator/v1": "75152cb577e50caf54927ab9b313d8650e6fb615acce8240c8ffcb4a8528e673"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -43976,7 +43976,7 @@
                 "region": {
                   "startLine": 84,
                   "startColumn": 13,
-                  "charOffset": 3041,
+                  "charOffset": 3033,
                   "charLength": 6,
                   "snippet": {
                     "text": "except"
@@ -43986,7 +43986,7 @@
                 "contextRegion": {
                   "startLine": 82,
                   "startColumn": 1,
-                  "charOffset": 2943,
+                  "charOffset": 2935,
                   "charLength": 179,
                   "snippet": {
                     "text": "            try:\n                await interaction.response.send_message(embed=embed)\n            except:\n                await interaction.channel.send(embed=embed)\n        else:"
@@ -44002,7 +44002,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "27a123e414431d1f6d9135d993baa84a686b8fb3276a1f719dd2cacee1a192c5"
+            "equalIndicator/v1": "b9faf43e1c1e0cdcd3e3fbcdb46eec603f3acce01ba4a28fda260af09113a431"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -44029,7 +44029,7 @@
                 "region": {
                   "startLine": 115,
                   "startColumn": 17,
-                  "charOffset": 4452,
+                  "charOffset": 4436,
                   "charLength": 6,
                   "snippet": {
                     "text": "except"
@@ -44039,7 +44039,7 @@
                 "contextRegion": {
                   "startLine": 113,
                   "startColumn": 1,
-                  "charOffset": 4342,
+                  "charOffset": 4326,
                   "charLength": 199,
                   "snippet": {
                     "text": "                try:\n                    await interaction.response.send_message(embed=embed)\n                except:\n                    await interaction.channel.send(embed=embed)\n            else:"
@@ -44055,7 +44055,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "5140d1228b4782fbeb2f675c04cda51f488465ac9b14ebcb68be4c8ae7d98111"
+            "equalIndicator/v1": "448fbfc29fc71f7128198d4a72f4da2a9fdf594b785303cafa10a392ef721d5b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -44082,7 +44082,7 @@
                 "region": {
                   "startLine": 125,
                   "startColumn": 17,
-                  "charOffset": 4902,
+                  "charOffset": 4886,
                   "charLength": 6,
                   "snippet": {
                     "text": "except"
@@ -44092,7 +44092,7 @@
                 "contextRegion": {
                   "startLine": 123,
                   "startColumn": 1,
-                  "charOffset": 4792,
+                  "charOffset": 4776,
                   "charLength": 182,
                   "snippet": {
                     "text": "                try:\n                    await interaction.response.send_message(embed=embed)\n                except:\n                    await interaction.channel.send(embed=embed)\n"
@@ -44108,7 +44108,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "436e4706ce3508ee349d73eb53bfda696b4332ffd86d37783211578bf2a559b4"
+            "equalIndicator/v1": "44d5de3d8a89c93d6b64503048e7ccf12542f43a8cb69b0341341e657361d561"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -45036,7 +45036,7 @@
                 "region": {
                   "startLine": 152,
                   "startColumn": 26,
-                  "charOffset": 5846,
+                  "charOffset": 5830,
                   "charLength": 5,
                   "snippet": {
                     "text": "query"
@@ -45046,7 +45046,7 @@
                 "contextRegion": {
                   "startLine": 150,
                   "startColumn": 1,
-                  "charOffset": 5777,
+                  "charOffset": 5761,
                   "charLength": 133,
                   "snippet": {
                     "text": "            list_ten = []\n            i = 0\n            for entry in query:\n\n                if not isinstance(entry.Date, datetime):"
@@ -45062,7 +45062,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "9bdaf1ca2d0703279207bfeb949babe886bb3daff467fb1f116318deff3420ed"
+            "equalIndicator/v1": "1052ec11d821ea348302272159330964548149f4c5f44f23c93046c351f99199"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -45392,7 +45392,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-03-27",
-        "guid": "572a86ff-50e8-4ea0-b86c-60f4c60dd573"
+        "guid": "b482e5e3-901c-4e56-805e-41870d872a13"
       },
       "newlineSequences": [
         "\r\n",
@@ -45919,7 +45919,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 28722,
+                    "charLength": 28734,
                     "snippet": {
                       "text": "import asyncio import datetime, pytz import random import string import os import json import ast i..."
                     },
@@ -45944,7 +45944,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "0bf77cd8f2a810ad5f50929de920ee8704d7d8ce3649e747981286f9d6a5c2b0"
+              "equalIndicator/v1": "6f8723414863d9fb2eca0d2ee208b12f346da9461544862b70e944e5cc57cfcc"
             },
             "properties": {
               "ideaSeverity": "ERROR"
@@ -46019,7 +46019,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 29914,
+                    "charLength": 29898,
                     "snippet": {
                       "text": "import asyncio import random import subprocess import sys import time from datetime import timedelta..."
                     },
@@ -46044,7 +46044,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "734bcaf79037f5eb7dae3bc8885c7b8bcbda3276d655184347a51cfb350f4f2c"
+              "equalIndicator/v1": "d4e0c622f9af840dd6fc23135b5e05c0f001f0b60b2d9a80bcdee3dbe709588f"
             },
             "properties": {
               "ideaSeverity": "ERROR"
@@ -46369,7 +46369,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 30537,
+                    "charLength": 30481,
                     "snippet": {
                       "text": "import asyncio import datetime from datetime import datetime, timedelta import discord from core im..."
                     },
@@ -46394,7 +46394,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "9b03f1632bf32ef227174538d649f22ded683855a9e42dc3b6be3bc74d6346ea"
+              "equalIndicator/v1": "9b7e273ef5bad05eaae76825b0b86c6fb47f83fea6f3d909b85227ddfe706dda"
             },
             "properties": {
               "ideaSeverity": "ERROR"
@@ -46569,7 +46569,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 20741,
+                    "charLength": 20717,
                     "snippet": {
                       "text": "import random import string from datetime import datetime, timedelta from typing import Literal imp..."
                     },
@@ -46594,7 +46594,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "19eaa052b1e1847cfc210650265d59b57c1f4c346297a3e8ed5d604b4be55e82"
+              "equalIndicator/v1": "84048b688709bba3834a69ec02df2bc994ae92075ea2e7b811c9377da3e36731"
             },
             "properties": {
               "ideaSeverity": "ERROR"
