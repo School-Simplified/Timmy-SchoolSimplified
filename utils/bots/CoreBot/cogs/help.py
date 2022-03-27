@@ -136,7 +136,7 @@ class RoboPages(discord.ui.View):
             print(error)
 
     async def start(self) -> None:
-        if self.check_embeds and not self.interaction.channel.permissions_for(self.interaction.guild.me).embed_links:
+        if self.check_embeds and not self.interaction.channel.permissions_for(self.interaction.client).embed_links:
             await self.interaction.response.send_message('Bot does not have embed links permission in this channel.')
             return
 
@@ -147,7 +147,7 @@ class RoboPages(discord.ui.View):
         self.message = await self.interaction.response.send_message(**kwargs, view=self)
 
     @discord.ui.button(label='≪', style=discord.ButtonStyle.grey)
-    async def go_to_first_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def go_to_first_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """go to the first page"""
         await self.show_page(interaction, 0)
 
@@ -161,18 +161,18 @@ class RoboPages(discord.ui.View):
         pass
 
     @discord.ui.button(label='Next', style=discord.ButtonStyle.blurple)
-    async def go_to_next_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def go_to_next_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """go to the next page"""
         await self.show_checked_page(interaction, self.current_page + 1)
 
     @discord.ui.button(label='≫', style=discord.ButtonStyle.grey)
-    async def go_to_last_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def go_to_last_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """go to the last page"""
         # The call here is safe because it's guarded by skip_if
         await self.show_page(interaction, self.source.get_max_pages() - 1)
 
     @discord.ui.button(label='Skip to page...', style=discord.ButtonStyle.grey)
-    async def numbered_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def numbered_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """lets you type a page number to go to"""
         if self.input_lock.locked():
             await interaction.response.send_message('Already waiting for your response...', ephemeral=True)
@@ -200,7 +200,7 @@ class RoboPages(discord.ui.View):
                 await self.show_checked_page(interaction, page - 1)
 
     @discord.ui.button(label='Quit', style=discord.ButtonStyle.red)
-    async def stop_pages(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def stop_pages(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """stops the pagination session."""
         await interaction.response.defer()
         await interaction.delete_original_message()
@@ -416,6 +416,7 @@ class Help(commands.Cog):
     """
     Help command
     """
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -507,7 +508,7 @@ class Help(commands.Cog):
                 *self.bot.tree.walk_commands(guild=discord.Object(interaction.guild.id)),
                 *self.bot.tree.walk_commands(),
                 *self.bot.commands
-                            )
+            )
                 if isinstance(x, (app_commands.Command, commands.Command))
             ],
             sort=True,
@@ -520,7 +521,9 @@ class Help(commands.Cog):
                 continue
 
             cog = self.bot.get_cog(name)
-            all_commands[cog] = sorted(children, key=lambda c: c.qualified_name)
+            all_commands[cog] = sorted(
+                children, key=lambda c: c.qualified_name if isinstance(c, commands.Command) else c.name
+            )
 
         menu = HelpMenu(FrontPageSource(), interaction=interaction, bot=self.bot)
         menu.add_categories(all_commands)
