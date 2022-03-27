@@ -787,7 +787,7 @@ class MiscCMD(commands.Cog):
         else:
             await interaction.response.send_message(f"{member.mention} is tall!")
 
-    @app_commands.command(name="Play TicTacToe with them!")
+    @app_commands.context_menu(name="Play TicTacToe with them!")
     @app_commands.describe(member='The user you want to play with.')
     async def tictactoe_ctx_menu(self, interaction: discord.Interaction, member: discord.Member):
         if member is None:
