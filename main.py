@@ -112,10 +112,12 @@ class Timmy(commands.Bot):
                 bar()
 
     async def is_owner(self, user: discord.User):
+        admin_ids = []
         query = database.Administrators.select().where(
             database.Administrators.TierLevel >= 3
         )
-        admin_ids = [admin for admin in query if admin.discordID == user.id]
+        for admin in query:
+            admin_ids.append(admin.discordID)
 
         if user.id in admin_ids:
             return True
