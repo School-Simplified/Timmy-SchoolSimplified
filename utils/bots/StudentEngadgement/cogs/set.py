@@ -357,7 +357,7 @@ class SuggestModal(discord.ui.Modal):
                     placeholder=question["placeholder"] if question["placeholder"] else None,
                     max_length=1024,
                     style=discord.TextStyle.paragraph,
-                    custom_id="suggestion_modal"
+                    custom_id=None
                 )
             )
 

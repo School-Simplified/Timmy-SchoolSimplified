@@ -192,7 +192,8 @@ def access_secret(
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gsheetsadmin/sstimmy.json"
         client = secretmanager.SecretManagerServiceClient()
     else:
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(dict(os.getenv("GOOGLE_APPLICATION_CREDENTIALS")))
+        rawcreds = json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(rawcreds)
         client = secretmanager.SecretManagerServiceClient(credentials=creds)
 
     name = f"projects/ss-timmy/secrets/{secret_id}/versions/latest"
