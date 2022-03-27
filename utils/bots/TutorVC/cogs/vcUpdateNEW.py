@@ -558,16 +558,16 @@ class TutorVCUpdate(commands.Cog):
             if TDO.total_seconds() > 120:
                 print(VC.ChannelID)
                 try:
-                    VoiceChannel: discord.VoiceChannel = await self.bot.fetch_channel(
+                    VoiceChannel: discord.VoiceChannel = self.bot.get_channel(
                         VC.ChannelID
                     )
                 except Exception as e:
                     print(f"Error Fetching Channel:\n{e}")
                     VC.delete_instance()
                     continue
-                VCGuild: discord.Guild = await self.bot.fetch_guild(VC.GuildID)
-                VCOwner: discord.Member = await VCGuild.fetch_member(VC.discordID)
-                acadChannel = await self.bot.fetch_channel(
+                VCGuild: discord.Guild = self.bot.get_guild(VC.GuildID)
+                VCOwner: discord.Member = VCGuild.get_member(VC.discordID)
+                acadChannel = self.bot.get_channel(
                     self.channel_id[VCOwner.guild.id]
                 )
 
@@ -628,11 +628,11 @@ class TutorVCUpdate(commands.Cog):
 
                                 tutorSession = tutorSession.get()
 
-                                student = await self.bot.fetch_user(
+                                student = self.bot.get_user(
                                     tutorSession.StudentID
                                 )
-                                tutor = await self.bot.fetch_user(tutorSession.TutorID)
-                                HOURCH = await self.bot.fetch_channel(self.TutorLogID)
+                                tutor = self.bot.get_user(tutorSession.TutorID)
+                                HOURCH = self.bot.get_channel(self.TutorLogID)
 
                                 hourlog = discord.Embed(
                                     title="Hour Log",
