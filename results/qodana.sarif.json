@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1800,19 +1800,19 @@
                 ]
               },
               {
-                "id": "CommandLineInspection",
+                "id": "PyComparisonWithNoneInspection",
                 "shortDescription": {
-                  "text": "Incorrect CLI syntax"
+                  "text": "Using equality operators to compare with None"
                 },
                 "fullDescription": {
-                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
-                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
+                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
+                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1834,19 +1834,19 @@
                 ]
               },
               {
-                "id": "PyComparisonWithNoneInspection",
+                "id": "CommandLineInspection",
                 "shortDescription": {
-                  "text": "Using equality operators to compare with None"
+                  "text": "Incorrect CLI syntax"
                 },
                 "fullDescription": {
-                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
-                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
+                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
+                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1936,13 +1936,13 @@
                 ]
               },
               {
-                "id": "PyMethodParametersInspection",
+                "id": "PyChainedComparisonsInspection",
                 "shortDescription": {
-                  "text": "Improper first parameter"
+                  "text": "Too complex chained comparisons"
                 },
                 "fullDescription": {
-                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
-                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
+                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
+                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1970,13 +1970,13 @@
                 ]
               },
               {
-                "id": "PyChainedComparisonsInspection",
+                "id": "PyMethodParametersInspection",
                 "shortDescription": {
-                  "text": "Too complex chained comparisons"
+                  "text": "Improper first parameter"
                 },
                 "fullDescription": {
-                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
-                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
+                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
+                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -2344,19 +2344,19 @@
                 ]
               },
               {
-                "id": "CythonUsageBeforeDeclarationInspection",
+                "id": "PyArgumentEqualDefaultInspection",
                 "shortDescription": {
-                  "text": "Cython variable is used before its declaration"
+                  "text": "The function argument is equal to the default parameter value"
                 },
                 "fullDescription": {
-                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
-                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
+                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2378,19 +2378,19 @@
                 ]
               },
               {
-                "id": "PyArgumentEqualDefaultInspection",
+                "id": "CythonUsageBeforeDeclarationInspection",
                 "shortDescription": {
-                  "text": "The function argument is equal to the default parameter value"
+                  "text": "Cython variable is used before its declaration"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
-                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
+                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
+                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2888,19 +2888,19 @@
                 ]
               },
               {
-                "id": "PyTrailingSemicolonInspection",
+                "id": "PyRedundantParenthesesInspection",
                 "shortDescription": {
-                  "text": "Prohibited trailing semicolon in a statement"
+                  "text": "Redundant parentheses"
                 },
                 "fullDescription": {
-                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
-                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
+                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
+                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2922,19 +2922,19 @@
                 ]
               },
               {
-                "id": "PyRedundantParenthesesInspection",
+                "id": "PyTrailingSemicolonInspection",
                 "shortDescription": {
-                  "text": "Redundant parentheses"
+                  "text": "Prohibited trailing semicolon in a statement"
                 },
                 "fullDescription": {
-                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
-                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
+                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
+                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3602,19 +3602,19 @@
                 ]
               },
               {
-                "id": "PyProtectedMemberInspection",
+                "id": "DjangoCloseTagInspection",
                 "shortDescription": {
-                  "text": "Accessing a protected member of a class or a module"
+                  "text": "Mismatched opening and closing tags"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
-                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
+                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
+                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3623,8 +3623,8 @@
                 "relationships": [
                   {
                     "target": {
-                      "id": "Python",
-                      "index": 2,
+                      "id": "Django",
+                      "index": 7,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -3670,19 +3670,19 @@
                 ]
               },
               {
-                "id": "DjangoCloseTagInspection",
+                "id": "PyProtectedMemberInspection",
                 "shortDescription": {
-                  "text": "Mismatched opening and closing tags"
+                  "text": "Accessing a protected member of a class or a module"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
-                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
+                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
+                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3691,8 +3691,8 @@
                 "relationships": [
                   {
                     "target": {
-                      "id": "Django",
-                      "index": 7,
+                      "id": "Python",
+                      "index": 2,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5756,40 +5756,6 @@
                 ]
               },
               {
-                "id": "UnusedDefine",
-                "shortDescription": {
-                  "text": "Unused define"
-                },
-                "fullDescription": {
-                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
-                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RELAX NG",
-                      "index": 11,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "HtmlUnknownAnchorTarget",
                 "shortDescription": {
                   "text": "Unresolved fragment in a link"
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "UnusedDefine",
+                "shortDescription": {
+                  "text": "Unused define"
+                },
+                "fullDescription": {
+                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
+                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RELAX NG",
+                      "index": 11,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "8d8437524c09e3162a1b6e6c92031f93ee86eb0a",
+          "revisionId": "7067304c793d7169598fb93b60267f1bffde941e",
           "branch": "beta",
           "properties": {
             "lastAuthorName": "Puncher",
@@ -9202,59 +9202,6 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/guild_check.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 1,
-                  "startColumn": 1,
-                  "charOffset": 0,
-                  "charLength": 1189,
-                  "snippet": {
-                    "text": "from discord.ext import commands import discord from core import database from core.common import Ot..."
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 1,
-                  "startColumn": 1,
-                  "charOffset": 0,
-                  "charLength": 73,
-                  "snippet": {
-                    "text": "from discord.ext import commands\nimport discord\nfrom core import database"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "58a84628289aed2330bd9bf51a1c0de9e0d7a7ea8b1edd991628284af44ebd15"
-          },
-          "properties": {
-            "ideaSeverity": "WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPackageRequirementsInspection",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "Package requirements 'aiohttp==3.8.1', 'aiosignal==1.2.0', 'anyio==3.5.0', 'appnope==0.1.2', 'astunparse==1.6.3', 'async-timeout==4.0.1', 'attrs==21.2.0', 'backcall==0.2.0', 'black==21.11b1', 'blinker==1.4', 'boto3==1.20.5', 'botocore==1.23.10', 'braceexpand==0.1.7', 'cachetools==4.2.4', 'certifi==2021.10.8', 'cffi==1.15.0', 'chardet==4.0.0', 'charset-normalizer==2.0.7', 'chat-exporter==2.1.1', 'click==8.0.3', 'configcat-client==5.0.0', 'cryptography==35.0.0', 'decorator==5.1.0', 'discord-sentry-reporting==2.0.4', 'discord.py', 'discord-ext-menus', 'dpytest==0.5.3', 'emoji==1.6.1', 'enum-compat==0.0.3', 'Flask==2.0.2', 'frozenlist==1.2.0', 'google-api-core==2.2.2', 'google-api-python-client==2.37.0', 'google-auth==2.3.3', 'google-auth-httplib2==0.1.0', 'google-auth-oauthlib==0.4.6', 'google-cloud-speech==2.12.0', 'google-cloud-texttospeech==2.8.0', 'google-cloud-storage==2.1.0', 'googleapis-common-protos==1.53.0', 'grapheme==0.6.0', 'grpcio==1.42.0', 'grpcio-status==1.42.0', 'gspread==4.0.1', 'gTTS==2.2.3', 'httplib2==0.20.2', 'idna==3.3', 'import-expression==1.1.4', 'iniconfig==1.1.1', 'ipdb==0.13.9', 'ipython==7.31.1', 'itsdangerous==2.0.1', 'jedi==0.18.1', 'Jinja2==3.0.3', 'jishaku', 'jmespath==0.10.0', 'libcst==0.4.1', 'logtail-python==0.1.2', 'MarkupSafe==2.0.1', 'matplotlib-inline==0.1.3', 'msgpack==1.0.2', 'multidict==5.2.0', 'mypy-extensions==0.4.3', 'newrelic==7.2.4.171', 'oauth2client==4.1.3', 'oauthlib==3.1.1', 'packaging==21.3', 'parso==0.8.3', 'pathspec==0.9.0', 'peewee==3.14.8', 'pexpect==4.8.0', 'pickleshare==0.7.5', 'platformdirs==2.4.0', 'pluggy==1.0.0', 'prompt-toolkit==3.0.23', 'proto-plus==1.19.8', 'protobuf==3.19.1', 'psutil==5.8.0', 'ptyprocess==0.7.0', 'py==1.11.0', 'pyasn1==0.4.8', 'pyasn1-modules==0.2.8', 'pycparser==2.21', 'Pygments==2.10.0', 'PyMySQL==1.0.2', 'pyOpenSSL==21.0.0', 'pyparsing==3.0.6', 'pytest==6.2.5', 'pytest-asyncio==0.16.0', 'python-dateutil==2.8.2', 'python-dotenv==0.19.2', 'pytz==2021.3', 'PyYAML==6.0', 'regex==2021.11.10', 'requests==2.26.0', 'requests-oauthlib==1.3.0', 'rsa==4.7.2', 's3transfer==0.5.0', 'semver==2.13.0', 'sentry-sdk==1.4.3', 'setproctitle==1.2.2', 'six==1.16.0', 'sniffio==1.2.0', 'tdqm==0.0.1', 'toml==0.10.2', 'tomli==1.2.2', 'tqdm==4.62.3', 'traitlets==5.1.1', 'typing-inspect==0.7.1', 'typing_extensions==4.0.0', 'uritemplate==4.1.1', 'urllib3==1.26.7', 'wcwidth==0.2.5', 'Werkzeug==2.0.2', 'ws4py==0.5.1', 'yarl==1.7.2', 'google-cloud-secret-manager==2.8.0', 'alive-progress==2.3.1', 'discord-ext-menus' are not satisfied",
-            "markdown": "Package requirements 'aiohttp==3.8.1', 'aiosignal==1.2.0', 'anyio==3.5.0', 'appnope==0.1.2', 'astunparse==1.6.3', 'async-timeout==4.0.1', 'attrs==21.2.0', 'backcall==0.2.0', 'black==21.11b1', 'blinker==1.4', 'boto3==1.20.5', 'botocore==1.23.10', 'braceexpand==0.1.7', 'cachetools==4.2.4', 'certifi==2021.10.8', 'cffi==1.15.0', 'chardet==4.0.0', 'charset-normalizer==2.0.7', 'chat-exporter==2.1.1', 'click==8.0.3', 'configcat-client==5.0.0', 'cryptography==35.0.0', 'decorator==5.1.0', 'discord-sentry-reporting==2.0.4', 'discord.py', 'discord-ext-menus', 'dpytest==0.5.3', 'emoji==1.6.1', 'enum-compat==0.0.3', 'Flask==2.0.2', 'frozenlist==1.2.0', 'google-api-core==2.2.2', 'google-api-python-client==2.37.0', 'google-auth==2.3.3', 'google-auth-httplib2==0.1.0', 'google-auth-oauthlib==0.4.6', 'google-cloud-speech==2.12.0', 'google-cloud-texttospeech==2.8.0', 'google-cloud-storage==2.1.0', 'googleapis-common-protos==1.53.0', 'grapheme==0.6.0', 'grpcio==1.42.0', 'grpcio-status==1.42.0', 'gspread==4.0.1', 'gTTS==2.2.3', 'httplib2==0.20.2', 'idna==3.3', 'import-expression==1.1.4', 'iniconfig==1.1.1', 'ipdb==0.13.9', 'ipython==7.31.1', 'itsdangerous==2.0.1', 'jedi==0.18.1', 'Jinja2==3.0.3', 'jishaku', 'jmespath==0.10.0', 'libcst==0.4.1', 'logtail-python==0.1.2', 'MarkupSafe==2.0.1', 'matplotlib-inline==0.1.3', 'msgpack==1.0.2', 'multidict==5.2.0', 'mypy-extensions==0.4.3', 'newrelic==7.2.4.171', 'oauth2client==4.1.3', 'oauthlib==3.1.1', 'packaging==21.3', 'parso==0.8.3', 'pathspec==0.9.0', 'peewee==3.14.8', 'pexpect==4.8.0', 'pickleshare==0.7.5', 'platformdirs==2.4.0', 'pluggy==1.0.0', 'prompt-toolkit==3.0.23', 'proto-plus==1.19.8', 'protobuf==3.19.1', 'psutil==5.8.0', 'ptyprocess==0.7.0', 'py==1.11.0', 'pyasn1==0.4.8', 'pyasn1-modules==0.2.8', 'pycparser==2.21', 'Pygments==2.10.0', 'PyMySQL==1.0.2', 'pyOpenSSL==21.0.0', 'pyparsing==3.0.6', 'pytest==6.2.5', 'pytest-asyncio==0.16.0', 'python-dateutil==2.8.2', 'python-dotenv==0.19.2', 'pytz==2021.3', 'PyYAML==6.0', 'regex==2021.11.10', 'requests==2.26.0', 'requests-oauthlib==1.3.0', 'rsa==4.7.2', 's3transfer==0.5.0', 'semver==2.13.0', 'sentry-sdk==1.4.3', 'setproctitle==1.2.2', 'six==1.16.0', 'sniffio==1.2.0', 'tdqm==0.0.1', 'toml==0.10.2', 'tomli==1.2.2', 'tqdm==4.62.3', 'traitlets==5.1.1', 'typing-inspect==0.7.1', 'typing_extensions==4.0.0', 'uritemplate==4.1.1', 'urllib3==1.26.7', 'wcwidth==0.2.5', 'Werkzeug==2.0.2', 'ws4py==0.5.1', 'yarl==1.7.2', 'google-cloud-secret-manager==2.8.0', 'alive-progress==2.3.1', 'discord-ext-menus' are not satisfied"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
                   "uri": "utils/bots/StudentEngadgement/cogs/guess.py",
                   "uriBaseId": "SRCROOT"
                 },
@@ -9308,16 +9255,16 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/messagelogs.py",
+                  "uri": "utils/events/guild_check.py",
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
                   "startLine": 1,
                   "startColumn": 1,
                   "charOffset": 0,
-                  "charLength": 2427,
+                  "charLength": 1189,
                   "snippet": {
-                    "text": "import datetime from datetime import datetime import discord from discord.ext import commands from ..."
+                    "text": "from discord.ext import commands import discord from core import database from core.common import Ot..."
                   },
                   "sourceLanguage": "Python"
                 },
@@ -9325,9 +9272,9 @@
                   "startLine": 1,
                   "startColumn": 1,
                   "charOffset": 0,
-                  "charLength": 46,
+                  "charLength": 73,
                   "snippet": {
-                    "text": "import datetime\nfrom datetime import datetime\n"
+                    "text": "from discord.ext import commands\nimport discord\nfrom core import database"
                   }
                 }
               },
@@ -9340,7 +9287,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "f72435757047f820a5b094e3fbab8c3e8ed44de1ba4c6438fd3d150d89e6ddf3"
+            "equalIndicator/v1": "58a84628289aed2330bd9bf51a1c0de9e0d7a7ea8b1edd991628284af44ebd15"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -9394,6 +9341,59 @@
           ],
           "partialFingerprints": {
             "equalIndicator/v1": "a7e52b6bf02bebf3009d319119fd9138a400b5654583637ddab23033babd8efb"
+          },
+          "properties": {
+            "ideaSeverity": "WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPackageRequirementsInspection",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Package requirements 'aiohttp==3.8.1', 'aiosignal==1.2.0', 'anyio==3.5.0', 'appnope==0.1.2', 'astunparse==1.6.3', 'async-timeout==4.0.1', 'attrs==21.2.0', 'backcall==0.2.0', 'black==21.11b1', 'blinker==1.4', 'boto3==1.20.5', 'botocore==1.23.10', 'braceexpand==0.1.7', 'cachetools==4.2.4', 'certifi==2021.10.8', 'cffi==1.15.0', 'chardet==4.0.0', 'charset-normalizer==2.0.7', 'chat-exporter==2.1.1', 'click==8.0.3', 'configcat-client==5.0.0', 'cryptography==35.0.0', 'decorator==5.1.0', 'discord-sentry-reporting==2.0.4', 'discord.py', 'discord-ext-menus', 'dpytest==0.5.3', 'emoji==1.6.1', 'enum-compat==0.0.3', 'Flask==2.0.2', 'frozenlist==1.2.0', 'google-api-core==2.2.2', 'google-api-python-client==2.37.0', 'google-auth==2.3.3', 'google-auth-httplib2==0.1.0', 'google-auth-oauthlib==0.4.6', 'google-cloud-speech==2.12.0', 'google-cloud-texttospeech==2.8.0', 'google-cloud-storage==2.1.0', 'googleapis-common-protos==1.53.0', 'grapheme==0.6.0', 'grpcio==1.42.0', 'grpcio-status==1.42.0', 'gspread==4.0.1', 'gTTS==2.2.3', 'httplib2==0.20.2', 'idna==3.3', 'import-expression==1.1.4', 'iniconfig==1.1.1', 'ipdb==0.13.9', 'ipython==7.31.1', 'itsdangerous==2.0.1', 'jedi==0.18.1', 'Jinja2==3.0.3', 'jishaku', 'jmespath==0.10.0', 'libcst==0.4.1', 'logtail-python==0.1.2', 'MarkupSafe==2.0.1', 'matplotlib-inline==0.1.3', 'msgpack==1.0.2', 'multidict==5.2.0', 'mypy-extensions==0.4.3', 'newrelic==7.2.4.171', 'oauth2client==4.1.3', 'oauthlib==3.1.1', 'packaging==21.3', 'parso==0.8.3', 'pathspec==0.9.0', 'peewee==3.14.8', 'pexpect==4.8.0', 'pickleshare==0.7.5', 'platformdirs==2.4.0', 'pluggy==1.0.0', 'prompt-toolkit==3.0.23', 'proto-plus==1.19.8', 'protobuf==3.19.1', 'psutil==5.8.0', 'ptyprocess==0.7.0', 'py==1.11.0', 'pyasn1==0.4.8', 'pyasn1-modules==0.2.8', 'pycparser==2.21', 'Pygments==2.10.0', 'PyMySQL==1.0.2', 'pyOpenSSL==21.0.0', 'pyparsing==3.0.6', 'pytest==6.2.5', 'pytest-asyncio==0.16.0', 'python-dateutil==2.8.2', 'python-dotenv==0.19.2', 'pytz==2021.3', 'PyYAML==6.0', 'regex==2021.11.10', 'requests==2.26.0', 'requests-oauthlib==1.3.0', 'rsa==4.7.2', 's3transfer==0.5.0', 'semver==2.13.0', 'sentry-sdk==1.4.3', 'setproctitle==1.2.2', 'six==1.16.0', 'sniffio==1.2.0', 'tdqm==0.0.1', 'toml==0.10.2', 'tomli==1.2.2', 'tqdm==4.62.3', 'traitlets==5.1.1', 'typing-inspect==0.7.1', 'typing_extensions==4.0.0', 'uritemplate==4.1.1', 'urllib3==1.26.7', 'wcwidth==0.2.5', 'Werkzeug==2.0.2', 'ws4py==0.5.1', 'yarl==1.7.2', 'google-cloud-secret-manager==2.8.0', 'alive-progress==2.3.1', 'discord-ext-menus' are not satisfied",
+            "markdown": "Package requirements 'aiohttp==3.8.1', 'aiosignal==1.2.0', 'anyio==3.5.0', 'appnope==0.1.2', 'astunparse==1.6.3', 'async-timeout==4.0.1', 'attrs==21.2.0', 'backcall==0.2.0', 'black==21.11b1', 'blinker==1.4', 'boto3==1.20.5', 'botocore==1.23.10', 'braceexpand==0.1.7', 'cachetools==4.2.4', 'certifi==2021.10.8', 'cffi==1.15.0', 'chardet==4.0.0', 'charset-normalizer==2.0.7', 'chat-exporter==2.1.1', 'click==8.0.3', 'configcat-client==5.0.0', 'cryptography==35.0.0', 'decorator==5.1.0', 'discord-sentry-reporting==2.0.4', 'discord.py', 'discord-ext-menus', 'dpytest==0.5.3', 'emoji==1.6.1', 'enum-compat==0.0.3', 'Flask==2.0.2', 'frozenlist==1.2.0', 'google-api-core==2.2.2', 'google-api-python-client==2.37.0', 'google-auth==2.3.3', 'google-auth-httplib2==0.1.0', 'google-auth-oauthlib==0.4.6', 'google-cloud-speech==2.12.0', 'google-cloud-texttospeech==2.8.0', 'google-cloud-storage==2.1.0', 'googleapis-common-protos==1.53.0', 'grapheme==0.6.0', 'grpcio==1.42.0', 'grpcio-status==1.42.0', 'gspread==4.0.1', 'gTTS==2.2.3', 'httplib2==0.20.2', 'idna==3.3', 'import-expression==1.1.4', 'iniconfig==1.1.1', 'ipdb==0.13.9', 'ipython==7.31.1', 'itsdangerous==2.0.1', 'jedi==0.18.1', 'Jinja2==3.0.3', 'jishaku', 'jmespath==0.10.0', 'libcst==0.4.1', 'logtail-python==0.1.2', 'MarkupSafe==2.0.1', 'matplotlib-inline==0.1.3', 'msgpack==1.0.2', 'multidict==5.2.0', 'mypy-extensions==0.4.3', 'newrelic==7.2.4.171', 'oauth2client==4.1.3', 'oauthlib==3.1.1', 'packaging==21.3', 'parso==0.8.3', 'pathspec==0.9.0', 'peewee==3.14.8', 'pexpect==4.8.0', 'pickleshare==0.7.5', 'platformdirs==2.4.0', 'pluggy==1.0.0', 'prompt-toolkit==3.0.23', 'proto-plus==1.19.8', 'protobuf==3.19.1', 'psutil==5.8.0', 'ptyprocess==0.7.0', 'py==1.11.0', 'pyasn1==0.4.8', 'pyasn1-modules==0.2.8', 'pycparser==2.21', 'Pygments==2.10.0', 'PyMySQL==1.0.2', 'pyOpenSSL==21.0.0', 'pyparsing==3.0.6', 'pytest==6.2.5', 'pytest-asyncio==0.16.0', 'python-dateutil==2.8.2', 'python-dotenv==0.19.2', 'pytz==2021.3', 'PyYAML==6.0', 'regex==2021.11.10', 'requests==2.26.0', 'requests-oauthlib==1.3.0', 'rsa==4.7.2', 's3transfer==0.5.0', 'semver==2.13.0', 'sentry-sdk==1.4.3', 'setproctitle==1.2.2', 'six==1.16.0', 'sniffio==1.2.0', 'tdqm==0.0.1', 'toml==0.10.2', 'tomli==1.2.2', 'tqdm==4.62.3', 'traitlets==5.1.1', 'typing-inspect==0.7.1', 'typing_extensions==4.0.0', 'uritemplate==4.1.1', 'urllib3==1.26.7', 'wcwidth==0.2.5', 'Werkzeug==2.0.2', 'ws4py==0.5.1', 'yarl==1.7.2', 'google-cloud-secret-manager==2.8.0', 'alive-progress==2.3.1', 'discord-ext-menus' are not satisfied"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/messagelogs.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "charOffset": 0,
+                  "charLength": 2427,
+                  "snippet": {
+                    "text": "import datetime from datetime import datetime import discord from discord.ext import commands from ..."
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "charOffset": 0,
+                  "charLength": 46,
+                  "snippet": {
+                    "text": "import datetime\nfrom datetime import datetime\n"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "f72435757047f820a5b094e3fbab8c3e8ed44de1ba4c6438fd3d150d89e6ddf3"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -62882,7 +62882,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-03-27",
-        "guid": "e9dfb544-d621-4107-82d7-9902c3c63556"
+        "guid": "d5ed0cdb-b2c9-4eda-b2ba-051e106de752"
       },
       "newlineSequences": [
         "\r\n",
