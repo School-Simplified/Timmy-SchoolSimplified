@@ -773,6 +773,7 @@ tables = {
     "AuthorizedGuilds": AuthorizedGuilds,
     "StudyVCDB": StudyVCDB,
     "StudyVCLeaderboard": StudyVCLeaderboard,
+    "ResponseSpamBlacklist": ResponseSpamBlacklist,
 }
 
 iter_table(tables)
