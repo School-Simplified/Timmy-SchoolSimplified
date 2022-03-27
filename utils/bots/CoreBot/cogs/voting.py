@@ -10,7 +10,7 @@ import discord
 from discord.ext import commands
 from core import database
 from core.checks import is_hostTimmyBeta
-from core.common import hexColors as hex
+from core.common import Colors
 from core.common import Emoji
 from core.common import (
     MAIN_ID,
@@ -184,7 +184,7 @@ class VotingBot(commands.Cog):
         voteCHsFileURL = msgVoteCHsFile.attachments[0].url
         await msgVoteCHsFile.delete()
         embedServer = discord.Embed(
-            color=hex.ss_blurple,
+            color=Colors.ss_blurple,
             title="Create Voting",
             description="Please provide the announcement-channel/s ID in which the voting should get sent. To send it to "
             "multiple channels, separate the channels with commas (`,`)."
@@ -223,7 +223,7 @@ class VotingBot(commands.Cog):
                 )
             except asyncio.TimeoutError:
                 embedTimeout = discord.Embed(
-                    color=hex.red_cancel,
+                    color=Colors.red,
                     title="Create Voting",
                     description="Setup canceled due to timeout.",
                 )
@@ -246,7 +246,7 @@ class VotingBot(commands.Cog):
 
                 if msgContent.lower() == "cancel":
                     embedCancel = discord.Embed(
-                        color=hex.red_cancel,
+                        color=Colors.red,
                         title="Create Voting",
                         description="Setup canceled.",
                     )
@@ -270,7 +270,7 @@ class VotingBot(commands.Cog):
                         pass
 
                     embedNotFound = discord.Embed(
-                        color=hex.red_error,
+                        color=Colors.red,
                         title="Create Voting",
                         description=f"Couldn't find one or more of the given text channels. Make sure the channel exists, "
                         f"you provide the channel's ID and it's an accepted channel.",
@@ -342,7 +342,7 @@ class VotingBot(commands.Cog):
                     channels = tempChannels
 
                     embedText = discord.Embed(
-                        color=hex.ss_blurple,
+                        color=Colors.ss_blurple,
                         title="Create Voting",
                         description="Please provide the text you want to add to the voting."
                         "\n\n**Example:**"
@@ -369,7 +369,7 @@ class VotingBot(commands.Cog):
 
                     if len(msgContent) > 2000:
                         embedTooLong = discord.Embed(
-                            color=hex.red_error,
+                            color=Colors.red,
                             title="Create Voting",
                             description="This text is too long! Make sure the text is less than 2000 characters.",
                         )
@@ -388,7 +388,7 @@ class VotingBot(commands.Cog):
                     text = msgContent
 
                     embedText = discord.Embed(
-                        color=hex.ss_blurple,
+                        color=Colors.ss_blurple,
                         title="Create Voting",
                         description="Please provide the options for the voting by separating the options with commas (`,`). "
                         "They will shown as buttons."
@@ -416,7 +416,7 @@ class VotingBot(commands.Cog):
                         options.append(optionStr.strip())
 
                     embedDuration = discord.Embed(
-                        color=hex.ss_blurple,
+                        color=Colors.ss_blurple,
                         title="Create Voting",
                         description="Please provide the duration of the voting."
                         "\n\n**Example:**"
@@ -451,7 +451,7 @@ class VotingBot(commands.Cog):
                         and seconds is None
                     ):
                         embedNotFound = discord.Embed(
-                            color=hex.red_error,
+                            color=Colors.red,
                             title="Create Voting",
                             description="Couldn't find something matching to the time units. Please try again.",
                         )
@@ -490,7 +490,7 @@ class VotingBot(commands.Cog):
                         )
                     except OverflowError as _error:
                         embedOverflow = discord.Embed(
-                            color=hex.red_error,
+                            color=Colors.red,
                             title="Create Voting",
                             description="Couldn't convert it to a datetime due of a too big expiration date. Please try again."
                             f"\n\n**Error:** `{_error.__class__.__name__}: {_error}`",
@@ -508,7 +508,7 @@ class VotingBot(commands.Cog):
                         continue
 
                     embedFinish = discord.Embed(
-                        color=hex.ss_blurple,
+                        color=Colors.ss_blurple,
                         title="Create Voting",
                         description="**Almost done...** Please overview the pseudo voting below and confirm it.",
                     )
@@ -523,7 +523,7 @@ class VotingBot(commands.Cog):
                     expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
 
                     embedPseudo = discord.Embed(
-                        color=hex.ss_blurple,
+                        color=Colors.ss_blurple,
                         title="Voting",
                         description=f"{text}"
                         f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})",
@@ -568,7 +568,7 @@ class VotingBot(commands.Cog):
                 )
 
             embedConfirm = discord.Embed(
-                color=hex.yellow,
+                color=Colors.yellow,
                 title="Confirm",
                 description=f"Please confirm that you overviewed the voting message and that this message will be sent and ping @everyone "
                 f"in the following channel/s:"
@@ -597,7 +597,7 @@ class VotingBot(commands.Cog):
                 )
             except asyncio.TimeoutError:
                 embedTimeout = discord.Embed(
-                    color=hex.red_error,
+                    color=Colors.red,
                     title="Confirm",
                     description="Confirmation canceled due to timeout.",
                 )
@@ -613,7 +613,7 @@ class VotingBot(commands.Cog):
                     await msgConfirm.clear_reactions()
 
                     embedSending = discord.Embed(
-                        color=hex.yellow,
+                        color=Colors.yellow,
                         title="Confirm",
                         description="Sending message/s...",
                     )
@@ -625,7 +625,7 @@ class VotingBot(commands.Cog):
                     expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")
 
                     embedVoting = discord.Embed(
-                        color=hex.ss_blurple,
+                        color=Colors.ss_blurple,
                         title="Voting",
                         description=f"{text}"
                         f"\n\nExpires {expLongDateTimeTP} ({expRelativeTimeTP})",
@@ -657,7 +657,7 @@ class VotingBot(commands.Cog):
                         )  # TODO: everyone
                     except Exception as _error:
                         embedError = discord.Embed(
-                            color=hex.red_error,
+                            color=Colors.red,
                             title="Error while sending message/s",
                             description="An unexpected error occurred! Please make sure I can send messages into the "
                             "provided channel/s."
@@ -682,7 +682,7 @@ class VotingBot(commands.Cog):
                         query.save()
 
                         embedSuccess = discord.Embed(
-                            color=hex.green_confirm,
+                            color=Colors.green,
                             title="Confirm",
                             description="Successfully sent messages to following channel/s:"
                             f"\n{strChannels}",
@@ -693,7 +693,7 @@ class VotingBot(commands.Cog):
                     await msgConfirm.clear_reactions()
 
                     embedCancel = discord.Embed(
-                        color=hex.red_cancel,
+                        color=Colors.red,
                         title="Confirm",
                         description="Confirmation canceled.",
                     )
