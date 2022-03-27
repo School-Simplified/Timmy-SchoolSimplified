@@ -3,8 +3,9 @@ from datetime import datetime, timedelta
 import discord
 import pytz
 from core import database
-from core.common import hexColors
+from core.common import Colors, Emoji
 from core.common import TECH_ID
+from discord.app_commands import command, Group
 from discord.ext import commands
 
 """
@@ -92,7 +93,7 @@ def _shortNumber(number: int) -> str:
     :return: The string with the number and if needed with the abbreviation: str
     """
 
-    numberStr = ...     # type: str
+    numberStr = ...  # type: str
 
     if number < 1000:
         numberStr = f"{number}"
@@ -137,7 +138,8 @@ async def addLeaderboardProgress(member: discord.Member):
     if StudySessionQ.exists():
         StudySessionQ = StudySessionQ.get()
         totalmin, now = showTotalMinutes(StudySessionQ.StartTime)
-        leaderboardQuery = database.StudyVCLeaderboard.select().where(database.StudyVCLeaderboard.discordID == member.id)
+        leaderboardQuery = database.StudyVCLeaderboard.select().where(
+            database.StudyVCLeaderboard.discordID == member.id)
 
         isNewLvl = False
         if leaderboardQuery.exists():
@@ -328,105 +330,6 @@ async def endSession(member: discord.Member):
 
     return True
 
-        elif newLvl < 40:
-            role = None  # TODO: get lvl 30 role and add to user
-
-            if currentLvl < 30:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 50:
-            role = None  # TODO: get lvl 40 role and add to user
-
-            if currentLvl < 40:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 60:
-            role = None  # TODO: get lvl 50 role and add to user
-
-            if currentLvl < 50:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 70:
-            role = None  # TODO: get lvl 60 role and add to user
-
-            if currentLvl < 60:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 80:
-            role = None  # TODO: get lvl 70 role and add to user
-
-            if currentLvl < 70:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 90:
-            role = None  # TODO: get lvl 80 role and add to user
-
-            if currentLvl < 80:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl < 100:
-            role = None  # TODO: get lvl 90 role and add to user
-
-            if currentLvl < 90:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        elif newLvl >= 100:
-            role = None  # TODO: get lvl 100 role and add to user
-
-            if currentLvl < 100:
-                roleStr = f"\nYou've earned a new role: {role}"
-            pass
-
-        if isNewLvl:
-
-            dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
-                    f"{roleStr}"
-            try:
-                await member.send(dmMSG)
-            except:
-                pass
-
-    else:
-        return False
-
-    StudySessionQ = StudySessionQ.get()
-    StudySessionQ.StartTime = datetime.now(EST)
-    StudySessionQ.Paused = True
-    StudySessionQ.save()
-
-    return True
-
-
-async def endSession(member: discord.Member):
-    """
-    Ends the session by kicking the user out of the voice channel and removing the user from the database table `StudyVCDB`.
-
-    :param member: The member which should get removed from the database.
-
-    :return: Whenever the user has been found in the database: bool
-    """
-
-    StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
-    if StudySessionQ.exists():
-        StudySessionQ = StudySessionQ.get()
-        StudySessionQ.delete_instance()
-        StudySessionQ.save()
-
-        if member.voice:
-            await member.move_to(None)
-
-    else:
-        return False
-
-    return True
-
 
 class StudyToDo(commands.Cog, Group):
     def __init__(self, bot: commands.Bot):
@@ -435,26 +338,37 @@ class StudyToDo(commands.Cog, Group):
 
         self.StudyVCGuildID = TECH_ID.g_tech
 
-
-    @commands.group(aliaseS=["study-todo"])
-    async def studytodo(self, ctx: commands.Context):
-        if ctx.message.content == "+studytodo":
-            subcommands = "/".join(
-                sorted(subcommand.name for subcommand in self.studytodo.commands)
-            )
-            signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
-
     @property
     def display_emoji(self) -> str:
         return Emoji.timmyBook
 
-    @studytodo.command()
-    async def set(self, ctx: commands.Context, *, item):
+    # @commands.group(aliases=["study-todo"])
+    # async def studytodo(self, ctx: commands.Context):
+    #     if ctx.message.content == "+studytodo":
+    #         subcommands = "/".join(
+    #             sorted(subcommand.name for subcommand in self.studytodo.commands)
+    #         )
+    #         signature = f"{ctx.prefix}{ctx.command.qualified_name} <{subcommands}>"
+    #
+    #         embed = discord.Embed(
+    #             color=Colors.red,
+    #             title="Missing/Extra Required Arguments Passed In!",
+    #             description=f"You have missed one or several arguments in this command"
+    #                         f"\n\nUsage:"
+    #                         f"\n`{signature}`",
+    #         )
+    #         embed.set_footer(
+    #             text="Consult the Help Command if you are having trouble or call over a Bot Manager!"
+    #         )
+    #         await ctx.send(embed=embed)
+
+    @command()
+    async def set(self, interaction: discord.Interaction, *, item: str):
         """
         Adds an item to the study to-do list of the author/owner.
         """
 
-        query: database.StudyVCDB = database.StudyVCDB.select().where(database.StudyVCDB.discordID==ctx.author.id)
+        query: database.StudyVCDB = database.StudyVCDB.select().where(database.StudyVCDB.discordID == interaction.user.id)
         if query.exists():
             query = query.get()
             query.studyTodo = item
@@ -462,59 +376,57 @@ class StudyToDo(commands.Cog, Group):
             embed = discord.Embed(
                 title="Successfully Added Item!",
                 description=f"`{item}` has been added successfully with the id `{str(query.id)}`.",
-                color=hexColors.green_confirm,
+                color=Colors.green,
             )
             embed.set_footer(text="StudyBot")
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
         else:
-            return await ctx.send(f"You don't have a study session yet! Make one by joining any StudyVC!")
+            return await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
-
-    @studytodo.command()
-    async def end(self, ctx: commands.Context):
+    @command()
+    async def end(self, interaction: discord.Interaction):
         """
         Removes an item from the study to-do list of the author/owner.
         """
-        isInDatabase = await addLeaderboardProgress(ctx.author)
+        isInDatabase = await addLeaderboardProgress(interaction.user)
 
         if isInDatabase:
-            await endSession(ctx.author)
-            await ctx.send(f"{ctx.author.mention} Your study session ended. To make one again, join any StudyVC!")
+            await endSession(interaction.user)
+            await interaction.response.send_message(f"{interaction.user.mention} Your study session ended. To make one again, join any StudyVC!")
 
         else:
-            await ctx.send(f"You don't have a study session yet! Make one by joining any StudyVC!")
+            await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
-
-    @studytodo.command()
-    async def list(self, ctx):
+    @command()
+    async def list(self, interaction: discord.Interaction):
         query = database.StudyToDo.select().where(
-            database.StudyToDo.discordID == ctx.author.id
+            database.StudyToDo.discordID == interaction.user.id
         )
         if query.exists():
             query = query.get()
             embed = discord.Embed(
                 title="Study To-Do List",
                 description=f"Your current goal: {query.studyTodo}",
-                color=hexColors.blue_main,
+                color=Colors.ss_blurple,
             )
             embed.set_footer(
                 text="You can use +studytodo set (item) to modify this!"
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         else:
-            return await ctx.send(f"You don't have a study session yet! Make one by joining any StudyVC!")
-    
-    @studytodo.command(aliases=["lb"])
-    async def leaderboard(self, ctx):
+            return await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
 
-        guild = await self.bot.fetch_guild(self.StudyVCGuildID)
+    @command()
+    async def leaderboard(self, interaction: discord.Interaction):
+
+        guild = self.bot.get_guild(self.StudyVCGuildID)
 
         lbList = []
         i = 1
         for entry in database.StudyVCLeaderboard.select().order_by(database.StudyVCLeaderboard.totalXP.desc(),
                                                                    database.StudyVCLeaderboard.xp.desc()):
-            member = await guild.fetch_member(entry.discordID)
+            member = guild.get_member(entry.discordID)
             print(entry, member)
             if member:
 
@@ -538,14 +450,13 @@ class StudyToDo(commands.Cog, Group):
         embed = discord.Embed(
             title="Study Leaderboard",
             description=f"{FormattedList}",
-            color=hexColors.ss_blurple,
+            color=Colors.ss_blurple,
         )
         embed.set_footer(
             text="StudyBot"
         )
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
-
-def setup(bot):
-    bot.add_cog(StudyToDo(bot))
+async def setup(bot):
+    await bot.add_cog(StudyToDo(bot))

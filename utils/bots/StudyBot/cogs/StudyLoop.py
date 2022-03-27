@@ -38,5 +38,5 @@ class StudyLoop(commands.Cog):
                 queryLeaderboard.save()
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(StudyLoop(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(StudyLoop(bot))
