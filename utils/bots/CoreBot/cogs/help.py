@@ -267,22 +267,28 @@ class GroupHelpPageSource(menus.ListPageSource):
         return embed
 
     @staticmethod
-    def slash_param_signature(_command: app_commands.Command) -> str:
+    def slash_param_signature(_command: Union[app_commands.Command, app_commands.Group]) -> str:
 
         raw_sig = _command.to_dict()
         params: List[Dict[str, Union[int, List, str]]] = raw_sig["options"]
 
-        param_list: List[str] = []
-        for name, param in params:
-            if param["choices"]:
-                name = '|'.join(f'"{v}"' if isinstance(v, str) else str(v) for v in param["choices"])
-            else:
-                name = name
-            if not param["required"] or param["default"]:
-                param_list.append(f"[{name}]")
-            else:
+        if isinstance(_command, app_commands.Command):
+            param_list: List[str] = []
+            for name, param in params:
+                if param["choices"]:
+                    name = '|'.join(f'"{v}"' if isinstance(v, str) else str(v) for v in param["choices"])
+                else:
+                    name = name
+                if not param["required"] or param["default"]:
+                    param_list.append(f"[{name}]")
+                else:
+                    param_list.append(f"<{name}>")
+            return " ".join(param_list)
+        elif isinstance(_command, app_commands.Group):
+            param_list = []
+            for name, param in params:
                 param_list.append(f"<{name}>")
-        return " ".join(param_list)
+            return " ".join(param_list)
 
 
 class HelpSelectMenu(discord.ui.Select['HelpMenu']):
@@ -530,7 +536,8 @@ class Help(commands.Cog):
         await menu.start()
 
     async def _send_cog_help(self, interaction: discord.Interaction, cog: commands.Cog):
-        entries = await self._filter_commands(cog.get_commands(), sort=True)
+        __commands = [*cog.get_commands(), *cog.__cog_app_commands__]
+        entries = await self._filter_commands(__commands, sort=True)
         menu = HelpMenu(GroupHelpPageSource(cog, entries, prefix="/"), interaction=interaction, bot=self.bot)
         await menu.start()
 
@@ -631,10 +638,10 @@ class Help(commands.Cog):
             return await self._send_command_help(interaction, slash)
         if isinstance(slash, app_commands.Group):
             return await self._send_group_help(interaction, slash)
-        if isinstance(regular_command, commands.Command):
-            return await self._send_command_help(interaction, regular_command)
         if isinstance(regular_command, commands.Group):
             return await self._send_group_help(interaction, regular_command)
+        if isinstance(regular_command, commands.Command):
+            return await self._send_command_help(interaction, regular_command)
         if cog:
             return await self._send_cog_help(interaction, cog)
         if not slash and not regular_command and not cog:
