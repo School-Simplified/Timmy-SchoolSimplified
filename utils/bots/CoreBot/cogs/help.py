@@ -380,7 +380,7 @@ class FrontPageSource(menus.PageSource):
             Use the dropdown menu below to select a category.
         """
         )
-        embed.set_footer(text=f"Contact IT Dept. for any questions or concerns!")
+        embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
         embed.set_thumbnail(url=Others.timmyBook_png)
 
         if self.index == 0:
@@ -530,7 +530,8 @@ class Help(commands.Cog):
         await menu.start()
 
     async def _send_cog_help(self, interaction: discord.Interaction, cog: commands.Cog):
-        entries = await self._filter_commands(cog.get_commands(), sort=True)
+        __commands = [*cog.get_commands(), *cog.__cog_app_commands__]
+        entries = await self._filter_commands(__commands, sort=True)
         menu = HelpMenu(GroupHelpPageSource(cog, entries, prefix="/"), interaction=interaction, bot=self.bot)
         await menu.start()
 
