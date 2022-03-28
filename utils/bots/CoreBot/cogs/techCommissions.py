@@ -71,6 +71,8 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
         c_ch: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
         msg: discord.Message = await c_ch.send(interaction.user.mention, embed=embed)
         thread = await msg.create_thread(name=self.titleTI.value)
+        q: database.TechCommissionArchiveLog = database.TechCommissionArchiveLog.create(ThreadID=thread.id)
+        q.save()
 
         await thread.send(
             f"{interaction.user.mention} has requested a bot development project.\n<@&{TECH_ID.r_botDeveloper}>"
@@ -167,20 +169,13 @@ class TechProjectCMD(commands.Cog):
         Creates a task loop to make sure threads don't automatically archive due to inactivity.
         """
 
-        guild = self.bot.get_guild(TECH_ID.g_tech)
-        channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
+        guild = await self.bot.fetch_guild(int(TECH_ID.g_tech))
+        channel: discord.TextChannel = await guild.fetch_channel(int(TECH_ID.ch_botreq))
+        if database.TechCommissionArchiveLog:
+            for entry in database.TechCommissionArchiveLog:
+                thread: discord.Thread = await guild.fetch_channel(entry.ThreadID)
+                await thread.edit(archived=False)
 
-        thread = ...  # type: discord.Thread
-
-        for thread in guild.threads:
-            query = (
-                database.TechCommissionArchiveLog.select().where(
-                    database.TechCommissionArchiveLog.ThreadID == thread.id)
-            )
-            if query.exists():
-
-                if thread.archived:
-                    await thread.edit(archived=False)
 
 
 async def setup(bot: commands.Bot):

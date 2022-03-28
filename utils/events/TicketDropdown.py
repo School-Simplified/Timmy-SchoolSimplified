@@ -1123,15 +1123,16 @@ class DropdownTickets(commands.Cog):
         TicketInfoTB = database.TicketInfo
         for entry in TicketInfoTB:
             try:
-                channel: discord.TextChannel = self.bot.get_channel(
+                channel: discord.TextChannel = await self.bot.fetch_channel(
                     entry.ChannelID
                 )
             except Exception as e:
                 continue
-            fetchMessage = await channel.history(limit=1).flatten()
-            TicketOwner = self.bot.get_user(entry.authorID)
-            messages = await channel.history(limit=None).flatten()
-            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)
+
+            fetchMessage = [message async for message in channel.history(limit=1)]
+            TicketOwner = await self.bot.fetch_user(entry.authorID)
+            messages = [message async for message in channel.history(limit=None)]
+            LogCH = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
             authorList = []
             if len(messages) == 0:
                 continue

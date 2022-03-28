@@ -1639,7 +1639,7 @@ class FeedbackModel(discord.ui.Modal, title="Submit Feedback"):
             )
         )
 
-    async def callback(self, interaction: discord.Interaction):
+    async def on_submit(self, interaction: discord.Interaction):
         response = f"User Action: {self.children[0]}\nSteps to reproduce the issue: {self.children[1]}\nWhat happened: {self.children[2]}\nExpected Result: {self.children[3]}\nAnything else: {self.children[4]}"
         url = f"https://sentry.io/api/0/projects/schoolsimplified/timmy/user-feedback/"
         headers = {"Authorization": f'Bearer {os.getenv("FDB_SENTRY")}'}
