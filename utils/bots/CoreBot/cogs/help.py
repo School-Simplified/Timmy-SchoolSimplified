@@ -136,7 +136,7 @@ class RoboPages(discord.ui.View):
             print(error)
 
     async def start(self) -> None:
-        if self.check_embeds and not self.interaction.channel.permissions_for(self.interaction.client).embed_links:
+        if self.check_embeds and not self.interaction.channel.permissions_for(self.interaction.guild.me).embed_links:
             await self.interaction.response.send_message('Bot does not have embed links permission in this channel.')
             return
 
@@ -147,7 +147,7 @@ class RoboPages(discord.ui.View):
         self.message = await self.interaction.response.send_message(**kwargs, view=self)
 
     @discord.ui.button(label='≪', style=discord.ButtonStyle.grey)
-    async def go_to_first_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def go_to_first_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """go to the first page"""
         await self.show_page(interaction, 0)
 
@@ -161,18 +161,18 @@ class RoboPages(discord.ui.View):
         pass
 
     @discord.ui.button(label='Next', style=discord.ButtonStyle.blurple)
-    async def go_to_next_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def go_to_next_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """go to the next page"""
         await self.show_checked_page(interaction, self.current_page + 1)
 
     @discord.ui.button(label='≫', style=discord.ButtonStyle.grey)
-    async def go_to_last_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def go_to_last_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """go to the last page"""
         # The call here is safe because it's guarded by skip_if
         await self.show_page(interaction, self.source.get_max_pages() - 1)
 
     @discord.ui.button(label='Skip to page...', style=discord.ButtonStyle.grey)
-    async def numbered_page(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def numbered_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """lets you type a page number to go to"""
         if self.input_lock.locked():
             await interaction.response.send_message('Already waiting for your response...', ephemeral=True)
@@ -200,7 +200,7 @@ class RoboPages(discord.ui.View):
                 await self.show_checked_page(interaction, page - 1)
 
     @discord.ui.button(label='Quit', style=discord.ButtonStyle.red)
-    async def stop_pages(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def stop_pages(self, interaction: discord.Interaction, button: discord.ui.Button, ):
         """stops the pagination session."""
         await interaction.response.defer()
         await interaction.delete_original_message()
@@ -380,7 +380,7 @@ class FrontPageSource(menus.PageSource):
             Use the dropdown menu below to select a category.
         """
         )
-        embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
+        embed.set_footer(text=f"Contact IT Dept. for any questions or concerns!")
         embed.set_thumbnail(url=Others.timmyBook_png)
 
         if self.index == 0:
@@ -416,6 +416,7 @@ class Help(commands.Cog):
     """
     Help command
     """
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -480,7 +481,7 @@ class Help(commands.Cog):
         if isinstance(_command, commands.Command):
             parent = _command.full_parent_name
             if len(_command.aliases) > 0:
-                aliases = '|'.join(_command.aliases)
+                aliases = ' | '.join(_command.aliases)
                 fmt = f'[{_command.name}|{aliases}]'
                 if parent:
                     fmt = f'{parent} {fmt}'
@@ -494,15 +495,20 @@ class Help(commands.Cog):
     async def _send_bot_help(self, interaction: discord.Interaction) -> None:
 
         def key(_command: Union[app_commands.Command, commands.Command]) -> str:
-            _cog = _command.cog
+            if isinstance(_command, app_commands.Command):
+                _cog: commands.Cog = _command.binding
+            else:
+                _cog: commands.Cog = _command.cog
             return _cog.qualified_name if _cog else '\U0010ffff'
 
         # sort guild and global slash commands, regular commands
         entries: Union[Set[Any], List[Union[commands.Command, app_commands.Command]]] = await self._filter_commands(
             [
-                x for x in (self.bot.tree.walk_commands(guild=discord.Object(interaction.guild.id)),
-                            self.bot.tree.walk_commands(),
-                            self.bot.commands)
+                x for x in (
+                *self.bot.tree.walk_commands(guild=discord.Object(interaction.guild.id)),
+                *self.bot.tree.walk_commands(),
+                *self.bot.commands
+            )
                 if isinstance(x, (app_commands.Command, commands.Command))
             ],
             sort=True,
@@ -515,14 +521,17 @@ class Help(commands.Cog):
                 continue
 
             cog = self.bot.get_cog(name)
-            all_commands[cog] = sorted(children, key=lambda c: c.qualified_name)
+            all_commands[cog] = sorted(
+                children, key=lambda c: c.qualified_name if isinstance(c, commands.Command) else c.name
+            )
 
         menu = HelpMenu(FrontPageSource(), interaction=interaction, bot=self.bot)
         menu.add_categories(all_commands)
         await menu.start()
 
     async def _send_cog_help(self, interaction: discord.Interaction, cog: commands.Cog):
-        entries = await self._filter_commands(cog.get_commands(), sort=True)
+        __commands = [*cog.get_commands(), *cog.__cog_app_commands__]
+        entries = await self._filter_commands(__commands, sort=True)
         menu = HelpMenu(GroupHelpPageSource(cog, entries, prefix="/"), interaction=interaction, bot=self.bot)
         await menu.start()
 

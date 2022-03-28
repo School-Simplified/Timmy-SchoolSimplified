@@ -28,7 +28,7 @@ from discord import (
     SelectOption,
     ui,
 )
-from discord.ext import commands
+from discord.ext import commands, menus
 from dotenv import load_dotenv
 from google.cloud import secretmanager
 from google_auth_oauthlib.flow import Flow
@@ -1670,6 +1670,45 @@ class FeedbackButton(discord.ui.View):
     ):
         modal = FeedbackModel()
         return await interaction.response.send_modal(modal)
+
+
+# class LeaderboardPages(menus.ListPageSource):
+#     def __init__(self, leaderboard):
+#         super().__init__(entries=leaderboard, per_page=25)
+#
+#     async def format_page(self, menu, item):
+#
+#         with open('levels.json', 'r') as fcheckrew:
+#             checkrew = json.load(fcheckrew)
+#         if f'{menu.ctx.guild.id}' in checkrew.keys():
+#             if not checkrew[f'{menu.ctx.guild.id}'] == {}:
+#
+#                 listkeys = []
+#                 authorrank = ''
+#                 for key, value in sorted(checkrew[f'{menu.ctx.guild.id}'].items(), key=lambda pair: pair[1]['total'], reverse=True):
+#                     if menu.ctx.guild.get_member(int(key)):
+#                         listkeys.append(key)
+#
+#                         if int(key) == menu.ctx.author.id:
+#                             authorrank_len = int(listkeys.index(str(menu.ctx.author.id))) + 1
+#
+#
+#                 if f'{menu.ctx.author.id}' in listkeys:
+#                     authorrank = f"Your rank: #{authorrank_len}"
+#
+#                 else:
+#                     authorrank = f"You aren't ranked yet."
+#
+#                 joined = '\n'.join(item)
+#                 embed = discord.Embed(color=farbegeneral, title=f'Leaderboard of {menu.ctx.guild.name}', description=
+#                 f'_ _'
+#                 f'\n{joined}')
+#                 embed.set_footer(text=f'{authorrank} | page {menu.current_page + 1}/{self.get_max_pages()}')
+#                 embed.set_thumbnail(url=f'{menu.ctx.guild.icon_url}')
+#
+#                 return embed
+
+
 
 
 async def id_generator(size=3, chars=string.ascii_uppercase):

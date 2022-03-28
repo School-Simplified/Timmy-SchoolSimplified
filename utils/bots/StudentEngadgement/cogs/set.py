@@ -201,8 +201,8 @@ class SuggestModal(discord.ui.Modal):
                 "required": True
             },
             {
-                "question": "Give a short description of the book with no spoilers.",
-                "placeholder": None,
+                "question": "Give a short description of the book",
+                "placeholder": "No Spoilers!",
                 "required": True
             },
             {
@@ -223,19 +223,18 @@ class SuggestModal(discord.ui.Modal):
                 "required": True
             },
             {
-                "question": "What rating does this movie have? If you aren't sure, give your best guess.",
+                "question": "What rating does this movie have?",
                 "placeholder": "Examples: TV-G or TV-PG",
                 "required": True
             },
             {
-                "question": "Give a short description of the movie with no spoilers",
-                "placeholder": None,
+                "question": "Give a short description of the movie",
+                "placeholder": "No Spoilers!",
                 "required": True
             },
             {
                 "question": "Why do you want to recommend this movie?",
-                "placeholder": "This is an optional question, so if you would like to tell people why you liked this "
-                               "movie (with no spoilers!) then feel free to write why you would recommend it!",
+                "placeholder": None,
                 "required": False
             },
         ]
@@ -251,36 +250,32 @@ class SuggestModal(discord.ui.Modal):
                 "required": True
             },
             {
-                "question": "What rating does this show have? If you aren't sure, give your best guess.",
+                "question": "What rating does this show have?",
                 "placeholder": "Examples: TV-G or TV-PG",
                 "required": True
             },
             {
-                "question": "Give a short description of the show with no spoilers",
-                "placeholder": None,
+                "question": "Give a short description of the show",
+                "placeholder": "No Spoilers!",
                 "required": True
             },
             {
                 "question": "Why do you want to recommend this show?",
-                "placeholder": "This is an optional question, so if you would like to tell people why you liked this "
-                               "show (with no spoilers!) then feel free to write why you would recommend it!",
+                "placeholder": "Tell people why you liked this show (with no spoilers!)",
                 "required": False
             },
         ]
         self.meme_question_list: List[Dict[str, Union[str, bool, None]]] = [
             {
-                "question": "Upload your meme here. Make sure it is appropriate and follows both School Simplified "
-                            "rules and Discord TOS.",
-                "placeholder": "You can link the file, link a Google Doc with the image, or use any other method that "
-                               "works for you.",
+                "question": "Upload your meme here",
+                "placeholder": "You can link the file, Google Doc, or use any other method that works for you.",
                 "required": True
             },
         ]
         self.pickup_question_list: List[Dict[str, Union[str, bool, None]]] = [
             {
-                "question": "Type your pickup line here. Make sure it is appropriate and follows both School "
-                            "Simplified rules and Discord TOS.",
-                "placeholder": None,
+                "question": "Type your pickup line here.",
+                "placeholder": "Make sure it is appropriate",
                 "required": True
             },
         ]
@@ -305,20 +300,20 @@ class SuggestModal(discord.ui.Modal):
         ]
         self.motivation_question_list: List[Dict[str, Union[str, bool, None]]] = [
             {
-                "question": "What quote are you suggesting? Make sure to include who said it.",
-                "placeholder": None,
+                "question": "What quote are you suggesting?",
+                "placeholder": "Make sure to include who said it.",
                 "required": True
             },
             {
-                "question": "If you have an interpretation/explanation of the quote, type it below!",
+                "question": "Type your interpretation of the quote",
                 "placeholder": None,
                 "required": False
             },
         ]
         self.music_question_list: List[Dict[str, Union[str, bool, None]]] = [
             {
-                "question": "What song are you recommending? Give the artist(s) as well.",
-                "placeholder": None,
+                "question": "What song are you recommending?",
+                "placeholder": "Give the artist(s) as well.",
                 "required": True
             },
             {
@@ -357,7 +352,6 @@ class SuggestModal(discord.ui.Modal):
                     placeholder=question["placeholder"] if question["placeholder"] else None,
                     max_length=1024,
                     style=discord.TextStyle.paragraph,
-                    custom_id=None
                 )
             )
 
@@ -388,7 +382,7 @@ class SuggestModal(discord.ui.Modal):
                 value=item.value if item.value else "None"
             )
 
-        channel = self.bot.get_channel(SET_ID.ch_suggestions)
+        channel: discord.abc.MessageableChannel = self.bot.get_channel(SET_ID.ch_suggestions)
         await channel.send(embed=embed)
 
 
