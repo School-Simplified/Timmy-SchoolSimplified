@@ -267,22 +267,28 @@ class GroupHelpPageSource(menus.ListPageSource):
         return embed
 
     @staticmethod
-    def slash_param_signature(_command: app_commands.Command) -> str:
+    def slash_param_signature(_command: Union[app_commands.Command, app_commands.Group]) -> str:
 
         raw_sig = _command.to_dict()
         params: List[Dict[str, Union[int, List, str]]] = raw_sig["options"]
 
-        param_list: List[str] = []
-        for name, param in params:
-            if param["choices"]:
-                name = '|'.join(f'"{v}"' if isinstance(v, str) else str(v) for v in param["choices"])
-            else:
-                name = name
-            if not param["required"] or param["default"]:
-                param_list.append(f"[{name}]")
-            else:
+        if isinstance(_command, app_commands.Command):
+            param_list: List[str] = []
+            for name, param in params:
+                if param["choices"]:
+                    name = '|'.join(f'"{v}"' if isinstance(v, str) else str(v) for v in param["choices"])
+                else:
+                    name = name
+                if not param["required"] or param["default"]:
+                    param_list.append(f"[{name}]")
+                else:
+                    param_list.append(f"<{name}>")
+            return " ".join(param_list)
+        elif isinstance(_command, app_commands.Group):
+            param_list = []
+            for name, param in params:
                 param_list.append(f"<{name}>")
-        return " ".join(param_list)
+            return " ".join(param_list)
 
 
 class HelpSelectMenu(discord.ui.Select['HelpMenu']):
