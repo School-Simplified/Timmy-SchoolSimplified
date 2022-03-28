@@ -380,7 +380,7 @@ class FrontPageSource(menus.PageSource):
             Use the dropdown menu below to select a category.
         """
         )
-        embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
+        embed.set_footer(text=f"Contact IT Dept. for any questions or concerns!")
         embed.set_thumbnail(url=Others.timmyBook_png)
 
         if self.index == 0:
