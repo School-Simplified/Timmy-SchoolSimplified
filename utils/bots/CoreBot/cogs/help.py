@@ -632,10 +632,10 @@ class Help(commands.Cog):
             return await self._send_command_help(interaction, slash)
         if isinstance(slash, app_commands.Group):
             return await self._send_group_help(interaction, slash)
-        if isinstance(regular_command, commands.Command):
-            return await self._send_command_help(interaction, regular_command)
         if isinstance(regular_command, commands.Group):
             return await self._send_group_help(interaction, regular_command)
+        if isinstance(regular_command, commands.Command):
+            return await self._send_command_help(interaction, regular_command)
         if cog:
             return await self._send_cog_help(interaction, cog)
         if not slash and not regular_command and not cog:
