@@ -274,11 +274,12 @@ class GroupHelpPageSource(menus.ListPageSource):
 
         if isinstance(_command, app_commands.Command):
             param_list: List[str] = []
-            for name, param in params.items():
+            for param in params:
                 if param["choices"]:
-                    name = '|'.join(f'"{v}"' if isinstance(v, str) else str(v) for v in param["choices"])
+                    name = '|'.join(
+                        f'"{v}"' for v in param["choices"])
                 else:
-                    name = name
+                    name = str(param['name'])
                 if not param["required"] or param["default"]:
                     param_list.append(f"[{name}]")
                 else:
@@ -286,8 +287,8 @@ class GroupHelpPageSource(menus.ListPageSource):
             return " ".join(param_list)
         elif isinstance(_command, app_commands.Group):
             param_list = []
-            for name, param in params.items():
-                param_list.append(f"<{name}>")
+            for param in params:
+                param_list.append(f"<{param['name']}>")
             return " ".join(param_list)
 
 
