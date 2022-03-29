@@ -619,7 +619,7 @@ class Help(commands.Cog):
         # passes an invalid subcommand, we need to walk through
         # the command group chain ourselves.
 
-        slash, *_ = (
+        slash = (
             self.bot.tree.get_command(
                 _command,
                 guild=interaction.guild,
@@ -629,7 +629,7 @@ class Help(commands.Cog):
                 guild=None,
                 type=discord.AppCommandType.chat_input
             )
-        )
+        )[0]
 
         regular_command = self.bot.get_command(_command)
         cog = self.bot.get_cog(_command)
