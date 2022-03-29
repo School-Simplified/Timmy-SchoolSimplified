@@ -454,7 +454,7 @@ class Help(commands.Cog):
         """
 
         if sort and key is None:
-            key = lambda c: c.qualified_name
+            key = lambda c: c.qualified_name if isinstance(c, commands.Command) else c.name
         #
         iterator = _commands
         # iterator = commands if show_hidden else filter(lambda c: not c.hidden, commands)
