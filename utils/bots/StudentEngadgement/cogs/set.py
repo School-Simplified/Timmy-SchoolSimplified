@@ -365,7 +365,7 @@ class SuggestModal(discord.ui.Modal):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
 
         for item, question in zip(
-                [item for item in self.children if isinstance(item, discord.TextInput)],
+                [item for item in self.__modal_children_items__.values() if isinstance(item, discord.TextInput)],
                 self.type_to_questions_list[self.type]
         ):
             """
