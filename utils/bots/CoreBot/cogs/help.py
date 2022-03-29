@@ -127,13 +127,13 @@ class RoboPages(discord.ui.View):
         if self.message:
             await self.message.edit(view=None)
 
-    async def on_error(self, error: Exception, item: discord.ui.Item, interaction: discord.Interaction) -> None:
-        if interaction.response.is_done():
-            await interaction.followup.send(f'An unknown error occurred, sorry {error}', ephemeral=True)
-            print(error)
-        else:
-            await interaction.response.send_message(f'An unknown error occurred, sorry {error}', ephemeral=True)
-            print(error)
+#     async def on_error(self, error: Exception, item: discord.ui.Item, interaction: discord.Interaction) -> None:
+#         if interaction.response.is_done():
+#             await interaction.followup.send(f'An unknown error occurred, sorry {error}', ephemeral=True)
+#             print(error)
+#         else:
+#             await interaction.response.send_message(f'An unknown error occurred, sorry {error}', ephemeral=True)
+#             print(error)
 
     async def start(self) -> None:
         if self.check_embeds and not self.interaction.channel.permissions_for(self.interaction.guild.me).embed_links:
