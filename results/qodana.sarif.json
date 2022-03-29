@@ -2344,19 +2344,19 @@
                 ]
               },
               {
-                "id": "PyArgumentEqualDefaultInspection",
+                "id": "CythonUsageBeforeDeclarationInspection",
                 "shortDescription": {
-                  "text": "The function argument is equal to the default parameter value"
+                  "text": "Cython variable is used before its declaration"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
-                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
+                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
+                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2378,19 +2378,19 @@
                 ]
               },
               {
-                "id": "CythonUsageBeforeDeclarationInspection",
+                "id": "PyArgumentEqualDefaultInspection",
                 "shortDescription": {
-                  "text": "Cython variable is used before its declaration"
+                  "text": "The function argument is equal to the default parameter value"
                 },
                 "fullDescription": {
-                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
-                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
+                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3602,40 +3602,6 @@
                 ]
               },
               {
-                "id": "PyProtectedMemberInspection",
-                "shortDescription": {
-                  "text": "Accessing a protected member of a class or a module"
-                },
-                "fullDescription": {
-                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
-                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "DjangoCloseTagInspection",
                 "shortDescription": {
                   "text": "Mismatched opening and closing tags"
@@ -3683,6 +3649,40 @@
                   "level": "warning",
                   "parameters": {
                     "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyProtectedMemberInspection",
+                "shortDescription": {
+                  "text": "Accessing a protected member of a class or a module"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
+                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -4702,40 +4702,6 @@
                 ]
               },
               {
-                "id": "DuplicatedCode",
-                "shortDescription": {
-                  "text": "Duplicated code fragment"
-                },
-                "fullDescription": {
-                  "text": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in File | Settings | Editor | Duplicates.",
-                  "markdown": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in [File \\| Settings \\| Editor \\| Duplicates](settings://duplicates.index)."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "General",
-                      "index": 9,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RequiredAttributes",
                 "shortDescription": {
                   "text": "Missing required attribute"
@@ -4759,6 +4725,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DuplicatedCode",
+                "shortDescription": {
+                  "text": "Duplicated code fragment"
+                },
+                "fullDescription": {
+                  "text": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in File | Settings | Editor | Duplicates.",
+                  "markdown": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in [File \\| Settings \\| Editor \\| Duplicates](settings://duplicates.index)."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "General",
+                      "index": 9,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5688,40 +5688,6 @@
                 ]
               },
               {
-                "id": "HtmlExtraClosingTag",
-                "shortDescription": {
-                  "text": "Redundant closing tag"
-                },
-                "fullDescription": {
-                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
-                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "ideaSeverity": "ERROR",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpOctalEscape",
                 "shortDescription": {
                   "text": "Octal escape"
@@ -5745,6 +5711,40 @@
                     "target": {
                       "id": "RegExp",
                       "index": 5,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "HtmlExtraClosingTag",
+                "shortDescription": {
+                  "text": "Redundant closing tag"
+                },
+                "fullDescription": {
+                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
+                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "error",
+                  "parameters": {
+                    "ideaSeverity": "ERROR",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6198,13 +6198,13 @@
                 ]
               },
               {
-                "id": "RegExpDuplicateAlternationBranch",
+                "id": "RegExpRepeatedSpace",
                 "shortDescription": {
-                  "text": "Duplicate branch in alternation"
+                  "text": "Consecutive spaces"
                 },
                 "fullDescription": {
-                  "text": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression. Example: '(alpha|bravo|charlie|alpha)' After the quick-fix is applied: '(alpha|bravo|charlie)' New in 2017.1",
-                  "markdown": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression.\n\n**Example:**\n\n\n      (alpha|bravo|charlie|alpha)\n\nAfter the quick-fix is applied:\n\n\n      (alpha|bravo|charlie)\n\nNew in 2017.1"
+                  "text": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier. Example: '(     )' After the quick-fix is applied: '( {5})' New in 2017.1",
+                  "markdown": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier.\n\n**Example:**\n\n\n      (     )\n\nAfter the quick-fix is applied:\n\n\n      ( {5})\n\n\nNew in 2017.1"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -6232,13 +6232,13 @@
                 ]
               },
               {
-                "id": "RegExpRepeatedSpace",
+                "id": "RegExpDuplicateAlternationBranch",
                 "shortDescription": {
-                  "text": "Consecutive spaces"
+                  "text": "Duplicate branch in alternation"
                 },
                 "fullDescription": {
-                  "text": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier. Example: '(     )' After the quick-fix is applied: '( {5})' New in 2017.1",
-                  "markdown": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier.\n\n**Example:**\n\n\n      (     )\n\nAfter the quick-fix is applied:\n\n\n      ( {5})\n\n\nNew in 2017.1"
+                  "text": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression. Example: '(alpha|bravo|charlie|alpha)' After the quick-fix is applied: '(alpha|bravo|charlie)' New in 2017.1",
+                  "markdown": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression.\n\n**Example:**\n\n\n      (alpha|bravo|charlie|alpha)\n\nAfter the quick-fix is applied:\n\n\n      (alpha|bravo|charlie)\n\nNew in 2017.1"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "67c15f0958f2db74879b49b657c416b1e5d494e1",
+          "revisionId": "ca9fdf105446e721707b30973866267ec8ffc548",
           "branch": "162-move-to-dpy",
           "properties": {
             "lastAuthorName": "Eric",
@@ -8519,7 +8519,7 @@
                 "region": {
                   "startLine": 369,
                   "startColumn": 9,
-                  "charOffset": 15464,
+                  "charOffset": 15462,
                   "charLength": 13,
                   "snippet": {
                     "text": "is_paginating"
@@ -8529,7 +8529,7 @@
                 "contextRegion": {
                   "startLine": 367,
                   "startColumn": 1,
-                  "charOffset": 15414,
+                  "charOffset": 15412,
                   "charLength": 165,
                   "snippet": {
                     "text": "\nclass FrontPageSource(menus.PageSource):\n    def is_paginating(self) -> bool:\n        # This forces the buttons to appear even in the front page\n        return True"
@@ -8545,7 +8545,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8958a326c4ba9ce57a69609d69e158fe2c8d0ad309bf92916bcc570c5daae737"
+            "equalIndicator/v1": "42ed467639fec8f716199ae6433a0fd48377b109c3af878508483453af00fc77"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -8572,7 +8572,7 @@
                 "region": {
                   "startLine": 373,
                   "startColumn": 9,
-                  "charOffset": 15589,
+                  "charOffset": 15587,
                   "charLength": 13,
                   "snippet": {
                     "text": "get_max_pages"
@@ -8582,7 +8582,7 @@
                 "contextRegion": {
                   "startLine": 371,
                   "startColumn": 1,
-                  "charOffset": 15560,
+                  "charOffset": 15558,
                   "charLength": 184,
                   "snippet": {
                     "text": "        return True\n\n    def get_max_pages(self) -> Optional[int]:\n        # There's only one actual page in the front page\n        # However we need at least 2 to show all the buttons"
@@ -8598,7 +8598,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "3ff20e99e0ac38c4213b6c2df821240c985312600be53c82f8fef0c81bbdee76"
+            "equalIndicator/v1": "a8ed308e4e422dd597f92caa60057d390207dd8249929c2247b01efe602caf1c"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10957,7 +10957,7 @@
                 "region": {
                   "startLine": 383,
                   "startColumn": 27,
-                  "charOffset": 15934,
+                  "charOffset": 15932,
                   "charLength": 14,
                   "snippet": {
                     "text": "menu: HelpMenu"
@@ -10967,7 +10967,7 @@
                 "contextRegion": {
                   "startLine": 381,
                   "startColumn": 1,
-                  "charOffset": 15887,
+                  "charOffset": 15885,
                   "charLength": 196,
                   "snippet": {
                     "text": "        return self\n\n    def format_page(self, menu: HelpMenu, page):\n        embed = discord.Embed(title='Bot Help', colour=discord.Colour.blurple())\n        embed.description = inspect.cleandoc("
@@ -10983,7 +10983,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "066b2e7a82a8eb16a57a0dc2bfcda3022678ce393f3e8ddd8a875a005450d1cc"
+            "equalIndicator/v1": "ee85d82f3e72d097ca05f9fc6ca8cde946b2e707ce589dc9e04621fa08e33db2"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11010,7 +11010,7 @@
                 "region": {
                   "startLine": 383,
                   "startColumn": 43,
-                  "charOffset": 15950,
+                  "charOffset": 15948,
                   "charLength": 4,
                   "snippet": {
                     "text": "page"
@@ -11020,7 +11020,7 @@
                 "contextRegion": {
                   "startLine": 381,
                   "startColumn": 1,
-                  "charOffset": 15887,
+                  "charOffset": 15885,
                   "charLength": 196,
                   "snippet": {
                     "text": "        return self\n\n    def format_page(self, menu: HelpMenu, page):\n        embed = discord.Embed(title='Bot Help', colour=discord.Colour.blurple())\n        embed.description = inspect.cleandoc("
@@ -11036,7 +11036,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "d345e4e063be23ea96ceebc75a2470fa0503510d3a2bd7ffe0e2f153a60eadf3"
+            "equalIndicator/v1": "4d4dd1932dcfea232763fb3badde3c3e50b975d0372b207992f35af5bb41d413"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -37934,7 +37934,7 @@
                 "region": {
                   "startLine": 380,
                   "startColumn": 9,
-                  "charOffset": 15862,
+                  "charOffset": 15860,
                   "charLength": 10,
                   "snippet": {
                     "text": "self.index"
@@ -37944,7 +37944,7 @@
                 "contextRegion": {
                   "startLine": 378,
                   "startColumn": 1,
-                  "charOffset": 15763,
+                  "charOffset": 15761,
                   "charLength": 144,
                   "snippet": {
                     "text": "    async def get_page(self, page_number: int) -> Any:\n        # The front page is a dummy\n        self.index = page_number\n        return self\n"
@@ -37960,7 +37960,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "78216a4257771aa8c0d72c164ee608a5ecc13e6bd1bf8ac8c74243dfc144cf91"
+            "equalIndicator/v1": "d565c344d47b8f80443f6173b0c2a98ff285b13c48978c5a6091a9e3cb886c1f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -39789,7 +39789,7 @@
                 "region": {
                   "startLine": 361,
                   "startColumn": 15,
-                  "charOffset": 15184,
+                  "charOffset": 15182,
                   "charLength": 25,
                   "snippet": {
                     "text": "self.source._prepare_once"
@@ -39799,7 +39799,7 @@
                 "contextRegion": {
                   "startLine": 359,
                   "startColumn": 1,
-                  "charOffset": 15139,
+                  "charOffset": 15137,
                   "charLength": 173,
                   "snippet": {
                     "text": "        self.current_page = 0\n\n        await self.source._prepare_once()\n        page = await self.source.get_page(0)\n        kwargs = await self._get_kwargs_from_page(page)"
@@ -39815,7 +39815,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "87965bffe05cbe64ccc6d232486233789034a705a32f6b148efbb163e6b71ba6"
+            "equalIndicator/v1": "afdcc8d96a715610644d56678346e346e2d9e513859b9f1703c67fac36b5b469"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -40569,7 +40569,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-03-29",
-        "guid": "c59555d5-c08c-499d-9331-5b5556f99756"
+        "guid": "6cd783d4-6acb-4324-adc3-cabec58885e4"
       },
       "newlineSequences": [
         "\r\n",
@@ -41046,7 +41046,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 28222,
+                    "charLength": 28220,
                     "snippet": {
                       "text": "# Copyright (c) 2015-2021 Rapptz # Copyright (c) 2022-present School Simplified import asyncio imp..."
                     },
@@ -41071,7 +41071,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "ff5387fa25178e78d54b26ad8dc89febb58cc71182a525808bfe69b4bda41d22"
+              "equalIndicator/v1": "bf917af93944d77b85c6390e85e6b3512250448a8d9878bae6d91e8254c417e0"
             },
             "properties": {
               "ideaSeverity": "ERROR"
