@@ -502,7 +502,7 @@ class Help(commands.Cog):
 
         def key(_command: Union[app_commands.Command, commands.Command]) -> str:
             if isinstance(_command, app_commands.Command):
-                _cog: commands.Cog = _command.binding
+                _cog: commands.Cog = _command.binding if type(_command.binding) == commands.Cog else None
             else:
                 _cog: commands.Cog = _command.cog
             return _cog.qualified_name if _cog else '\U0010ffff'
