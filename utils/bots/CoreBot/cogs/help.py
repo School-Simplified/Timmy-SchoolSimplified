@@ -278,7 +278,7 @@ class GroupHelpPageSource(menus.ListPageSource):
                 if param["choices"]:
                     try:
                         name = '|'.join(f'"{v}"' for v in param["choices"])
-                    except IndexError:
+                    except KeyError:
                         name = str(param['name'])
                 else:
                     name = str(param['name'])
