@@ -275,18 +275,12 @@ class GroupHelpPageSource(menus.ListPageSource):
         if isinstance(_command, app_commands.Command):
             param_list: List[str] = []
             for param in params:
-                if param["choices"]:
-                    try:
-                        name = '|'.join(f'"{v}"' for v in param["choices"])
-                    except KeyError:
-                        name = str(param['name'])
-                else:
-                    name = str(param['name'])
-                if not param["required"] or param["default"]:
+                name = param["name"]
+                if not param["required"]:
                     param_list.append(f"[{name}]")
                 else:
                     param_list.append(f"<{name}>")
-                    
+
             return " ".join(param_list)
         elif isinstance(_command, app_commands.Group):
             param_list = []
