@@ -274,7 +274,7 @@ class GroupHelpPageSource(menus.ListPageSource):
 
         if isinstance(_command, app_commands.Command):
             param_list: List[str] = []
-            for name, param in params:
+            for name, param in params.items():
                 if param["choices"]:
                     name = '|'.join(f'"{v}"' if isinstance(v, str) else str(v) for v in param["choices"])
                 else:
@@ -286,7 +286,7 @@ class GroupHelpPageSource(menus.ListPageSource):
             return " ".join(param_list)
         elif isinstance(_command, app_commands.Group):
             param_list = []
-            for name, param in params:
+            for name, param in params.items():
                 param_list.append(f"<{name}>")
             return " ".join(param_list)
 
