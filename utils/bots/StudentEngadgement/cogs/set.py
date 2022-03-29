@@ -367,10 +367,10 @@ class SuggestModal(discord.ui.Modal):
         print(self.__modal_children_items__.values())
         print(self.children)
 
-        for item, question in zip(
-                [item for item in self.children if isinstance(item, discord.TextInput)],
-                self.type_to_questions_list[self.type]
-        ):
+        items = [item for item in self.children if isinstance(item, discord.TextInput)]
+        questions = self.type_to_questions_list[self.type]
+
+        for item, question in zip(items, questions):
             """
             item: discord.TextInput 
                 if isinstance(item, discord.TextInput) 
@@ -380,6 +380,7 @@ class SuggestModal(discord.ui.Modal):
                 exe: question = {"question": "How is your day?", "placeholder": None ,"required": True}
 
             """
+            print(f"Question: {question} \n\n Answer: {str(item)}")
             embed.add_field(
                 name=question["question"],
                 value=item.value if item.value else "None"
