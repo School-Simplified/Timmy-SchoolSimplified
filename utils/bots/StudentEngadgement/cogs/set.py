@@ -364,11 +364,10 @@ class SuggestModal(discord.ui.Modal):
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
 
-        print(self.__modal_children_items__.values())
-        print(self.children)
-
         items = [item for item in self.children if isinstance(item, discord.TextInput)]
         questions = self.type_to_questions_list[self.type]
+
+        print(f"Items: {items} \n\n Questions: {questions}")
 
         for item, question in zip(items, questions):
             """
@@ -380,10 +379,10 @@ class SuggestModal(discord.ui.Modal):
                 exe: question = {"question": "How is your day?", "placeholder": None ,"required": True}
 
             """
-            print(f"Question: {question} \n\n Answer: {str(item)}")
+            print(f"Question: {question['question']} \n\n Answer: {str(item)}")
             embed.add_field(
                 name=question["question"],
-                value=item.value if item.value else "None"
+                value=str(item) if item.value else "None"
             )
 
         channel: discord.abc.MessageableChannel = self.bot.get_channel(SET_ID.ch_suggestions)
