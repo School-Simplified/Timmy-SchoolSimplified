@@ -197,7 +197,7 @@ class SuggestModal(discord.ui.Modal):
             },
             {
                 "question": "What rating does this book have?",
-                "placeholder": None,
+                "placeholder": "Example: YA (Young Adult)",
                 "required": True
             },
             {
@@ -224,7 +224,7 @@ class SuggestModal(discord.ui.Modal):
             },
             {
                 "question": "What rating does this movie have?",
-                "placeholder": "Examples: TV-G or TV-PG",
+                "placeholder": "Examples: G or PG",
                 "required": True
             },
             {
@@ -381,7 +381,8 @@ class SuggestModal(discord.ui.Modal):
             print(f"Question: {question['question']} \n\n Answer: {str(item)}")
             embed.add_field(
                 name=question["question"],
-                value=str(item) if item.value else "None"
+                value=str(item) if str(item) != "" else "None",
+                inline=False
             )
 
         channel: discord.abc.MessageableChannel = self.bot.get_channel(SET_ID.ch_suggestions)
