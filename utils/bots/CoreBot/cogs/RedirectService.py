@@ -14,7 +14,7 @@ class RedirectURL(commands.Cog):
         self.bot = bot
         self.domain = "rs.schoolsimplified.org"
         self.raOBJ = redirect_sdk.RedirectClient(
-            os.getenv("RP_TK"), domain="https://rs.schoolsimplified.org"
+            os.getenv("RP_TK"), domain="https://ssimpl.org"
         )
         self.__cog_name__ = "Redirect URL"
 
