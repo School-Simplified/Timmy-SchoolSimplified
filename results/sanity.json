@@ -94,14 +94,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 17812
+      "length": 17796
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "3892061105893640087"
+  "hash": "-7139315892068959605"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -438,14 +438,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 6303
+      "length": 6483
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-7308291714922805128"
+  "hash": "-2343920721761042327"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -516,12 +516,12 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 1394,
+      "length": 1400,
       "code": {
         "startLine": 1,
-        "length": 1394,
+        "length": 1400,
         "offset": 0,
-        "surroundingCode": "import pytz\nimport datetime\nfrom dateutil import parser\nimport discord\nfrom discord.ext import tasks, commands\n\nfrom core.database import StudyVCLeaderboard\n\n\nclass StudyLoop(commands.Cog):\n\n    def __init__(self, bot: commands.Bot):\n        self.bot = bot\n        self.est = pytz.timezone(\"US/Eastern\")\n        self.lastReset = parser.parse(\"14.03.2022 00:00:00 EST\", tzinfos={\"EST\": -4 * 3600})     # 14.03.2022 as default value\n        self.midnight = datetime.datetime.strptime(\"00:00:00\", \"%H:%M:%S\").time()\n\n        self.TTSWeekCheck.start()\n\n    def cog_unload(self):\n        self.TTSWeekCheck.stop()\n\n    @tasks.loop(seconds=10)\n    async def TTSWeekCheck(self):\n        now = datetime.datetime.now(self.est)\n        weekdayNow = now.isoweekday()\n        timeNow = now.time()\n\n        queryLeaderboard = StudyVCLeaderboard.select()\n        entries = [entry.id for entry in queryLeaderboard]\n\n        if weekdayNow == 1 and (now - self.lastReset >= datetime.timedelta(days=7)) and timeNow >= self.midnight:\n            lastReset = now\n            for entry in entries:\n                queryLeaderboard = queryLeaderboard.select().where(StudyVCLeaderboard.id == entry)\n                queryLeaderboard = queryLeaderboard.get()\n                queryLeaderboard.TTSWeek = 0\n                queryLeaderboard.save()\n\n\nasync def setup(bot: commands.Bot):\n    await bot.add_cog(StudyLoop(bot))"
+        "surroundingCode": "import pytz\nimport datetime\nfrom dateutil import parser\nimport discord\nfrom discord.ext import tasks, commands\n\nfrom core.database import StudyVCLeaderboard\n\n\nclass StudyLoop(commands.Cog):\n\n    def __init__(self, bot: commands.Bot):\n        self.bot = bot\n        self.est = pytz.timezone(\"US/Eastern\")\n        self.lastReset = parser.parse(\"14.03.2022 00:00:00 EST\", tzinfos={\"EST\": -4 * 3600})     # 14.03.2022 as default value\n        self.midnight = datetime.datetime.strptime(\"00:00:00\", \"%H:%M:%S\").time()\n\n        self.TTSWeekCheck.start()\n\n    async def cog_unload(self):\n        self.TTSWeekCheck.stop()\n\n    @tasks.loop(seconds=10)\n    async def TTSWeekCheck(self):\n        now = datetime.datetime.now(self.est)\n        weekdayNow = now.isoweekday()\n        timeNow = now.time()\n\n        queryLeaderboard = StudyVCLeaderboard.select()\n        entries = [entry.id for entry in queryLeaderboard]\n\n        if weekdayNow == 1 and (now - self.lastReset >= datetime.timedelta(days=7)) and timeNow >= self.midnight:\n            lastReset = now\n            for entry in entries:\n                queryLeaderboard = queryLeaderboard.select().where(StudyVCLeaderboard.id == entry)\n                queryLeaderboard = queryLeaderboard.get()\n                queryLeaderboard.TTSWeek = 0\n                queryLeaderboard.save()\n\n\nasync def setup(bot: commands.Bot):\n    await bot.add_cog(StudyLoop(bot))"
       }
     }
   ],
@@ -529,7 +529,7 @@
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "1131905055789160286"
+  "hash": "6884945267450458507"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -574,14 +574,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 8319
+      "length": 8424
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "2687668375657629002"
+  "hash": "-7397511596632284405"
 },{
   "tool": "Code Inspection",
   "category": "Python",
