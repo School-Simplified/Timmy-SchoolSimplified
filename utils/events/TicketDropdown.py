@@ -565,7 +565,6 @@ class TicketBT(discord.ui.Button):
                     RoleOBJ = discord.utils.get(
                         interaction.message.guild.roles, name=role
                     )
-                    print(role, RoleOBJ)
                     await channel.set_permissions(
                         RoleOBJ,
                         read_messages=True,
@@ -921,7 +920,7 @@ class DropdownTickets(commands.Cog):
                 .get()
             )
             try:
-                TicketOwner = guild.get_member(query.authorID)
+                TicketOwner =await guild.fetch_member(query.authorID)
             except discord.NotFound:
                 await channel.send(
                     f"{author.mention} Sorry, but the ticket owner has left the server."
@@ -1021,13 +1020,12 @@ class DropdownTickets(commands.Cog):
             )
             TicketOwner = self.bot.get_user(query.authorID)
 
-            messages = await channel.history(limit=None).flatten()
+            messages = [message async for message in channel.history(limit=None)]
             authorList = []
 
             for msg in messages:
                 if msg.author not in authorList:
                     authorList.append(msg.author)
-            print(self, channel, ResponseLogChannel, TicketOwner, authorList)
             msg, transcript_file, url = await TicketExport(
                 self, channel, ResponseLogChannel, TicketOwner, authorList
             )
@@ -1121,6 +1119,7 @@ class DropdownTickets(commands.Cog):
     @tasks.loop(minutes=1.0)
     async def TicketInactive(self):
         TicketInfoTB = database.TicketInfo
+        guild = self.bot.get_guild(MAIN_ID.g_main)
         for entry in TicketInfoTB:
             try:
                 channel: discord.TextChannel = await self.bot.fetch_channel(
@@ -1130,7 +1129,7 @@ class DropdownTickets(commands.Cog):
                 continue
 
             fetchMessage = [message async for message in channel.history(limit=1)]
-            TicketOwner = await self.bot.fetch_user(entry.authorID)
+            TicketOwner = await guild.fetch_member(entry.authorID)
             messages = [message async for message in channel.history(limit=None)]
             LogCH = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
             authorList = []
@@ -1175,11 +1174,13 @@ class DropdownTickets(commands.Cog):
                         emoji="❌",
                     )
                 )
-                overwrite = discord.PermissionOverwrite()
-                overwrite.update(read_messages=False)
-                print(channel, overwrite)
+                """overwrite = discord.PermissionOverwrite()
+                overwrite.read_messages = False
+                overwrite.send_messages = False"""
                 await channel.set_permissions(
-                    TicketOwner, overwrite=overwrite, reason="Ticket Perms Close (User)"
+                    TicketOwner, reason="Ticket Perms Close (User)",
+                    read_messages=False,
+                    send_messages=False,
                 )
                 await channel.send(
                     f"Ticket has been inactive for 24 hours.\nTicket has been closed.",

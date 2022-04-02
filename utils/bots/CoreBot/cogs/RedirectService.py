@@ -12,7 +12,7 @@ load_dotenv()
 class RedirectURL(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.domain = "rs.schoolsimplified.org"
+        self.domain = "https://ssimpl.org"
         self.raOBJ = redirect_sdk.RedirectClient(
             os.getenv("RP_TK"), domain="https://ssimpl.org"
         )
@@ -27,7 +27,7 @@ class RedirectURL(commands.Cog):
     async def ra(self, ctx, redirect_code, destination_url: str):
         val = self.raOBJ.add_redirect(redirect_code, destination_url)
         await ctx.send(
-            f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!\n\nAccess it at https://rs.schoolsimplified.org/{redirect_code}"
+            f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!\n\nAccess it at https://ssimpl.org/{redirect_code}"
         )
 
     @commands.command(alliases=["redirectremove", "removeredirect"])

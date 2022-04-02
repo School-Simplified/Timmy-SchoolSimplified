@@ -151,7 +151,6 @@ class RedirectClient:
         Returns:
             typing.Union[dict, int]: Returns a dict of the redirect or an int of the status code.
         """
-        print(redirect_url, destination, domain)
         if domain is None and self.domain is None:
             raise TypeError("Domain is not set!")
         if domain is None and self.domain is not None:
@@ -171,7 +170,6 @@ class RedirectClient:
         )
         if r.status_code == 422:
             raise InvalidAuth(r.status_code)
-        print(r.status_code)
         object = range(len(r.json()["data"]))
         pprint.pprint(r.json())
 
