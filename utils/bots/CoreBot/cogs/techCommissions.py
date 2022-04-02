@@ -171,8 +171,12 @@ class TechProjectCMD(commands.Cog):
 
         guild = self.bot.get_guild(int(TECH_ID.g_tech))
         channel: discord.TextChannel = guild.get_channel(int(TECH_ID.ch_botreq))
-        if database.TechCommissionArchiveLog:
-            for entry in database.TechCommissionArchiveLog:
+
+        query = database.TechCommissionArchiveLog.select()
+        entries = [entry.id for entry in query]
+
+        if entries:
+            for entry in entries:
                 thread: discord.Thread = guild.get_thread(entry.ThreadID)
                 await thread.edit(archived=False)
 
