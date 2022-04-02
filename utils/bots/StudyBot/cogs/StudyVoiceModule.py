@@ -136,7 +136,7 @@ class StudyVCUpdate(commands.Cog):
         before: discord.VoiceState,
         after: discord.VoiceState,
     ):
-        console: discord.TextChannel = await self.bot.fetch_channel(self.StudyVCConsole)
+        console: discord.TextChannel = self.bot.get_channel(self.StudyVCConsole)
         if member.guild.id != self.StudyVCGuild:
             return
         if (
@@ -193,18 +193,18 @@ class StudyVCUpdate(commands.Cog):
                     )
 
 
-    @tasks.loop(seconds=10) # TODO: change to 60s due of rate limits
+    @tasks.loop(seconds=60) # TODO: change to 60s due of rate limits
     async def StudyVCChecker(self):
         """Loop through each session and check if a user's study session is about to end"""
         print("loop StudyVCChecker")
 
-        StudyVCGuildObj = await self.bot.fetch_guild(self.StudyVCGuild)
-        StudyVCConsoleObj = await StudyVCGuildObj.fetch_channel(self.StudyVCConsole)
+        StudyVCGuildObj = self.bot.get_guild(self.StudyVCGuild)
+        StudyVCConsoleObj = StudyVCGuildObj.get_channel(self.StudyVCConsole)
 
         for q in database.StudyVCDB:
             dateObj = pytz.timezone("America/New_York").localize(q.RenewalTime)
 
-            member = await StudyVCGuildObj.fetch_member(q.discordID)
+            member = StudyVCGuildObj.get_member(q.discordID)
             if datetime.now(EST) >= dateObj:
                 if member.voice:
                     await member.move_to(None)
@@ -226,5 +226,5 @@ class StudyVCUpdate(commands.Cog):
 
 
     
-def setup(bot):
-    bot.add_cog(StudyVCUpdate(bot))
+async def setup(bot):
+    await bot.add_cog(StudyVCUpdate(bot))

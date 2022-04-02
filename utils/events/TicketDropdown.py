@@ -1121,7 +1121,7 @@ class DropdownTickets(commands.Cog):
         TicketInfoTB = database.TicketInfo
         guild = self.bot.get_guild(MAIN_ID.g_main)
         for entry in TicketInfoTB:
-            channel: discord.TextChannel = await self.bot.fetch_channel(
+            channel: discord.TextChannel = self.bot.get_channel(
                 entry.ChannelID
             )
             if channel is None:

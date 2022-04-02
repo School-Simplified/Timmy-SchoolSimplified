@@ -169,11 +169,11 @@ class TechProjectCMD(commands.Cog):
         Creates a task loop to make sure threads don't automatically archive due to inactivity.
         """
 
-        guild = await self.bot.fetch_guild(int(TECH_ID.g_tech))
-        channel: discord.TextChannel = await guild.fetch_channel(int(TECH_ID.ch_botreq))
+        guild = self.bot.get_guild(int(TECH_ID.g_tech))
+        channel: discord.TextChannel = guild.get_channel(int(TECH_ID.ch_botreq))
         if database.TechCommissionArchiveLog:
             for entry in database.TechCommissionArchiveLog:
-                thread: discord.Thread = await guild.fetch_channel(entry.ThreadID)
+                thread: discord.Thread = guild.get_thread(entry.ThreadID)
                 await thread.edit(archived=False)
 
 

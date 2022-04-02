@@ -282,8 +282,8 @@ class MiscCMD(commands.Cog):
                 return
             else:
                 await message.delete()
-                guild = await self.bot.fetch_guild(TECH_ID.g_tech)
-                channel = await guild.fetch_channel(TECH_ID.ch_tracebacks)
+                guild = self.bot.get_guild(TECH_ID.g_tech)
+                channel = guild.get_channel(TECH_ID.ch_tracebacks)
 
                 embed = discord.Embed(
                     title="New Suggestion!",
