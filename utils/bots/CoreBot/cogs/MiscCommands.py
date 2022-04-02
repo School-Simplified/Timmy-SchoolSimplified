@@ -4,6 +4,7 @@ import subprocess
 import sys
 import time
 from datetime import timedelta
+from typing import List
 
 import discord
 import psutil
@@ -11,23 +12,157 @@ from core import database
 from core.checks import is_botAdmin, is_botAdmin2
 from core.common import (
     ButtonHandler,
+    MAIN_ID,
+    TECH_ID,
+    Colors,
+    Others,
     Emoji,
     NitroConfirmFake,
     SelectMenuHandler,
-    hexColors,
+    Colors,
     Others,
     MAIN_ID,
 )
-from core.common import getHostDir, force_restart
 from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk import Hub
+from discord import app_commands
+from google.cloud import texttospeech
+from core.common import access_secret
+
+class TicTacToeButton(discord.ui.Button["TicTacToe"]):
+    def __init__(self, x: int, y: int, xUser: discord.User, yUser: discord.User):
+        super().__init__(style=discord.ButtonStyle.secondary, label="\u200b", row=y)
+        self.x = x
+        self.xUser = xUser
+
+        self.y = y
+        self.yUser = yUser
+
+    async def callback(self, interaction: discord.Interaction):
+        assert self.view is not None
+        view: TicTacToe = self.view
+        state = view.board[self.y][self.x]
+        if state in (view.X, view.O):
+            return
+        if view.current_player == view.X and self.xUser.id == interaction.user.id:
+            self.style = discord.ButtonStyle.danger
+            self.label = "X"
+            self.disabled = True
+            view.board[self.y][self.x] = view.X
+            view.current_player = view.O
+            content = f"It is now {self.yUser.mention}'s turn"
+
+        elif view.current_player == view.O and self.yUser.id == interaction.user.id:
+            self.style = discord.ButtonStyle.success
+            self.label = "O"
+            self.disabled = True
+            view.board[self.y][self.x] = view.O
+            view.current_player = view.X
+            content = f"It is now {self.xUser.mention}'s turn"
+
+        elif not interaction.user.id == view.current_player and interaction.user in [
+            self.yUser,
+            self.xUser,
+        ]:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} It's not your turn!", ephemeral=True
+            )
+        else:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} Woah! You can't join this game "
+                f"as you weren't invited, if you'd like to play you can start "
+                f"a session by doing `+ttc @UserYouWannaPlayAgainst`!",
+                ephemeral=True,
+            )
+
+        winner = view.check_board_winner()
+        if winner is not None:
+            if winner == view.X:
+                content = f"{self.xUser.mention} won!"
+            elif winner == view.O:
+                content = f"{self.yUser.mention} won!"
+            else:
+                content = "It's a tie!"
+
+            for child in view.children:
+                child.disabled = True
+
+            view.stop()
+
+        await interaction.response.edit_message(content=content, view=view)
+
+
+# This is our actual board View
+class TicTacToe(discord.ui.View):
+    # This tells the IDE or linter that all our children will be TicTacToeButtons
+    # This is not required
+    children: List[TicTacToeButton]
+    X = -1
+    O = 1
+    Tie = 2
+
+    def __init__(self, XPlayer, OPlayer):
+        super().__init__()
+        self.current_player = self.X
+        self.board = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+        ]
+        self.XPlayer = XPlayer
+        self.OPlayer = OPlayer
+
+        # Our board is made up of 3 by 3 TicTacToeButtons
+        # The TicTacToeButton maintains the callbacks and helps steer
+        # the actual game.
+        for x in range(3):
+            for y in range(3):
+                self.add_item(TicTacToeButton(x, y, XPlayer, OPlayer))
+
+    # This method checks for the board winner -- it is used by the TicTacToeButton
+    def check_board_winner(self):
+        for across in self.board:
+            value = sum(across)
+            if value == 3:
+                return self.O
+            elif value == -3:
+                return self.X
+
+        # Check vertical
+        for line in range(3):
+            value = self.board[0][line] + self.board[1][line] + self.board[2][line]
+            if value == 3:
+                return self.O
+            elif value == -3:
+                return self.X
+
+        # Check diagonals
+        diag = self.board[0][2] + self.board[1][1] + self.board[2][0]
+        if diag == 3:
+            return self.O
+        elif diag == -3:
+            return self.X
+
+        diag = self.board[0][0] + self.board[1][1] + self.board[2][2]
+        if diag == 3:
+            return self.O
+        elif diag == -3:
+            return self.X
+
+        # If we're here, we need to check if a tie was made
+        if all(i != 0 for row in self.board for i in row):
+            return self.Tie
+
+        return None
+
 
 load_dotenv()
 
 
 class MiscCMD(commands.Cog):
     def __init__(self, bot: commands.Bot):
+        self.__cog_name__ = "General"
         self.bot: commands.Bot = bot
         self.interaction = []
 
@@ -82,10 +217,126 @@ class MiscCMD(commands.Cog):
             ),
         ]
 
+    @property
+    def display_emoji(self) -> str:
+        return Emoji.schoolsimplified
+
+    @commands.command(aliases=["ttc", "tictactoe"])
+    async def tic(self, ctx: commands.Context, user: discord.User = None):
+        if not ctx.channel.id == MAIN_ID.ch_commands:
+            await ctx.message.delete()
+            return await ctx.send(
+                f"{ctx.author.mention}"
+                f"\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!"
+            )
+
+        if user is None:
+            return await ctx.send(
+                "lonely :(, sorry but you need a person to play against!"
+            )
+        elif user == self.bot.user:
+            return await ctx.send("i'm good")
+        elif user == ctx.author:
+            return await ctx.send(
+                "lonely :(, sorry but you need an actual person to play against, not yourself!"
+            )
+
+        await ctx.send(
+            f"Tic Tac Toe: {ctx.author.mention} goes first",
+            view=TicTacToe(ctx.author, user),
+        )
+
+    @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def suggest(self, ctx, suggestion):
+        embed = discord.Embed(
+            title="Confirmation",
+            description="Are you sure you want to submit this suggestion? Creating irrelevant "
+                        "suggestions will warrant a blacklist and you will be subject to a "
+                        "warning/mute.",
+            color=discord.Colour.blurple(),
+        )
+        embed.add_field(name="Suggestion Collected", value=suggestion)
+        embed.set_footer(
+            text="Double check this suggestion || MAKE SURE THIS SUGGESTION IS RELATED TO THE BOT, NOT THE DISCORD "
+                 "SERVER! "
+        )
+
+        message = await ctx.send(embed=embed)
+        reactions = ["✅", "❌"]
+        for emoji in reactions:
+            await message.add_reaction(emoji)
+
+        def check2(reaction, user):
+            return user == ctx.author and (
+                    str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
+            )
+
+        try:
+            reaction, user = await self.bot.wait_for(
+                "reaction_add", timeout=150.0, check=check2
+            )
+            if str(reaction.emoji) == "❌":
+                await ctx.send("Okay, I won't send this.")
+                await message.delete()
+                return
+            else:
+                await message.delete()
+                guild = self.bot.get_guild(TECH_ID.g_tech)
+                channel = guild.get_channel(TECH_ID.ch_tracebacks)
+
+                embed = discord.Embed(
+                    title="New Suggestion!",
+                    description=f"User: {ctx.author.mention}\nChannel: {ctx.channel.mention}",
+                    color=discord.Colour.blurple(),
+                )
+                embed.add_field(name="Suggestion", value=suggestion)
+
+                await channel.send(embed=embed)
+                await ctx.send(
+                    "I have sent in the suggestion! You will get a DM back depending on its status!"
+                )
+
+        except asyncio.TimeoutError:
+            await ctx.send(
+                "Looks like you didn't react in time, please try again later!"
+            )
+
+    @suggest.error
+    async def suggest_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            m, s = divmod(error.retry_after, 60)
+            msg = "You can't suggest for: `{} minutes and {} seconds`".format(
+                round(m), round(s)
+            )
+            await ctx.send(msg)
+
+        else:
+            raise error
+
+    @commands.command(aliases=["donation"])
+    @commands.cooldown(1, 10, commands.BucketType.guild)
+    async def donate(self, ctx: commands.Context):
+        timmyDonation_png = discord.File(
+            Others.timmyDonation_path, filename=Others.timmyDonation_png
+        )
+
+        embedDonate = discord.Embed(
+            color=Colors.ss_blurple,
+            title=f"Donate",
+            description=f"Thank you for your generosity in donating to School Simplified. "
+                        f"We do not charge anything for our services, and your support helps to further our mission "
+                        f"to *empower the next generation to revolutionize the future through learning*."
+                        f"\n\n**Donate here: https://schoolsimplified.org/donate**",
+        )
+        embedDonate.set_footer(text="Great thanks to all our donors!")
+        embedDonate.set_thumbnail(url=f"attachment://{Others.timmyDonation_png}")
+        await ctx.send(embed=embedDonate, file=timmyDonation_png)
+
     @commands.command()
     @is_botAdmin
     async def pingmasa(self, ctx, *, msg=None):
-        masa = await self.bot.fetch_user(736765405728735232)
+        masa = self.bot.get_user(736765405728735232)
         if msg is not None:
             await ctx.send(masa.mention + f" {msg}")
         else:
@@ -100,7 +351,7 @@ class MiscCMD(commands.Cog):
             embed = discord.Embed(
                 title="Unable to Debate Ban this User",
                 description="Why are you trying to ban me?",
-                color=hexColors.red_error,
+                color=Colors.red,
             )
             return await ctx.send(embed=embed)
 
@@ -108,7 +359,7 @@ class MiscCMD(commands.Cog):
             embed = discord.Embed(
                 title="Unable to Debate Ban this User",
                 description="Why are you trying to ban yourself?",
-                color=hexColors.red_error,
+                color=Colors.red,
             )
             return await ctx.send(embed=embed)
 
@@ -127,8 +378,8 @@ class MiscCMD(commands.Cog):
                 embed = discord.Embed(
                     title="Debate Banned!",
                     description=f"{Emoji.confirm} {member.display_name} has been debate banned!"
-                    f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=hexColors.yellow_ticketBan,
+                                f"\n{Emoji.barrow} **Reason:** {reason}",
+                    color=Colors.yellow,
                 )
                 await ctx.send(embed=embed)
 
@@ -145,17 +396,10 @@ class MiscCMD(commands.Cog):
                 embed = discord.Embed(
                     title="Debate Unbanned!",
                     description=f"{Emoji.confirm} {member.display_name} has been debate unbanned!"
-                    f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=hexColors.yellow_ticketBan,
+                                f"\n{Emoji.barrow} **Reason:** {reason}",
+                    color=Colors.yellow,
                 )
                 await ctx.send(embed=embed)
-
-    @commands.command()
-    async def obama(self, ctx):
-        await ctx.message.delete()
-        lines = open("utils/bots/CoreBot/LogFiles/obamaGIF.txt").read().splitlines()
-        myline = random.choice(lines)
-        await ctx.send(myline)
 
     @commands.command()
     @commands.has_any_role("Moderator")
@@ -166,7 +410,7 @@ class MiscCMD(commands.Cog):
             embed = discord.Embed(
                 title="Unable to CountBan this User",
                 description="Why are you trying to CountBan me?",
-                color=hexColors.red_error,
+                color=Colors.red,
             )
             return await ctx.send(embed=embed)
 
@@ -174,7 +418,7 @@ class MiscCMD(commands.Cog):
             embed = discord.Embed(
                 title="Unable to CountBan this User",
                 description="Why are you trying to CountBan yourself?",
-                color=hexColors.red_error,
+                color=Colors.red,
             )
             return await ctx.send(embed=embed)
 
@@ -193,8 +437,8 @@ class MiscCMD(commands.Cog):
                 embed = discord.Embed(
                     title="Count Banned!",
                     description=f"{Emoji.confirm} {member.display_name} has been count banned!"
-                    f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=hexColors.yellow_ticketBan,
+                                f"\n{Emoji.barrow} **Reason:** {reason}",
+                    color=Colors.yellow,
                 )
                 await ctx.send(embed=embed)
 
@@ -211,8 +455,8 @@ class MiscCMD(commands.Cog):
                 embed = discord.Embed(
                     title="Count Unbanned!",
                     description=f"{Emoji.confirm} {member.display_name} has been count unbanned!"
-                    f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=hexColors.yellow_ticketBan,
+                                f"\n{Emoji.barrow} **Reason:** {reason}",
+                    color=Colors.yellow,
                 )
                 await ctx.send(embed=embed)
 
@@ -231,18 +475,6 @@ class MiscCMD(commands.Cog):
         current_time = float(time.time())
         difference = int(round(current_time - float(q.UpStart)))
         text = str(timedelta(seconds=difference))
-
-        try:
-            p = subprocess.run(
-                "git describe --always",
-                shell=True,
-                text=True,
-                capture_output=True,
-                check=True,
-            )
-            output = p.stdout
-        except subprocess.CalledProcessError:
-            output = "ERROR"
 
         pingembed = discord.Embed(
             title="Pong! ⌛",
@@ -263,7 +495,7 @@ class MiscCMD(commands.Cog):
             inline=False,
         )
         pingembed.set_footer(
-            text=f"GitHub Commit Version: {output}", icon_url=ctx.author.avatar.url
+            text=f"TimmyOS Version: {0.0}", icon_url=ctx.author.avatar.url
         )
 
         await ctx.send(embed=pingembed)
@@ -272,26 +504,26 @@ class MiscCMD(commands.Cog):
 
     @commands.command()
     async def help(self, ctx):
-        view = discord.ui.View()
-        emoji = Emoji.timmyBook
-        view.add_item(
-            ButtonHandler(
-                style=discord.ButtonStyle.green,
-                url="https://timmy.schoolsimplified.org",
-                disabled=False,
-                label="Click Here to Visit the Documentation!",
-                emoji=emoji,
-            )
-        )
-
-        embed = discord.Embed(title="Help Command", color=discord.Colour.gold())
-        embed.add_field(
-            name="Documentation Page",
-            value="Click the button below to visit the documentation!",
-        )
-        embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
-        embed.set_thumbnail(url=Others.timmyBook_png)
-        await ctx.send(embed=embed, view=view)
+        # view = discord.ui.View()
+        # emoji = Emoji.timmyBook
+        # view.add_item(
+        #     ButtonHandler(
+        #         style=discord.ButtonStyle.green,
+        #         url="https://timmy.schoolsimplified.org",
+        #         disabled=False,
+        #         label="Click Here to Visit the Documentation!",
+        #         emoji=emoji,
+        #     )
+        # )
+        #
+        # embed = discord.Embed(title="Help Command", color=discord.Colour.gold())
+        # embed.add_field(
+        #     name="Documentation Page",
+        #     value="Click the button below to visit the documentation!",
+        # )
+        # embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
+        # embed.set_thumbnail(url=Others.timmyBook_png)
+        await ctx.send("The help command is now a slash command! Use `/help` for help.")
 
     @commands.command()
     async def nitro(self, ctx: commands.Context):
@@ -300,7 +532,7 @@ class MiscCMD(commands.Cog):
         embed = discord.Embed(
             title="A WILD GIFT APPEARS!",
             description="**Nitro:**\nExpires in 48 hours.",
-            color=hexColors.dark_gray,
+            color=Colors.dark_gray,
         )
         embed.set_thumbnail(url=Others.nitro_png)
         await ctx.send(embed=embed, view=NitroConfirmFake())
@@ -316,8 +548,8 @@ class MiscCMD(commands.Cog):
         embed.add_field(
             name="WARNING",
             value="Please not that this will kill the bot immediately and it will not be online unless a "
-            "developer manually starts the proccess again!"
-            "\nIf you don't respond in 5 seconds, the process will automatically abort.",
+                  "developer manually starts the proccess again!"
+                  "\nIf you don't respond in 5 seconds, the process will automatically abort.",
         )
         embed.set_footer(
             text="Abusing this system will subject your authorization removal, so choose wisely you fucking pig."
@@ -331,7 +563,7 @@ class MiscCMD(commands.Cog):
 
         def check2(reaction, user):
             return user == ctx.author and (
-                str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
+                    str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
             )
 
         try:
@@ -370,103 +602,14 @@ class MiscCMD(commands.Cog):
             )
             await message.delete()
 
-    @commands.command()
-    @is_botAdmin2
-    async def gitpull(self, ctx, mode="-a"):
-        output = ""
-
-        hostDir = getHostDir()
-        if hostDir == "/home/timmya":
-            branch = "origin/main"
-            directory = "TimmyMain-SS"
-
-        elif hostDir == "/home/timmy-beta":
-            branch = "origin/beta"
-            directory = "TimmyBeta-SS"
-
-        else:
-            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
-
-        try:
-            p = subprocess.run(
-                "git fetch --all",
-                shell=True,
-                text=True,
-                capture_output=True,
-                check=True,
-            )
-            output += p.stdout
-        except Exception as e:
-            await ctx.send("⛔️ Unable to fetch the Current Repo Header!")
-            await ctx.send(f"**Error:**\n{e}")
-        try:
-            p = subprocess.run(
-                f"git reset --hard {branch}",
-                shell=True,
-                text=True,
-                capture_output=True,
-                check=True,
-            )
-            output += p.stdout
-        except Exception as e:
-            await ctx.send("⛔️ Unable to apply changes!")
-            await ctx.send(f"**Error:**\n{e}")
-
-        embed = discord.Embed(
-            title="GitHub Local Reset",
-            description=f"Local Files changed to match {branch}",
-            color=hexColors.green_general,
-        )
-        embed.add_field(name="Shell Output", value=f"```shell\n$ {output}\n```")
-        if mode == "-a":
-            embed.set_footer(text="Attempting to restart the bot...")
-        elif mode == "-c":
-            embed.set_footer(text="Attempting to reloading cogs...")
-
-        await ctx.send(embed=embed)
-
-        if mode == "-a":
-            await force_restart(ctx, directory)
-        elif mode == "-c":
-            await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
-
-    @commands.command()
-    @is_botAdmin2
-    async def numbergame(self, ctx):
-        await ctx.message.delete()
-
-        def check(m):
-            return (
-                m.content is not None
-                and m.channel == ctx.channel
-                and m.author is not self.bot.user
-            )
-
-        randomnum = random.randint(0, 10)
-
-        userinput = None
-        userObj = None
-
-        await ctx.send(
-            "Guess my number (between 0 and 10) and if you get it right you can change my status to whatever you want!"
-        )
-
-        while userinput != str(randomnum):
-            inputMSG = await self.bot.wait_for("message", check=check)
-            userinput = inputMSG.content
-            userObj = inputMSG.author
-
-        await ctx.send(
-            f"{userObj.mention}, you guessed it!\nWhat do you want my status to be?"
-        )
 
     @commands.command()
     @commands.has_role(MAIN_ID.r_clubPresident)
     async def role(
-        self,
-        ctx: commands.Context,
-        users: commands.Greedy[discord.Member],
-        roles: commands.Greedy[discord.Role],
+            self,
+            ctx: commands.Context,
+            users: commands.Greedy[discord.Member],
+            roles: commands.Greedy[discord.Role],
     ):
         """
         Gives an authorized role to every user provided.
@@ -482,7 +625,8 @@ class MiscCMD(commands.Cog):
 
         embed = discord.Embed(
             title="Starting Mass Role Function",
-            description="Please wait until I finish the role operation, you'll see this message update when I am finished!",
+            description="Please wait until I finish the role operation, you'll see this message update when I am "
+                        "finished!",
             color=discord.Color.gold(),
         )
 
@@ -543,17 +687,109 @@ class MiscCMD(commands.Cog):
         msg = await ctx.send("Select a role you want to ping!", view=view)
         await view.wait()
         await msg.delete()
-
         ViewResponse = str(view.children[0].values)
         RoleID = self.decodeDict[ViewResponse]
         await ctx.send(f"<@&{RoleID}>\n{message}")
 
-    @commands.command()
+    @commands.command(hidden=True)
     @is_botAdmin
     async def purgemasa(self, ctx, num: int = 10):
-        user = await self.bot.fetch_user(736765405728735232)
+        user = self.bot.get_user(736765405728735232)
         await ctx.channel.purge(check=lambda m: m.author == user, limit=num)
 
+    @app_commands.command(description="Play a game of TicTacToe with someone!")
+    @app_commands.describe(user='The user you want to play with.')
+    async def tictactoe(self, interaction: discord.Interaction, user: discord.Member):
+        if interaction.channel.id != MAIN_ID.ch_commands:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention}\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!",
+                ephemeral=True,
+            )
+        if user is None:
+            return await interaction.response.send_message(
+                "lonely :(, sorry but you need a person to play against!"
+            )
+        elif user == self.bot.user:
+            return await interaction.response.send_message("i'm good.")
+        elif user == interaction.user:
+            return await interaction.response.send_message(
+                "lonely :(, sorry but you need an actual person to play against, not yourself!"
+            )
 
-def setup(bot):
-    bot.add_cog(MiscCMD(bot))
+        await interaction.response.send_message(
+            f"Tic Tac Toe: {interaction.user.mention} goes first",
+            view=TicTacToe(interaction.user, user),
+        )
+
+    @commands.command()
+    @is_botAdmin
+    async def say(self, ctx, *, message):
+        NE = database.AdminLogging.create(
+            discordID=ctx.author.id, action="SAY", content=message
+        )
+        NE.save()
+
+        await ctx.message.delete()
+        await ctx.send(message)
+
+    @commands.command()
+    @is_botAdmin
+    async def sayvc(self, ctx, *, text=None):
+        await ctx.message.delete()
+
+        if not text:
+            # We have nothing to speak
+            await ctx.send(
+                f"Hey {ctx.author.mention}, I need to know what to say please."
+            )
+            return
+
+        vc = ctx.voice_client  # We use it more then once, so make it an easy variable
+        if not vc:
+            # We are not currently in a voice channel
+            await ctx.send(
+                "I need to be in a voice channel to do this, please use the connect command."
+            )
+            return
+
+        NE = database.AdminLogging.create(
+            discordID=ctx.author.id, action="SAYVC", content=text
+        )
+        NE.save()
+
+        # Lets prepare our text, and then save the audio file
+        TTSClient = texttospeech.TextToSpeechClient(
+            credentials=access_secret("ttscreds", True, 2)
+        )
+
+        synthesis_input = texttospeech.SynthesisInput(text=text)
+        voice = texttospeech.VoiceSelectionParams(
+            language_code="en-US", ssml_gender=texttospeech.SsmlVoiceGender.MALE
+        )
+        audio_config = texttospeech.AudioConfig(
+            audio_encoding=texttospeech.AudioEncoding.MP3
+        )
+        response = TTSClient.synthesize_speech(
+            input=synthesis_input, voice=voice, audio_config=audio_config
+        )
+        with open("text.mp3", "wb") as out:
+            out.write(response.audio_content)
+
+        try:
+            vc.play(
+                discord.FFmpegPCMAudio("text.mp3"),
+                after=lambda e: print(f"Finished playing: {e}"),
+            )
+
+            vc.source = discord.PCMVolumeTransformer(vc.source)
+            vc.source.volume = 1
+
+        except discord.ClientException as e:
+            await ctx.send(f"A client exception occurred:\n`{e}`")
+
+        except TypeError as e:
+            await ctx.send(f"TypeError exception:\n`{e}`")
+
+
+async def setup(bot: commands.Bot):
+    await bot.add_cog(MiscCMD(bot))

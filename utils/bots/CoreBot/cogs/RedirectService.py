@@ -12,17 +12,22 @@ load_dotenv()
 class RedirectURL(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.domain = "rs.schoolsimplified.org"
+        self.domain = "https://ssimpl.org"
         self.raOBJ = redirect_sdk.RedirectClient(
-            os.getenv("RP_TK"), domain="https://rs.schoolsimplified.org"
+            os.getenv("RP_TK"), domain="https://ssimpl.org"
         )
+        self.__cog_name__ = "Redirect URL"
+
+    @property
+    def display_emoji(self) -> str:
+        return "🖇️"
 
     @commands.command(alliases=["redirectadd", "addredirect"])
     @is_botAdmin
     async def ra(self, ctx, redirect_code, destination_url: str):
         val = self.raOBJ.add_redirect(redirect_code, destination_url)
         await ctx.send(
-            f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!\n\nAccess it at https://rs.schoolsimplified.org/{redirect_code}"
+            f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!\n\nAccess it at https://ssimpl.org/{redirect_code}"
         )
 
     @commands.command(alliases=["redirectremove", "removeredirect"])
@@ -48,5 +53,5 @@ class RedirectURL(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(RedirectURL(bot))
+async def setup(bot):
+    await bot.add_cog(RedirectURL(bot))

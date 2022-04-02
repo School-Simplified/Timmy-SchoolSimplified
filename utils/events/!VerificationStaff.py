@@ -31,20 +31,6 @@ async def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Mem
             await user.add_roles(helper)
 
 
-class VerifyButton(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.value = None
-
-    @discord.ui.button(
-        label="Verify",
-        style=discord.ButtonStyle.blurple,
-        custom_id="persistent_view:verify",
-        emoji="✅",
-    )
-    async def verify(self, button: discord.ui.Button, interaction: discord.Interaction):
-        self.value = True
-
 
 class VerificationStaff(commands.Cog):
     def __init__(self, bot):
@@ -73,7 +59,7 @@ class VerificationStaff(commands.Cog):
         ):
             print(interaction.user.id)
 
-            staffServer: discord.Guild = await self.bot.fetch_guild(
+            staffServer: discord.Guild = self.bot.get_guild(
                 interaction.guild_id
             )
             print(staffServer)
@@ -84,7 +70,7 @@ class VerificationStaff(commands.Cog):
             print(StaffServerMember)
             if StaffServerMember is None:
                 print("h")
-                StaffServerMember: discord.Member = await staffServer.fetch_member(
+                StaffServerMember: discord.Member = staffServer.get_member(
                     interaction.user.id
                 )
                 print(StaffServerMember)
@@ -92,19 +78,19 @@ class VerificationStaff(commands.Cog):
             if StaffServerMember is None:
                 try:
                     await interaction.response.send_message(
-                        "<:sadturtl:879197443600834600> An error occurred while trying to verify your status, please contact a staff member! (Error Code: TM-NOMEMBERFOUND)",
+                        "An error occurred while trying to verify your status, please contact a staff member! (Error Code: TM-NOMEMBERFOUND)",
                         ephemeral=True,
                     )
                 except discord.InteractionResponded:
                     try:
                         await interaction.followup.send(
-                            "<:sadturtl:879197443600834600> An error occurred while trying to verify your status, "
+                            "An error occurred while trying to verify your status, "
                             "please contact a staff member! (Error Code: TM-NOMEMBERFOUND)",
                             ephemeral=True,
                         )
                     except:
                         await interaction.channel.send(
-                            f"{interaction.user.mention} <:sadturtl:879197443600834600> An error occurred while "
+                            f"{interaction.user.mention} An error occurred while "
                             f"trying to verify your status, please contact a staff member! (Error Code: "
                             f"TM-NOMEMBERFOUND)",
                             delete_after=10.0,
@@ -113,7 +99,7 @@ class VerificationStaff(commands.Cog):
                     return
 
             VerificationChannel = interaction.channel
-            logchannel = await self.bot.fetch_channel(
+            logchannel = self.bot.get_channel(
                 self.staffServer[interaction.guild_id]
             )
 
@@ -121,9 +107,9 @@ class VerificationStaff(commands.Cog):
             VerifiedGuilds = []
 
             for ID in self.ServerIDs:
-                server: discord.Guild = await self.bot.fetch_guild(ID)
+                server: discord.Guild = self.bot.get_guild(ID)
                 try:
-                    ServerMember: discord.Member = await server.fetch_member(
+                    ServerMember: discord.Member = server.get_member(
                         interaction.user.id
                     )
 
@@ -259,5 +245,5 @@ class VerificationStaff(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(VerificationStaff(bot))
+async def setup(bot):
+    await bot.add_cog(VerificationStaff(bot))

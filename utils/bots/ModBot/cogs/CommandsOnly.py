@@ -1,7 +1,6 @@
 import discord
 from core import database
 from core.common import rulesDict
-from discord import Option, slash_command
 from discord.ext import commands
 from core.common import MAIN_ID
 
@@ -30,33 +29,19 @@ class CommandsOnly(commands.Cog):
                     embed = discord.Embed(
                         title="Commands ONLY",
                         description=MESSAGEMASA,
-                        color=discord.Colour.red(),
+                        color=discord.Colour.brand_red(),
                     )
                 else:
                     embed = discord.Embed(
                         title="Commands ONLY",
                         description=MESSAGEC,
-                        color=discord.Colour.red(),
+                        color=discord.Colour.brand_red(),
                     )
 
                 await message.channel.send(
                     message.author.mention, embed=embed, delete_after=5.0
                 )
 
-    @slash_command(guild_ids=[MAIN_ID.g_main])
-    @commands.cooldown(1, 15, commands.BucketType.user)
-    async def rule(self, ctx, num: Option(int, max_value=14, min_value=1)):
-        RuleNumber = str(num)
-        RuleTitle, RuleDesc = self.rules[int(num)].split(" && ")
 
-        embed = discord.Embed(
-            title=f"Rule {RuleNumber}: {RuleTitle}",
-            description=RuleDesc,
-            color=discord.Colour.green(),
-        )
-        embed.set_footer(text="Have a question? Feel free to DM a Moderator!")
-        await ctx.respond(embed=embed)
-
-
-def setup(bot):
-    bot.add_cog(CommandsOnly(bot))
+async def setup(bot):
+    await bot.add_cog(CommandsOnly(bot))
