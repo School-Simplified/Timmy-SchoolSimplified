@@ -179,12 +179,16 @@ class TechProjectCMD(commands.Cog):
 
         if entries:
             for entry in entries:
-                thread: discord.Thread = guild.get_thread(entry.ThreadID)
+                query = query.select().where(database.TechCommissionArchiveLog.id == entry)
+                query = query.get()
+                
+                thread: discord.Thread = guild.get_thread(query.ThreadID)
                 await thread.edit(archived=False)
 
     @autoUnarchiveThread.before_loop
     async def before_loop_(self):
         await self.bot.wait_until_ready()
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(TechProjectCMD(bot))
