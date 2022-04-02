@@ -920,7 +920,7 @@ class DropdownTickets(commands.Cog):
                 .get()
             )
             try:
-                TicketOwner =await guild.fetch_member(query.authorID)
+                TicketOwner = guild.get_member(query.authorID)
             except discord.NotFound:
                 await channel.send(
                     f"{author.mention} Sorry, but the ticket owner has left the server."
@@ -1121,17 +1121,16 @@ class DropdownTickets(commands.Cog):
         TicketInfoTB = database.TicketInfo
         guild = self.bot.get_guild(MAIN_ID.g_main)
         for entry in TicketInfoTB:
-            try:
-                channel: discord.TextChannel = await self.bot.fetch_channel(
-                    entry.ChannelID
-                )
-            except Exception as e:
+            channel: discord.TextChannel = await self.bot.fetch_channel(
+                entry.ChannelID
+            )
+            if channel is None:
                 continue
 
             fetchMessage = [message async for message in channel.history(limit=1)]
-            TicketOwner = await guild.fetch_member(entry.authorID)
+            TicketOwner = guild.get_member(entry.authorID)
             messages = [message async for message in channel.history(limit=None)]
-            LogCH = await self.bot.fetch_channel(MAIN_ID.ch_transcriptLogs)
+            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)
             authorList = []
             if len(messages) == 0:
                 continue
