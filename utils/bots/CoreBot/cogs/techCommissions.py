@@ -170,7 +170,6 @@ class TechProjectCMD(commands.Cog):
         """
 
         guild = self.bot.get_guild(int(TECH_ID.g_tech))
-        channel: discord.TextChannel = guild.get_channel(int(TECH_ID.ch_botreq))
 
         query = database.TechCommissionArchiveLog.select()
         entries = [entry.id for entry in query]
