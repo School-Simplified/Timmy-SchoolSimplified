@@ -102,12 +102,14 @@ class TechProjectCMD(commands.Cog):
     """
     def __init__(self, bot):
         self.bot: commands.Bot = bot
-        self.autoUnarchiveThread.start()
         self.__cog_name__ = "Bot Commissions"
+        self.autoUnarchiveThread.start()
+
 
     @property
     def display_emoji(self) -> str:
         return Emoji.pythonLogo
+
 
     async def cog_unload(self):
         self.autoUnarchiveThread.cancel()
@@ -169,8 +171,9 @@ class TechProjectCMD(commands.Cog):
         Creates a task loop to make sure threads don't automatically archive due to inactivity.
         """
 
-        guild = self.bot.get_guild(int(TECH_ID.g_tech))
-
+        guild = self.bot.get_guild(TECH_ID.g_tech)
+        print(TECH_ID.g_tech, int(TECH_ID.g_tech))
+        print(guild)
         query = database.TechCommissionArchiveLog.select()
         entries = [entry.id for entry in query]
 
@@ -179,7 +182,9 @@ class TechProjectCMD(commands.Cog):
                 thread: discord.Thread = guild.get_thread(entry.ThreadID)
                 await thread.edit(archived=False)
 
-
+    @autoUnarchiveThread.before_loop
+    async def before_loop_(self):
+        await self.bot.wait_until_ready()
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(TechProjectCMD(bot))

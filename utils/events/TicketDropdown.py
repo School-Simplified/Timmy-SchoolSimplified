@@ -749,11 +749,12 @@ class DropdownTickets(commands.Cog):
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
         self.CHID_DEFAULT = Others.CHID_DEFAULT
         self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
-        self.TicketInactive.start()
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
+        self.TicketInactive.start()
 
     async def cog_unload(self):
         self.TicketInactive.cancel()
+
 
     @commands.Cog.listener("on_interaction")
     async def TicketDropdown(self, interaction: discord.Interaction):
@@ -1209,6 +1210,10 @@ class DropdownTickets(commands.Cog):
 
                 await channel.delete()
                 entry.delete_instance()"""
+
+    @TicketInactive.before_loop
+    async def before_loop_(self):
+        await self.bot.wait_until_ready()
 
     @commands.command()
     @is_botAdmin
