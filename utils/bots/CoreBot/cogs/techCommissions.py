@@ -172,8 +172,6 @@ class TechProjectCMD(commands.Cog):
         """
 
         guild = self.bot.get_guild(TECH_ID.g_tech)
-        print(TECH_ID.g_tech, int(TECH_ID.g_tech))
-        print(guild)
         query = database.TechCommissionArchiveLog.select()
         entries = [entry.id for entry in query]
 
@@ -181,7 +179,7 @@ class TechProjectCMD(commands.Cog):
             for entry in entries:
                 query = query.select().where(database.TechCommissionArchiveLog.id == entry)
                 query = query.get()
-                
+
                 thread: discord.Thread = guild.get_thread(query.ThreadID)
                 await thread.edit(archived=False)
 
