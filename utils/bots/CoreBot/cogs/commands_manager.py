@@ -63,7 +63,7 @@ class CommandsManager(commands.Cog):
 
             timeout = await view.wait()
             if not timeout:
-
+                print(view.value)
                 if view.value == "Confirm":
 
                     embed_processing = discord.Embed(
@@ -90,6 +90,7 @@ class CommandsManager(commands.Cog):
                         description="Sync canceled."
                     )
                     await message_confirm.edit(embed=embed_cancel)
+
             else:
                 embed_timeout = discord.Embed(
                     color=Colors.red,
