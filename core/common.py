@@ -1884,11 +1884,3 @@ async def get_active_or_archived_thread(guild: discord.Guild, thread_id: int) ->
 
     return thread
 
-
-def get_guild_ids(bot: commands.Bot) -> Tuple:
-
-    guild_ids = []
-    for guild in bot.guilds:
-        guild_ids.append(guild.id)
-
-    return tuple(guild_ids)
