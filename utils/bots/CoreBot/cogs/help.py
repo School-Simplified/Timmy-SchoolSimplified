@@ -438,7 +438,7 @@ class Help(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        ALL_GUILD_IDS = get_guild_ids(self.bot)
+        Help.ALL_GUILD_IDS = get_guild_ids(self.bot)
 
     @staticmethod
     async def _filter_commands(
