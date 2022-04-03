@@ -6,10 +6,10 @@ from typing import Literal
 
 import discord
 from core import database
-from core.common import CheckDB_CC
+from core.common import CheckDB_CC, TECH_ID
 from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4, slash_is_bot_admin_2
 from core.common import Emoji, Colors
-from discord.app_commands import command
+from discord.app_commands import command, guilds
 from discord.ext import commands
 from dotenv import load_dotenv
 from core.common import getHostDir, force_restart
@@ -312,6 +312,7 @@ class CoreBotConfig(commands.Cog):
             await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
 
     @command()
+    @guilds(TECH_ID.g_tech)
     @slash_is_bot_admin_2()
     async def gitpull(
             self, interaction: discord.Interaction, mode: Literal["-a", "-c"] = "-a", sync_commands: bool = False
