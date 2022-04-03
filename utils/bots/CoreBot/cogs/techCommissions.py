@@ -151,7 +151,6 @@ class TechProjectCMD(commands.Cog):
             else:
                 result = query.get()
                 result.delete_instance()
-                query.save()
 
                 current_name = thread.name
                 new_name = f"[CLOSED] {current_name}"
