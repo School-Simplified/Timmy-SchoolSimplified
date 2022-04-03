@@ -11,7 +11,7 @@ import subprocess
 import sys
 import typing
 from pathlib import Path
-from typing import Any, Awaitable, Callable, List, Tuple, Union
+from typing import Any, Awaitable, Callable, List, Tuple, Union, Optional
 from threading import Thread
 
 import boto3
@@ -964,6 +964,7 @@ class SET_ID:
     ch_college_acceptance = int(
         ConfigcatClient.SET_ID_CC.get_value("ch_college_acceptance", 955960683785236540)
     )
+    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
 
 
 class CheckDB_CC:
@@ -1200,6 +1201,7 @@ rulesDict = {
     14: f"No evading user blocks, punishments, or bans by using alternate accounts. && {Emoji.barrow} Sending unwanted, repeated friend requests or messages to contact someone who has blocked you is prohibited.\n{Emoji.barrow} Creating alternate accounts to evade a punishment or ban, harass or impersonate someone, or participate in a raid are all strictly prohibited.\n{Emoji.barrow} Suspicions of being an alternate account are cause for a ban with no prior warning.\n{Emoji.barrow} To discuss punishments or warnings, create a support ticket or talk to a moderator in DMs.",
 }
 
+deprecatedFiles = ["TTScreds.json", "tokenA.json", "staff_verifyClient.json", "gmailAPI_credentials.json", "gmail_token.json", "docs_token.json", "docs_credentials.json", "credentialsA.json", "admincred.json"]
 
 class bcolors:
     HEADER = "\033[95m"
@@ -1275,13 +1277,14 @@ class SelectMenuHandler(ui.Select):
         Parameters:
             options: List of discord.SelectOption
             custom_id: Custom ID of the view. Default to None.
-            place_holder: Place Holder string for the view. Default to None.
+            place_holder: Placeholder string for the view. Default to None.
             max_values Maximum values that are selectable. Default to 1.
             min_values: Minimum values that are selectable. Default to 1.
             disabled: Whenever the button is disabled or not. Default to False.
             select_user: The user that can perform this action, leave blank for everyone. Defaults to None.
             interaction_message: The response message when pressing on a selection. Default to None.
             ephemeral: Whenever the response message should only be visible for the select_user or not. Default to True.
+            coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed. Default to None.
         """
 
         self.options_ = options
@@ -1295,7 +1298,7 @@ class SelectMenuHandler(ui.Select):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
-        self.view_response = view_response
+        self.view_response = None
 
         if self.custom_id_:
             super().__init__(
@@ -1319,11 +1322,8 @@ class SelectMenuHandler(ui.Select):
         if self.select_user in [None, interaction.user] or any(
                 role in interaction.user.roles for role in self.roles
         ):
-            if self.custom_id_ is None:
-                self.view.value = self.values[0]
-            else:
-                # self.view.value = self.custom_id_
-                self.view_response = self.values[0]
+            self.view.value = self.values[0]
+            self.view_response = self.values[0]
 
             if self.interaction_message_:
                 await interaction.response.send_message(
@@ -1376,7 +1376,7 @@ class ButtonHandler(ui.Button):
             roles: The roles which the user needs to be able to click the button.
             interaction_message: The response message when pressing on a selection. Default to None.
             ephemeral: Whenever the response message should only be visible for the select_user or not. Default to True.
-            coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed.  Default to None.
+            coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed. Default to None.
         """
         self.style_ = style
         self.label_ = label
@@ -1389,6 +1389,7 @@ class ButtonHandler(ui.Button):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
+        self.view_response = None
 
         if self.custom_id_:
             super().__init__(
@@ -1414,8 +1415,10 @@ class ButtonHandler(ui.Button):
         ):
             if self.custom_id_ is None:
                 self.view.value = None
+                self.view_response = None
             else:
                 self.view.value = self.custom_id_
+                self.view_response = self.custom_id_
 
             if self.interaction_message_:
                 await interaction.response.send_message(
@@ -1639,7 +1642,7 @@ class FeedbackModel(discord.ui.Modal, title="Submit Feedback"):
             )
         )
 
-    async def callback(self, interaction: discord.Interaction):
+    async def on_submit(self, interaction: discord.Interaction):
         response = f"User Action: {self.children[0]}\nSteps to reproduce the issue: {self.children[1]}\nWhat happened: {self.children[2]}\nExpected Result: {self.children[3]}\nAnything else: {self.children[4]}"
         url = f"https://sentry.io/api/0/projects/schoolsimplified/timmy/user-feedback/"
         headers = {"Authorization": f'Bearer {os.getenv("FDB_SENTRY")}'}
@@ -1707,7 +1710,6 @@ class FeedbackButton(discord.ui.View):
 #                 embed.set_thumbnail(url=f'{menu.ctx.guild.icon_url}')
 #
 #                 return embed
-
 
 
 
@@ -1862,25 +1864,22 @@ def searchCustomEmoji(string: str):
     return customEmoji
 
 
-ALL_GUILD_IDS = (
-    763119924385939498,
-    797835726200635424,
-    799855854182596618,
-    805593783684562965,
-    807299737279004715,
-    815753072742891532,
-    824421093015945216,
-    846817718653026334,
-    874704943624380456,
-    888929996033368154,
-    891521033700540457,
-    932066545117585428,
-    937121020949692456,
-    950795656853876806,
-    950799370855518268,
-    950799439625355294,
-    950799485901107270,
-    951595352090374185,
-    952287046750310440,
-    952294235028201572
-)
+async def get_active_or_archived_thread(guild: discord.Guild, thread_id: int) -> Optional[discord.Thread]:
+
+    active_thread = guild.get_thread(thread_id)
+
+    if active_thread is None:
+
+        thread = None
+        for text_channel in guild.text_channels:
+            if thread is None:
+                async for archived_thread in text_channel.archived_threads():
+                    if archived_thread.id == thread_id:
+                        thread = archived_thread
+                        break
+            else:
+                break
+    else:
+        thread = active_thread
+
+    return thread

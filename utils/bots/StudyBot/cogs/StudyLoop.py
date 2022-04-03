@@ -17,7 +17,7 @@ class StudyLoop(commands.Cog):
 
         self.TTSWeekCheck.start()
 
-    def cog_unload(self):
+    async def cog_unload(self):
         self.TTSWeekCheck.stop()
 
     @tasks.loop(seconds=10)

@@ -255,10 +255,10 @@ class Administrators(BaseModel):
     `TierLevel`: IntegerField()
     TIER LEVEL
 
-    >>> 1 - Bot Manager\n
-    >>> 2 - Admin\n
-    >>> 3 - Sudo Admin\n
-    >>> 4 - Owner
+    1 - Bot Manager\n
+    2 - Admin\n
+    3 - Sudo Admin\n
+    4 - Owner
     """
 
     id = AutoField()
@@ -569,9 +569,9 @@ class VCDeletionQueue(BaseModel):
     DTF = DateTimeField()
 
 
-class TechCommissionArchiveLog(BaseModel):
+class TechCommissions(BaseModel):
     """
-    #TechCommissionArchiveLog
+    #TechCommissions
 
     `id`: AutoField()
     Database Entry
@@ -748,7 +748,7 @@ tables = {
     "BaseTickerInfo": BaseTickerInfo,
     "VCDeletionQueue": VCDeletionQueue,
     "TutorSession_GracePeriod": TutorSession_GracePeriod,
-    "TechCommissionArchiveLog": TechCommissionArchiveLog,
+    "TechCommissions": TechCommissions,
     "SandboxConfig": SandboxConfig,
     "Voting": Voting,
     "BaseQueue": BaseQueue,

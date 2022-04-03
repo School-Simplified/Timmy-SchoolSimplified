@@ -565,7 +565,6 @@ class TicketBT(discord.ui.Button):
                     RoleOBJ = discord.utils.get(
                         interaction.message.guild.roles, name=role
                     )
-                    print(role, RoleOBJ)
                     await channel.set_permissions(
                         RoleOBJ,
                         read_messages=True,
@@ -750,11 +749,12 @@ class DropdownTickets(commands.Cog):
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
         self.CHID_DEFAULT = Others.CHID_DEFAULT
         self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
-        self.TicketInactive.start()
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
+        self.TicketInactive.start()
 
     async def cog_unload(self):
         self.TicketInactive.cancel()
+
 
     @commands.Cog.listener("on_interaction")
     async def TicketDropdown(self, interaction: discord.Interaction):
@@ -1021,13 +1021,12 @@ class DropdownTickets(commands.Cog):
             )
             TicketOwner = self.bot.get_user(query.authorID)
 
-            messages = await channel.history(limit=None).flatten()
+            messages = [message async for message in channel.history(limit=None)]
             authorList = []
 
             for msg in messages:
                 if msg.author not in authorList:
                     authorList.append(msg.author)
-            print(self, channel, ResponseLogChannel, TicketOwner, authorList)
             msg, transcript_file, url = await TicketExport(
                 self, channel, ResponseLogChannel, TicketOwner, authorList
             )
@@ -1121,16 +1120,17 @@ class DropdownTickets(commands.Cog):
     @tasks.loop(minutes=1.0)
     async def TicketInactive(self):
         TicketInfoTB = database.TicketInfo
+        guild = self.bot.get_guild(MAIN_ID.g_main)
         for entry in TicketInfoTB:
-            try:
-                channel: discord.TextChannel = self.bot.get_channel(
-                    entry.ChannelID
-                )
-            except Exception as e:
+            channel: discord.TextChannel = self.bot.get_channel(
+                entry.ChannelID
+            )
+            if channel is None:
                 continue
-            fetchMessage = await channel.history(limit=1).flatten()
-            TicketOwner = self.bot.get_user(entry.authorID)
-            messages = await channel.history(limit=None).flatten()
+
+            fetchMessage = [message async for message in channel.history(limit=1)]
+            TicketOwner = guild.get_member(entry.authorID)
+            messages = [message async for message in channel.history(limit=None)]
             LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)
             authorList = []
             if len(messages) == 0:
@@ -1174,11 +1174,13 @@ class DropdownTickets(commands.Cog):
                         emoji="❌",
                     )
                 )
-                overwrite = discord.PermissionOverwrite()
-                overwrite.update(read_messages=False)
-                print(channel, overwrite)
+                """overwrite = discord.PermissionOverwrite()
+                overwrite.read_messages = False
+                overwrite.send_messages = False"""
                 await channel.set_permissions(
-                    TicketOwner, overwrite=overwrite, reason="Ticket Perms Close (User)"
+                    TicketOwner, reason="Ticket Perms Close (User)",
+                    read_messages=False,
+                    send_messages=False,
                 )
                 await channel.send(
                     f"Ticket has been inactive for 24 hours.\nTicket has been closed.",
@@ -1208,6 +1210,10 @@ class DropdownTickets(commands.Cog):
 
                 await channel.delete()
                 entry.delete_instance()"""
+
+    @TicketInactive.before_loop
+    async def before_loop_(self):
+        await self.bot.wait_until_ready()
 
     @commands.command()
     @is_botAdmin

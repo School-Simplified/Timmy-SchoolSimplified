@@ -30,7 +30,6 @@ from discord import app_commands
 from google.cloud import texttospeech
 from core.common import access_secret
 
-
 class TicTacToeButton(discord.ui.Button["TicTacToe"]):
     def __init__(self, x: int, y: int, xUser: discord.User, yUser: discord.User):
         super().__init__(style=discord.ButtonStyle.secondary, label="\u200b", row=y)
@@ -403,13 +402,6 @@ class MiscCMD(commands.Cog):
                 await ctx.send(embed=embed)
 
     @commands.command()
-    async def obama(self, ctx):
-        await ctx.message.delete()
-        lines = open("utils/bots/CoreBot/LogFiles/obamaGIF.txt").read().splitlines()
-        myline = random.choice(lines)
-        await ctx.send(myline)
-
-    @commands.command()
     @commands.has_any_role("Moderator")
     async def countban(self, ctx, member: discord.Member, *, reason=None):
         NoCount = discord.utils.get(ctx.guild.roles, name="NoCounting")
@@ -484,18 +476,6 @@ class MiscCMD(commands.Cog):
         difference = int(round(current_time - float(q.UpStart)))
         text = str(timedelta(seconds=difference))
 
-        try:
-            p = subprocess.run(
-                "git describe --always",
-                shell=True,
-                text=True,
-                capture_output=True,
-                check=True,
-            )
-            output = p.stdout
-        except subprocess.CalledProcessError:
-            output = "ERROR"
-
         pingembed = discord.Embed(
             title="Pong! ⌛",
             color=discord.Colour.gold(),
@@ -515,7 +495,7 @@ class MiscCMD(commands.Cog):
             inline=False,
         )
         pingembed.set_footer(
-            text=f"GitHub Commit Version: {output}", icon_url=ctx.author.avatar.url
+            text=f"TimmyOS Version: {0.0}", icon_url=ctx.author.avatar.url
         )
 
         await ctx.send(embed=pingembed)
@@ -622,35 +602,6 @@ class MiscCMD(commands.Cog):
             )
             await message.delete()
 
-    @commands.command()
-    @is_botAdmin2
-    async def numbergame(self, ctx):
-        await ctx.message.delete()
-
-        def check(m):
-            return (
-                    m.content is not None
-                    and m.channel == ctx.channel
-                    and m.author is not self.bot.user
-            )
-
-        randomnum = random.randint(0, 10)
-
-        userinput = None
-        userObj = None
-
-        await ctx.send(
-            "Guess my number (between 0 and 10) and if you get it right you can change my status to whatever you want!"
-        )
-
-        while userinput != str(randomnum):
-            inputMSG = await self.bot.wait_for("message", check=check)
-            userinput = inputMSG.content
-            userObj = inputMSG.author
-
-        await ctx.send(
-            f"{userObj.mention}, you guessed it!\nWhat do you want my status to be?"
-        )
 
     @commands.command()
     @commands.has_role(MAIN_ID.r_clubPresident)
