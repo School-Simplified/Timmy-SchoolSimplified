@@ -10,7 +10,7 @@ from discord import app_commands
 import discord
 from discord.app_commands import command, describe, guilds
 from discord.ext import commands, menus
-from core.common import Others, ALL_GUILD_IDS
+from core.common import Others, get_guild_ids
 
 
 class RoboPages(discord.ui.View):
@@ -434,8 +434,11 @@ class Help(commands.Cog):
     Help command
     """
 
+    ALL_GUILD_IDS = ... # type: tuple
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        ALL_GUILD_IDS = get_guild_ids(self.bot)
 
     @staticmethod
     async def _filter_commands(
@@ -688,12 +691,8 @@ class Help(commands.Cog):
     @command()
     @describe(object="Name of command, cog or command group")
     @guilds(*ALL_GUILD_IDS)
-    async def help(
-            self,
-            interaction:
-            discord.Interaction,
-            object: Optional[str] = None
-    ):
+    async def help(self, interaction: discord.Interaction, object: Optional[str] = None):
+
         await self._command_callback(interaction, _command=object)
         # Maybe add autocomplete for commands in the future
 
