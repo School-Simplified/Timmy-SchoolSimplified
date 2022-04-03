@@ -235,7 +235,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
         await ctx.send(embed=em)
         return
 
-    elif isinstance(error, (commands.BadArgument, commands.BadLiteralArgument)):
+    elif isinstance(error, (commands.BadArgument, commands.BadLiteralArgument, commands.BadUnionArgument)):
         signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
         if ctx.command.name == "schedule":
             em = discord.Embed(
