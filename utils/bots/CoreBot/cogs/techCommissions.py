@@ -134,20 +134,19 @@ class TechProjectCMD(commands.Cog):
         view = CommissionTechButton(self.bot)
         await ctx.send(embed=embed, view=view)
 
-    @app_commands.command(name="commission")
-    @app_commands.guilds(TECH_ID.g_tech)
-    async def commission_actions(self, interaction: discord.Interaction, action: Literal["close", "reopen"]):
+    @commands.command()
+    async def commission(self, ctx: commands.Context, action: Literal["close", "reopen"]):
         channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
-        thread = interaction.channel
+        thread = ctx.channel
 
         if not isinstance(thread, discord.Thread):
-            await interaction.response.send_message("Not a bot commission.")
+            await ctx.send("Not a bot commission.")
             return
 
         if action == "close":
             query = database.TechCommissions.select().where(database.TechCommissions.ThreadID == thread.id)
             if thread not in channel.threads or not query.exists():
-                await interaction.response.send_message("This commission is already closed.")
+                await ctx.send("This commission is already closed.")
                 return
             else:
                 query.get()
@@ -158,12 +157,12 @@ class TechProjectCMD(commands.Cog):
                 new_name = f"[CLOSED] {current_name}"
                 await thread.edit(archived=True, name=new_name)
 
-                await interaction.response.send_message("Commission closed! You can find the commission in the archived threads of that channel.")
+                await ctx.send("Commission closed! You can find the commission in the archived threads of that channel.")
 
         elif action == "reopen":
             query = database.TechCommissions.select().where(database.TechCommissions.ThreadID == thread.id)
             if query.exists() or thread in channel.threads:
-                await interaction.response.send_message(
+                await ctx.send(
                     "This commission is already open. You can close it by doing `/commission-close`")
                 return
             else:
@@ -173,7 +172,7 @@ class TechProjectCMD(commands.Cog):
                 current_name = thread.name
                 new_name = current_name.replace("[CLOSED]", "").strip()
                 await thread.edit(archived=False, name=new_name)
-                await interaction.response.send_message("Re-opened commission!")
+                await ctx.send("Re-opened commission!")
 
         else:
             raise ValueError("Action is neither 'close' nor 'reopen'.")
