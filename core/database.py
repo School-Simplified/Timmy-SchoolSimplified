@@ -640,24 +640,6 @@ class BaseQueue(BaseModel):
     id = AutoField()
     queueID = BigIntegerField()
 
-class AuthorizedGuilds(BaseModel):
-    """
-    #AuthorizedGuilds
-
-    `id`: AutoField()
-    Database Entry ID.
-
-    `guildID`: BigIntegerField()
-    Guild ID.
-
-    `authorizedUserID`: BigIntegerField()
-    User who performed the action.
-    """
-
-    id = AutoField()
-    guildID = BigIntegerField()
-    authorizedUserID = BigIntegerField()
-
 class StudyVCDB(BaseModel):
     """
     #StudyVCDB
@@ -770,10 +752,8 @@ tables = {
     "SandboxConfig": SandboxConfig,
     "Voting": Voting,
     "BaseQueue": BaseQueue,
-    "AuthorizedGuilds": AuthorizedGuilds,
     "StudyVCDB": StudyVCDB,
-    "StudyVCLeaderboard": StudyVCLeaderboard,
-    "ResponseSpamBlacklist": ResponseSpamBlacklist,
+    "StudyVCLeaderboard": StudyVCLeaderboard
 }
 
 iter_table(tables)
