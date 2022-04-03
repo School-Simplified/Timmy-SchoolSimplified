@@ -149,8 +149,8 @@ class TechProjectCMD(commands.Cog):
                 await ctx.send("This commission is already closed.")
                 return
             else:
-                query.get()
-                query.delete_instance()
+                result = query.get()
+                result.delete_instance()
                 query.save()
 
                 current_name = thread.name
