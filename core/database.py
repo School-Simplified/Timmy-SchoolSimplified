@@ -753,7 +753,8 @@ tables = {
     "Voting": Voting,
     "BaseQueue": BaseQueue,
     "StudyVCDB": StudyVCDB,
-    "StudyVCLeaderboard": StudyVCLeaderboard
+    "StudyVCLeaderboard": StudyVCLeaderboard,
+    "ResponseSpamBlacklist": ResponseSpamBlacklist
 }
 
 iter_table(tables)

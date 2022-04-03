@@ -29,7 +29,8 @@ from core.special_methods import (
     initializeDB,
     main_mode_check_,
     on_command_error_,
-    on_ready_
+    on_ready_,
+    on_app_command_error_
 )
 
 load_dotenv()
@@ -43,26 +44,15 @@ print("Starting Timmy...")
 
 
 class TimmyCommandTree(app_commands.CommandTree):
-    def __init__(self, client: commands.Bot):
-        super().__init__(client)
+    def __init__(self, bot: commands.Bot):
+        super().__init__(bot)
+        self.bot = bot
 
-#     async def on_error(
-#             self,
-#             interaction: discord.Interaction,
-#             command: Optional[Union[app_commands.ContextMenu, app_commands.Command]],
-#             error: app_commands.AppCommandError,
-#     ) -> None:
-#         ...
-
-    # Implement error system
-
-    # async def interaction_check(
-    #         self,
-    #         interaction: discord.Interaction,
-    #         /
-    # ) -> bool:
-    #     ...
-    #  Implement blacklist check for spammers
+    async def on_error(self,
+                       interaction: discord.Interaction,
+                       command: Union[app_commands.Command, app_commands.ContextMenu],
+                       error: app_commands.AppCommandError):
+        return await on_app_command_error_(self.bot, interaction, command, error)
 
 
 class Timmy(commands.Bot):
@@ -97,8 +87,8 @@ class Timmy(commands.Bot):
         return await main_mode_check_(ctx)
 
     async def setup_hook(self) -> None:
-        for guild in self.guilds:
-            await self.tree.sync(guild=guild)
+        # for guild in self.guilds:
+        #     await self.tree.sync(guild=guild)
 
         with alive_bar(len(get_extensions()), ctrl_c=False, bar="bubbles", title="Initializing Cogs:") as bar:
             for ext in get_extensions():
@@ -127,7 +117,6 @@ class Timmy(commands.Bot):
 
 bot = Timmy()
 
-
 if os.getenv("DSN_SENTRY") is not None:
     sentry_logging = LoggingIntegration(
         level=logging.INFO,  # Capture info and above as breadcrumbs
@@ -141,6 +130,5 @@ if os.getenv("DSN_SENTRY") is not None:
         integrations=[FlaskIntegration(), sentry_logging],
     )
 initializeDB(bot)
-
 
 bot.run(os.getenv("TOKEN"))

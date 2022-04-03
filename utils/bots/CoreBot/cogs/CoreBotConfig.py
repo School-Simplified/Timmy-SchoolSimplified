@@ -6,10 +6,10 @@ from typing import Literal
 
 import discord
 from core import database
-from core.common import CheckDB_CC
+from core.common import CheckDB_CC, TECH_ID
 from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4, slash_is_bot_admin_2
 from core.common import Emoji, Colors
-from discord.app_commands import command
+from discord.app_commands import command, guilds
 from discord.ext import commands
 from dotenv import load_dotenv
 from core.common import getHostDir, force_restart
@@ -387,8 +387,7 @@ class CoreBotConfig(commands.Cog):
                 return await interaction.channel.send(embed=embed)
 
         if sync_commands:
-            for guild in self.bot.guilds:
-                await self.bot.tree.sync(guild=guild)
+            await self.bot.tree.sync()
 
     @commands.group()
     async def w(self, ctx):

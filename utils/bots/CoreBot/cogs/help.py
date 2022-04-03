@@ -8,7 +8,7 @@ import itertools
 from typing import Any, Coroutine, Dict, List, Optional, Set, Union
 from discord import app_commands
 import discord
-from discord.app_commands import command, describe
+from discord.app_commands import command, describe, guilds
 from discord.ext import commands, menus
 from core.common import Others
 
@@ -684,12 +684,8 @@ class Help(commands.Cog):
 
     @command()
     @describe(object="Name of command, cog or command group")
-    async def help(
-            self,
-            interaction:
-            discord.Interaction,
-            object: Optional[str] = None
-    ):
+    async def help(self, interaction: discord.Interaction, object: Optional[str] = None):
+
         await self._command_callback(interaction, _command=object)
         # Maybe add autocomplete for commands in the future
 

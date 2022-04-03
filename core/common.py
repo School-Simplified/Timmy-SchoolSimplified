@@ -1414,8 +1414,8 @@ class ButtonHandler(ui.Button):
                 role in interaction.user.roles for role in self.roles
         ):
             if self.custom_id_ is None:
-                self.view.value = None
-                self.view_response = None
+                self.view.value = self.label_
+                self.view_response = self.label_
             else:
                 self.view.value = self.custom_id_
                 self.view_response = self.custom_id_
@@ -1883,3 +1883,4 @@ async def get_active_or_archived_thread(guild: discord.Guild, thread_id: int) ->
         thread = active_thread
 
     return thread
+
