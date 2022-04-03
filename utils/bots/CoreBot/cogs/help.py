@@ -10,7 +10,7 @@ from discord import app_commands
 import discord
 from discord.app_commands import command, describe, guilds
 from discord.ext import commands, menus
-from core.common import Others, get_guild_ids
+from core.common import Others
 
 
 class RoboPages(discord.ui.View):
