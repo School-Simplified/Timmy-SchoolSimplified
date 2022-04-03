@@ -1,7 +1,7 @@
 import discord
 from discord import ui
 from discord.ext import commands, tasks
-from core.common import TECH_ID, Emoji
+from core.common import TECH_ID, Emoji, get_active_or_archived_thread
 from core.checks import is_botAdmin
 from core import database
 
@@ -180,8 +180,12 @@ class TechProjectCMD(commands.Cog):
                 query = query.select().where(database.TechCommissionArchiveLog.id == entry)
                 query = query.get()
 
-                thread: discord.Thread = guild.get_thread(query.ThreadID)
-                await thread.edit(archived=False)
+                thread = await get_active_or_archived_thread(guild, query.ThreadID)
+
+                if thread is not None:
+                    await thread.edit(archived=False)
+                else:
+                    raise ValueError(f"Thread with id {query.ThreadID} not found.")
 
     @autoUnarchiveThread.before_loop
     async def before_loop_(self):

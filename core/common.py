@@ -11,7 +11,7 @@ import subprocess
 import sys
 import typing
 from pathlib import Path
-from typing import Any, Awaitable, Callable, List, Tuple, Union
+from typing import Any, Awaitable, Callable, List, Tuple, Union, Optional
 from threading import Thread
 
 import boto3
@@ -1861,3 +1861,24 @@ def searchCustomEmoji(string: str):
         customEmoji = None
 
     return customEmoji
+
+
+async def get_active_or_archived_thread(guild: discord.Guild, thread_id: int) -> Optional[discord.Thread]:
+
+    active_thread = guild.get_thread(thread_id)
+
+    if active_thread is None:
+
+        thread = None
+        for text_channel in guild.text_channels:
+            if thread is None:
+                async for archived_thread in text_channel.archived_threads():
+                    if archived_thread.id == thread_id:
+                        thread = archived_thread
+                        break
+            else:
+                break
+    else:
+        thread = active_thread
+
+    return thread
