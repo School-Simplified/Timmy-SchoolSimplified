@@ -569,9 +569,9 @@ class VCDeletionQueue(BaseModel):
     DTF = DateTimeField()
 
 
-class TechCommissionArchiveLog(BaseModel):
+class TechCommissions(BaseModel):
     """
-    #TechCommissionArchiveLog
+    #TechCommissions
 
     `id`: AutoField()
     Database Entry
