@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1936,13 +1936,13 @@
                 ]
               },
               {
-                "id": "PyMethodParametersInspection",
+                "id": "PyChainedComparisonsInspection",
                 "shortDescription": {
-                  "text": "Improper first parameter"
+                  "text": "Too complex chained comparisons"
                 },
                 "fullDescription": {
-                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
-                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
+                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
+                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1970,13 +1970,13 @@
                 ]
               },
               {
-                "id": "PyChainedComparisonsInspection",
+                "id": "PyMethodParametersInspection",
                 "shortDescription": {
-                  "text": "Too complex chained comparisons"
+                  "text": "Improper first parameter"
                 },
                 "fullDescription": {
-                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
-                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
+                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
+                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -2888,40 +2888,6 @@
                 ]
               },
               {
-                "id": "PyRedundantParenthesesInspection",
-                "shortDescription": {
-                  "text": "Redundant parentheses"
-                },
-                "fullDescription": {
-                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
-                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "PyTrailingSemicolonInspection",
                 "shortDescription": {
                   "text": "Prohibited trailing semicolon in a statement"
@@ -2956,19 +2922,19 @@
                 ]
               },
               {
-                "id": "PyOldStyleClassesInspection",
+                "id": "PyRedundantParenthesesInspection",
                 "shortDescription": {
-                  "text": "Old-style class contains new-style class features"
+                  "text": "Redundant parentheses"
                 },
                 "fullDescription": {
-                  "text": "Reports occurrences of new-style class features in old-style classes. The inspection highlights '__slots__', '__getattribute__', and 'super()' inside old-style classes.",
-                  "markdown": "Reports occurrences of\n[new-style class features](https://www.python.org/doc/newstyle/)\nin old-style classes. The inspection highlights\n`__slots__`, `__getattribute__`, and `super()`\ninside old-style classes."
+                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
+                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3003,6 +2969,40 @@
                   "level": "note",
                   "parameters": {
                     "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyOldStyleClassesInspection",
+                "shortDescription": {
+                  "text": "Old-style class contains new-style class features"
+                },
+                "fullDescription": {
+                  "text": "Reports occurrences of new-style class features in old-style classes. The inspection highlights '__slots__', '__getattribute__', and 'super()' inside old-style classes.",
+                  "markdown": "Reports occurrences of\n[new-style class features](https://www.python.org/doc/newstyle/)\nin old-style classes. The inspection highlights\n`__slots__`, `__getattribute__`, and `super()`\ninside old-style classes."
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3636,19 +3636,19 @@
                 ]
               },
               {
-                "id": "PyProtectedMemberInspection",
+                "id": "PyStubPackagesCompatibilityInspection",
                 "shortDescription": {
-                  "text": "Accessing a protected member of a class or a module"
+                  "text": "Incompatible stub packages"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
-                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
+                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
+                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3670,19 +3670,19 @@
                 ]
               },
               {
-                "id": "PyStubPackagesCompatibilityInspection",
+                "id": "PyProtectedMemberInspection",
                 "shortDescription": {
-                  "text": "Incompatible stub packages"
+                  "text": "Accessing a protected member of a class or a module"
                 },
                 "fullDescription": {
-                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
-                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
+                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
+                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -4464,40 +4464,6 @@
                 ]
               },
               {
-                "id": "XmlDuplicatedId",
-                "shortDescription": {
-                  "text": "Duplicate 'id' attribute"
-                },
-                "fullDescription": {
-                  "text": "Reports a duplicate 'id' attribute in XML.",
-                  "markdown": "Reports a duplicate `id` attribute in XML."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "ideaSeverity": "ERROR",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "XML",
-                      "index": 3,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "JsonSchemaDeprecation",
                 "shortDescription": {
                   "text": "Deprecated JSON property"
@@ -4521,6 +4487,40 @@
                     "target": {
                       "id": "JSON and JSON5",
                       "index": 4,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "XmlDuplicatedId",
+                "shortDescription": {
+                  "text": "Duplicate 'id' attribute"
+                },
+                "fullDescription": {
+                  "text": "Reports a duplicate 'id' attribute in XML.",
+                  "markdown": "Reports a duplicate `id` attribute in XML."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "error",
+                  "parameters": {
+                    "ideaSeverity": "ERROR",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "XML",
+                      "index": 3,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -4702,40 +4702,6 @@
                 ]
               },
               {
-                "id": "RequiredAttributes",
-                "shortDescription": {
-                  "text": "Missing required attribute"
-                },
-                "fullDescription": {
-                  "text": "Reports a missing mandatory attribute in an XML/HTML tag. Suggests configuring attributes that should not be reported.",
-                  "markdown": "Reports a missing mandatory attribute in an XML/HTML tag. Suggests configuring attributes that should not be reported."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "DuplicatedCode",
                 "shortDescription": {
                   "text": "Duplicated code fragment"
@@ -4759,6 +4725,40 @@
                     "target": {
                       "id": "General",
                       "index": 9,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "RequiredAttributes",
+                "shortDescription": {
+                  "text": "Missing required attribute"
+                },
+                "fullDescription": {
+                  "text": "Reports a missing mandatory attribute in an XML/HTML tag. Suggests configuring attributes that should not be reported.",
+                  "markdown": "Reports a missing mandatory attribute in an XML/HTML tag. Suggests configuring attributes that should not be reported."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5586,40 +5586,6 @@
                 ]
               },
               {
-                "id": "RegExpRedundantNestedCharacterClass",
-                "shortDescription": {
-                  "text": "Redundant nested character class"
-                },
-                "fullDescription": {
-                  "text": "Reports unnecessary nested character classes. Example: '[a-c[x-z]]' After the quick-fix is applied: '[a-cx-z]' New in 2020.2",
-                  "markdown": "Reports unnecessary nested character classes.\n\n**Example:**\n\n\n      [a-c[x-z]]\n\nAfter the quick-fix is applied:\n\n\n      [a-cx-z]\n\nNew in 2020.2"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RegExp",
-                      "index": 5,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "XmlDeprecatedElement",
                 "shortDescription": {
                   "text": "Deprecated symbol"
@@ -5643,6 +5609,40 @@
                     "target": {
                       "id": "XML",
                       "index": 3,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "RegExpRedundantNestedCharacterClass",
+                "shortDescription": {
+                  "text": "Redundant nested character class"
+                },
+                "fullDescription": {
+                  "text": "Reports unnecessary nested character classes. Example: '[a-c[x-z]]' After the quick-fix is applied: '[a-cx-z]' New in 2020.2",
+                  "markdown": "Reports unnecessary nested character classes.\n\n**Example:**\n\n\n      [a-c[x-z]]\n\nAfter the quick-fix is applied:\n\n\n      [a-cx-z]\n\nNew in 2020.2"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RegExp",
+                      "index": 5,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6130,40 +6130,6 @@
                 ]
               },
               {
-                "id": "RegExpEscapedMetaCharacter",
-                "shortDescription": {
-                  "text": "Escaped meta character"
-                },
-                "fullDescription": {
-                  "text": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character '[', ']' and '^', because those would need additional escaping inside a character class. Example: '\\d+\\.\\d+' After the quick-fix is applied: '\\d+[.]\\d+' New in 2017.1",
-                  "markdown": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character `[`, `]` and `^`, because those would need additional escaping inside a character class.\n\n**Example:**\n\n\n      \\d+\\.\\d+\n\nAfter the quick-fix is applied:\n\n\n      \\d+[.]\\d+\n\nNew in 2017.1"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "INFORMATION",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RegExp",
-                      "index": 5,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "LossyEncoding",
                 "shortDescription": {
                   "text": "Lossy encoding"
@@ -6187,6 +6153,40 @@
                     "target": {
                       "id": "Internationalization",
                       "index": 14,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "RegExpEscapedMetaCharacter",
+                "shortDescription": {
+                  "text": "Escaped meta character"
+                },
+                "fullDescription": {
+                  "text": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character '[', ']' and '^', because those would need additional escaping inside a character class. Example: '\\d+\\.\\d+' After the quick-fix is applied: '\\d+[.]\\d+' New in 2017.1",
+                  "markdown": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character `[`, `]` and `^`, because those would need additional escaping inside a character class.\n\n**Example:**\n\n\n      \\d+\\.\\d+\n\nAfter the quick-fix is applied:\n\n\n      \\d+[.]\\d+\n\nNew in 2017.1"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "INFORMATION",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RegExp",
+                      "index": 5,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "ab3f0764027911a4dded2bc4112356034b67e28d",
+          "revisionId": "7270dcc775290372c9eb877a3cd644edfc817b3a",
           "branch": "beta",
           "properties": {
             "lastAuthorName": "Puncher",
@@ -8941,9 +8941,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 98,
+                  "startLine": 83,
                   "startColumn": 15,
-                  "charOffset": 2624,
+                  "charOffset": 2392,
                   "charLength": 13,
                   "snippet": {
                     "text": "before_invoke"
@@ -8951,9 +8951,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 96,
+                  "startLine": 81,
                   "startColumn": 1,
-                  "charOffset": 2552,
+                  "charOffset": 2320,
                   "charLength": 157,
                   "snippet": {
                     "text": "        return await on_command_error_(self, ctx, error)\n\n    async def before_invoke(self, ctx: commands.Context):\n        return await before_invoke_(ctx)\n"
@@ -8969,7 +8969,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8a60c68dc7237965c3593e8a1cc1adb90a5acba54f9ee629620d2e567f0da4c1"
+            "equalIndicator/v1": "473b42b3964ede4ae781665a9bc98c50522d63e7ff84728dc89bc8e5d776dbe5"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -8994,9 +8994,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 101,
+                  "startLine": 86,
                   "startColumn": 15,
-                  "charOffset": 2724,
+                  "charOffset": 2492,
                   "charLength": 5,
                   "snippet": {
                     "text": "check"
@@ -9004,9 +9004,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 99,
+                  "startLine": 84,
                   "startColumn": 1,
-                  "charOffset": 2668,
+                  "charOffset": 2436,
                   "charLength": 135,
                   "snippet": {
                     "text": "        return await before_invoke_(ctx)\n\n    async def check(self, ctx: commands.Context):\n        return await main_mode_check_(ctx)\n"
@@ -9022,7 +9022,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "2191f00ab55b87d121c5c3001fbb78832e919704f1933033daaeffc7cee30477"
+            "equalIndicator/v1": "4b6ee6826f53bb592cec30cdb3556f5115187f59ad83f706fe8c11aa3aac7c82"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -9047,9 +9047,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 104,
+                  "startLine": 89,
                   "startColumn": 15,
-                  "charOffset": 2818,
+                  "charOffset": 2586,
                   "charLength": 10,
                   "snippet": {
                     "text": "setup_hook"
@@ -9057,9 +9057,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 102,
+                  "startLine": 87,
                   "startColumn": 1,
-                  "charOffset": 2760,
+                  "charOffset": 2528,
                   "charLength": 167,
                   "snippet": {
                     "text": "        return await main_mode_check_(ctx)\n\n    async def setup_hook(self) -> None:\n        # for guild in self.guilds:\n        #     await self.tree.sync(guild=guild)"
@@ -9075,7 +9075,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "e71455e6cd7867b5619f822a71a3f7bacc35afeb0e0ee4bafd02b55142cbc857"
+            "equalIndicator/v1": "d01a39988b1483929f84f8ff2b6c8b9f9023caff23a9f57fc69d8600cc224c51"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10691,8 +10691,8 @@
                 },
                 "region": {
                   "startLine": 369,
-                  "startColumn": 32,
-                  "charOffset": 13681,
+                  "startColumn": 33,
+                  "charOffset": 13684,
                   "charLength": 62,
                   "snippet": {
                     "text": "command: Union[app_commands.Command, app_commands.ContextMenu]"
@@ -10703,9 +10703,9 @@
                   "startLine": 367,
                   "startColumn": 1,
                   "charOffset": 13535,
-                  "charLength": 310,
+                  "charLength": 315,
                   "snippet": {
-                    "text": "async def on_app_command_error_(bot:commands.Bot,\n                               interaction: discord.Interaction,\n                               command: Union[app_commands.Command, app_commands.ContextMenu],\n                               error: app_commands.AppCommandError\n                               ):"
+                    "text": "async def on_app_command_error_(bot: commands.Bot,\n                                interaction: discord.Interaction,\n                                command: Union[app_commands.Command, app_commands.ContextMenu],\n                                error: app_commands.AppCommandError\n                                ):"
                   }
                 }
               },
@@ -10718,7 +10718,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "318a5d884dda0d909208b59e63369cba055711953df1639284f613a54e423747"
+            "equalIndicator/v1": "5e99c5f14d3e439da5e8a1abcf3393768224bb0d84214be3c3b74a4c2335806e"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -14703,6 +14703,59 @@
           }
         },
         {
+          "ruleId": "PyShadowingNamesInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Shadows name 'bot' from outer scope",
+            "markdown": "Shadows name 'bot' from outer scope"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "main.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 47,
+                  "startColumn": 24,
+                  "charOffset": 1227,
+                  "charLength": 3,
+                  "snippet": {
+                    "text": "bot"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 45,
+                  "startColumn": 1,
+                  "charOffset": 1153,
+                  "charLength": 146,
+                  "snippet": {
+                    "text": "\nclass TimmyCommandTree(app_commands.CommandTree):\n    def __init__(self, bot: commands.Bot):\n        super().__init__(bot)\n        self.bot = bot"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "281a621c708b5fd9f6a655880a9f7f667ebb3efabf0fb78adbe82407bcd17b06"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
           "ruleId": "PyClassHasNoInitInspection",
           "kind": "fail",
           "level": "note",
@@ -15674,7 +15727,7 @@
                 "region": {
                   "startLine": 473,
                   "startColumn": 7,
-                  "charOffset": 17820,
+                  "charOffset": 17825,
                   "charLength": 2,
                   "snippet": {
                     "text": "Me"
@@ -15684,7 +15737,7 @@
                 "contextRegion": {
                   "startLine": 471,
                   "startColumn": 1,
-                  "charOffset": 17812,
+                  "charOffset": 17817,
                   "charLength": 56,
                   "snippet": {
                     "text": "\n\nclass Me:\n    publicCH = [\n        MAIN_ID.cat_casual,"
@@ -15700,7 +15753,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "b4dca715c0397b8bfeee7ac7f1a2baa3b18a531f8843bc24a1f62af065a8a2eb"
+            "equalIndicator/v1": "077df444448ea704e07582020ae22bf00a94452a8e815e0eb58d864ebefc4908"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19543,7 +19596,7 @@
                 "region": {
                   "startLine": 401,
                   "startColumn": 13,
-                  "charOffset": 14835,
+                  "charOffset": 14840,
                   "charLength": 10,
                   "snippet": {
                     "text": "GITHUB_API"
@@ -19553,7 +19606,7 @@
                 "contextRegion": {
                   "startLine": 399,
                   "startColumn": 1,
-                  "charOffset": 14769,
+                  "charOffset": 14774,
                   "charLength": 185,
                   "snippet": {
                     "text": "            data = \"\\n\".join([l.strip() for l in f])\n\n            GITHUB_API = \"https://api.github.com\"\n            API_TOKEN = os.getenv(\"GIST\")\n            url = GITHUB_API + \"/gists\""
@@ -19569,7 +19622,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "2498c99ad6963e5c0ef5f7fdd285e1ead9d478d486548f100ab49ef49df37bc5"
+            "equalIndicator/v1": "e7855897c086640b8ba732e94a1725c4bbc5d0e780027a7770ec10647a543021"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19596,7 +19649,7 @@
                 "region": {
                   "startLine": 402,
                   "startColumn": 13,
-                  "charOffset": 14885,
+                  "charOffset": 14890,
                   "charLength": 9,
                   "snippet": {
                     "text": "API_TOKEN"
@@ -19606,7 +19659,7 @@
                 "contextRegion": {
                   "startLine": 400,
                   "startColumn": 1,
-                  "charOffset": 14822,
+                  "charOffset": 14827,
                   "charLength": 196,
                   "snippet": {
                     "text": "\n            GITHUB_API = \"https://api.github.com\"\n            API_TOKEN = os.getenv(\"GIST\")\n            url = GITHUB_API + \"/gists\"\n            headers = {\"Authorization\": \"token %s\" % API_TOKEN}"
@@ -19622,7 +19675,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "79c1c5a20c48caedd87de2cbac88dfb1863324776f023dd7604c269e72c4cb63"
+            "equalIndicator/v1": "969d90f02eb0ad5922d7abe48db8fb617d81b1d22a9a80c90597cc7548b8dc7d"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19649,7 +19702,7 @@
                 "region": {
                   "startLine": 415,
                   "startColumn": 13,
-                  "charOffset": 15427,
+                  "charOffset": 15432,
                   "charLength": 2,
                   "snippet": {
                     "text": "ID"
@@ -19659,7 +19712,7 @@
                 "contextRegion": {
                   "startLine": 413,
                   "startColumn": 1,
-                  "charOffset": 15364,
+                  "charOffset": 15369,
                   "charLength": 130,
                   "snippet": {
                     "text": "            )\n            j = json.loads(res.text)\n            ID = j[\"id\"]\n            gisturl = f\"https://gist.github.com/{ID}\"\n"
@@ -19675,7 +19728,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "27031ca42fb24d91edc15a86ed882834182750b47e4e992577b4c007c2c449b9"
+            "equalIndicator/v1": "b00542cc9caca0c36325f20f6a03a7be25e56821f646dcc2d1de6db5029fe1a8"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19702,7 +19755,7 @@
                 "region": {
                   "startLine": 496,
                   "startColumn": 5,
-                  "charOffset": 18529,
+                  "charOffset": 18534,
                   "charLength": 8,
                   "snippet": {
                     "text": "adminIDs"
@@ -19712,7 +19765,7 @@
                 "contextRegion": {
                   "startLine": 494,
                   "startColumn": 1,
-                  "charOffset": 18478,
+                  "charOffset": 18483,
                   "charLength": 163,
                   "snippet": {
                     "text": "        blacklisted_users.append(p.discordID)\n\n    adminIDs = []\n    query = database.Administrators.select().where(\n        database.Administrators.TierLevel == 4"
@@ -19728,7 +19781,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "fa97db5e93759fef6e1325bf2268afe3333f975bd7c0e2e8022f40109a4a657b"
+            "equalIndicator/v1": "fe3d6e93bfe66a4ce9551784e15116746f02b500278efcb535ce7d6ff27efa13"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19755,7 +19808,7 @@
                 "region": {
                   "startLine": 545,
                   "startColumn": 5,
-                  "charOffset": 19852,
+                  "charOffset": 19857,
                   "charLength": 12,
                   "snippet": {
                     "text": "initializeDB"
@@ -19765,7 +19818,7 @@
                 "contextRegion": {
                   "startLine": 543,
                   "startColumn": 1,
-                  "charOffset": 19807,
+                  "charOffset": 19812,
                   "charLength": 156,
                   "snippet": {
                     "text": "        return CheckDB_CC.elseSituation\n\ndef initializeDB(bot):\n    \"\"\"\n    Initializes the database, and creates the needed table data if they don't exist."
@@ -19781,7 +19834,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "2e53e3cccc7dafc3b29712a7d9bf33abac78e7f0b900d4d1478c8d2946952174"
+            "equalIndicator/v1": "76aaad56cc4854e2e21e715f31f5cc57ae9a40b82df7c7f2b0f08e7d6f196d42"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19808,7 +19861,7 @@
                 "region": {
                   "startLine": 550,
                   "startColumn": 5,
-                  "charOffset": 20020,
+                  "charOffset": 20025,
                   "charLength": 3,
                   "snippet": {
                     "text": "UpQ"
@@ -19818,7 +19871,7 @@
                 "contextRegion": {
                   "startLine": 548,
                   "startColumn": 1,
-                  "charOffset": 19964,
+                  "charOffset": 19969,
                   "charLength": 285,
                   "snippet": {
                     "text": "    \"\"\"\n    database.db.connect(reuse_if_open=True)\n    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)"
@@ -19834,7 +19887,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "b414a8ffe34c25722b0e9398f1eb37b0d6cc41bc512a3dbdc5b8b599fff4e235"
+            "equalIndicator/v1": "698869274c39050f957289c1fac9f3b806b5451e3e1c07edfc6eec3cafbcd977"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19861,7 +19914,7 @@
                 "region": {
                   "startLine": 551,
                   "startColumn": 5,
-                  "charOffset": 20086,
+                  "charOffset": 20091,
                   "charLength": 3,
                   "snippet": {
                     "text": "CIQ"
@@ -19871,7 +19924,7 @@
                 "contextRegion": {
                   "startLine": 549,
                   "startColumn": 1,
-                  "charOffset": 19972,
+                  "charOffset": 19977,
                   "charLength": 356,
                   "snippet": {
                     "text": "    database.db.connect(reuse_if_open=True)\n    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)"
@@ -19887,7 +19940,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "a63a008c4756954eebfed8375dc871a9e9e1c62b88b07a68e5efe5d91cf47f5a"
+            "equalIndicator/v1": "62588fc63166d6bb0d97d84299b572b328dab1e6782057b2633d97254bc2439d"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19914,7 +19967,7 @@
                 "region": {
                   "startLine": 552,
                   "startColumn": 5,
-                  "charOffset": 20172,
+                  "charOffset": 20177,
                   "charLength": 3,
                   "snippet": {
                     "text": "BTE"
@@ -19924,7 +19977,7 @@
                 "contextRegion": {
                   "startLine": 550,
                   "startColumn": 1,
-                  "charOffset": 20016,
+                  "charOffset": 20021,
                   "charLength": 313,
                   "snippet": {
                     "text": "    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)\n"
@@ -19940,7 +19993,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "6290d23603b7c0982f09b004ba4c38dc52dc28906b9781c84a5262e85dd52051"
+            "equalIndicator/v1": "2aa22db9ccba901848fa7fac85afb08232e28ad66e09392675ccf3acf642c296"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19967,7 +20020,7 @@
                 "region": {
                   "startLine": 553,
                   "startColumn": 5,
-                  "charOffset": 20254,
+                  "charOffset": 20259,
                   "charLength": 2,
                   "snippet": {
                     "text": "SM"
@@ -19977,7 +20030,7 @@
                 "contextRegion": {
                   "startLine": 551,
                   "startColumn": 1,
-                  "charOffset": 20082,
+                  "charOffset": 20087,
                   "charLength": 272,
                   "snippet": {
                     "text": "    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)\n\n    if not UpQ.exists():"
@@ -19993,7 +20046,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "d6ad47a7a03d50c76b424480d317c44db8d77e40f1842e58cf78c20d664ed179"
+            "equalIndicator/v1": "50e9f62da589725e50f029f252aa54dd27e7cd5f1b55108781ec15cbdc7d3f4c"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -45672,7 +45725,7 @@
                 "region": {
                   "startLine": 493,
                   "startColumn": 14,
-                  "charOffset": 18464,
+                  "charOffset": 18469,
                   "charLength": 12,
                   "snippet": {
                     "text": "db_blacklist"
@@ -45682,7 +45735,7 @@
                 "contextRegion": {
                   "startLine": 491,
                   "startColumn": 1,
-                  "charOffset": 18364,
+                  "charOffset": 18369,
                   "charLength": 160,
                   "snippet": {
                     "text": "    blacklisted_users = []\n    db_blacklist: collections.Iterable = database.Blacklist\n    for p in db_blacklist:\n        blacklisted_users.append(p.discordID)\n"
@@ -45698,7 +45751,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "c0e9a7f3c413f29ccfad2ec9dcd5d6a35be68103b694e77d8615578a84b5a933"
+            "equalIndicator/v1": "54d3a2ae92c7ad6e4a7774337cf871b0be108a10a0efd176204085ab5e302bb2"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -46399,7 +46452,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-04-03",
-        "guid": "74678e05-3b7a-4b9a-b43d-0dadb3762733"
+        "guid": "d0a2e2b5-a73c-44c4-ba48-4fdd232f75ab"
       },
       "newlineSequences": [
         "\r\n",
@@ -46676,7 +46729,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 21747,
+                    "charLength": 21752,
                     "snippet": {
                       "text": "import collections import json import os import subprocess import time import traceback from datetim..."
                     },
@@ -46701,7 +46754,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "c331df4425c8b96f1f179db368f5afc277ff6c7607fe20f92516056b5ca0f952"
+              "equalIndicator/v1": "df7bf7c0bd5a647d1eb8220b1062aa433b7c01beda4653eff61e69960a3c4347"
             },
             "properties": {
               "ideaSeverity": "ERROR"
