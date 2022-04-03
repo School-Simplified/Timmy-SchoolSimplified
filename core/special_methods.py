@@ -235,7 +235,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
         await ctx.send(embed=em)
         return
 
-    elif isinstance(error, commands.BadArgument):
+    elif isinstance(error, (commands.BadArgument, commands.BadLiteralArgument)):
         signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
         if ctx.command.name == "schedule":
             em = discord.Embed(
@@ -255,7 +255,8 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
         else:
             em = discord.Embed(
                 title="Bad Argument!",
-                description=f"Unable to parse arguments, check what arguments you provided.\n\nUsage:\n`{signature}`",
+                description=f"Unable to parse arguments, check what arguments you provided."
+                            f"\n\nUsage:\n`{signature}`",
                 color=Colors.red,
             )
             em.set_thumbnail(url=Others.error_png)
