@@ -255,10 +255,10 @@ class Administrators(BaseModel):
     `TierLevel`: IntegerField()
     TIER LEVEL
 
-    >>> 1 - Bot Manager\n
-    >>> 2 - Admin\n
-    >>> 3 - Sudo Admin\n
-    >>> 4 - Owner
+    1 - Bot Manager\n
+    2 - Admin\n
+    3 - Sudo Admin\n
+    4 - Owner
     """
 
     id = AutoField()

@@ -247,20 +247,26 @@ class CoreBotConfig(commands.Cog):
 
     @commands.command(name="gitpull")
     @is_botAdmin2
-    async def _gitpull(self, ctx, mode="-a"):
+    async def _gitpull(self, ctx, mode="-a", branch=None):
         output = ""
-
         hostDir = getHostDir()
-        if hostDir == "/home/timmya":
-            branch = "origin/main"
-            directory = "TimmyMain-SS"
 
-        elif hostDir == "/home/timmy-beta":
-            branch = "origin/beta"
-            directory = "TimmyBeta-SS"
+        if branch is not None:
+            if hostDir == "/home/timmya":
+                branch = "origin/main"
+                directory = "TimmyMain-SS"
 
+            elif hostDir == "/home/timmy-beta":
+                branch = "origin/beta"
+                directory = "TimmyBeta-SS"
+
+            else:
+                raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
         else:
-            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
+            if hostDir == "/home/timmya":
+                raise ValueError("Branch can not be changed when running production.")
+            branch = branch
+            directory = "TimmyBeta-SS"
 
         try:
             p = subprocess.run(

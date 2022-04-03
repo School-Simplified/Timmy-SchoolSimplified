@@ -11,7 +11,6 @@ class TutorBotLoop(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.est = pytz.timezone("US/Eastern")
-        self.tutorsession.start()
         self.tutorsession_graceperiod.start()
 
     async def cog_unload(self):
@@ -140,11 +139,11 @@ class TutorBotLoop(commands.Cog):
                     entry.delete_instance()
 
     @tutorsession.before_loop
-    async def before_printer(self):
+    async def before_loop_(self):
         await self.bot.wait_until_ready()
 
     @tutorsession_graceperiod.before_loop
-    async def before_printer(self):
+    async def before_loop_(self):
         await self.bot.wait_until_ready()
 
 

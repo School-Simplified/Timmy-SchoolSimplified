@@ -197,7 +197,7 @@ class SuggestModal(discord.ui.Modal):
             },
             {
                 "question": "What rating does this book have?",
-                "placeholder": None,
+                "placeholder": "Example: YA (Young Adult)",
                 "required": True
             },
             {
@@ -224,7 +224,7 @@ class SuggestModal(discord.ui.Modal):
             },
             {
                 "question": "What rating does this movie have?",
-                "placeholder": "Examples: TV-G or TV-PG",
+                "placeholder": "Examples: G or PG",
                 "required": True
             },
             {
@@ -364,10 +364,11 @@ class SuggestModal(discord.ui.Modal):
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
 
-        for item, question in zip(
-                [item for item in self.children if isinstance(item, discord.TextInput)],
-                self.type_to_questions_list[self.type]
-        ):
+        questions = self.type_to_questions_list[self.type]
+
+        print(f"Items: {self.children} \n\n Questions: {questions}")
+
+        for item, question in zip(self.children, questions):
             """
             item: discord.TextInput 
                 if isinstance(item, discord.TextInput) 
@@ -377,9 +378,11 @@ class SuggestModal(discord.ui.Modal):
                 exe: question = {"question": "How is your day?", "placeholder": None ,"required": True}
 
             """
+            print(f"Question: {question['question']} \n\n Answer: {str(item)}")
             embed.add_field(
                 name=question["question"],
-                value=item.value if item.value else "None"
+                value=str(item) if str(item) != "" else "None",
+                inline=False
             )
 
         channel: discord.abc.MessageableChannel = self.bot.get_channel(SET_ID.ch_suggestions)

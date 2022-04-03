@@ -127,13 +127,13 @@ class RoboPages(discord.ui.View):
         if self.message:
             await self.message.edit(view=None)
 
-    async def on_error(self, error: Exception, item: discord.ui.Item, interaction: discord.Interaction) -> None:
-        if interaction.response.is_done():
-            await interaction.followup.send(f'An unknown error occurred, sorry {error}', ephemeral=True)
-            print(error)
-        else:
-            await interaction.response.send_message(f'An unknown error occurred, sorry {error}', ephemeral=True)
-            print(error)
+    #     async def on_error(self, error: Exception, item: discord.ui.Item, interaction: discord.Interaction) -> None:
+    #         if interaction.response.is_done():
+    #             await interaction.followup.send(f'An unknown error occurred, sorry {error}', ephemeral=True)
+    #             print(error)
+    #         else:
+    #             await interaction.response.send_message(f'An unknown error occurred, sorry {error}', ephemeral=True)
+    #             print(error)
 
     async def start(self) -> None:
         if self.check_embeds and not self.interaction.channel.permissions_for(self.interaction.guild.me).embed_links:
@@ -246,7 +246,7 @@ class GroupHelpPageSource(menus.ListPageSource):
     async def format_page(
             self,
             menu,
-            _commands: List[Union[commands.Command, app_commands.Command]]
+            _commands: List[Union[commands.Command, app_commands.Command, app_commands.Group]]
     ) -> discord.Embed:
 
         embed = discord.Embed(title=self.title, description=self.description, colour=discord.Colour.fuchsia())
@@ -256,8 +256,17 @@ class GroupHelpPageSource(menus.ListPageSource):
                 embed.add_field(name=signature, value=_command.short_doc or 'No help given...', inline=False)
             elif isinstance(_command, app_commands.Command):
                 params = self.slash_param_signature(_command)
-                signature = f'{_command.root_parent} {_command.name} {params[:256]}'
-                embed.add_field(name=signature, value=_command.description or 'No help given...', inline=False)
+                signature = (f'{_command.root_parent} {_command.name} {params}' if _command.root_parent
+                             else f'{_command.name} {params}')
+                embed.add_field(
+                    name=signature[:256], value=_command.description[:1024] or 'No help given...', inline=False
+                )
+            elif isinstance(_command, app_commands.Group):
+                subcommands = self.slash_param_signature(_command)
+                signature = f'{_command.name} {subcommands}'
+                embed.add_field(
+                    name=signature[:256], value=_command.description[:1024] or 'No help given...', inline=False
+                )
 
         maximum = self.get_max_pages()
         if maximum > 1:
@@ -274,6 +283,7 @@ class GroupHelpPageSource(menus.ListPageSource):
 
         if isinstance(_command, app_commands.Command):
             param_list: List[str] = []
+
             for name, param in params:
                 if param["choices"]:
                     name = '|'.join(f'"{v}"' if isinstance(v, str) else str(v) for v in param["choices"])
@@ -288,6 +298,7 @@ class GroupHelpPageSource(menus.ListPageSource):
             param_list = []
             for name, param in params:
                 param_list.append(f"<{name}>")
+                
             return " ".join(param_list)
 
 
@@ -454,7 +465,7 @@ class Help(commands.Cog):
         """
 
         if sort and key is None:
-            key = lambda c: c.qualified_name
+            key = lambda c: c.qualified_name if isinstance(c, commands.Command) else c.name
         #
         iterator = _commands
         # iterator = commands if show_hidden else filter(lambda c: not c.hidden, commands)
@@ -502,7 +513,7 @@ class Help(commands.Cog):
 
         def key(_command: Union[app_commands.Command, commands.Command]) -> str:
             if isinstance(_command, app_commands.Command):
-                _cog: commands.Cog = _command.binding
+                _cog: commands.Cog = _command.binding if isinstance(_command.binding, commands.Cog) else None
             else:
                 _cog: commands.Cog = _command.cog
             return _cog.qualified_name if _cog else '\U0010ffff'
@@ -619,7 +630,7 @@ class Help(commands.Cog):
         # passes an invalid subcommand, we need to walk through
         # the command group chain ourselves.
 
-        slash, *_ = (
+        slash = (
             self.bot.tree.get_command(
                 _command,
                 guild=interaction.guild,
@@ -629,7 +640,7 @@ class Help(commands.Cog):
                 guild=None,
                 type=discord.AppCommandType.chat_input
             )
-        )
+        )[0]
 
         regular_command = self.bot.get_command(_command)
         cog = self.bot.get_cog(_command)

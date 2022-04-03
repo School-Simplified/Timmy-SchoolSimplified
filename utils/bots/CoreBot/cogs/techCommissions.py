@@ -1,7 +1,7 @@
 import discord
 from discord import ui
 from discord.ext import commands, tasks
-from core.common import TECH_ID, Emoji
+from core.common import TECH_ID, Emoji, get_active_or_archived_thread
 from core.checks import is_botAdmin
 from core import database
 
@@ -71,6 +71,8 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
         c_ch: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
         msg: discord.Message = await c_ch.send(interaction.user.mention, embed=embed)
         thread = await msg.create_thread(name=self.titleTI.value)
+        q: database.TechCommissionArchiveLog = database.TechCommissionArchiveLog.create(ThreadID=thread.id)
+        q.save()
 
         await thread.send(
             f"{interaction.user.mention} has requested a bot development project.\n<@&{TECH_ID.r_botDeveloper}>"
@@ -100,12 +102,14 @@ class TechProjectCMD(commands.Cog):
     """
     def __init__(self, bot):
         self.bot: commands.Bot = bot
-        self.autoUnarchiveThread.start()
         self.__cog_name__ = "Bot Commissions"
+        self.autoUnarchiveThread.start()
+
 
     @property
     def display_emoji(self) -> str:
         return Emoji.pythonLogo
+
 
     async def cog_unload(self):
         self.autoUnarchiveThread.cancel()
@@ -168,19 +172,24 @@ class TechProjectCMD(commands.Cog):
         """
 
         guild = self.bot.get_guild(TECH_ID.g_tech)
-        channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
+        query = database.TechCommissionArchiveLog.select()
+        entries = [entry.id for entry in query]
 
-        thread = ...  # type: discord.Thread
+        if entries:
+            for entry in entries:
+                query = query.select().where(database.TechCommissionArchiveLog.id == entry)
+                query = query.get()
 
-        for thread in guild.threads:
-            query = (
-                database.TechCommissionArchiveLog.select().where(
-                    database.TechCommissionArchiveLog.ThreadID == thread.id)
-            )
-            if query.exists():
+                thread = await get_active_or_archived_thread(guild, query.ThreadID)
 
-                if thread.archived:
+                if thread is not None:
                     await thread.edit(archived=False)
+                else:
+                    raise ValueError(f"Thread with id {query.ThreadID} not found.")
+
+    @autoUnarchiveThread.before_loop
+    async def before_loop_(self):
+        await self.bot.wait_until_ready()
 
 
 async def setup(bot: commands.Bot):

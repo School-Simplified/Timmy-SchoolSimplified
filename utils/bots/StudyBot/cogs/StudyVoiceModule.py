@@ -121,9 +121,12 @@ class StudyVCUpdate(commands.Cog):
         self.StudyVCChannels = [954516833694810152]
         self.StudyVCConsole = 954516809577533530
         self.StudyVCGuild = 932066545117585428
+
+
         self.StudyVCChecker.start()
 
-    async def cog_unload(self):
+
+    def cog_unload(self):
         self.StudyVCChecker.stop()
 
     @commands.Cog.listener("on_voice_state_update")
@@ -136,7 +139,6 @@ class StudyVCUpdate(commands.Cog):
         console: discord.TextChannel = self.bot.get_channel(self.StudyVCConsole)
         if member.guild.id != self.StudyVCGuild:
             return
-
         if (
             before.channel is not None
             and (
@@ -146,7 +148,6 @@ class StudyVCUpdate(commands.Cog):
             )
             and not member.bot
         ):
-
             StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
             if StudySessionQ.exists():
                 await addLeaderboardProgress(member)
@@ -159,7 +160,6 @@ class StudyVCUpdate(commands.Cog):
             and after.channel.id in self.StudyVCChannels
             and not member.bot
         ):
-
             query = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
             if not query.exists():
                 goal, renewal = await setNewStudyGoal(self, console, member, False)
@@ -193,7 +193,7 @@ class StudyVCUpdate(commands.Cog):
                     )
 
 
-    @tasks.loop(seconds=10) # TODO: change to 60s due of rate limits
+    @tasks.loop(seconds=60) # TODO: change to 60s due of rate limits
     async def StudyVCChecker(self):
         """Loop through each session and check if a user's study session is about to end"""
         print("loop StudyVCChecker")
@@ -226,6 +226,6 @@ class StudyVCUpdate(commands.Cog):
     async def before_loop_(self):
         await self.bot.wait_until_ready()
 
-
+    
 async def setup(bot):
     await bot.add_cog(StudyVCUpdate(bot))
