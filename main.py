@@ -46,6 +46,9 @@ class TimmyCommandTree(app_commands.CommandTree):
     def __init__(self, client: commands.Bot):
         super().__init__(client)
 
+    def get_all_commands(self):
+        return self._get_all_commands()
+
 #     async def on_error(
 #             self,
 #             interaction: discord.Interaction,

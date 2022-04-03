@@ -390,6 +390,18 @@ class CoreBotConfig(commands.Cog):
             for guild in self.bot.guilds:
                 await self.bot.tree.sync(guild=guild)
 
+    @commands.command()
+    async def sync(self, ctx: commands.Context, guild: int = None):
+        if not guild:
+            await self.bot.tree.sync()
+            return await ctx.send("Synced commands to all guilds")
+        try:
+            _guild = self.bot.get_guild(guild)
+            await self.bot.tree.sync(guild=discord.Object(guild))
+            return await ctx.send(f"Synced commands to {_guild.name}")
+        except commands.GuildNotFound:
+            return await ctx.send("Invalid Guild")
+
     @commands.group()
     async def w(self, ctx):
         pass
