@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -2344,19 +2344,19 @@
                 ]
               },
               {
-                "id": "CythonUsageBeforeDeclarationInspection",
+                "id": "PyArgumentEqualDefaultInspection",
                 "shortDescription": {
-                  "text": "Cython variable is used before its declaration"
+                  "text": "The function argument is equal to the default parameter value"
                 },
                 "fullDescription": {
-                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
-                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
+                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2378,19 +2378,19 @@
                 ]
               },
               {
-                "id": "PyArgumentEqualDefaultInspection",
+                "id": "CythonUsageBeforeDeclarationInspection",
                 "shortDescription": {
-                  "text": "The function argument is equal to the default parameter value"
+                  "text": "Cython variable is used before its declaration"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
-                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
+                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
+                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2888,40 +2888,6 @@
                 ]
               },
               {
-                "id": "PyTrailingSemicolonInspection",
-                "shortDescription": {
-                  "text": "Prohibited trailing semicolon in a statement"
-                },
-                "fullDescription": {
-                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
-                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "PyRedundantParenthesesInspection",
                 "shortDescription": {
                   "text": "Redundant parentheses"
@@ -2956,13 +2922,13 @@
                 ]
               },
               {
-                "id": "PyOldStyleClassesInspection",
+                "id": "PyTrailingSemicolonInspection",
                 "shortDescription": {
-                  "text": "Old-style class contains new-style class features"
+                  "text": "Prohibited trailing semicolon in a statement"
                 },
                 "fullDescription": {
-                  "text": "Reports occurrences of new-style class features in old-style classes. The inspection highlights '__slots__', '__getattribute__', and 'super()' inside old-style classes.",
-                  "markdown": "Reports occurrences of\n[new-style class features](https://www.python.org/doc/newstyle/)\nin old-style classes. The inspection highlights\n`__slots__`, `__getattribute__`, and `super()`\ninside old-style classes."
+                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
+                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -3003,6 +2969,40 @@
                   "level": "note",
                   "parameters": {
                     "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyOldStyleClassesInspection",
+                "shortDescription": {
+                  "text": "Old-style class contains new-style class features"
+                },
+                "fullDescription": {
+                  "text": "Reports occurrences of new-style class features in old-style classes. The inspection highlights '__slots__', '__getattribute__', and 'super()' inside old-style classes.",
+                  "markdown": "Reports occurrences of\n[new-style class features](https://www.python.org/doc/newstyle/)\nin old-style classes. The inspection highlights\n`__slots__`, `__getattribute__`, and `super()`\ninside old-style classes."
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3602,40 +3602,6 @@
                 ]
               },
               {
-                "id": "DjangoCloseTagInspection",
-                "shortDescription": {
-                  "text": "Mismatched opening and closing tags"
-                },
-                "fullDescription": {
-                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
-                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Django",
-                      "index": 7,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "PyStubPackagesCompatibilityInspection",
                 "shortDescription": {
                   "text": "Incompatible stub packages"
@@ -3693,6 +3659,40 @@
                     "target": {
                       "id": "Python",
                       "index": 2,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DjangoCloseTagInspection",
+                "shortDescription": {
+                  "text": "Mismatched opening and closing tags"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
+                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Django",
+                      "index": 7,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5756,40 +5756,6 @@
                 ]
               },
               {
-                "id": "UnusedDefine",
-                "shortDescription": {
-                  "text": "Unused define"
-                },
-                "fullDescription": {
-                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
-                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RELAX NG",
-                      "index": 11,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "HtmlUnknownAnchorTarget",
                 "shortDescription": {
                   "text": "Unresolved fragment in a link"
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "UnusedDefine",
+                "shortDescription": {
+                  "text": "Unused define"
+                },
+                "fullDescription": {
+                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
+                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RELAX NG",
+                      "index": 11,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,12 +6737,12 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "51cfac73551e19eaf7ac314df0003499fd4c5069",
+          "revisionId": "44b864937ea91f008516d1bf625540b9b92b3b92",
           "branch": "beta",
           "properties": {
-            "lastAuthorName": "Puncher",
+            "lastAuthorName": "pandabear189",
             "vcsType": "Git",
-            "lastAuthorEmail": "mcocexpert@hispeed.ch",
+            "lastAuthorEmail": "88685021+pandabear189@users.noreply.github.com",
             "tags": [
               "lastAuthorEmail",
               "lastAuthorName",
@@ -11432,9 +11432,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 540,
+                  "startLine": 539,
                   "startColumn": 13,
-                  "charOffset": 17887,
+                  "charOffset": 17830,
                   "charLength": 6,
                   "snippet": {
                     "text": "result"
@@ -11442,9 +11442,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 538,
+                  "startLine": 537,
                   "startColumn": 1,
-                  "charOffset": 17861,
+                  "charOffset": 17804,
                   "charLength": 122,
                   "snippet": {
                     "text": "        try:\n\n            result = subprocess.run(\n                f\"cd && cd {main_or_beta}\",\n                shell=True,"
@@ -11460,7 +11460,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "356f8a3bb21112e446c5ca172118404bb31ff7c4060827b6c5cc85463d5048fb"
+            "equalIndicator/v1": "b220287ab5cdae3300ea15c0a09448a6472502308ded51b4ad50ecbe2c0d38a4"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26219,9 +26219,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 413,
+                  "startLine": 412,
                   "startColumn": 9,
-                  "charOffset": 13683,
+                  "charOffset": 13626,
                   "charLength": 9,
                   "snippet": {
                     "text": "adminList"
@@ -26229,9 +26229,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 411,
+                  "startLine": 410,
                   "startColumn": 1,
-                  "charOffset": 13627,
+                  "charOffset": 13570,
                   "charLength": 128,
                   "snippet": {
                     "text": "    @is_botAdmin\n    async def list(self, ctx):\n        adminList = []\n\n        query1 = database.Administrators.select().where("
@@ -26247,7 +26247,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "065733c1411e6c1ceabb762559a4779142d3866634ab2b50ef3c6c5ee9516ede"
+            "equalIndicator/v1": "2d7d6d347ce47cbb47d744e5ca3fbca94fcf1300f578aa66898291da75a68795"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26272,9 +26272,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 422,
+                  "startLine": 421,
                   "startColumn": 9,
-                  "charOffset": 13971,
+                  "charOffset": 13914,
                   "charLength": 11,
                   "snippet": {
                     "text": "adminLEVEL1"
@@ -26282,9 +26282,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 420,
+                  "startLine": 419,
                   "startColumn": 1,
-                  "charOffset": 13900,
+                  "charOffset": 13843,
                   "charLength": 129,
                   "snippet": {
                     "text": "            adminList.append(f\"`{user.name}` -> `{user.id}`\")\n\n        adminLEVEL1 = \"\\n\".join(adminList)\n\n        adminList = []"
@@ -26300,7 +26300,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "9b780f080c022447fb1489ffdfcf77111718e97bc2a9a0acf5bdd1336a16da4e"
+            "equalIndicator/v1": "d1b7b6545e31290ca8a33f2e1c8109a3a32c6bad0faeab38a5ab5b569251b751"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26325,9 +26325,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 424,
+                  "startLine": 423,
                   "startColumn": 9,
-                  "charOffset": 14015,
+                  "charOffset": 13958,
                   "charLength": 9,
                   "snippet": {
                     "text": "adminList"
@@ -26335,9 +26335,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 422,
+                  "startLine": 421,
                   "startColumn": 1,
-                  "charOffset": 13963,
+                  "charOffset": 13906,
                   "charLength": 174,
                   "snippet": {
                     "text": "        adminLEVEL1 = \"\\n\".join(adminList)\n\n        adminList = []\n        query2 = database.Administrators.select().where(\n            database.Administrators.TierLevel == 2"
@@ -26353,7 +26353,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "e5fc1ba1adf1660ad9f8b21d9d30e4263b86e8fbf8ab202c6348f0fceaa84ee6"
+            "equalIndicator/v1": "b5f4b3f872bc3d1b3cfe69edae73261169ebc695a4002b6b257e1b9efa9adb53"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26378,9 +26378,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 432,
+                  "startLine": 431,
                   "startColumn": 9,
-                  "charOffset": 14302,
+                  "charOffset": 14245,
                   "charLength": 11,
                   "snippet": {
                     "text": "adminLEVEL2"
@@ -26388,9 +26388,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 430,
+                  "startLine": 429,
                   "startColumn": 1,
-                  "charOffset": 14231,
+                  "charOffset": 14174,
                   "charLength": 129,
                   "snippet": {
                     "text": "            adminList.append(f\"`{user.name}` -> `{user.id}`\")\n\n        adminLEVEL2 = \"\\n\".join(adminList)\n\n        adminList = []"
@@ -26406,7 +26406,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "9f3e05ec17843681d5acabe590f0e66a16a3154465969758f22c6e841dfd037d"
+            "equalIndicator/v1": "903c6df64b5ae80f5c5cd0a1b98ef45f383ab78e8b6c04da990befe68f10b69b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26431,9 +26431,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 434,
+                  "startLine": 433,
                   "startColumn": 9,
-                  "charOffset": 14346,
+                  "charOffset": 14289,
                   "charLength": 9,
                   "snippet": {
                     "text": "adminList"
@@ -26441,9 +26441,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 432,
+                  "startLine": 431,
                   "startColumn": 1,
-                  "charOffset": 14294,
+                  "charOffset": 14237,
                   "charLength": 174,
                   "snippet": {
                     "text": "        adminLEVEL2 = \"\\n\".join(adminList)\n\n        adminList = []\n        query3 = database.Administrators.select().where(\n            database.Administrators.TierLevel == 3"
@@ -26459,7 +26459,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "41f06b90b1a412f992d4c3e1de25bd558bf4e2593d3618073b80008b405c3c51"
+            "equalIndicator/v1": "647f8348bc3f6dbddad52b7929abb9b73433fe461d860d690b4954a872241cd0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26484,9 +26484,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 442,
+                  "startLine": 441,
                   "startColumn": 9,
-                  "charOffset": 14633,
+                  "charOffset": 14576,
                   "charLength": 11,
                   "snippet": {
                     "text": "adminLEVEL3"
@@ -26494,9 +26494,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 440,
+                  "startLine": 439,
                   "startColumn": 1,
-                  "charOffset": 14562,
+                  "charOffset": 14505,
                   "charLength": 129,
                   "snippet": {
                     "text": "            adminList.append(f\"`{user.name}` -> `{user.id}`\")\n\n        adminLEVEL3 = \"\\n\".join(adminList)\n\n        adminList = []"
@@ -26512,7 +26512,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "5fc227c82e6732b0561d70ea241ce2aa8f50175f90d6bb4d2536fdd2e6ec4169"
+            "equalIndicator/v1": "a7dc2fdc9877866adddcad839d454d1f094618e710f577c49762e553f5ea3224"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26537,9 +26537,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 444,
+                  "startLine": 443,
                   "startColumn": 9,
-                  "charOffset": 14677,
+                  "charOffset": 14620,
                   "charLength": 9,
                   "snippet": {
                     "text": "adminList"
@@ -26547,9 +26547,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 442,
+                  "startLine": 441,
                   "startColumn": 1,
-                  "charOffset": 14625,
+                  "charOffset": 14568,
                   "charLength": 174,
                   "snippet": {
                     "text": "        adminLEVEL3 = \"\\n\".join(adminList)\n\n        adminList = []\n        query4 = database.Administrators.select().where(\n            database.Administrators.TierLevel == 4"
@@ -26565,7 +26565,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "742f95a32f36bd9b58f71dc312df18c027ae48ed1b053816f1c3100ba0f8567a"
+            "equalIndicator/v1": "2d5e51238ad7ea07da660c37f5bd725a9570ab0b804cbd51590ecdc358e1dd14"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26590,9 +26590,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 452,
+                  "startLine": 451,
                   "startColumn": 9,
-                  "charOffset": 14964,
+                  "charOffset": 14907,
                   "charLength": 11,
                   "snippet": {
                     "text": "adminLEVEL4"
@@ -26600,9 +26600,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 450,
+                  "startLine": 449,
                   "startColumn": 1,
-                  "charOffset": 14893,
+                  "charOffset": 14836,
                   "charLength": 137,
                   "snippet": {
                     "text": "            adminList.append(f\"`{user.name}` -> `{user.id}`\")\n\n        adminLEVEL4 = \"\\n\".join(adminList)\n\n        embed = discord.Embed("
@@ -26618,7 +26618,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "fda8c776ba9d96772ee5b3de09812e92f0820bb21f459298cb6521ef5afa4d37"
+            "equalIndicator/v1": "4f20f2ae981c7c3b8ec0694effa21e1d7f0579aaec284f335758cde5b1af3aea"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26643,9 +26643,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 475,
+                  "startLine": 474,
                   "startColumn": 33,
-                  "charOffset": 15867,
+                  "charOffset": 15810,
                   "charLength": 16,
                   "snippet": {
                     "text": "ID: discord.User"
@@ -26653,9 +26653,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 473,
+                  "startLine": 472,
                   "startColumn": 1,
-                  "charOffset": 15800,
+                  "charOffset": 15743,
                   "charLength": 134,
                   "snippet": {
                     "text": "    @w.command()\n    @is_botAdmin4\n    async def remove(self, ctx, ID: discord.User):\n        database.db.connect(reuse_if_open=True)\n"
@@ -26671,7 +26671,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "ff5ef25e0b517f60498874ff67266e6fda0fe2d8c9dc87609845e6297f4cb5d8"
+            "equalIndicator/v1": "ba9599094fa23f9635122c8d71d68b73916519a2a9e51447682042de23da7e54"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26696,9 +26696,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 505,
+                  "startLine": 504,
                   "startColumn": 30,
-                  "charOffset": 16764,
+                  "charOffset": 16707,
                   "charLength": 16,
                   "snippet": {
                     "text": "ID: discord.User"
@@ -26706,9 +26706,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 503,
+                  "startLine": 502,
                   "startColumn": 1,
-                  "charOffset": 16700,
+                  "charOffset": 16643,
                   "charLength": 143,
                   "snippet": {
                     "text": "    @w.command()\n    @is_botAdmin4\n    async def add(self, ctx, ID: discord.User, level: int):\n        database.db.connect(reuse_if_open=True)\n"
@@ -26724,7 +26724,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "d6f46a32a0f3ae23cab5b62ccf8f2f200cf856feb0339885f654d6b9b6f6a6f9"
+            "equalIndicator/v1": "74d4b9ce870d330c633385b3fc15cbf8d14596e5e8643ab9d1ce529b59b57e8e"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -26749,9 +26749,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 549,
+                  "startLine": 548,
                   "startColumn": 13,
-                  "charOffset": 18171,
+                  "charOffset": 18114,
                   "charLength": 9,
                   "snippet": {
                     "text": "runThread"
@@ -26759,9 +26759,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 547,
+                  "startLine": 546,
                   "startColumn": 1,
-                  "charOffset": 18090,
+                  "charOffset": 18033,
                   "charLength": 158,
                   "snippet": {
                     "text": "            theproc = subprocess.Popen([sys.executable, \"main.py\"])\n\n            runThread = Thread(target=theproc.communicate)\n            runThread.start()\n"
@@ -26777,7 +26777,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "3f12f2d5e4fdfbba907577574cc1644e182c882f82943cdf186c144d74f9c018"
+            "equalIndicator/v1": "5c43a8f8881c84c81af8e1f3ad8b3abf10e8ec342b168ee6e44e72e9d41fa3b5"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -46187,7 +46187,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-04-03",
-        "guid": "dac512d1-7ef1-4459-a8e0-208188bae579"
+        "guid": "4a80ba10-f891-4807-b699-d3da87af7d3d"
       },
       "newlineSequences": [
         "\r\n",
@@ -46914,7 +46914,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 19120,
+                    "charLength": 19063,
                     "snippet": {
                       "text": "import subprocess import sys from pathlib import Path from threading import Thread from typing impor..."
                     },
@@ -46939,7 +46939,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "fe5fcaf34922c923598ac916a7ea3a43fd283b9dc45d5c06cf719545daa6d233"
+              "equalIndicator/v1": "5ee8c539852050668047658db9cc178f0285c1ff14281451864125a381db30cb"
             },
             "properties": {
               "ideaSeverity": "ERROR"
