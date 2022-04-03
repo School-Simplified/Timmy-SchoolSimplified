@@ -391,6 +391,7 @@ class CoreBotConfig(commands.Cog):
                 await self.bot.tree.sync(guild=guild)
 
     @commands.command()
+    @is_botAdmin2()
     async def sync(self, ctx: commands.Context, guild: int = None):
         if not guild:
             await self.bot.tree.sync()
