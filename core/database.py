@@ -748,7 +748,7 @@ tables = {
     "BaseTickerInfo": BaseTickerInfo,
     "VCDeletionQueue": VCDeletionQueue,
     "TutorSession_GracePeriod": TutorSession_GracePeriod,
-    "TechCommissionArchiveLog": TechCommissionArchiveLog,
+    "TechCommissions": TechCommissions,
     "SandboxConfig": SandboxConfig,
     "Voting": Voting,
     "BaseQueue": BaseQueue,
