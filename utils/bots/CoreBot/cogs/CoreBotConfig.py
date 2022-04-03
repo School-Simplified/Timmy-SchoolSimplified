@@ -312,7 +312,6 @@ class CoreBotConfig(commands.Cog):
             await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
 
     @command()
-    @guilds(TECH_ID.g_tech)
     @slash_is_bot_admin_2()
     async def gitpull(
             self, interaction: discord.Interaction, mode: Literal["-a", "-c"] = "-a", sync_commands: bool = False
