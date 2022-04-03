@@ -29,7 +29,8 @@ from core.special_methods import (
     initializeDB,
     main_mode_check_,
     on_command_error_,
-    on_ready_
+    on_ready_,
+    on_app_command_error_
 )
 
 load_dotenv()
@@ -87,6 +88,7 @@ class Timmy(commands.Bot):
         )
         self.help_command = None
 
+
     async def on_ready(self):
         return await on_ready_(self)
 
@@ -127,8 +129,15 @@ class Timmy(commands.Bot):
 
         return await super().is_owner(user)
 
-
 bot = Timmy()
+tree = bot.tree
+
+@tree.error
+async def on_app_command_error(self,
+                               interaction: discord.Interaction,
+                               command: Union[app_commands.Command, app_commands.ContextMenu],
+                               error: app_commands.AppCommandError):
+    return await on_app_command_error_(self, interaction, command, error)
 
 
 if os.getenv("DSN_SENTRY") is not None:
