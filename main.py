@@ -100,8 +100,8 @@ class Timmy(commands.Bot):
         return await main_mode_check_(ctx)
 
     async def setup_hook(self) -> None:
-        for guild in self.guilds:
-            await self.tree.sync(guild=guild)
+        # for guild in self.guilds:
+        #     await self.tree.sync(guild=guild)
 
         with alive_bar(len(get_extensions()), ctrl_c=False, bar="bubbles", title="Initializing Cogs:") as bar:
             for ext in get_extensions():
