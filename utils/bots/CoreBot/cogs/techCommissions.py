@@ -185,12 +185,12 @@ class TechProjectCMD(commands.Cog):
         """
 
         guild = self.bot.get_guild(TECH_ID.g_tech)
-        query = database.TechCommissionArchiveLog.select()
+        query = database.TechCommissions.select()
         entries = [entry.id for entry in query]
 
         if entries:
             for entry in entries:
-                query = query.select().where(database.TechCommissionArchiveLog.id == entry)
+                query = query.select().where(database.TechCommissions.id == entry)
                 query = query.get()
 
                 thread = await get_active_or_archived_thread(guild, query.ThreadID)
