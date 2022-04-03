@@ -63,7 +63,6 @@ class CommandsManager(commands.Cog):
 
             timeout = await view.wait()
             if not timeout:
-                print(view.value)
                 if view.value == "Confirm":
 
                     embed_processing = discord.Embed(
@@ -79,7 +78,7 @@ class CommandsManager(commands.Cog):
                     embed_processing = discord.Embed(
                         color=Colors.green,
                         title="Sync",
-                        description=f"Successfully synced slash commands globally..."
+                        description=f"Successfully synced slash commands globally!"
                     )
                     await message_confirm.edit(embed=embed_processing)
 
@@ -89,7 +88,7 @@ class CommandsManager(commands.Cog):
                         title="Sync",
                         description="Sync canceled."
                     )
-                    await message_confirm.edit(embed=embed_cancel)
+                    await message_confirm.edit(embed=embed_cancel, view=None)
 
             else:
                 embed_timeout = discord.Embed(
@@ -97,7 +96,7 @@ class CommandsManager(commands.Cog):
                     title="Sync",
                     description="Sync canceled due to timeout."
                 )
-                await message_confirm.edit(embed=embed_timeout)
+                await message_confirm.edit(embed=embed_timeout, view=None)
 
 
 async def setup(bot):
