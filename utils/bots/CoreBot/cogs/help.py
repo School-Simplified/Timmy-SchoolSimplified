@@ -10,7 +10,7 @@ from discord import app_commands
 import discord
 from discord.app_commands import command, describe, guilds
 from discord.ext import commands, menus
-from core.common import Others, ALL_GUILD_IDS
+from core.common import Others
 
 
 class RoboPages(discord.ui.View):
@@ -687,7 +687,6 @@ class Help(commands.Cog):
 
     @command()
     @describe(object="Name of command, cog or command group")
-    @guilds(*ALL_GUILD_IDS)
     async def help(
             self,
             interaction:
