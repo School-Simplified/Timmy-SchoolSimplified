@@ -63,26 +63,40 @@ class CommandsManager(commands.Cog):
 
             timeout = await view.wait()
             if not timeout:
-                embed_processing = discord.Embed(
-                    color=Colors.yellow,
+
+                if view.value == "Confirm":
+
+                    embed_processing = discord.Embed(
+                        color=Colors.yellow,
+                        title="Sync",
+                        description=f"Syncing slash commands globally..."
+                                    f"\nThis may take a while."
+                    )
+                    await message_confirm.edit(embed=embed_processing, view=None)
+
+                    await self.bot.tree.sync()
+
+                    embed_processing = discord.Embed(
+                        color=Colors.green,
+                        title="Sync",
+                        description=f"Successfully synced slash commands globally..."
+                    )
+                    await message_confirm.edit(embed=embed_processing)
+
+                elif view.value == "Cancel":
+                    embed_cancel = discord.Embed(
+                        color=Colors.red,
+                        title="Sync",
+                        description="Sync canceled."
+                    )
+                    await message_confirm.edit(embed=embed_cancel)
+            else:
+                embed_timeout = discord.Embed(
+                    color=Colors.red,
                     title="Sync",
-                    description=f"Syncing slash commands globally..."
-                                f"\nThis may take a while."
+                    description="Sync canceled due to timeout."
                 )
-                await message_confirm.edit(embed=embed_processing, view=None)
-
-                await self.bot.tree.sync()
-
-                embed_processing = discord.Embed(
-                    color=Colors.green,
-                    title="Sync",
-                    description=f"Successfully synced slash commands globally..."
-                )
-                await message_confirm.edit(embed=embed_processing)
-
-        else:
-            print(f"Unknown action {action}")
-
+                await message_confirm.edit(embed=embed_timeout)
 
 
 async def setup(bot):
