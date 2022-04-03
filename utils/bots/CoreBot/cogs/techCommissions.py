@@ -155,14 +155,15 @@ class TechProjectCMD(commands.Cog):
                 current_name = thread.name
                 new_name = f"[CLOSED] {current_name}"
                 await thread.edit(archived=True, name=new_name)
-
+                print(thread.archived)
                 await ctx.send("Commission closed! You can find the commission in the archived threads of that channel.")
 
         elif action == "reopen":
             query = database.TechCommissions.select().where(database.TechCommissions.ThreadID == thread.id)
             if query.exists() or thread in channel.threads:
+                print(thread in channel.threads)
                 await ctx.send(
-                    "This commission is already open. You can close it by doing `/commission-close`")
+                    "This commission is already open. You can close it by doing `+commission close`")
                 return
             else:
                 query = database.TechCommissions.create(ThreadID=thread.id)
