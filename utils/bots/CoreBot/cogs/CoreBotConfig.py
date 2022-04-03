@@ -387,8 +387,7 @@ class CoreBotConfig(commands.Cog):
                 return await interaction.channel.send(embed=embed)
 
         if sync_commands:
-            for guild in self.bot.guilds:
-                await self.bot.tree.sync(guild=guild)
+            await self.bot.tree.sync()
 
     # @commands.command()
     # @is_botAdmin2()
