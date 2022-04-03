@@ -1414,8 +1414,8 @@ class ButtonHandler(ui.Button):
                 role in interaction.user.roles for role in self.roles
         ):
             if self.custom_id_ is None:
-                self.view.value = None
-                self.view_response = None
+                self.view.value = self.label_
+                self.view_response = self.label_
             else:
                 self.view.value = self.custom_id_
                 self.view_response = self.custom_id_
