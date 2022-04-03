@@ -44,29 +44,15 @@ print("Starting Timmy...")
 
 
 class TimmyCommandTree(app_commands.CommandTree):
-    def __init__(self, client: commands.Bot):
-        super().__init__(client)
+    def __init__(self, bot: commands.Bot):
+        super().__init__(bot)
+        self.bot = bot
 
-    def get_all_commands(self):
-        return self._get_all_commands()
-
-#     async def on_error(
-#             self,
-#             interaction: discord.Interaction,
-#             command: Optional[Union[app_commands.ContextMenu, app_commands.Command]],
-#             error: app_commands.AppCommandError,
-#     ) -> None:
-#         ...
-
-    # Implement error system
-
-    # async def interaction_check(
-    #         self,
-    #         interaction: discord.Interaction,
-    #         /
-    # ) -> bool:
-    #     ...
-    #  Implement blacklist check for spammers
+    async def on_error(self,
+                       interaction: discord.Interaction,
+                       command: Union[app_commands.Command, app_commands.ContextMenu],
+                       error: app_commands.AppCommandError):
+        return await on_app_command_error_(self.bot, interaction, command, error)
 
 
 class Timmy(commands.Bot):
@@ -87,7 +73,6 @@ class Timmy(commands.Bot):
             ),
         )
         self.help_command = None
-
 
     async def on_ready(self):
         return await on_ready_(self)
@@ -129,16 +114,8 @@ class Timmy(commands.Bot):
 
         return await super().is_owner(user)
 
+
 bot = Timmy()
-tree = bot.tree
-
-@tree.error
-async def on_app_command_error(self,
-                               interaction: discord.Interaction,
-                               command: Union[app_commands.Command, app_commands.ContextMenu],
-                               error: app_commands.AppCommandError):
-    return await on_app_command_error_(self, interaction, command, error)
-
 
 if os.getenv("DSN_SENTRY") is not None:
     sentry_logging = LoggingIntegration(
@@ -153,6 +130,5 @@ if os.getenv("DSN_SENTRY") is not None:
         integrations=[FlaskIntegration(), sentry_logging],
     )
 initializeDB(bot)
-
 
 bot.run(os.getenv("TOKEN"))

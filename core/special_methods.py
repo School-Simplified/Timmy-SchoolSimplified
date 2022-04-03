@@ -364,11 +364,11 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
     raise error
 
 
-async def on_app_command_error_(bot:commands.Bot,
-                               interaction: discord.Interaction,
-                               command: Union[app_commands.Command, app_commands.ContextMenu],
-                               error: app_commands.AppCommandError
-                               ):
+async def on_app_command_error_(bot: commands.Bot,
+                                interaction: discord.Interaction,
+                                command: Union[app_commands.Command, app_commands.ContextMenu],
+                                error: app_commands.AppCommandError
+                                ):
     tb = error.__traceback__
     etype = type(error)
     exception = traceback.format_exception(etype, error, tb, chain=True)
