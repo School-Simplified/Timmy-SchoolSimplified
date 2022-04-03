@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1936,13 +1936,13 @@
                 ]
               },
               {
-                "id": "PyChainedComparisonsInspection",
+                "id": "PyMethodParametersInspection",
                 "shortDescription": {
-                  "text": "Too complex chained comparisons"
+                  "text": "Improper first parameter"
                 },
                 "fullDescription": {
-                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
-                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
+                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
+                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1970,13 +1970,13 @@
                 ]
               },
               {
-                "id": "PyMethodParametersInspection",
+                "id": "PyChainedComparisonsInspection",
                 "shortDescription": {
-                  "text": "Improper first parameter"
+                  "text": "Too complex chained comparisons"
                 },
                 "fullDescription": {
-                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
-                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
+                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
+                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -2888,19 +2888,19 @@
                 ]
               },
               {
-                "id": "PyRedundantParenthesesInspection",
+                "id": "PyTrailingSemicolonInspection",
                 "shortDescription": {
-                  "text": "Redundant parentheses"
+                  "text": "Prohibited trailing semicolon in a statement"
                 },
                 "fullDescription": {
-                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
-                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
+                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
+                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2922,19 +2922,19 @@
                 ]
               },
               {
-                "id": "PyTrailingSemicolonInspection",
+                "id": "PyRedundantParenthesesInspection",
                 "shortDescription": {
-                  "text": "Prohibited trailing semicolon in a statement"
+                  "text": "Redundant parentheses"
                 },
                 "fullDescription": {
-                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
-                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
+                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
+                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3602,6 +3602,40 @@
                 ]
               },
               {
+                "id": "DjangoCloseTagInspection",
+                "shortDescription": {
+                  "text": "Mismatched opening and closing tags"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
+                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Django",
+                      "index": 7,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
                 "id": "PyStubPackagesCompatibilityInspection",
                 "shortDescription": {
                   "text": "Incompatible stub packages"
@@ -3659,40 +3693,6 @@
                     "target": {
                       "id": "Python",
                       "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
-                "id": "DjangoCloseTagInspection",
-                "shortDescription": {
-                  "text": "Mismatched opening and closing tags"
-                },
-                "fullDescription": {
-                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
-                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Django",
-                      "index": 7,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -4464,40 +4464,6 @@
                 ]
               },
               {
-                "id": "XmlDuplicatedId",
-                "shortDescription": {
-                  "text": "Duplicate 'id' attribute"
-                },
-                "fullDescription": {
-                  "text": "Reports a duplicate 'id' attribute in XML.",
-                  "markdown": "Reports a duplicate `id` attribute in XML."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "ideaSeverity": "ERROR",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "XML",
-                      "index": 3,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "JsonSchemaDeprecation",
                 "shortDescription": {
                   "text": "Deprecated JSON property"
@@ -4521,6 +4487,40 @@
                     "target": {
                       "id": "JSON and JSON5",
                       "index": 4,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "XmlDuplicatedId",
+                "shortDescription": {
+                  "text": "Duplicate 'id' attribute"
+                },
+                "fullDescription": {
+                  "text": "Reports a duplicate 'id' attribute in XML.",
+                  "markdown": "Reports a duplicate `id` attribute in XML."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "error",
+                  "parameters": {
+                    "ideaSeverity": "ERROR",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "XML",
+                      "index": 3,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5756,40 +5756,6 @@
                 ]
               },
               {
-                "id": "HtmlUnknownAnchorTarget",
-                "shortDescription": {
-                  "text": "Unresolved fragment in a link"
-                },
-                "fullDescription": {
-                  "text": "Reports an unresolved last part of an URL after the '#' sign.",
-                  "markdown": "Reports an unresolved last part of an URL after the `#` sign."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "UnusedDefine",
                 "shortDescription": {
                   "text": "Unused define"
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "RELAX NG",
                       "index": 11,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "HtmlUnknownAnchorTarget",
+                "shortDescription": {
+                  "text": "Unresolved fragment in a link"
+                },
+                "fullDescription": {
+                  "text": "Reports an unresolved last part of an URL after the '#' sign.",
+                  "markdown": "Reports an unresolved last part of an URL after the `#` sign."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6130,40 +6130,6 @@
                 ]
               },
               {
-                "id": "RegExpEscapedMetaCharacter",
-                "shortDescription": {
-                  "text": "Escaped meta character"
-                },
-                "fullDescription": {
-                  "text": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character '[', ']' and '^', because those would need additional escaping inside a character class. Example: '\\d+\\.\\d+' After the quick-fix is applied: '\\d+[.]\\d+' New in 2017.1",
-                  "markdown": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character `[`, `]` and `^`, because those would need additional escaping inside a character class.\n\n**Example:**\n\n\n      \\d+\\.\\d+\n\nAfter the quick-fix is applied:\n\n\n      \\d+[.]\\d+\n\nNew in 2017.1"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "INFORMATION",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RegExp",
-                      "index": 5,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "LossyEncoding",
                 "shortDescription": {
                   "text": "Lossy encoding"
@@ -6187,6 +6153,40 @@
                     "target": {
                       "id": "Internationalization",
                       "index": 14,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "RegExpEscapedMetaCharacter",
+                "shortDescription": {
+                  "text": "Escaped meta character"
+                },
+                "fullDescription": {
+                  "text": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character '[', ']' and '^', because those would need additional escaping inside a character class. Example: '\\d+\\.\\d+' After the quick-fix is applied: '\\d+[.]\\d+' New in 2017.1",
+                  "markdown": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character `[`, `]` and `^`, because those would need additional escaping inside a character class.\n\n**Example:**\n\n\n      \\d+\\.\\d+\n\nAfter the quick-fix is applied:\n\n\n      \\d+[.]\\d+\n\nNew in 2017.1"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "INFORMATION",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RegExp",
+                      "index": 5,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "44b864937ea91f008516d1bf625540b9b92b3b92",
+          "revisionId": "617c9a1bdc7a6a357338af6388beb7babe11244f",
           "branch": "beta",
           "properties": {
             "lastAuthorName": "pandabear189",
@@ -8731,7 +8731,7 @@
                 "region": {
                   "startLine": 376,
                   "startColumn": 9,
-                  "charOffset": 15920,
+                  "charOffset": 15905,
                   "charLength": 13,
                   "snippet": {
                     "text": "is_paginating"
@@ -8741,7 +8741,7 @@
                 "contextRegion": {
                   "startLine": 374,
                   "startColumn": 1,
-                  "charOffset": 15870,
+                  "charOffset": 15855,
                   "charLength": 165,
                   "snippet": {
                     "text": "\nclass FrontPageSource(menus.PageSource):\n    def is_paginating(self) -> bool:\n        # This forces the buttons to appear even in the front page\n        return True"
@@ -8757,7 +8757,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "578802fa452b0b05a02ed8603f596f429948ccd58c3f36ad8e112735765f46c0"
+            "equalIndicator/v1": "6dd74f3fb41efd1d9e36be54d033d701811aa8b0bbe0420be50097baa66589e0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -8784,7 +8784,7 @@
                 "region": {
                   "startLine": 380,
                   "startColumn": 9,
-                  "charOffset": 16045,
+                  "charOffset": 16030,
                   "charLength": 13,
                   "snippet": {
                     "text": "get_max_pages"
@@ -8794,7 +8794,7 @@
                 "contextRegion": {
                   "startLine": 378,
                   "startColumn": 1,
-                  "charOffset": 16016,
+                  "charOffset": 16001,
                   "charLength": 184,
                   "snippet": {
                     "text": "        return True\n\n    def get_max_pages(self) -> Optional[int]:\n        # There's only one actual page in the front page\n        # However we need at least 2 to show all the buttons"
@@ -8810,7 +8810,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "6e42ee1dd1c49c58e842e2ec9332e5bec43d978b73f6dc5ebfbce17171388f10"
+            "equalIndicator/v1": "442bd9b5632adca86aac682cc782c460ee71aad9cadf213af3fda729ca754fe1"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10957,7 +10957,7 @@
                 "region": {
                   "startLine": 150,
                   "startColumn": 72,
-                  "charOffset": 6455,
+                  "charOffset": 6440,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10967,7 +10967,7 @@
                 "contextRegion": {
                   "startLine": 148,
                   "startColumn": 1,
-                  "charOffset": 6317,
+                  "charOffset": 6302,
                   "charLength": 247,
                   "snippet": {
                     "text": "\n    @discord.ui.button(label='≪', style=discord.ButtonStyle.grey)\n    async def go_to_first_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):\n        \"\"\"go to the first page\"\"\"\n        await self.show_page(interaction, 0)"
@@ -10983,7 +10983,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "354c55ed0917e366fe8810f8c4fe4e6981eb52a3f323c694bcf49f4ce93ceb5d"
+            "equalIndicator/v1": "e0c12151dd0dfd5f0b9740c4c0255a192404a087a9cf565920f2197727c3aae4"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11010,7 +11010,7 @@
                 "region": {
                   "startLine": 155,
                   "startColumn": 75,
-                  "charOffset": 6712,
+                  "charOffset": 6697,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11020,7 +11020,7 @@
                 "contextRegion": {
                   "startLine": 153,
                   "startColumn": 1,
-                  "charOffset": 6565,
+                  "charOffset": 6550,
                   "charLength": 285,
                   "snippet": {
                     "text": "\n    @discord.ui.button(label='Back', style=discord.ButtonStyle.blurple)\n    async def go_to_previous_page(self, interaction: discord.Interaction, button: discord.ui.Button):\n        \"\"\"go to the previous page\"\"\"\n        await self.show_checked_page(interaction, self.current_page - 1)"
@@ -11036,7 +11036,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "52927ab7a130af6f08e34558299483b643d214b7ed540deb25a0a72403bcce28"
+            "equalIndicator/v1": "f3b635c392da9ad50c8da109fefff41ce1fca7eaf79100155a36e21220f4bd77"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11063,7 +11063,7 @@
                 "region": {
                   "startLine": 164,
                   "startColumn": 71,
-                  "charOffset": 7196,
+                  "charOffset": 7181,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11073,7 +11073,7 @@
                 "contextRegion": {
                   "startLine": 162,
                   "startColumn": 1,
-                  "charOffset": 7053,
+                  "charOffset": 7038,
                   "charLength": 279,
                   "snippet": {
                     "text": "\n    @discord.ui.button(label='Next', style=discord.ButtonStyle.blurple)\n    async def go_to_next_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):\n        \"\"\"go to the next page\"\"\"\n        await self.show_checked_page(interaction, self.current_page + 1)"
@@ -11089,7 +11089,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "023dad4091a8abee387196f10c9cc46ca9dd6e871691a15aa009fa63364a34b9"
+            "equalIndicator/v1": "6baafd9f84a37c5f242c21f6963a82c6d8896658f0e87364eedba1d6d49d52b0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11116,7 +11116,7 @@
                 "region": {
                   "startLine": 169,
                   "startColumn": 71,
-                  "charOffset": 7470,
+                  "charOffset": 7455,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11126,7 +11126,7 @@
                 "contextRegion": {
                   "startLine": 167,
                   "startColumn": 1,
-                  "charOffset": 7333,
+                  "charOffset": 7318,
                   "charLength": 264,
                   "snippet": {
                     "text": "\n    @discord.ui.button(label='≫', style=discord.ButtonStyle.grey)\n    async def go_to_last_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):\n        \"\"\"go to the last page\"\"\"\n        # The call here is safe because it's guarded by skip_if"
@@ -11142,7 +11142,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "da2547abff7db7e1e02fe8f6ba505f23de0db95c7ec91d30d5b135d5b837eea1"
+            "equalIndicator/v1": "553b92ceeba7642c43ee07e56c521237ef5897c66d8010ae93261ccb49b88e73"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11169,7 +11169,7 @@
                 "region": {
                   "startLine": 175,
                   "startColumn": 69,
-                  "charOffset": 7822,
+                  "charOffset": 7807,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11179,7 +11179,7 @@
                 "contextRegion": {
                   "startLine": 173,
                   "startColumn": 1,
-                  "charOffset": 7673,
+                  "charOffset": 7658,
                   "charLength": 266,
                   "snippet": {
                     "text": "\n    @discord.ui.button(label='Skip to page...', style=discord.ButtonStyle.grey)\n    async def numbered_page(self, interaction: discord.Interaction, button: discord.ui.Button, ):\n        \"\"\"lets you type a page number to go to\"\"\"\n        if self.input_lock.locked():"
@@ -11195,7 +11195,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "6f324352171f35b8311ce767d19170b95b06756d9bf626eb092c9cd2b6077796"
+            "equalIndicator/v1": "068b191d49fb7517fe2386e3a31b80daea7bb154548d393c3cb823d651eb0f2f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11222,7 +11222,7 @@
                 "region": {
                   "startLine": 203,
                   "startColumn": 66,
-                  "charOffset": 9067,
+                  "charOffset": 9052,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11232,7 +11232,7 @@
                 "contextRegion": {
                   "startLine": 201,
                   "startColumn": 1,
-                  "charOffset": 8933,
+                  "charOffset": 8918,
                   "charLength": 250,
                   "snippet": {
                     "text": "\n    @discord.ui.button(label='Quit', style=discord.ButtonStyle.red)\n    async def stop_pages(self, interaction: discord.Interaction, button: discord.ui.Button, ):\n        \"\"\"stops the pagination session.\"\"\"\n        await interaction.response.defer()"
@@ -11248,7 +11248,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "02a248362b66ae58598511f4cea204d8503bd4ccd495a1e706a07c2f68c0911a"
+            "equalIndicator/v1": "f2a86025f43abe2658a021f43dad10d66f0e0bf0dd4449ce5b34355c37c0b74c"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11275,7 +11275,7 @@
                 "region": {
                   "startLine": 390,
                   "startColumn": 27,
-                  "charOffset": 16390,
+                  "charOffset": 16375,
                   "charLength": 14,
                   "snippet": {
                     "text": "menu: HelpMenu"
@@ -11285,7 +11285,7 @@
                 "contextRegion": {
                   "startLine": 388,
                   "startColumn": 1,
-                  "charOffset": 16343,
+                  "charOffset": 16328,
                   "charLength": 196,
                   "snippet": {
                     "text": "        return self\n\n    def format_page(self, menu: HelpMenu, page):\n        embed = discord.Embed(title='Bot Help', colour=discord.Colour.blurple())\n        embed.description = inspect.cleandoc("
@@ -11301,7 +11301,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "9c5d8cfe2998a6e042ce8447f49ceecbd537c7481982c07955d1f3ef5f93f546"
+            "equalIndicator/v1": "5516ffa28c131e18af6520294fdd2d38b05d4e0deee7fd2500fc88d52b5dc01f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11328,7 +11328,7 @@
                 "region": {
                   "startLine": 390,
                   "startColumn": 43,
-                  "charOffset": 16406,
+                  "charOffset": 16391,
                   "charLength": 4,
                   "snippet": {
                     "text": "page"
@@ -11338,7 +11338,7 @@
                 "contextRegion": {
                   "startLine": 388,
                   "startColumn": 1,
-                  "charOffset": 16343,
+                  "charOffset": 16328,
                   "charLength": 196,
                   "snippet": {
                     "text": "        return self\n\n    def format_page(self, menu: HelpMenu, page):\n        embed = discord.Embed(title='Bot Help', colour=discord.Colour.blurple())\n        embed.description = inspect.cleandoc("
@@ -11354,7 +11354,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "74da76cefd6e099fef0784fa3ea836611b616dc1a14f17cfa83014e781f073d9"
+            "equalIndicator/v1": "8607bfbc00d1baed01bba126dde747381a5a9df45c19b8cd7bfe58445e3f193d"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -42916,7 +42916,7 @@
                 "region": {
                   "startLine": 387,
                   "startColumn": 9,
-                  "charOffset": 16318,
+                  "charOffset": 16303,
                   "charLength": 10,
                   "snippet": {
                     "text": "self.index"
@@ -42926,7 +42926,7 @@
                 "contextRegion": {
                   "startLine": 385,
                   "startColumn": 1,
-                  "charOffset": 16219,
+                  "charOffset": 16204,
                   "charLength": 144,
                   "snippet": {
                     "text": "    async def get_page(self, page_number: int) -> Any:\n        # The front page is a dummy\n        self.index = page_number\n        return self\n"
@@ -42942,7 +42942,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "46ce40c9f6afe449b0bfc84ee86e56684a41c2849ef1e6c0157bc8a639ab4f47"
+            "equalIndicator/v1": "4d316ffb0b9ad2be242193dcb6b4611fd80b7fcd34948bb452a2a2e897fa6675"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -45354,7 +45354,7 @@
                 "region": {
                   "startLine": 143,
                   "startColumn": 15,
-                  "charOffset": 6068,
+                  "charOffset": 6053,
                   "charLength": 25,
                   "snippet": {
                     "text": "self.source._prepare_once"
@@ -45364,7 +45364,7 @@
                 "contextRegion": {
                   "startLine": 141,
                   "startColumn": 1,
-                  "charOffset": 6034,
+                  "charOffset": 6019,
                   "charLength": 162,
                   "snippet": {
                     "text": "            return\n\n        await self.source._prepare_once()\n        page = await self.source.get_page(0)\n        kwargs = await self._get_kwargs_from_page(page)"
@@ -45380,7 +45380,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "5b1887ad0c99371be093dc77eaede1225219a1f4d9dc3ed14beabf8d4eec185c"
+            "equalIndicator/v1": "b8930b8638b62e5bc4f988514b48eb1a5c729b72690d08c2fbf26620582e45ab"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -45407,7 +45407,7 @@
                 "region": {
                   "startLine": 368,
                   "startColumn": 15,
-                  "charOffset": 15640,
+                  "charOffset": 15625,
                   "charLength": 25,
                   "snippet": {
                     "text": "self.source._prepare_once"
@@ -45417,7 +45417,7 @@
                 "contextRegion": {
                   "startLine": 366,
                   "startColumn": 1,
-                  "charOffset": 15595,
+                  "charOffset": 15580,
                   "charLength": 173,
                   "snippet": {
                     "text": "        self.current_page = 0\n\n        await self.source._prepare_once()\n        page = await self.source.get_page(0)\n        kwargs = await self._get_kwargs_from_page(page)"
@@ -45433,7 +45433,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "402c1c66de00f9934327511ce5da48617c02afb8aae02e12df0182bcb3e11842"
+            "equalIndicator/v1": "8fe6b32f2c61861a1e89e8f4d1a0b68bd17af561a1fb6497b7a3114a6cd477cc"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -46187,7 +46187,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-04-03",
-        "guid": "4a80ba10-f891-4807-b699-d3da87af7d3d"
+        "guid": "ec6e51af-195a-4757-a10d-990cc123f53f"
       },
       "newlineSequences": [
         "\r\n",
@@ -46664,7 +46664,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 28706,
+                    "charLength": 28663,
                     "snippet": {
                       "text": "# Copyright (c) 2015-2021 Rapptz # Copyright (c) 2022-present School Simplified import asyncio imp..."
                     },
@@ -46689,7 +46689,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "77ae1c5be02215c85b0fc80e5b840d0b691b315998cc6a1f7d3fd62c1b2a04e4"
+              "equalIndicator/v1": "16a1b2f62d5872f4ab5f49646f676eeeadc0d69c4b532cbd1ed0d30d52885fd5"
             },
             "properties": {
               "ideaSeverity": "ERROR"
