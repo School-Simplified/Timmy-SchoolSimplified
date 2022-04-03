@@ -569,9 +569,9 @@ class VCDeletionQueue(BaseModel):
     DTF = DateTimeField()
 
 
-class TechCommissions(BaseModel):
+class TechCommissionArchiveLog(BaseModel):
     """
-    #TechCommissions
+    #TechCommissionArchiveLog
 
     `id`: AutoField()
     Database Entry
@@ -748,7 +748,7 @@ tables = {
     "BaseTickerInfo": BaseTickerInfo,
     "VCDeletionQueue": VCDeletionQueue,
     "TutorSession_GracePeriod": TutorSession_GracePeriod,
-    "TechCommissions": TechCommissions,
+    "TechCommissionArchiveLog": TechCommissionArchiveLog,
     "SandboxConfig": SandboxConfig,
     "Voting": Voting,
     "BaseQueue": BaseQueue,

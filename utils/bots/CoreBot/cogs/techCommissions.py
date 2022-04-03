@@ -73,8 +73,6 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
         c_ch: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
         msg: discord.Message = await c_ch.send(interaction.user.mention, embed=embed)
         thread = await msg.create_thread(name=self.titleTI.value)
-        q: database.TechCommissionArchiveLog = database.TechCommissionArchiveLog.create(ThreadID=thread.id)
-        q.save()
 
         await thread.send(
             f"{interaction.user.mention} has requested a bot development project.\n<@&{TECH_ID.r_botDeveloper}>"
@@ -134,48 +132,42 @@ class TechProjectCMD(commands.Cog):
         view = CommissionTechButton(self.bot)
         await ctx.send(embed=embed, view=view)
 
-    @commands.command()
-    async def commission(self, ctx: commands.Context, action: Literal["close", "reopen"]):
+    @app_commands.command()
+    @app_commands.guilds(TECH_ID.g_tech)
+    @app_commands.checks.cooldown(1, 300, key=lambda i: (i.guild_id, i.channel.id))
+    async def commission(self, interaction: discord.Interaction, action: Literal["close"]):
         channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
-        thread = ctx.channel
+        thread = interaction.channel
 
         if not isinstance(thread, discord.Thread):
-            await ctx.send("Not a bot commission.")
+            await interaction.response.send_message("This is not a bot commission.", ephemeral=True)
             return
 
         if action == "close":
-            query = database.TechCommissions.select().where(database.TechCommissions.ThreadID == thread.id)
-            if thread not in channel.threads or not query.exists():
-                await ctx.send("This commission is already closed.")
+            query = database.TechCommissionArchiveLog.select().where(database.TechCommissionArchiveLog.ThreadID == thread.id)
+            if thread not in channel.threads or query.exists():
+                await interaction.response.send_message("This commission is already closed.", ephemeral=True)
                 return
             else:
+                query = database.TechCommissionArchiveLog.create(ThreadID=thread.id)
+                query.save()
+
+                await interaction.response.send_message("Commission closed! You can find the commission in the archived threads of that channel.")
+                await thread.edit(archived=True)
+
+
+    @commands.Cog.listener("on_message")
+    async def auto_open_commission(self, message: discord.Message):
+        channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
+
+        if isinstance(message.channel, discord.Thread) and message.type == discord.MessageType.default and message.channel in channel.threads:
+
+            query = database.TechCommissionArchiveLog.select().where(database.TechCommissionArchiveLog.ThreadID == message.channel.id)
+            if query.exists():
                 result = query.get()
                 result.delete_instance()
 
-                current_name = thread.name
-                new_name = f"[CLOSED] {current_name}"
-                await thread.edit(archived=True, name=new_name)
-                print(thread.archived)
-                await ctx.send("Commission closed! You can find the commission in the archived threads of that channel.")
-
-        elif action == "reopen":
-            query = database.TechCommissions.select().where(database.TechCommissions.ThreadID == thread.id)
-            if query.exists() or thread in channel.threads:
-                print(thread in channel.threads)
-                await ctx.send(
-                    "This commission is already open. You can close it by doing `+commission close`")
-                return
-            else:
-                query = database.TechCommissions.create(ThreadID=thread.id)
-                query.save()
-
-                current_name = thread.name
-                new_name = current_name.replace("[CLOSED]", "").strip()
-                await thread.edit(archived=False, name=new_name)
-                await ctx.send("Re-opened commission!")
-
-        else:
-            raise ValueError("Action is neither 'close' nor 'reopen'.")
+                await message.reply(content="Commission re-opened!")
 
     @tasks.loop(seconds=60.0)
     async def autoUnarchiveThread(self):
@@ -183,21 +175,13 @@ class TechProjectCMD(commands.Cog):
         Creates a task loop to make sure threads don't automatically archive due to inactivity.
         """
 
-        guild = self.bot.get_guild(TECH_ID.g_tech)
-        query = database.TechCommissions.select()
-        entries = [entry.id for entry in query]
+        channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
+        query = database.TechCommissionArchiveLog.select()
+        closed_threads = [entry.ThreadID for entry in query]
 
-        if entries:
-            for entry in entries:
-                query = query.select().where(database.TechCommissions.id == entry)
-                query = query.get()
-
-                thread = await get_active_or_archived_thread(guild, query.ThreadID)
-
-                if thread is not None:
-                    await thread.edit(archived=False)
-                else:
-                    raise ValueError(f"Thread with id {query.ThreadID} not found.")
+        async for archived_thread in channel.archived_threads():
+            if archived_thread.id not in closed_threads:
+                await archived_thread.edit(archived=False)
 
     @autoUnarchiveThread.before_loop
     async def before_loop_(self):
