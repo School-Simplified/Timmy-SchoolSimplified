@@ -255,16 +255,16 @@
           "description": "Reports invalid usages of a class with `__slots__` definitions.\n\n**Example:**\n\n```\nclass Foo:\n    __slots__ = ['foo', 'bar']\n\n\nfoo = Foo()\nfoo.baz = 'spam'\n```"
         },
         {
-          "shortName": "PyDefaultArgumentInspection",
-          "displayName": "The default argument is mutable",
-          "enabled": true,
-          "description": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
-        },
-        {
           "shortName": "PyMissingConstructorInspection",
           "displayName": "Missed call to '__init__' of the super class",
           "enabled": true,
           "description": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+        },
+        {
+          "shortName": "PyDefaultArgumentInspection",
+          "displayName": "The default argument is mutable",
+          "enabled": true,
+          "description": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
         },
         {
           "shortName": "PyShadowingBuiltinsInspection",
@@ -303,16 +303,16 @@
           "description": "Reports coroutines that were called\nwithout using the `await` syntax.\n\n**Example:**\n\n```\nasync def bar():\n    pass\n\n\nasync def foo():\n    bar()\n```\n\nAfter the quick-fix is applied, the code changes to:\n\n```\nasync def bar():\n    pass\n\n\nasync def foo():\n    await bar()\n```"
         },
         {
-          "shortName": "CommandLineInspection",
-          "displayName": "Incorrect CLI syntax",
-          "enabled": false,
-          "description": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
-        },
-        {
           "shortName": "PyComparisonWithNoneInspection",
           "displayName": "Using equality operators to compare with None",
           "enabled": true,
           "description": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
+        },
+        {
+          "shortName": "CommandLineInspection",
+          "displayName": "Incorrect CLI syntax",
+          "enabled": false,
+          "description": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
         },
         {
           "shortName": "PyCallingNonCallableInspection",
@@ -567,16 +567,16 @@
           "description": "Reports invalid usages of final classes,\nmethods and variables.\n\n**Example:**\n\n```\nfrom typing import final\n\n\n@final\nclass A:\n    def a_method(self):\n        pass\n\n\nclass B(A):\n    def a_method(self):\n        pass\n```"
         },
         {
-          "shortName": "PyStubPackagesCompatibilityInspection",
-          "displayName": "Incompatible stub packages",
-          "enabled": false,
-          "description": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
-        },
-        {
           "shortName": "PyProtectedMemberInspection",
           "displayName": "Accessing a protected member of a class or a module",
           "enabled": true,
           "description": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
+        },
+        {
+          "shortName": "PyStubPackagesCompatibilityInspection",
+          "displayName": "Incompatible stub packages",
+          "enabled": false,
+          "description": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
         },
         {
           "shortName": "PyUnboundLocalVariableInspection",
@@ -882,16 +882,16 @@
           "description": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character `[`, `]` and `^`, because those would need additional escaping inside a character class.\n\n**Example:**\n\n\n      \\d+\\.\\d+\n\nAfter the quick-fix is applied:\n\n\n      \\d+[.]\\d+\n\nNew in 2017.1"
         },
         {
-          "shortName": "RegExpDuplicateAlternationBranch",
-          "displayName": "Duplicate branch in alternation",
-          "enabled": true,
-          "description": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression.\n\n**Example:**\n\n\n      (alpha|bravo|charlie|alpha)\n\nAfter the quick-fix is applied:\n\n\n      (alpha|bravo|charlie)\n\nNew in 2017.1"
-        },
-        {
           "shortName": "RegExpRepeatedSpace",
           "displayName": "Consecutive spaces",
           "enabled": true,
           "description": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier.\n\n**Example:**\n\n\n      (     )\n\nAfter the quick-fix is applied:\n\n\n      ( {5})\n\n\nNew in 2017.1"
+        },
+        {
+          "shortName": "RegExpDuplicateAlternationBranch",
+          "displayName": "Duplicate branch in alternation",
+          "enabled": true,
+          "description": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression.\n\n**Example:**\n\n\n      (alpha|bravo|charlie|alpha)\n\nAfter the quick-fix is applied:\n\n\n      (alpha|bravo|charlie)\n\nNew in 2017.1"
         }
       ]
     },
