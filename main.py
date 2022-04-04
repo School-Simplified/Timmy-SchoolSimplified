@@ -48,10 +48,12 @@ class TimmyCommandTree(app_commands.CommandTree):
         super().__init__(bot)
         self.bot = bot
 
-    async def on_error(self,
-                       interaction: discord.Interaction,
-                       command: Union[app_commands.Command, app_commands.ContextMenu],
-                       error: app_commands.AppCommandError):
+    async def on_error(
+            self,
+            interaction: discord.Interaction,
+            command: Union[app_commands.Command, app_commands.ContextMenu],
+            error: app_commands.AppCommandError
+    ):
         return await on_app_command_error_(self.bot, interaction, command, error)
 
 
