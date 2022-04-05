@@ -104,6 +104,8 @@ async def TicketExport(
         .get()
     )
     TicketOwner = self.bot.get_user(query.authorID)
+    if TicketOwner is None:
+        TicketOwner = await self.bot.fetch_user(query.authorID)
 
     if transcript is None:
         return

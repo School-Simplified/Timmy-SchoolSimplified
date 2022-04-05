@@ -116,6 +116,10 @@ class Timmy(commands.Bot):
 
         return await super().is_owner(user)
 
+    @property
+    def version(self):
+        return __version__
+
 
 bot = Timmy()
 
@@ -131,6 +135,7 @@ if os.getenv("DSN_SENTRY") is not None:
         traces_sample_rate=1.0,
         integrations=[FlaskIntegration(), sentry_logging],
     )
+
 initializeDB(bot)
 
 bot.run(os.getenv("TOKEN"))
