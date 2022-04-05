@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1800,19 +1800,19 @@
                 ]
               },
               {
-                "id": "CommandLineInspection",
+                "id": "PyComparisonWithNoneInspection",
                 "shortDescription": {
-                  "text": "Incorrect CLI syntax"
+                  "text": "Using equality operators to compare with None"
                 },
                 "fullDescription": {
-                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
-                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
+                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
+                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1834,19 +1834,19 @@
                 ]
               },
               {
-                "id": "PyComparisonWithNoneInspection",
+                "id": "CommandLineInspection",
                 "shortDescription": {
-                  "text": "Using equality operators to compare with None"
+                  "text": "Incorrect CLI syntax"
                 },
                 "fullDescription": {
-                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
-                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
+                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
+                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1936,13 +1936,13 @@
                 ]
               },
               {
-                "id": "PyMethodParametersInspection",
+                "id": "PyChainedComparisonsInspection",
                 "shortDescription": {
-                  "text": "Improper first parameter"
+                  "text": "Too complex chained comparisons"
                 },
                 "fullDescription": {
-                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
-                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
+                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
+                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1970,13 +1970,13 @@
                 ]
               },
               {
-                "id": "PyChainedComparisonsInspection",
+                "id": "PyMethodParametersInspection",
                 "shortDescription": {
-                  "text": "Too complex chained comparisons"
+                  "text": "Improper first parameter"
                 },
                 "fullDescription": {
-                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
-                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
+                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
+                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -2888,40 +2888,6 @@
                 ]
               },
               {
-                "id": "PyRedundantParenthesesInspection",
-                "shortDescription": {
-                  "text": "Redundant parentheses"
-                },
-                "fullDescription": {
-                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
-                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "PyTrailingSemicolonInspection",
                 "shortDescription": {
                   "text": "Prohibited trailing semicolon in a statement"
@@ -2956,13 +2922,13 @@
                 ]
               },
               {
-                "id": "PyAbstractClassInspection",
+                "id": "PyRedundantParenthesesInspection",
                 "shortDescription": {
-                  "text": "Class must implement all abstract methods"
+                  "text": "Redundant parentheses"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when not all abstract properties or methods are defined in a subclass. Example: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n When the quick-fix is applied, the IDE implements an abstract method for the 'Triangle' class: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass",
-                  "markdown": "Reports cases when not all abstract properties or methods are defined in\na subclass.\n\n**Example:**\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n```\n\nWhen the quick-fix is applied, the IDE implements an abstract method for the `Triangle` class:\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass\n```"
+                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
+                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -3003,6 +2969,40 @@
                   "level": "warning",
                   "parameters": {
                     "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyAbstractClassInspection",
+                "shortDescription": {
+                  "text": "Class must implement all abstract methods"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when not all abstract properties or methods are defined in a subclass. Example: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n When the quick-fix is applied, the IDE implements an abstract method for the 'Triangle' class: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass",
+                  "markdown": "Reports cases when not all abstract properties or methods are defined in\na subclass.\n\n**Example:**\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n```\n\nWhen the quick-fix is applied, the IDE implements an abstract method for the `Triangle` class:\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass\n```"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3602,13 +3602,13 @@
                 ]
               },
               {
-                "id": "PyStubPackagesCompatibilityInspection",
+                "id": "DjangoCloseTagInspection",
                 "shortDescription": {
-                  "text": "Incompatible stub packages"
+                  "text": "Mismatched opening and closing tags"
                 },
                 "fullDescription": {
-                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
-                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
+                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
+                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
                 },
                 "defaultConfiguration": {
                   "enabled": false,
@@ -3623,8 +3623,8 @@
                 "relationships": [
                   {
                     "target": {
-                      "id": "Python",
-                      "index": 2,
+                      "id": "Django",
+                      "index": 7,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -3670,13 +3670,13 @@
                 ]
               },
               {
-                "id": "DjangoCloseTagInspection",
+                "id": "PyStubPackagesCompatibilityInspection",
                 "shortDescription": {
-                  "text": "Mismatched opening and closing tags"
+                  "text": "Incompatible stub packages"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
-                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
+                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
+                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
                 },
                 "defaultConfiguration": {
                   "enabled": false,
@@ -3691,8 +3691,8 @@
                 "relationships": [
                   {
                     "target": {
-                      "id": "Django",
-                      "index": 7,
+                      "id": "Python",
+                      "index": 2,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5586,40 +5586,6 @@
                 ]
               },
               {
-                "id": "RegExpRedundantNestedCharacterClass",
-                "shortDescription": {
-                  "text": "Redundant nested character class"
-                },
-                "fullDescription": {
-                  "text": "Reports unnecessary nested character classes. Example: '[a-c[x-z]]' After the quick-fix is applied: '[a-cx-z]' New in 2020.2",
-                  "markdown": "Reports unnecessary nested character classes.\n\n**Example:**\n\n\n      [a-c[x-z]]\n\nAfter the quick-fix is applied:\n\n\n      [a-cx-z]\n\nNew in 2020.2"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RegExp",
-                      "index": 5,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "XmlDeprecatedElement",
                 "shortDescription": {
                   "text": "Deprecated symbol"
@@ -5643,6 +5609,40 @@
                     "target": {
                       "id": "XML",
                       "index": 3,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "RegExpRedundantNestedCharacterClass",
+                "shortDescription": {
+                  "text": "Redundant nested character class"
+                },
+                "fullDescription": {
+                  "text": "Reports unnecessary nested character classes. Example: '[a-c[x-z]]' After the quick-fix is applied: '[a-cx-z]' New in 2020.2",
+                  "markdown": "Reports unnecessary nested character classes.\n\n**Example:**\n\n\n      [a-c[x-z]]\n\nAfter the quick-fix is applied:\n\n\n      [a-cx-z]\n\nNew in 2020.2"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RegExp",
+                      "index": 5,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5756,40 +5756,6 @@
                 ]
               },
               {
-                "id": "UnusedDefine",
-                "shortDescription": {
-                  "text": "Unused define"
-                },
-                "fullDescription": {
-                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
-                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RELAX NG",
-                      "index": 11,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "HtmlUnknownAnchorTarget",
                 "shortDescription": {
                   "text": "Unresolved fragment in a link"
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "UnusedDefine",
+                "shortDescription": {
+                  "text": "Unused define"
+                },
+                "fullDescription": {
+                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
+                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RELAX NG",
+                      "index": 11,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6130,40 +6130,6 @@
                 ]
               },
               {
-                "id": "LossyEncoding",
-                "shortDescription": {
-                  "text": "Lossy encoding"
-                },
-                "fullDescription": {
-                  "text": "Reports characters that cannot be displayed because of the current document encoding. Examples: If you type international characters in a document with the US-ASCII charset, some characters will be lost on save. If you load a UTF-8-encoded file using the ISO-8859-1 one-byte charset, some characters will be displayed incorrectly. You can fix this by changing the file encoding either by specifying the encoding directly in the file, e.g. by editing 'encoding=' attribute in the XML prolog of XML file, or by changing the corresponding options in Settings | Editor | File Encodings.",
-                  "markdown": "Reports characters that cannot be displayed because of the current document encoding.\n\nExamples:\n\n* If you type international characters in a document with the **US-ASCII** charset, some characters will be lost on save.\n* If you load a **UTF-8** -encoded file using the **ISO-8859-1** one-byte charset, some characters will be displayed incorrectly.\n\nYou can fix this by changing the file encoding\neither by specifying the encoding directly in the file, e.g. by editing `encoding=` attribute in the XML prolog of XML file,\nor by changing the corresponding options in **Settings \\| Editor \\| File Encodings**."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Internationalization",
-                      "index": 14,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpEscapedMetaCharacter",
                 "shortDescription": {
                   "text": "Escaped meta character"
@@ -6187,6 +6153,40 @@
                     "target": {
                       "id": "RegExp",
                       "index": 5,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "LossyEncoding",
+                "shortDescription": {
+                  "text": "Lossy encoding"
+                },
+                "fullDescription": {
+                  "text": "Reports characters that cannot be displayed because of the current document encoding. Examples: If you type international characters in a document with the US-ASCII charset, some characters will be lost on save. If you load a UTF-8-encoded file using the ISO-8859-1 one-byte charset, some characters will be displayed incorrectly. You can fix this by changing the file encoding either by specifying the encoding directly in the file, e.g. by editing 'encoding=' attribute in the XML prolog of XML file, or by changing the corresponding options in Settings | Editor | File Encodings.",
+                  "markdown": "Reports characters that cannot be displayed because of the current document encoding.\n\nExamples:\n\n* If you type international characters in a document with the **US-ASCII** charset, some characters will be lost on save.\n* If you load a **UTF-8** -encoded file using the **ISO-8859-1** one-byte charset, some characters will be displayed incorrectly.\n\nYou can fix this by changing the file encoding\neither by specifying the encoding directly in the file, e.g. by editing `encoding=` attribute in the XML prolog of XML file,\nor by changing the corresponding options in **Settings \\| Editor \\| File Encodings**."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Internationalization",
+                      "index": 14,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,12 +6737,12 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "4d11c2412a77e092ef22b8c5959855fc4fd02fbc",
+          "revisionId": "6fe3f8b33d572c62e323a19b697b5704b81eba33",
           "branch": "beta",
           "properties": {
-            "lastAuthorName": "pandabear189",
+            "lastAuthorName": "SpaceT0",
             "vcsType": "Git",
-            "lastAuthorEmail": "88685021+pandabear189@users.noreply.github.com",
+            "lastAuthorEmail": "space@spaceturtle.tech",
             "tags": [
               "lastAuthorEmail",
               "lastAuthorName",
@@ -13766,7 +13766,7 @@
                 "region": {
                   "startLine": 890,
                   "startColumn": 13,
-                  "charOffset": 32331,
+                  "charOffset": 32339,
                   "charLength": 7,
                   "snippet": {
                     "text": "channel"
@@ -13776,7 +13776,7 @@
                 "contextRegion": {
                   "startLine": 888,
                   "startColumn": 1,
-                  "charOffset": 32251,
+                  "charOffset": 32259,
                   "charLength": 199,
                   "snippet": {
                     "text": "\n        elif InteractionResponse[\"custom_id\"] == \"ch_lock_CANCEL\":\n            channel = interaction.message.channel\n            author = interaction.user\n            await interaction.channel.send("
@@ -13792,7 +13792,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "97657c5809305ee077a63398fb410aaa823bbe4ca8667ed204fd729275b1f11c"
+            "equalIndicator/v1": "9dcb0f53984cd27c5d44d41b0dd54fc08021aa43d6f70f62c135d4a957517dec"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -13819,7 +13819,7 @@
                 "region": {
                   "startLine": 898,
                   "startColumn": 13,
-                  "charOffset": 32669,
+                  "charOffset": 32677,
                   "charLength": 7,
                   "snippet": {
                     "text": "channel"
@@ -13829,7 +13829,7 @@
                 "contextRegion": {
                   "startLine": 896,
                   "startColumn": 1,
-                  "charOffset": 32594,
+                  "charOffset": 32602,
                   "charLength": 168,
                   "snippet": {
                     "text": "\n        elif InteractionResponse[\"custom_id\"] == \"ch_lock_C\":\n            channel = self.bot.get_channel(interaction.channel_id)\n            author = interaction.user\n"
@@ -13845,7 +13845,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "2e3a8e8870b60ae00d9d39f780be739aaa779696df2702289d56b786ecc2e526"
+            "equalIndicator/v1": "634bf805c60ebc28bd0e83163e45523bdef16838602e8193f94b6c656676a88f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -13872,7 +13872,7 @@
                 "region": {
                   "startLine": 953,
                   "startColumn": 13,
-                  "charOffset": 34860,
+                  "charOffset": 34897,
                   "charLength": 3,
                   "snippet": {
                     "text": "msg"
@@ -13882,7 +13882,7 @@
                 "contextRegion": {
                   "startLine": 951,
                   "startColumn": 1,
-                  "charOffset": 34792,
+                  "charOffset": 34829,
                   "charLength": 225,
                   "snippet": {
                     "text": "                )\n            author = interaction.user\n            msg = await interaction.channel.send(\n                f\"Please wait, creating your transcript {Emoji.loadingGIF2}\\n**THIS MAY TAKE SOME TIME**\"\n            )"
@@ -13898,7 +13898,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "137ee84f5afbf6b9993992d893e2a728821ec23c3c29d88d8bf7e657ed34cd71"
+            "equalIndicator/v1": "cc17e4aa10059643bfbba8830cb2597068f822d65174c97063141cade9d996ce"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -13923,9 +13923,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1091,
+                  "startLine": 1094,
                   "startColumn": 13,
-                  "charOffset": 40862,
+                  "charOffset": 41384,
                   "charLength": 5,
                   "snippet": {
                     "text": "query"
@@ -13933,9 +13933,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1089,
+                  "startLine": 1092,
                   "startColumn": 1,
-                  "charOffset": 40813,
+                  "charOffset": 41335,
                   "charLength": 137,
                   "snippet": {
                     "text": "        )\n        if query.exists():\n            query = query.get()\n            embed = discord.Embed(\n                title=\"Confirm?\","
@@ -13951,7 +13951,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "32eeb7c219b9fc060bb53cea67d63863374018d6016813d86556225a329de3fa"
+            "equalIndicator/v1": "da332d2aa99a021e279bb3e7d7f5f3149bbb8c81ce7ae5b0b18ccc3ee58445c4"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -13976,9 +13976,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1134,
+                  "startLine": 1137,
                   "startColumn": 13,
-                  "charOffset": 42474,
+                  "charOffset": 42996,
                   "charLength": 5,
                   "snippet": {
                     "text": "LogCH"
@@ -13986,9 +13986,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1132,
+                  "startLine": 1135,
                   "startColumn": 1,
-                  "charOffset": 42321,
+                  "charOffset": 42843,
                   "charLength": 271,
                   "snippet": {
                     "text": "            TicketOwner = guild.get_member(entry.authorID)\n            messages = [message async for message in channel.history(limit=None)]\n            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)\n            authorList = []\n            if len(messages) == 0:"
@@ -14004,7 +14004,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "25f20ec403c3d3032fa0da35b3896e46825a12452b433afebaeb094111e6d036"
+            "equalIndicator/v1": "eaab196e8ad6fcf24830e26fa1000ec7da89ec0c8b9beba13696cd7f28e3595c"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -14029,9 +14029,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1135,
+                  "startLine": 1138,
                   "startColumn": 13,
-                  "charOffset": 42542,
+                  "charOffset": 43064,
                   "charLength": 10,
                   "snippet": {
                     "text": "authorList"
@@ -14039,9 +14039,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1133,
+                  "startLine": 1136,
                   "startColumn": 1,
-                  "charOffset": 42380,
+                  "charOffset": 42902,
                   "charLength": 237,
                   "snippet": {
                     "text": "            messages = [message async for message in channel.history(limit=None)]\n            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)\n            authorList = []\n            if len(messages) == 0:\n                continue"
@@ -14057,7 +14057,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8d63bfe85733900bc1fa09186ed313bb9d4740e9aa0f9cc7d8079d30f84a19d5"
+            "equalIndicator/v1": "8d47ab1b5b0c271b11e0c4eead098b43ff0b197e64e9ce78dd675764522daf8b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41072,9 +41072,9 @@
                   "startLine": 834,
                   "startColumn": 1,
                   "charOffset": 30308,
-                  "charLength": 153,
+                  "charLength": 161,
                   "snippet": {
-                    "text": "\n            try:\n                TicketOwner = guild.get_member(query.authorID)\n            except discord.NotFound:\n                await channel.send("
+                    "text": "\n            try:\n                TicketOwner = await guild.fetch_member(query.authorID)\n            except discord.NotFound:\n                await channel.send("
                   }
                 }
               },
@@ -41087,7 +41087,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "ae3130e83a00e897f37ee75b217dcb5e40420f8d65a76fd7430964349b0ddd4d"
+            "equalIndicator/v1": "86735c8571bb1f86d2aaa352ac836b58cbb64f207a7bb3b60478b107c1d99287"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41114,7 +41114,7 @@
                 "region": {
                   "startLine": 852,
                   "startColumn": 13,
-                  "charOffset": 31055,
+                  "charOffset": 31063,
                   "charLength": 12,
                   "snippet": {
                     "text": "ButtonViews2"
@@ -41124,7 +41124,7 @@
                 "contextRegion": {
                   "startLine": 850,
                   "startColumn": 1,
-                  "charOffset": 30963,
+                  "charOffset": 30971,
                   "charLength": 160,
                   "snippet": {
                     "text": "            )\n            embed.set_footer(text=\"This ticket has been closed!\")\n            ButtonViews2 = discord.ui.View()\n\n            ButtonViews2.add_item("
@@ -41140,7 +41140,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "b5b7ab5e543592cac349f7f35ed0bfc573904b140c161b0bb31c56877acd2e9e"
+            "equalIndicator/v1": "54bff105e8294ad72e8da9d18df2ca62e4e02feeabbc60517236e921f33af462"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41167,7 +41167,7 @@
                 "region": {
                   "startLine": 924,
                   "startColumn": 17,
-                  "charOffset": 33660,
+                  "charOffset": 33668,
                   "charLength": 11,
                   "snippet": {
                     "text": "TicketOwner"
@@ -41177,10 +41177,10 @@
                 "contextRegion": {
                   "startLine": 922,
                   "startColumn": 1,
-                  "charOffset": 33613,
-                  "charLength": 166,
+                  "charOffset": 33621,
+                  "charLength": 174,
                   "snippet": {
-                    "text": "            )\n            try:\n                TicketOwner = guild.get_member(query.authorID)\n            except discord.NotFound:\n                await channel.send("
+                    "text": "            )\n            try:\n                TicketOwner = await guild.fetch_member(query.authorID)\n            except discord.NotFound:\n                await channel.send("
                   }
                 }
               },
@@ -41193,7 +41193,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "7c8358ed1a98f209abdfa3a1d13a32c9205fbbebebb3ce56a93a51a67ac4b96f"
+            "equalIndicator/v1": "2b50bf9798b8cf4c2b62e9950f6b1e426a3261bad30f06b7d1a83adaea171c87"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41220,7 +41220,7 @@
                 "region": {
                   "startLine": 945,
                   "startColumn": 17,
-                  "charOffset": 34525,
+                  "charOffset": 34562,
                   "charLength": 18,
                   "snippet": {
                     "text": "ResponseLogChannel"
@@ -41230,10 +41230,10 @@
                 "contextRegion": {
                   "startLine": 943,
                   "startColumn": 1,
-                  "charOffset": 34412,
-                  "charLength": 240,
+                  "charOffset": 34428,
+                  "charLength": 261,
                   "snippet": {
-                    "text": "            channel = interaction.channel\n            if interaction.guild.id == MAIN_ID.g_main:\n                ResponseLogChannel: discord.TextChannel = self.bot.get_channel(\n                    MAIN_ID.ch_transcriptLogs\n                )"
+                    "text": "            channel: discord.TextChannel = interaction.channel\n            if interaction.guild.id == MAIN_ID.g_main:\n                ResponseLogChannel: discord.TextChannel = self.bot.get_channel(\n                    MAIN_ID.ch_transcriptLogs\n                )"
                   }
                 }
               },
@@ -41246,7 +41246,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "cf9a15a988d0478c5c9ca712e3208c70882d966594fe3c3ad06781c2b6cf0699"
+            "equalIndicator/v1": "baae9576fc681ec29c7a22eba6170e555b237573f3d3f260b4532e61803ad99d"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41273,7 +41273,7 @@
                 "region": {
                   "startLine": 949,
                   "startColumn": 17,
-                  "charOffset": 34687,
+                  "charOffset": 34724,
                   "charLength": 18,
                   "snippet": {
                     "text": "ResponseLogChannel"
@@ -41283,7 +41283,7 @@
                 "contextRegion": {
                   "startLine": 947,
                   "startColumn": 1,
-                  "charOffset": 34635,
+                  "charOffset": 34672,
                   "charLength": 174,
                   "snippet": {
                     "text": "                )\n            else:\n                ResponseLogChannel: discord.TextChannel = self.bot.get_channel(\n                    TECH_ID.ch_ticketLog\n                )"
@@ -41299,7 +41299,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "37cd139ed987b5efca461e415e8ee0b1055b1527819c86a286c0eaaf239abc47"
+            "equalIndicator/v1": "c54f2d8d7ca517b806bde5b3220c11461cc4ba32a3594091091d95afa1cf59dc"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41325,8 +41325,8 @@
                 },
                 "region": {
                   "startLine": 957,
-                  "startColumn": 24,
-                  "charOffset": 35042,
+                  "startColumn": 28,
+                  "charOffset": 35123,
                   "charLength": 6,
                   "snippet": {
                     "text": "S3_URL"
@@ -41336,10 +41336,10 @@
                 "contextRegion": {
                   "startLine": 955,
                   "startColumn": 1,
-                  "charOffset": 35004,
-                  "charLength": 150,
+                  "charOffset": 35041,
+                  "charLength": 202,
                   "snippet": {
-                    "text": "            )\n\n            msg, file, S3_URL = await TicketExport(\n                self, channel, ResponseLogChannel, author, None, True\n            )"
+                    "text": "            )\n            async with channel.typing():\n                msg, file, S3_URL = await TicketExport(\n                    self, channel, ResponseLogChannel, author, None, True\n                )"
                   }
                 }
               },
@@ -41352,7 +41352,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "586f0c9980284872c7e4f01fefb3c74d43ca1945127dbc8e509bfae900bb13d7"
+            "equalIndicator/v1": "343f776aa7393c67bd84a927c7402d609a1d5a2c2e79e485989d313f26583df3"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41379,7 +41379,7 @@
                 "region": {
                   "startLine": 1007,
                   "startColumn": 17,
-                  "charOffset": 37202,
+                  "charOffset": 37419,
                   "charLength": 18,
                   "snippet": {
                     "text": "ResponseLogChannel"
@@ -41389,7 +41389,7 @@
                 "contextRegion": {
                   "startLine": 1005,
                   "startColumn": 1,
-                  "charOffset": 37093,
+                  "charOffset": 37310,
                   "charLength": 236,
                   "snippet": {
                     "text": "            author = interaction.user\n            if interaction.guild.id == MAIN_ID.g_main:\n                ResponseLogChannel: discord.TextChannel = self.bot.get_channel(\n                    MAIN_ID.ch_transcriptLogs\n                )"
@@ -41405,7 +41405,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8aa802cc0f7aa8b5df4f25adc9b75f2b7f4d61e6488939b7a4cc8026222b57d8"
+            "equalIndicator/v1": "02e19150fc930ac04e893d1dff092705f5074c4417fb628ef57c02003a66ea2f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41432,7 +41432,7 @@
                 "region": {
                   "startLine": 1011,
                   "startColumn": 17,
-                  "charOffset": 37364,
+                  "charOffset": 37581,
                   "charLength": 18,
                   "snippet": {
                     "text": "ResponseLogChannel"
@@ -41442,7 +41442,7 @@
                 "contextRegion": {
                   "startLine": 1009,
                   "startColumn": 1,
-                  "charOffset": 37312,
+                  "charOffset": 37529,
                   "charLength": 174,
                   "snippet": {
                     "text": "                )\n            else:\n                ResponseLogChannel: discord.TextChannel = self.bot.get_channel(\n                    TECH_ID.ch_ticketLog\n                )"
@@ -41458,7 +41458,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "15137dee55d089cc4d834db8fe0bba48512c2414d38956126eb96b9dc617b40f"
+            "equalIndicator/v1": "b79a151b51731f5a8b34e7fc7ba7a49623a76d8c1ebc51aba2cb090628edcb2f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41485,7 +41485,7 @@
                 "region": {
                   "startLine": 1019,
                   "startColumn": 13,
-                  "charOffset": 37683,
+                  "charOffset": 37900,
                   "charLength": 4,
                   "snippet": {
                     "text": "msgO"
@@ -41495,7 +41495,7 @@
                 "contextRegion": {
                   "startLine": 1017,
                   "startColumn": 1,
-                  "charOffset": 37634,
+                  "charOffset": 37851,
                   "charLength": 224,
                   "snippet": {
                     "text": "                .get()\n            )\n            msgO = await interaction.channel.send(\n                f\"{author.mention}\\nPlease wait, generating a transcript {Emoji.loadingGIF2}\\n**THIS MAY TAKE SOME TIME**\"\n            )"
@@ -41511,7 +41511,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "4e732cbc58f27e4854767a5eb4f569b21f71bbf244d281939bcd094ef47c4ab7"
+            "equalIndicator/v1": "42c2aef2f3ab8b071c932f6f8b020c9a264699952919bcd39a40d30aa5baf40a"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41536,9 +41536,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1022,
-                  "startColumn": 13,
-                  "charOffset": 37871,
+                  "startLine": 1023,
+                  "startColumn": 17,
+                  "charOffset": 38133,
                   "charLength": 11,
                   "snippet": {
                     "text": "TicketOwner"
@@ -41546,12 +41546,12 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1020,
+                  "startLine": 1021,
                   "startColumn": 1,
-                  "charOffset": 37722,
-                  "charLength": 279,
+                  "charOffset": 38062,
+                  "charLength": 234,
                   "snippet": {
-                    "text": "                f\"{author.mention}\\nPlease wait, generating a transcript {Emoji.loadingGIF2}\\n**THIS MAY TAKE SOME TIME**\"\n            )\n            TicketOwner = self.bot.get_user(query.authorID)\n\n            messages = [message async for message in channel.history(limit=None)]"
+                    "text": "            )\n            async with channel.typing():\n                TicketOwner = self.bot.get_user(query.authorID)\n                if TicketOwner is None:\n                    TicketOwner = await self.bot.fetch_user(query.authorID)"
                   }
                 }
               },
@@ -41564,7 +41564,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "50ab486a9e2cf165ee23960f6ff44dbd579f9145a70e2e5e4453436f916a2075"
+            "equalIndicator/v1": "8e238a48e2da6cb7ecef51ea7cc2a3e859e61d1a2649efaf54105188b05a09e7"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41590,21 +41590,21 @@
                 },
                 "region": {
                   "startLine": 1025,
-                  "startColumn": 13,
-                  "charOffset": 38014,
-                  "charLength": 10,
+                  "startColumn": 21,
+                  "charOffset": 38241,
+                  "charLength": 11,
                   "snippet": {
-                    "text": "authorList"
+                    "text": "TicketOwner"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
                   "startLine": 1023,
                   "startColumn": 1,
-                  "charOffset": 37919,
-                  "charLength": 144,
+                  "charOffset": 38117,
+                  "charLength": 266,
                   "snippet": {
-                    "text": "\n            messages = [message async for message in channel.history(limit=None)]\n            authorList = []\n\n            for msg in messages:"
+                    "text": "                TicketOwner = self.bot.get_user(query.authorID)\n                if TicketOwner is None:\n                    TicketOwner = await self.bot.fetch_user(query.authorID)\n\n                messages = [message async for message in channel.history(limit=None)]"
                   }
                 }
               },
@@ -41617,7 +41617,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8e38bd2af381fe987e4cdcfeb483987d03e7d88ee02672a16c0336ff6b5f79ba"
+            "equalIndicator/v1": "1277520e1502c6edd4d870d357307bac56fee7acb36584ebdd152edfdca12c74"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41642,9 +41642,62 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1097,
+                  "startLine": 1028,
+                  "startColumn": 17,
+                  "charOffset": 38400,
+                  "charLength": 10,
+                  "snippet": {
+                    "text": "authorList"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 1026,
+                  "startColumn": 1,
+                  "charOffset": 38297,
+                  "charLength": 156,
+                  "snippet": {
+                    "text": "\n                messages = [message async for message in channel.history(limit=None)]\n                authorList = []\n\n                for msg in messages:"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "d2688bf2d6676525cca3263cdf67edda9e8bfcfa3ca9b2b3ea83cf3fa773bcb8"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/TicketDropdown.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 1100,
                   "startColumn": 13,
-                  "charOffset": 41081,
+                  "charOffset": 41603,
                   "charLength": 11,
                   "snippet": {
                     "text": "ButtonViews"
@@ -41652,9 +41705,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1095,
+                  "startLine": 1098,
                   "startColumn": 1,
-                  "charOffset": 41011,
+                  "charOffset": 41533,
                   "charLength": 166,
                   "snippet": {
                     "text": "                color=discord.Colour.red(),\n            )\n            ButtonViews = discord.ui.View()\n            ButtonViews.add_item(\n                ButtonHandler("
@@ -41670,7 +41723,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0fcc10124c0f17f9b82b3c1d3ef2bb994cb1d1f63805dd58304ff6e9908208a6"
+            "equalIndicator/v1": "70cc0cac99c183e7a2efd606a1de6d0cea8a6f479658cb4f486db83b5e643537"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41695,9 +41748,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1121,
+                  "startLine": 1124,
                   "startColumn": 15,
-                  "charOffset": 41918,
+                  "charOffset": 42440,
                   "charLength": 14,
                   "snippet": {
                     "text": "TicketInactive"
@@ -41705,9 +41758,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1119,
+                  "startLine": 1122,
                   "startColumn": 1,
-                  "charOffset": 41874,
+                  "charOffset": 42396,
                   "charLength": 159,
                   "snippet": {
                     "text": "\n    @tasks.loop(minutes=1.0)\n    async def TicketInactive(self):\n        TicketInfoTB = database.TicketInfo\n        guild = self.bot.get_guild(MAIN_ID.g_main)"
@@ -41723,7 +41776,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "5d6c44d9db446b88a4b7370f1ac57dd0bfbcee126fd060f1cd0c3a2418960ddd"
+            "equalIndicator/v1": "e1e24b96d9090f8ee56bc07f56e4c17ba8030293cbb550cd3ff477cdc8ab031c"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41748,9 +41801,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1122,
+                  "startLine": 1125,
                   "startColumn": 9,
-                  "charOffset": 41948,
+                  "charOffset": 42470,
                   "charLength": 12,
                   "snippet": {
                     "text": "TicketInfoTB"
@@ -41758,9 +41811,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1120,
+                  "startLine": 1123,
                   "startColumn": 1,
-                  "charOffset": 41875,
+                  "charOffset": 42397,
                   "charLength": 193,
                   "snippet": {
                     "text": "    @tasks.loop(minutes=1.0)\n    async def TicketInactive(self):\n        TicketInfoTB = database.TicketInfo\n        guild = self.bot.get_guild(MAIN_ID.g_main)\n        for entry in TicketInfoTB:"
@@ -41776,113 +41829,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "d1118b3c1576b1d4c26c368d85059abeede321d5d7f38e43eca82ae2da50626a"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/TicketDropdown.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 1131,
-                  "startColumn": 13,
-                  "charOffset": 42250,
-                  "charLength": 12,
-                  "snippet": {
-                    "text": "fetchMessage"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 1129,
-                  "startColumn": 1,
-                  "charOffset": 42212,
-                  "charLength": 249,
-                  "snippet": {
-                    "text": "                continue\n\n            fetchMessage = [message async for message in channel.history(limit=1)]\n            TicketOwner = guild.get_member(entry.authorID)\n            messages = [message async for message in channel.history(limit=None)]"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "549ad5ccac2fc42f4af625e1798e1bf8d6322f5b0e726c928473ac2f0f2a646f"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/TicketDropdown.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 1132,
-                  "startColumn": 13,
-                  "charOffset": 42333,
-                  "charLength": 11,
-                  "snippet": {
-                    "text": "TicketOwner"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 1130,
-                  "startColumn": 1,
-                  "charOffset": 42237,
-                  "charLength": 292,
-                  "snippet": {
-                    "text": "\n            fetchMessage = [message async for message in channel.history(limit=1)]\n            TicketOwner = guild.get_member(entry.authorID)\n            messages = [message async for message in channel.history(limit=None)]\n            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "af2d30584360b6fc591dd37d7b2fef66a06a4f931a2bbe786630f326d0a9daf6"
+            "equalIndicator/v1": "905750204e6ff959362ed65074f553690b9f8bb232c2e2f0aa830c646b64b6e4"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41909,20 +41856,20 @@
                 "region": {
                   "startLine": 1134,
                   "startColumn": 13,
-                  "charOffset": 42474,
-                  "charLength": 5,
+                  "charOffset": 42772,
+                  "charLength": 12,
                   "snippet": {
-                    "text": "LogCH"
+                    "text": "fetchMessage"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
                   "startLine": 1132,
                   "startColumn": 1,
-                  "charOffset": 42321,
-                  "charLength": 271,
+                  "charOffset": 42734,
+                  "charLength": 249,
                   "snippet": {
-                    "text": "            TicketOwner = guild.get_member(entry.authorID)\n            messages = [message async for message in channel.history(limit=None)]\n            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)\n            authorList = []\n            if len(messages) == 0:"
+                    "text": "                continue\n\n            fetchMessage = [message async for message in channel.history(limit=1)]\n            TicketOwner = guild.get_member(entry.authorID)\n            messages = [message async for message in channel.history(limit=None)]"
                   }
                 }
               },
@@ -41935,7 +41882,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "7d8e8ca0d2739f068d7b3c6fefa585ef09b3993a8155ae359c4991d437a22587"
+            "equalIndicator/v1": "d29c2e7f9649c3988e75f1a029297c65002fa8e7a17c6f3d219534f4aaebcd0c"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -41962,20 +41909,20 @@
                 "region": {
                   "startLine": 1135,
                   "startColumn": 13,
-                  "charOffset": 42542,
-                  "charLength": 10,
+                  "charOffset": 42855,
+                  "charLength": 11,
                   "snippet": {
-                    "text": "authorList"
+                    "text": "TicketOwner"
                   },
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
                   "startLine": 1133,
                   "startColumn": 1,
-                  "charOffset": 42380,
-                  "charLength": 237,
+                  "charOffset": 42759,
+                  "charLength": 292,
                   "snippet": {
-                    "text": "            messages = [message async for message in channel.history(limit=None)]\n            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)\n            authorList = []\n            if len(messages) == 0:\n                continue"
+                    "text": "\n            fetchMessage = [message async for message in channel.history(limit=1)]\n            TicketOwner = guild.get_member(entry.authorID)\n            messages = [message async for message in channel.history(limit=None)]\n            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)"
                   }
                 }
               },
@@ -41988,7 +41935,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "c397100f2b32c3803caeb8e0ae4b9272a3d9d169c7a80f857fd0a1445b70b1c0"
+            "equalIndicator/v1": "c6b3392e8de6f92c8a32e5e660c4f04847d74b700a4dc2d7219a6917d2f6dff2"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -42013,9 +41960,115 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1143,
+                  "startLine": 1137,
+                  "startColumn": 13,
+                  "charOffset": 42996,
+                  "charLength": 5,
+                  "snippet": {
+                    "text": "LogCH"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 1135,
+                  "startColumn": 1,
+                  "charOffset": 42843,
+                  "charLength": 271,
+                  "snippet": {
+                    "text": "            TicketOwner = guild.get_member(entry.authorID)\n            messages = [message async for message in channel.history(limit=None)]\n            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)\n            authorList = []\n            if len(messages) == 0:"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "31ddf72baa583ced474d769e84fe6d37a783bec32969e979e00778096b4703df"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/TicketDropdown.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 1138,
+                  "startColumn": 13,
+                  "charOffset": 43064,
+                  "charLength": 10,
+                  "snippet": {
+                    "text": "authorList"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 1136,
+                  "startColumn": 1,
+                  "charOffset": 42902,
+                  "charLength": 237,
+                  "snippet": {
+                    "text": "            messages = [message async for message in channel.history(limit=None)]\n            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)\n            authorList = []\n            if len(messages) == 0:\n                continue"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "589bd888c7b5823b22a01ab746102817f06797ccb8836a61ca097953ca28f5f7"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/TicketDropdown.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 1146,
                   "startColumn": 17,
-                  "charOffset": 42817,
+                  "charOffset": 43339,
                   "charLength": 12,
                   "snippet": {
                     "text": "ButtonViews2"
@@ -42023,9 +42076,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1141,
+                  "startLine": 1144,
                   "startColumn": 1,
-                  "charOffset": 42723,
+                  "charOffset": 43245,
                   "charLength": 166,
                   "snippet": {
                     "text": "                - timedelta(minutes=self.TICKET_INACTIVE_TIME)\n            ):\n                ButtonViews2 = discord.ui.View()\n\n                ButtonViews2.add_item("
@@ -42041,7 +42094,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "82ee2b402ca8aa5fc2cfd06bcf06474d964d95e5dd779e8d2b5e0d1c881736a3"
+            "equalIndicator/v1": "353ae169386e033101b530e73f5bd865c29175ea487b9a24dbd460dd5f7bce74"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -42066,9 +42119,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1220,
+                  "startLine": 1224,
                   "startColumn": 15,
-                  "charOffset": 45993,
+                  "charOffset": 46579,
                   "charLength": 13,
                   "snippet": {
                     "text": "sendCHTKTView"
@@ -42076,9 +42129,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1218,
+                  "startLine": 1222,
                   "startColumn": 1,
-                  "charOffset": 45938,
+                  "charOffset": 46524,
                   "charLength": 162,
                   "snippet": {
                     "text": "    @commands.command()\n    @is_botAdmin\n    async def sendCHTKTView(self, ctx):\n        MasterSubjectView = discord.ui.View()\n        MasterSubjectView.add_item("
@@ -42094,7 +42147,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "edc22303c15f133eeee4c3a7c1378052f1573ba54d58accbed1690c662616081"
+            "equalIndicator/v1": "11983cd06c33f0b5a8c411700e955f704464ac20b2acf29adb3b92682ca7efbe"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -42119,9 +42172,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1221,
+                  "startLine": 1225,
                   "startColumn": 9,
-                  "charOffset": 46027,
+                  "charOffset": 46613,
                   "charLength": 17,
                   "snippet": {
                     "text": "MasterSubjectView"
@@ -42129,9 +42182,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1219,
+                  "startLine": 1223,
                   "startColumn": 1,
-                  "charOffset": 45962,
+                  "charOffset": 46548,
                   "charLength": 169,
                   "snippet": {
                     "text": "    @is_botAdmin\n    async def sendCHTKTView(self, ctx):\n        MasterSubjectView = discord.ui.View()\n        MasterSubjectView.add_item(\n            SelectMenuHandler("
@@ -42147,7 +42200,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8a76ede3254733687ecdfbaea1dc6fd3f8869ab3f064fc92bc154af6a85dc6dc"
+            "equalIndicator/v1": "2818bfc1fc895a3ae5d0ff8a6ec330dc66c802ead6fd291f457cec24f11551fa"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -46360,8 +46413,8 @@
                 },
                 "region": {
                   "startLine": 958,
-                  "startColumn": 60,
-                  "charOffset": 35130,
+                  "startColumn": 64,
+                  "charOffset": 35215,
                   "charLength": 4,
                   "snippet": {
                     "text": "None"
@@ -46371,10 +46424,10 @@
                 "contextRegion": {
                   "startLine": 956,
                   "startColumn": 1,
-                  "charOffset": 35018,
-                  "charLength": 137,
+                  "charOffset": 35055,
+                  "charLength": 189,
                   "snippet": {
-                    "text": "\n            msg, file, S3_URL = await TicketExport(\n                self, channel, ResponseLogChannel, author, None, True\n            )\n"
+                    "text": "            async with channel.typing():\n                msg, file, S3_URL = await TicketExport(\n                    self, channel, ResponseLogChannel, author, None, True\n                )\n"
                   }
                 }
               },
@@ -46387,7 +46440,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "d007727865abc2c6ac51ce470c496173708941fadeb0ebe846de7e1b0f190049"
+            "equalIndicator/v1": "ca9582f7d51091e29aec278d30d1430fe3ea6f0806d98d297c4123f4563cc0c4"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -46412,9 +46465,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 1124,
+                  "startLine": 1127,
                   "startColumn": 22,
-                  "charOffset": 42055,
+                  "charOffset": 42577,
                   "charLength": 12,
                   "snippet": {
                     "text": "TicketInfoTB"
@@ -46422,9 +46475,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 1122,
+                  "startLine": 1125,
                   "startColumn": 1,
-                  "charOffset": 41940,
+                  "charOffset": 42462,
                   "charLength": 225,
                   "snippet": {
                     "text": "        TicketInfoTB = database.TicketInfo\n        guild = self.bot.get_guild(MAIN_ID.g_main)\n        for entry in TicketInfoTB:\n            channel: discord.TextChannel = self.bot.get_channel(\n                entry.ChannelID"
@@ -46440,7 +46493,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8f12fb3ef2883ac45ed0d1d11ac5e8fa913ce56b7360817198a411521e4c0f60"
+            "equalIndicator/v1": "64061ecdda22caa5271a8d68d4b15c4405855dfff560e47ca81c6d1f4c4db0e3"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -46451,8 +46504,8 @@
         }
       ],
       "automationDetails": {
-        "id": "project/qodana/2022-04-04",
-        "guid": "63e8e54a-b30a-49a5-9610-0e540691c3a5"
+        "id": "project/qodana/2022-04-05",
+        "guid": "c0a660a7-1507-4d25-9893-a9775a61e650"
       },
       "newlineSequences": [
         "\r\n",
