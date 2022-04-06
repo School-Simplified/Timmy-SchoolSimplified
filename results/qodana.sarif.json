@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -3602,19 +3602,19 @@
                 ]
               },
               {
-                "id": "PyStubPackagesCompatibilityInspection",
+                "id": "PyProtectedMemberInspection",
                 "shortDescription": {
-                  "text": "Incompatible stub packages"
+                  "text": "Accessing a protected member of a class or a module"
                 },
                 "fullDescription": {
-                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
-                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
+                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
+                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3636,19 +3636,19 @@
                 ]
               },
               {
-                "id": "PyProtectedMemberInspection",
+                "id": "PyStubPackagesCompatibilityInspection",
                 "shortDescription": {
-                  "text": "Accessing a protected member of a class or a module"
+                  "text": "Incompatible stub packages"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
-                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
+                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
+                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -4464,40 +4464,6 @@
                 ]
               },
               {
-                "id": "JsonSchemaDeprecation",
-                "shortDescription": {
-                  "text": "Deprecated JSON property"
-                },
-                "fullDescription": {
-                  "text": "Reports a deprecated property in a JSON file. Note that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'.",
-                  "markdown": "Reports a deprecated property in a JSON file.  \nNote that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JSON and JSON5",
-                      "index": 4,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "XmlDuplicatedId",
                 "shortDescription": {
                   "text": "Duplicate 'id' attribute"
@@ -4521,6 +4487,40 @@
                     "target": {
                       "id": "XML",
                       "index": 3,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "JsonSchemaDeprecation",
+                "shortDescription": {
+                  "text": "Deprecated JSON property"
+                },
+                "fullDescription": {
+                  "text": "Reports a deprecated property in a JSON file. Note that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'.",
+                  "markdown": "Reports a deprecated property in a JSON file.  \nNote that deprecation mechanism is not defined in the JSON Schema specification yet, and this inspection uses a non-standard extension 'deprecationMessage'."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JSON and JSON5",
+                      "index": 4,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5586,40 +5586,6 @@
                 ]
               },
               {
-                "id": "XmlDeprecatedElement",
-                "shortDescription": {
-                  "text": "Deprecated symbol"
-                },
-                "fullDescription": {
-                  "text": "Reports a deprecated XML element or attribute. Symbols can be marked by XML comment or documentation tag with text 'deprecated'.",
-                  "markdown": "Reports a deprecated XML element or attribute.\n\nSymbols can be marked by XML comment or documentation tag with text 'deprecated'."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "XML",
-                      "index": 3,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpRedundantNestedCharacterClass",
                 "shortDescription": {
                   "text": "Redundant nested character class"
@@ -5643,6 +5609,40 @@
                     "target": {
                       "id": "RegExp",
                       "index": 5,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "XmlDeprecatedElement",
+                "shortDescription": {
+                  "text": "Deprecated symbol"
+                },
+                "fullDescription": {
+                  "text": "Reports a deprecated XML element or attribute. Symbols can be marked by XML comment or documentation tag with text 'deprecated'.",
+                  "markdown": "Reports a deprecated XML element or attribute.\n\nSymbols can be marked by XML comment or documentation tag with text 'deprecated'."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "XML",
+                      "index": 3,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5688,40 +5688,6 @@
                 ]
               },
               {
-                "id": "HtmlExtraClosingTag",
-                "shortDescription": {
-                  "text": "Redundant closing tag"
-                },
-                "fullDescription": {
-                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
-                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "ideaSeverity": "ERROR",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpOctalEscape",
                 "shortDescription": {
                   "text": "Octal escape"
@@ -5756,19 +5722,19 @@
                 ]
               },
               {
-                "id": "HtmlUnknownAnchorTarget",
+                "id": "HtmlExtraClosingTag",
                 "shortDescription": {
-                  "text": "Unresolved fragment in a link"
+                  "text": "Redundant closing tag"
                 },
                 "fullDescription": {
-                  "text": "Reports an unresolved last part of an URL after the '#' sign.",
-                  "markdown": "Reports an unresolved last part of an URL after the `#` sign."
+                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
+                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "error",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "ERROR",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "RELAX NG",
                       "index": 11,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "HtmlUnknownAnchorTarget",
+                "shortDescription": {
+                  "text": "Unresolved fragment in a link"
+                },
+                "fullDescription": {
+                  "text": "Reports an unresolved last part of an URL after the '#' sign.",
+                  "markdown": "Reports an unresolved last part of an URL after the `#` sign."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,12 +6737,12 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "fc9e6e098fffdd94d5dd498bf7818256ce42c49c",
+          "revisionId": "02d15000654d5bc7679f06c2de20754b354bb864",
           "branch": "beta",
           "properties": {
-            "lastAuthorName": "SpaceT0",
+            "lastAuthorName": "pandabear189",
             "vcsType": "Git",
-            "lastAuthorEmail": "space@spaceturtle.tech",
+            "lastAuthorEmail": "88685021+pandabear189@users.noreply.github.com",
             "tags": [
               "lastAuthorEmail",
               "lastAuthorName",
@@ -8943,7 +8943,7 @@
                 "region": {
                   "startLine": 85,
                   "startColumn": 15,
-                  "charOffset": 2367,
+                  "charOffset": 2357,
                   "charLength": 13,
                   "snippet": {
                     "text": "before_invoke"
@@ -8953,7 +8953,7 @@
                 "contextRegion": {
                   "startLine": 83,
                   "startColumn": 1,
-                  "charOffset": 2295,
+                  "charOffset": 2285,
                   "charLength": 157,
                   "snippet": {
                     "text": "        return await on_command_error_(self, ctx, error)\n\n    async def before_invoke(self, ctx: commands.Context):\n        return await before_invoke_(ctx)\n"
@@ -8969,7 +8969,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "6808a01dcfbfcd0e0591953d6242edeb708a25c3c43ceca9820af7c4f6deea20"
+            "equalIndicator/v1": "7dd77128c78dae3c5a722bba6c80c057d3cac13fc64de7f5c81a39b696285422"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -8996,7 +8996,7 @@
                 "region": {
                   "startLine": 88,
                   "startColumn": 15,
-                  "charOffset": 2467,
+                  "charOffset": 2457,
                   "charLength": 5,
                   "snippet": {
                     "text": "check"
@@ -9006,7 +9006,7 @@
                 "contextRegion": {
                   "startLine": 86,
                   "startColumn": 1,
-                  "charOffset": 2411,
+                  "charOffset": 2401,
                   "charLength": 135,
                   "snippet": {
                     "text": "        return await before_invoke_(ctx)\n\n    async def check(self, ctx: commands.Context):\n        return await main_mode_check_(ctx)\n"
@@ -9022,7 +9022,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "e35dee25d4f7e56ce56d4760cc94667b689069c00614ba72a80049fca420c75a"
+            "equalIndicator/v1": "69d9a3574df046dd7314ee56e470ae877d6218ece91c20d37f2a09c351143d61"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -9049,7 +9049,7 @@
                 "region": {
                   "startLine": 91,
                   "startColumn": 15,
-                  "charOffset": 2561,
+                  "charOffset": 2551,
                   "charLength": 10,
                   "snippet": {
                     "text": "setup_hook"
@@ -9059,7 +9059,7 @@
                 "contextRegion": {
                   "startLine": 89,
                   "startColumn": 1,
-                  "charOffset": 2503,
+                  "charOffset": 2493,
                   "charLength": 167,
                   "snippet": {
                     "text": "        return await main_mode_check_(ctx)\n\n    async def setup_hook(self) -> None:\n        # for guild in self.guilds:\n        #     await self.tree.sync(guild=guild)"
@@ -9075,7 +9075,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "fe822cecdc5ea9d675de3cda529176f8f85f38cec5b1342480ae2369d759abb3"
+            "equalIndicator/v1": "9313c4570ec08772e3e2a4591e6b9bf3422f64191fc8e0eb7b8864e0b0236fda"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10956,8 +10956,8 @@
                 },
                 "region": {
                   "startLine": 40,
-                  "startColumn": 42,
-                  "charOffset": 1085,
+                  "startColumn": 57,
+                  "charOffset": 1100,
                   "charLength": 4,
                   "snippet": {
                     "text": "user"
@@ -10968,9 +10968,9 @@
                   "startLine": 38,
                   "startColumn": 1,
                   "charOffset": 1014,
-                  "charLength": 194,
+                  "charLength": 209,
                   "snippet": {
-                    "text": "\n    @commands.Cog.listener()\n    async def on_member_ban(self, guild, user):\n        \"\"\"\n        Pycord doesn't give us the information we need so we need to dig deeper and query the audit logs"
+                    "text": "\n    @commands.Cog.listener()\n    async def on_member_ban(self, guild: discord.Guild, user):\n        \"\"\"\n        Pycord doesn't give us the information we need so we need to dig deeper and query the audit logs"
                   }
                 }
               },
@@ -10983,7 +10983,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "55d471749eb4a1a174d8ff14ef73595b7673607080224083974ddb2692032a40"
+            "equalIndicator/v1": "afdfe107d006e515043f3d2b5e0d6bb6be070e724960a7bfbd99640742ee6a13"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -14720,7 +14720,7 @@
                 "region": {
                   "startLine": 47,
                   "startColumn": 24,
-                  "charOffset": 1227,
+                  "charOffset": 1217,
                   "charLength": 3,
                   "snippet": {
                     "text": "bot"
@@ -14730,7 +14730,7 @@
                 "contextRegion": {
                   "startLine": 45,
                   "startColumn": 1,
-                  "charOffset": 1153,
+                  "charOffset": 1143,
                   "charLength": 146,
                   "snippet": {
                     "text": "\nclass TimmyCommandTree(app_commands.CommandTree):\n    def __init__(self, bot: commands.Bot):\n        super().__init__(bot)\n        self.bot = bot"
@@ -14746,7 +14746,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "281a621c708b5fd9f6a655880a9f7f667ebb3efabf0fb78adbe82407bcd17b06"
+            "equalIndicator/v1": "db8c744c7a8a54a61f54eb7a4930c35011a4bc9fd57e8e225284f93bc4892267"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -20126,7 +20126,7 @@
                 "region": {
                   "startLine": 62,
                   "startColumn": 17,
-                  "charOffset": 1750,
+                  "charOffset": 1765,
                   "charLength": 14,
                   "snippet": {
                     "text": "banReasonAUDIT"
@@ -20136,7 +20136,7 @@
                 "contextRegion": {
                   "startLine": 60,
                   "startColumn": 1,
-                  "charOffset": 1616,
+                  "charOffset": 1631,
                   "charLength": 226,
                   "snippet": {
                     "text": "            # We need to check who banned the person.\n            if moderator.id == 548410451818708993:  # Wick's ID\n                banReasonAUDIT = logs.reason\n\n                if \"No reason specified by\" in banReasonAUDIT:"
@@ -20152,7 +20152,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "1a2bf6519acfdc3ec686ea50f6ea58628b9bb8829ddec90962dc830bbc4bfe1f"
+            "equalIndicator/v1": "bc36c032cf2afb4a2e6d0c17ccf1cd920dd1a9e4b42c244e77080502cb9faf9a"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -20179,7 +20179,7 @@
                 "region": {
                   "startLine": 65,
                   "startColumn": 29,
-                  "charOffset": 1871,
+                  "charOffset": 1886,
                   "charLength": 15,
                   "snippet": {
                     "text": "fullUsernameMOD"
@@ -20189,7 +20189,7 @@
                 "contextRegion": {
                   "startLine": 63,
                   "startColumn": 1,
-                  "charOffset": 1779,
+                  "charOffset": 1794,
                   "charLength": 203,
                   "snippet": {
                     "text": "\n                if \"No reason specified by\" in banReasonAUDIT:\n                    random, fullUsernameMOD = banReasonAUDIT.split(\n                        \"No reason specified by \"\n                    )"
@@ -20205,7 +20205,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "289d6918afdb7ebe2bd49172e9532983379d5bb70270a6078ec1a7ee2fcaaeb9"
+            "equalIndicator/v1": "b944939a62c99b5ad07f2900681f093314f0078bd9852af28888205a63048821"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -20232,7 +20232,7 @@
                 "region": {
                   "startLine": 68,
                   "startColumn": 21,
-                  "charOffset": 2003,
+                  "charOffset": 2018,
                   "charLength": 9,
                   "snippet": {
                     "text": "banReason"
@@ -20242,7 +20242,7 @@
                 "contextRegion": {
                   "startLine": 66,
                   "startColumn": 1,
-                  "charOffset": 1911,
+                  "charOffset": 1926,
                   "charLength": 143,
                   "snippet": {
                     "text": "                        \"No reason specified by \"\n                    )\n                    banReason = \"None Specified\"\n\n                else:"
@@ -20258,7 +20258,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "1b602777aaffc3c522d0c34fd9f2068881ec17ea67666df33dffaa2b95e207f0"
+            "equalIndicator/v1": "96a2b1ab2c8b5ebf6da293ac0c32dc0cc5e717c24fb5a9edfe02d6d175ed8495"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -20285,7 +20285,7 @@
                 "region": {
                   "startLine": 71,
                   "startColumn": 21,
-                  "charOffset": 2075,
+                  "charOffset": 2090,
                   "charLength": 9,
                   "snippet": {
                     "text": "banReason"
@@ -20295,7 +20295,7 @@
                 "contextRegion": {
                   "startLine": 69,
                   "startColumn": 1,
-                  "charOffset": 2032,
+                  "charOffset": 2047,
                   "charLength": 158,
                   "snippet": {
                     "text": "\n                else:\n                    banReason = re.match(r\"[^[]*\\[([^]]*)\\]\", banReasonAUDIT).groups()[\n                        0\n                    ]"
@@ -20311,7 +20311,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "427c44cb7196e3d5bcd6bef9c2453a46680155a1ba836af8ea2105491a99b15f"
+            "equalIndicator/v1": "3196e88c3ad134fe57eb954858ecb5f6e3ee1ce499b75c4a52724d0f4b6b4cad"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -20338,7 +20338,7 @@
                 "region": {
                   "startLine": 76,
                   "startColumn": 33,
-                  "charOffset": 2249,
+                  "charOffset": 2264,
                   "charLength": 15,
                   "snippet": {
                     "text": "fullUsernameMOD"
@@ -20348,7 +20348,7 @@
                 "contextRegion": {
                   "startLine": 74,
                   "startColumn": 1,
-                  "charOffset": 2191,
+                  "charOffset": 2206,
                   "charLength": 190,
                   "snippet": {
                     "text": "\n                    try:\n                        random, fullUsernameMOD = banReasonAUDIT.split(\"- \")\n                    except ValueError:\n                        fullUsernameMOD = \"Wick\""
@@ -20364,7 +20364,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "84deaffbb939c6a3935787b8d4bbdc231356814a9335121aa87292095e4149f7"
+            "equalIndicator/v1": "9c21dec92d989b644e8b0e17158c9b1b0d3e0eb7c029c23848fbac6512464430"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -20391,7 +20391,7 @@
                 "region": {
                   "startLine": 78,
                   "startColumn": 25,
-                  "charOffset": 2357,
+                  "charOffset": 2372,
                   "charLength": 15,
                   "snippet": {
                     "text": "fullUsernameMOD"
@@ -20401,7 +20401,7 @@
                 "contextRegion": {
                   "startLine": 76,
                   "startColumn": 1,
-                  "charOffset": 2217,
+                  "charOffset": 2232,
                   "charLength": 183,
                   "snippet": {
                     "text": "                        random, fullUsernameMOD = banReasonAUDIT.split(\"- \")\n                    except ValueError:\n                        fullUsernameMOD = \"Wick\"\n\n            else:"
@@ -20417,7 +20417,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "21b42171de91566afb2dcca9ca4d612e797e975b81f6515e90be5b1daadd2983"
+            "equalIndicator/v1": "a6efe3e906c80ca9372f728e2073c979ab74b5768c1bc173ae278c3bfa98229a"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -20444,7 +20444,7 @@
                 "region": {
                   "startLine": 81,
                   "startColumn": 17,
-                  "charOffset": 2417,
+                  "charOffset": 2432,
                   "charLength": 9,
                   "snippet": {
                     "text": "banReason"
@@ -20454,7 +20454,7 @@
                 "contextRegion": {
                   "startLine": 79,
                   "startColumn": 1,
-                  "charOffset": 2382,
+                  "charOffset": 2397,
                   "charLength": 191,
                   "snippet": {
                     "text": "\n            else:\n                banReason = logs.reason\n                # Get full username with tag\n                fullUsernameMOD = f\"{moderator.display_name}#{moderator.discriminator}\""
@@ -20470,7 +20470,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "1d40fcc0d14f2357c769b609175846a9559512adb9be891814c093ad90764026"
+            "equalIndicator/v1": "4d9432d9aefeebe760014f0e168bc17b52ab301728113e9b1bfbc2c919da8c06"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -20497,7 +20497,7 @@
                 "region": {
                   "startLine": 83,
                   "startColumn": 17,
-                  "charOffset": 2502,
+                  "charOffset": 2517,
                   "charLength": 15,
                   "snippet": {
                     "text": "fullUsernameMOD"
@@ -20507,7 +20507,7 @@
                 "contextRegion": {
                   "startLine": 81,
                   "startColumn": 1,
-                  "charOffset": 2401,
+                  "charOffset": 2416,
                   "charLength": 248,
                   "snippet": {
                     "text": "                banReason = logs.reason\n                # Get full username with tag\n                fullUsernameMOD = f\"{moderator.display_name}#{moderator.discriminator}\"\n\n            # Okay now we got our reason, we need to get a few more things"
@@ -20523,7 +20523,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "5e7e1aaa5da2b05f1f76ed907e48052cb7f85f5471a19c03991d62e1c6751ad0"
+            "equalIndicator/v1": "0101c5dc739cf5054f388ffa7d789e3aaad8afc0ae8323badcc1e9a29de61b29"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -20550,7 +20550,7 @@
                 "region": {
                   "startLine": 89,
                   "startColumn": 13,
-                  "charOffset": 2783,
+                  "charOffset": 2798,
                   "charLength": 18,
                   "snippet": {
                     "text": "fullUsernameTARGET"
@@ -20560,7 +20560,7 @@
                 "contextRegion": {
                   "startLine": 87,
                   "startColumn": 1,
-                  "charOffset": 2729,
+                  "charOffset": 2744,
                   "charLength": 187,
                   "snippet": {
                     "text": "\n            # Get full username with tag\n            fullUsernameTARGET = f\"{target.display_name}#{target.discriminator}\"\n\n            # Get everything into a list so we can bulk insert."
@@ -20576,7 +20576,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0c423f9bc66d15bc2bd57a0132fc9c834948cde30fa4f05559ad7969c7db85d3"
+            "equalIndicator/v1": "782e7d47023ea96e5ad5ea41cd580ed93d2227136747deb5050e7547d1fee46f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -20603,7 +20603,7 @@
                 "region": {
                   "startLine": 105,
                   "startColumn": 13,
-                  "charOffset": 3252,
+                  "charOffset": 3267,
                   "charLength": 10,
                   "snippet": {
                     "text": "ModChannel"
@@ -20613,7 +20613,7 @@
                 "contextRegion": {
                   "startLine": 103,
                   "startColumn": 1,
-                  "charOffset": 3167,
+                  "charOffset": 3182,
                   "charLength": 169,
                   "snippet": {
                     "text": "            sheet.insert_row(row, 2)  # Insert data, and boom. We done!\n\n            ModChannel = self.bot.get_channel(self.ModLogID)\n\n            embed = discord.Embed("
@@ -20629,7 +20629,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "f5f14aa41dce65871a3706aebe6109491a9a9e4b906eb6a45c38101b89fc0eef"
+            "equalIndicator/v1": "5f2355712158e72cef95478b45a55efd51f9623c2919d6a2a722eba30826453a"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -46558,7 +46558,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-04-06",
-        "guid": "0ae0840d-e109-4e67-b560-1c4f8e068510"
+        "guid": "e6a8068b-6fbe-4dd4-ada5-816fc24e39ca"
       },
       "newlineSequences": [
         "\r\n",
@@ -46935,7 +46935,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 4004,
+                    "charLength": 4019,
                     "snippet": {
                       "text": "import asyncio import json import os import re from datetime import datetime import discord import ..."
                     },
@@ -46960,7 +46960,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "7363646c40b599ffd4158c5fce8361e1d5caa6889d1c9c2c19dada04033173a7"
+              "equalIndicator/v1": "08af44ac58143cc4b13c0985a7433e27440d0e203bab115c3a5d69989c15d8fe"
             },
             "properties": {
               "ideaSeverity": "ERROR"
