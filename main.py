@@ -4,7 +4,7 @@ Copyright (C) School Simplified - All Rights Reserved
  * Written by School Simplified, IT Dept. <timmy@schoolsimplified.org>, March 2022
 """
 
-__version__ = "beta3.0.0"
+__version__ = "beta3.0.1"
 __author__ = "School Simplified, IT Dept."
 __author_email__ = "timmy@schoolsimplified.org"
 
@@ -116,6 +116,10 @@ class Timmy(commands.Bot):
 
         return await super().is_owner(user)
 
+    @property
+    def version(self):
+        return __version__
+
 
 bot = Timmy()
 
@@ -131,6 +135,7 @@ if os.getenv("DSN_SENTRY") is not None:
         traces_sample_rate=1.0,
         integrations=[FlaskIntegration(), sentry_logging],
     )
+
 initializeDB(bot)
 
 bot.run(os.getenv("TOKEN"))
