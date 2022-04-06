@@ -432,7 +432,7 @@ class Engagement(commands.Cog):
     @guilds(MAIN_ID.g_main)
     async def _guess(self, interaction: discord.Interaction, guess: str):
         """
-        :param guess: The guess you are making to the weekly puzzle
+        Make a guess for the weekly puzzle
         """
         embed = discord.Embed(
             color=0xC387FF,
