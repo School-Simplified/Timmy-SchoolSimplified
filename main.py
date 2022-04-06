@@ -71,7 +71,7 @@ class Timmy(commands.Bot):
             tree_cls=TimmyCommandTree,
             activity=discord.Activity(
                 type=discord.ActivityType.watching,
-                name="+help | ssimpl.org/timmy",
+                name="/help | ssimpl.org/timmy",
             ),
         )
         self.help_command = None
