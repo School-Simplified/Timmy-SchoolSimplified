@@ -1,10 +1,14 @@
-from typing import Dict, List, Literal, Union
+from __future__ import annotations
+from typing import Dict, List, Literal, Union, TYPE_CHECKING
 
 from discord.ext import commands
 from discord.app_commands import command, describe, Group, guilds, check
 import discord
 from core import database
 from core.common import MAIN_ID, SET_ID, Emoji
+
+if TYPE_CHECKING:
+    from main import Timmy
 
 blacklist = []
 
@@ -23,7 +27,7 @@ def reload_blacklist():
 
 
 class SetSuggestBlacklist(Group):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: 'Timmy'):
         super().__init__(
             name="set_blacklist",
             guild_ids=[MAIN_ID.g_main, SET_ID.g_set]
@@ -31,7 +35,7 @@ class SetSuggestBlacklist(Group):
         self.bot = bot
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return interaction.user.id == 752984497259151370
+        return interaction.user.id in [752984497259151370, 747126643587416174]
 
     @command(name="add")
     @describe(user="User ID or mention")
