@@ -11,7 +11,7 @@ __author_email__ = "timmy@schoolsimplified.org"
 import faulthandler
 import logging
 import os
-from typing import Optional, Union
+from typing import Union
 
 import discord
 from alive_progress import alive_bar
