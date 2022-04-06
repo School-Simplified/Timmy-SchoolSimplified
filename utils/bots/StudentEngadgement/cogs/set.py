@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Dict, List, Literal, Union, TYPE_CHECKING
 
 from discord.ext import commands
@@ -26,7 +27,7 @@ def reload_blacklist():
 
 
 class SetSuggestBlacklist(Group):
-    def __init__(self, bot: Timmy):
+    def __init__(self, bot: 'Timmy'):
         super().__init__(
             name="set_blacklist",
             guild_ids=[MAIN_ID.g_main, SET_ID.g_set]
