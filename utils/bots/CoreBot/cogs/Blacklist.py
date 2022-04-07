@@ -22,6 +22,7 @@ class BlacklistCMD(commands.Cog, Group):
             description="Manage the bot's blacklist"
         )
         self.bot = bot
+        self.__cog_name__ = "Set Blacklist"
 
     @property
     def display_emoji(self) -> str:
