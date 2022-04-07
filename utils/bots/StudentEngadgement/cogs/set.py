@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import collections
 from typing import Dict, List, Literal, Union, TYPE_CHECKING
 
 from discord.ext import commands
@@ -22,8 +24,8 @@ def spammer_check():
 
 def reload_blacklist():
     blacklist.clear()
-    for user_id in database.ResponseSpamBlacklist:
-        blacklist.append(user_id)
+    for entry in database.ResponseSpamBlacklist:
+        blacklist.append(entry.discordID)
 
 
 class SetSuggestBlacklist(Group):
