@@ -71,11 +71,10 @@ class BlacklistCMD(commands.Cog, Group):
         await interaction.response.defer(thinking=True)
         empty_list = []
         for p in database.Blacklist:
-            try:
-                user = self.bot.get_user(p.id)
-                empty_list.append(f"`{user.name}` -> `{user.id}`")
-            except:
-                empty_list.append(f"`{p}`")
+            user = self.bot.get_user(p.discordID)
+            if not user:
+                user = await self.bot.fetch_user(p.discordID)
+            empty_list.append(f"`{user.name}` -> `{user.id}`")
 
         blacklist_list = "\n".join(empty_list)
 

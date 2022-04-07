@@ -1,10 +1,14 @@
-from typing import Dict, List, Literal, Union
+from __future__ import annotations
+from typing import Dict, List, Literal, Union, TYPE_CHECKING
 
 from discord.ext import commands
 from discord.app_commands import command, describe, Group, guilds, check
 import discord
 from core import database
 from core.common import MAIN_ID, SET_ID, Emoji
+
+if TYPE_CHECKING:
+    from main import Timmy
 
 blacklist = []
 
@@ -23,7 +27,7 @@ def reload_blacklist():
 
 
 class SetSuggestBlacklist(Group):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: 'Timmy'):
         super().__init__(
             name="set_blacklist",
             guild_ids=[MAIN_ID.g_main, SET_ID.g_set]
@@ -31,7 +35,7 @@ class SetSuggestBlacklist(Group):
         self.bot = bot
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return interaction.user.id == 752984497259151370
+        return interaction.user.id in [752984497259151370, 747126643587416174]
 
     @command(name="add")
     @describe(user="User ID or mention")
@@ -88,7 +92,7 @@ class SetSuggestBlacklist(Group):
 class Suggest(Group):
     def __init__(
             self,
-            bot: commands.Bot
+            bot: 'Timmy'
     ):
         super().__init__(
             name="suggest",
@@ -170,7 +174,7 @@ class Suggest(Group):
 class SuggestModal(discord.ui.Modal):
     def __init__(
             self,
-            bot: commands.Bot,
+            bot: 'Timmy',
             suggest_type: Literal[
                 "Book",
                 "Movie",
@@ -394,7 +398,7 @@ class Engagement(commands.Cog):
     Commands for Student Engagement
     """
 
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: 'Timmy'):
         self.bot = bot
         self.__cog_name__ = "Student Engagement"
         self.__cog_app_commands__.append(Suggest(bot))
@@ -428,7 +432,7 @@ class Engagement(commands.Cog):
     @guilds(MAIN_ID.g_main)
     async def _guess(self, interaction: discord.Interaction, guess: str):
         """
-        :param guess: The guess you are making to the weekly puzzle
+        Make a guess for the weekly puzzle
         """
         embed = discord.Embed(
             color=0xC387FF,
@@ -442,5 +446,5 @@ class Engagement(commands.Cog):
         await guess_channel.send(embed=embed)
 
 
-async def setup(bot: commands.Bot):
+async def setup(bot: 'Timmy'):
     await bot.add_cog(Engagement(bot))

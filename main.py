@@ -4,14 +4,14 @@ Copyright (C) School Simplified - All Rights Reserved
  * Written by School Simplified, IT Dept. <timmy@schoolsimplified.org>, March 2022
 """
 
-__version__ = "3.0.1"
+__version__ = "beta3.0.1"
 __author__ = "School Simplified, IT Dept."
 __author_email__ = "timmy@schoolsimplified.org"
 
 import faulthandler
 import logging
 import os
-from typing import Optional, Union
+from typing import Union
 
 import discord
 from alive_progress import alive_bar
@@ -71,7 +71,7 @@ class Timmy(commands.Bot):
             tree_cls=TimmyCommandTree,
             activity=discord.Activity(
                 type=discord.ActivityType.watching,
-                name="+help | timmy.schoolsimplified.org",
+                name="/help | ssimpl.org/timmy",
             ),
         )
         self.help_command = None
@@ -137,5 +137,4 @@ if os.getenv("DSN_SENTRY") is not None:
     )
 
 initializeDB(bot)
-
 bot.run(os.getenv("TOKEN"))
