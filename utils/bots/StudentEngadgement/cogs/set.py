@@ -410,8 +410,8 @@ class Engagement(commands.Cog):
         return Emoji.turtlesmirk
 
     async def cog_load(self) -> None:
-        for user_id in database.ResponseSpamBlacklist:
-            blacklist.append(user_id)
+        for item in database.ResponseSpamBlacklist:
+            blacklist.append(item.discordID)
 
     @command(name="acceptance-letter")
     @spammer_check()
