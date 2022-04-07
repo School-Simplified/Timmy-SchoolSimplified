@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import collections
 from typing import Dict, List, Literal, Union, TYPE_CHECKING
 
 from discord.ext import commands

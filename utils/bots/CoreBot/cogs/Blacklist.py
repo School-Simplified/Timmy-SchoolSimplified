@@ -1,15 +1,22 @@
+from __future__ import annotations
+
 import discord
 from core import database
 from core.checks import slash_is_bot_admin_4, slash_is_bot_admin_3
 from discord.ext import commands
 from dotenv import load_dotenv
 from discord.app_commands import Group, command
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from main import Timmy
 
 load_dotenv()
 
 
 class BlacklistCMD(commands.Cog, Group):
-    def __init__(self, bot):
+    def __init__(self, bot: 'Timmy'):
         super().__init__(
             name="blacklist",
             description="Manage the bot's blacklist"
