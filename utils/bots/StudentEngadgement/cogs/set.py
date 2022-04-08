@@ -11,6 +11,14 @@ from core.common import MAIN_ID, SET_ID, Emoji
 if TYPE_CHECKING:
     from main import Timmy
 
+
+MediaLiteralType = Literal[
+    "Book", "Movie", "TV Show",
+    "Meme", "Pickup Line", "Puzzle",
+    "Daily Question", "Motivation", "Music"
+]
+
+
 blacklist = []
 
 
@@ -333,9 +341,7 @@ class SuggestModal(discord.ui.Modal):
             },
         ]
         self.type_to_questions_list: Dict[
-            Literal[
-                "Book", "Movie", "TV Show", "Meme", "Pickup Line", "Puzzle", " Daily Question", "Motivation", "Music"
-            ], List[
+            MediaLiteralType, List[
                 Dict[str, Union[bool, str, None]]
             ]
         ] = {
@@ -370,8 +376,6 @@ class SuggestModal(discord.ui.Modal):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
 
         questions = self.type_to_questions_list[self.type]
-
-        print(f"Items: {self.children} \n\n Questions: {questions}")
 
         for item, question in zip(self.children, questions):
             """
