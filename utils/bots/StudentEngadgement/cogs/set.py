@@ -209,6 +209,11 @@ class SuggestModal(discord.ui.Modal):
                 "required": True
             },
             {
+                "question": "What genre is it?",
+                "placeholder": None,
+                "required": True
+            },
+            {
                 "question": "What rating does this book have?",
                 "placeholder": "Example: YA (Young Adult)",
                 "required": True
