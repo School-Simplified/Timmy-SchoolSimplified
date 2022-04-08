@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import Dict, List, Literal, Union, TYPE_CHECKING
 
 from discord.ext import commands
@@ -9,6 +10,14 @@ from core.common import MAIN_ID, SET_ID, Emoji
 
 if TYPE_CHECKING:
     from main import Timmy
+
+
+MediaLiteralType = Literal[
+    "Book", "Movie", "TV Show",
+    "Meme", "Pickup Line", "Puzzle",
+    "Daily Question", "Motivation", "Music"
+]
+
 
 blacklist = []
 
@@ -22,8 +31,8 @@ def spammer_check():
 
 def reload_blacklist():
     blacklist.clear()
-    for user_id in database.ResponseSpamBlacklist:
-        blacklist.append(user_id)
+    for entry in database.ResponseSpamBlacklist:
+        blacklist.append(entry.discordID)
 
 
 class SetSuggestBlacklist(Group):
@@ -200,6 +209,11 @@ class SuggestModal(discord.ui.Modal):
                 "required": True
             },
             {
+                "question": "What genre is it?",
+                "placeholder": None,
+                "required": True
+            },
+            {
                 "question": "What rating does this book have?",
                 "placeholder": "Example: YA (Young Adult)",
                 "required": True
@@ -332,9 +346,7 @@ class SuggestModal(discord.ui.Modal):
             },
         ]
         self.type_to_questions_list: Dict[
-            Literal[
-                "Book", "Movie", "TV Show", "Meme", "Pickup Line", "Puzzle", " Daily Question", "Motivation", "Music"
-            ], List[
+            MediaLiteralType, List[
                 Dict[str, Union[bool, str, None]]
             ]
         ] = {
@@ -369,8 +381,6 @@ class SuggestModal(discord.ui.Modal):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
 
         questions = self.type_to_questions_list[self.type]
-
-        print(f"Items: {self.children} \n\n Questions: {questions}")
 
         for item, question in zip(self.children, questions):
             """
@@ -409,8 +419,8 @@ class Engagement(commands.Cog):
         return Emoji.turtlesmirk
 
     async def cog_load(self) -> None:
-        for user_id in database.ResponseSpamBlacklist:
-            blacklist.append(user_id)
+        for item in database.ResponseSpamBlacklist:
+            blacklist.append(item.discordID)
 
     @command(name="acceptance-letter")
     @spammer_check()
