@@ -10,20 +10,21 @@ from core.common import Colors, ButtonHandler
 
 
 class CommandsManager(commands.Cog):
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
     @is_botAdmin4
-    async def sync(self, ctx: commands.Context, action: Union[Literal["global"], discord.Guild]):
+    async def sync(
+        self, ctx: commands.Context, action: Union[Literal["global"], discord.Guild]
+    ):
         if isinstance(action, discord.Guild):
             guild = action
 
             embed_processing = discord.Embed(
                 color=Colors.yellow,
                 title="Sync",
-                description=f"Syncing slash commands for guild `{guild.name}`..."
+                description=f"Syncing slash commands for guild `{guild.name}`...",
             )
             message_sync = await ctx.send(embed=embed_processing)
 
@@ -32,7 +33,7 @@ class CommandsManager(commands.Cog):
             embed_done = discord.Embed(
                 color=Colors.green,
                 title="Sync",
-                description=f"Successfully synced slash commands for guild `{guild.name}`!"
+                description=f"Successfully synced slash commands for guild `{guild.name}`!",
             )
             await message_sync.edit(embed=embed_done)
 
@@ -43,13 +44,10 @@ class CommandsManager(commands.Cog):
                 style=ButtonStyle.green,
                 label="Confirm",
                 emoji="✅",
-                button_user=ctx.author
+                button_user=ctx.author,
             )
             button_cancel = ButtonHandler(
-                style=ButtonStyle.red,
-                label="Cancel",
-                emoji="❌",
-                button_user=ctx.author
+                style=ButtonStyle.red, label="Cancel", emoji="❌", button_user=ctx.author
             )
             view.add_item(button_confirm)
             view.add_item(button_cancel)
@@ -69,7 +67,7 @@ class CommandsManager(commands.Cog):
                         color=Colors.yellow,
                         title="Sync",
                         description=f"Syncing slash commands globally..."
-                                    f"\nThis may take a while."
+                        f"\nThis may take a while.",
                     )
                     await message_confirm.edit(embed=embed_processing, view=None)
 
@@ -78,15 +76,13 @@ class CommandsManager(commands.Cog):
                     embed_processing = discord.Embed(
                         color=Colors.green,
                         title="Sync",
-                        description=f"Successfully synced slash commands globally!"
+                        description=f"Successfully synced slash commands globally!",
                     )
                     await message_confirm.edit(embed=embed_processing)
 
                 elif view.value == "Cancel":
                     embed_cancel = discord.Embed(
-                        color=Colors.red,
-                        title="Sync",
-                        description="Sync canceled."
+                        color=Colors.red, title="Sync", description="Sync canceled."
                     )
                     await message_confirm.edit(embed=embed_cancel, view=None)
 
@@ -94,7 +90,7 @@ class CommandsManager(commands.Cog):
                 embed_timeout = discord.Embed(
                     color=Colors.red,
                     title="Sync",
-                    description="Sync canceled due to timeout."
+                    description="Sync canceled due to timeout.",
                 )
                 await message_confirm.edit(embed=embed_timeout, view=None)
 

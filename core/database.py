@@ -640,6 +640,7 @@ class BaseQueue(BaseModel):
     id = AutoField()
     queueID = BigIntegerField()
 
+
 class StudyVCDB(BaseModel):
     """
     #StudyVCDB
@@ -662,13 +663,14 @@ class StudyVCDB(BaseModel):
     `Paused`: BooleanField()
     Boolean that states if the session is paused.
     """
-    
+
     id = AutoField()
     discordID = BigIntegerField()
     Goal = TextField()
     StartTime = DateTimeField()
     RenewalTime = DateTimeField()
     Paused = BooleanField(default=False)
+
 
 class StudyVCLeaderboard(BaseModel):
     """
@@ -698,7 +700,7 @@ class StudyVCLeaderboard(BaseModel):
     `totalXP`: IntegerField()
     The total XP, which the user has.
     """
-    
+
     id = AutoField()
     discordID = BigIntegerField()
     TTS = BigIntegerField(default=0)
@@ -707,6 +709,7 @@ class StudyVCLeaderboard(BaseModel):
     level = IntegerField(default=0)
     xp = BigIntegerField(default=0)
     totalXP = BigIntegerField(default=0)
+
 
 app = Flask(__name__)
 
@@ -754,7 +757,7 @@ tables = {
     "BaseQueue": BaseQueue,
     "StudyVCDB": StudyVCDB,
     "StudyVCLeaderboard": StudyVCLeaderboard,
-    "ResponseSpamBlacklist": ResponseSpamBlacklist
+    "ResponseSpamBlacklist": ResponseSpamBlacklist,
 }
 
 iter_table(tables)

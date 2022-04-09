@@ -13,12 +13,14 @@ class GuildCheck(commands.Cog):
         """
         This event triggers when the bot joins a guild; Used to verify if the guild is approved.
         """
-        query = database.AuthorizedGuilds.select().where(database.AuthorizedGuilds.guildID == guild.id)
+        query = database.AuthorizedGuilds.select().where(
+            database.AuthorizedGuilds.guildID == guild.id
+        )
         if not query.exists():
             embed = discord.Embed(
                 title="Unable to join guild!",
                 description="This guild is not authorized to use Timmy!",
-                color=discord.Color.brand_red()
+                color=discord.Color.brand_red(),
             )
             embed.set_thumbnail(url=Others.timmyDog_png)
             embed.set_footer(text="Please contact an IT administrator for help.")

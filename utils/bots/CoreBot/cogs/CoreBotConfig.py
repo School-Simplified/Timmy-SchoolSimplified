@@ -7,7 +7,13 @@ from typing import Literal
 import discord
 from core import database
 from core.common import CheckDB_CC, TECH_ID
-from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, is_botAdmin4, slash_is_bot_admin_2
+from core.checks import (
+    is_botAdmin,
+    is_botAdmin2,
+    is_botAdmin3,
+    is_botAdmin4,
+    slash_is_bot_admin_2,
+)
 from core.common import Emoji, Colors
 from discord.app_commands import command, guilds
 from discord.ext import commands
@@ -44,8 +50,8 @@ class CoreBotConfig(commands.Cog):
     async def Fmodify(self, ctx, num: int, val: bool):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
-                .where(database.CheckInformation.id == 1)
-                .get()
+            .where(database.CheckInformation.id == 1)
+            .get()
         )
 
         databaseValues = {
@@ -88,8 +94,8 @@ class CoreBotConfig(commands.Cog):
     async def list(self, ctx):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
-                .where(database.CheckInformation.id == 1)
-                .get()
+            .where(database.CheckInformation.id == 1)
+            .get()
         )
 
         embed = discord.Embed(
@@ -100,12 +106,12 @@ class CoreBotConfig(commands.Cog):
         embed.add_field(
             name="Checks",
             value=f"1) `Maintenance Mode`\n{Emoji.barrow} {CheckDB_CC.MasterMaintenance}"
-                  f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB_CC.guildNone}"
-                  f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB_CC.externalGuild}"
-                  f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB_CC.ModRoleBypass}"
-                  f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB_CC.ruleBypass}"
-                  f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB_CC.publicCategories}"
-                  f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB_CC.elseSituation}",
+            f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB_CC.guildNone}"
+            f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB_CC.externalGuild}"
+            f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB_CC.ModRoleBypass}"
+            f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB_CC.ruleBypass}"
+            f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB_CC.publicCategories}"
+            f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB_CC.elseSituation}",
         )
         await ctx.send(embed=embed)
 
@@ -118,8 +124,8 @@ class CoreBotConfig(commands.Cog):
     async def delete(self, ctx, num: int):
         WhitelistedPrefix: database.WhitelistedPrefix = (
             database.WhitelistedPrefix.select()
-                .where(database.WhitelistedPrefix.id == num)
-                .get()
+            .where(database.WhitelistedPrefix.id == num)
+            .get()
         )
         WhitelistedPrefix.delete_instance()
         await ctx.send(f"Field: {WhitelistedPrefix.prefix} has been deleted")
@@ -314,7 +320,10 @@ class CoreBotConfig(commands.Cog):
     @command()
     @slash_is_bot_admin_2()
     async def gitpull(
-            self, interaction: discord.Interaction, mode: Literal["-a", "-c"] = "-a", sync_commands: bool = False
+        self,
+        interaction: discord.Interaction,
+        mode: Literal["-a", "-c"] = "-a",
+        sync_commands: bool = False,
     ) -> None:
         output = ""
 
@@ -340,7 +349,9 @@ class CoreBotConfig(commands.Cog):
             )
             output += p.stdout
         except Exception as e:
-            await interaction.response.send_message(f"⛔️ Unable to fetch the Current Repo Header!\n**Error:**\n{e}")
+            await interaction.response.send_message(
+                f"⛔️ Unable to fetch the Current Repo Header!\n**Error:**\n{e}"
+            )
         try:
             p = subprocess.run(
                 f"git reset --hard {branch}",
@@ -351,7 +362,9 @@ class CoreBotConfig(commands.Cog):
             )
             output += p.stdout
         except Exception as e:
-            await interaction.response.send_message(f"⛔️ Unable to apply changes!\n**Error:**\n{e}")
+            await interaction.response.send_message(
+                f"⛔️ Unable to apply changes!\n**Error:**\n{e}"
+            )
 
         embed = discord.Embed(
             title="GitHub Local Reset",
@@ -445,10 +458,10 @@ class CoreBotConfig(commands.Cog):
         embed.add_field(
             name="Whitelisted Users",
             value=f"Format:\n**Username** -> **ID**"
-                  f"\n\n**Permit 4:** *Owners*\n{adminLEVEL4}"
-                  f"\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}"
-                  f"\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}"
-                  f"\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}",
+            f"\n\n**Permit 4:** *Owners*\n{adminLEVEL4}"
+            f"\n\n**Permit 3:** *Sudo Administrators*\n{adminLEVEL3}"
+            f"\n\n**Permit 2:** *Administrators*\n{adminLEVEL2}"
+            f"\n\n**Permit 1:** *Bot Managers*\n{adminLEVEL1}",
         )
         embed.set_footer(
             text="Only Owners/Permit 4's can modify Bot Administrators. | Permit 4 is the HIGHEST Authorization Level"
@@ -517,7 +530,8 @@ class CoreBotConfig(commands.Cog):
             color=discord.Color.brand_green(),
         )
         embed.add_field(
-            name="Checking GIT (1/3)", value=f"**Git Output:**\n```shell\n{p.stdout}\n```"
+            name="Checking GIT (1/3)",
+            value=f"**Git Output:**\n```shell\n{p.stdout}\n```",
         )
 
         msg = await interaction.channel.send(embed=embed)

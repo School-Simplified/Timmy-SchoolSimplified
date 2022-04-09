@@ -42,6 +42,7 @@ class AdminAPI(commands.Cog):
     """
     HR Commands
     """
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.__cog_name__ = "Human Resources"
@@ -55,7 +56,9 @@ class AdminAPI(commands.Cog):
         description="Create a GSuite Account",
     )
     @app_commands.guilds(HR_ID.g_hr)
-    @app_commands.describe(organizationunit='Select the organization unit this user will be in.')
+    @app_commands.describe(
+        organizationunit="Select the organization unit this user will be in."
+    )
     async def create_gsuite(
         self,
         interaction: discord.Interaction,

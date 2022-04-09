@@ -30,6 +30,7 @@ from utils.events.TicketDropdown import TicketButton
 from utils.bots.CoreBot.cogs.techCommissions import CommissionTechButton
 from pathlib import Path
 
+
 class VerifyButton(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -41,8 +42,13 @@ class VerifyButton(discord.ui.View):
         custom_id="persistent_view:verify",
         emoji="✅",
     )
-    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def verify(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
+    ):
         self.value = True
+
 
 async def before_invoke_(ctx: commands.Context):
     sentry_sdk.set_user(None)
@@ -80,8 +86,8 @@ async def on_ready_(bot: commands.Bot):
     now = datetime.now()
     query: database.CheckInformation = (
         database.CheckInformation.select()
-            .where(database.CheckInformation.id == 1)
-            .get()
+        .where(database.CheckInformation.id == 1)
+        .get()
     )
 
     if not query.PersistantChange:
@@ -178,7 +184,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
             )
 
     elif isinstance(
-            error, (commands.MissingRequiredArgument, commands.TooManyArguments)
+        error, (commands.MissingRequiredArgument, commands.TooManyArguments)
     ):
         signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
 
@@ -186,12 +192,12 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
             em = discord.Embed(
                 title="Missing/Extra Required Arguments Passed In!",
                 description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
-                            f"following:**\nUsage:\n`{signature}`\n\n-> If you seperated the time and the AM/PM. "
-                            f"(Eg; "
-                            f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
-                            f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the ["
-                            f"documentation "
-                            f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
+                f"following:**\nUsage:\n`{signature}`\n\n-> If you seperated the time and the AM/PM. "
+                f"(Eg; "
+                f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
+                f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the ["
+                f"documentation "
+                f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
                 color=Colors.red,
             )
             em.set_thumbnail(url=Others.error_png)
@@ -203,8 +209,8 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
             em = discord.Embed(
                 title="Missing/Extra Required Arguments Passed In!",
                 description="You have missed one or several arguments in this command"
-                            "\n\nUsage:"
-                            f"\n`{signature}`",
+                "\n\nUsage:"
+                f"\n`{signature}`",
                 color=Colors.red,
             )
             em.set_thumbnail(url=Others.error_png)
@@ -214,20 +220,20 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
             return await ctx.send(embed=em)
 
     elif isinstance(
-            error,
-            (
-                    commands.MissingAnyRole,
-                    commands.MissingRole,
-                    commands.MissingPermissions,
-                    commands.errors.MissingAnyRole,
-                    commands.errors.MissingRole,
-                    commands.errors.MissingPermissions,
-            ),
+        error,
+        (
+            commands.MissingAnyRole,
+            commands.MissingRole,
+            commands.MissingPermissions,
+            commands.errors.MissingAnyRole,
+            commands.errors.MissingRole,
+            commands.errors.MissingPermissions,
+        ),
     ):
         em = discord.Embed(
             title="Invalid Permissions!",
             description="You do not have the associated role in order to successfully invoke this command! "
-                        "Contact an administrator/developer if you believe this is invalid.",
+            "Contact an administrator/developer if you believe this is invalid.",
             color=Colors.red,
         )
         em.set_thumbnail(url=Others.error_png)
@@ -237,16 +243,19 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
         await ctx.send(embed=em)
         return
 
-    elif isinstance(error, (commands.BadArgument, commands.BadLiteralArgument, commands.BadUnionArgument)):
+    elif isinstance(
+        error,
+        (commands.BadArgument, commands.BadLiteralArgument, commands.BadUnionArgument),
+    ):
         signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
         if ctx.command.name == "schedule":
             em = discord.Embed(
                 title="Bad Argument!",
                 description=f"Looks like you messed up an argument somewhere here!\n\n**Check the "
-                            f"following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; "
-                            f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
-                            f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
-                            f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
+                f"following:**\nUsage:\n`{signature}`\n-> If you seperated the time and the AM/PM. (Eg; "
+                f"5:00 PM)\n-> If you provided a valid student's ID\n-> If you followed the MM/DD "
+                f"Format.\n-> Keep all the arguments in one word.\n-> If you followed the [documentation "
+                f"for schedule.](https://timmy.schoolsimplified.org/tutorbot#schedule)",
                 color=Colors.red,
             )
             em.set_thumbnail(url=Others.error_png)
@@ -258,7 +267,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
             em = discord.Embed(
                 title="Bad Argument!",
                 description=f"Unable to parse arguments, check what arguments you provided."
-                            f"\n\nUsage:\n`{signature}`",
+                f"\n\nUsage:\n`{signature}`",
                 color=Colors.red,
             )
             em.set_thumbnail(url=Others.error_png)
@@ -268,7 +277,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
             return await ctx.send(embed=em)
 
     elif isinstance(
-            error, (commands.CommandOnCooldown, commands.errors.CommandOnCooldown)
+        error, (commands.CommandOnCooldown, commands.errors.CommandOnCooldown)
     ):
         m, s = divmod(error.retry_after, 60)
         h, m = divmod(m, 60)
@@ -320,8 +329,8 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                 embed = discord.Embed(
                     title="Traceback Detected!",
                     description="Timmy here has ran into an error!\nPlease check what you sent and/or check out "
-                                "the "
-                                "help command!",
+                    "the "
+                    "help command!",
                     color=Colors.red,
                 )
                 embed.set_thumbnail(url=Others.timmyDog_png)
@@ -344,9 +353,9 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
             embed2 = discord.Embed(
                 title="Traceback Detected!",
                 description=f"**Information**\n"
-                            f"**Server:** {ctx.message.guild.name}\n"
-                            f"**User:** {ctx.message.author.mention}\n"
-                            f"**Command:** {ctx.command.name}",
+                f"**Server:** {ctx.message.guild.name}\n"
+                f"**User:** {ctx.message.author.mention}\n"
+                f"**Command:** {ctx.command.name}",
                 color=Colors.red,
             )
             embed2.add_field(
@@ -364,11 +373,12 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
     raise error
 
 
-async def on_app_command_error_(bot: commands.Bot,
-                                interaction: discord.Interaction,
-                                command: Union[app_commands.Command, app_commands.ContextMenu],
-                                error: app_commands.AppCommandError
-                                ):
+async def on_app_command_error_(
+    bot: commands.Bot,
+    interaction: discord.Interaction,
+    command: Union[app_commands.Command, app_commands.ContextMenu],
+    error: app_commands.AppCommandError,
+):
     tb = error.__traceback__
     etype = type(error)
     exception = traceback.format_exception(etype, error, tb, chain=True)
@@ -433,8 +443,8 @@ async def on_app_command_error_(bot: commands.Bot,
                 embed = discord.Embed(
                     title="Traceback Detected!",
                     description="Timmy here has ran into an error!\nPlease check what you sent and/or check out "
-                                "the "
-                                "help command!",
+                    "the "
+                    "help command!",
                     color=Colors.red,
                 )
                 embed.set_thumbnail(url=Others.timmyDog_png)
@@ -461,9 +471,9 @@ async def on_app_command_error_(bot: commands.Bot,
             embed2 = discord.Embed(
                 title="Traceback Detected!",
                 description=f"**Information**\n"
-                            f"**Server:** {interaction.guild.name}\n"
-                            f"**User:** {interaction.user.mention}\n"
-                            f"**Command:** {interaction.command.name}",
+                f"**Server:** {interaction.guild.name}\n"
+                f"**User:** {interaction.user.mention}\n"
+                f"**Command:** {interaction.command.name}",
                 color=Colors.red,
             )
             embed2.add_field(
@@ -557,6 +567,7 @@ async def main_mode_check_(ctx: commands.Context):
     else:
         return CheckDB_CC.elseSituation
 
+
 def initializeDB(bot):
     """
     Initializes the database, and creates the needed table data if they don't exist.
@@ -607,7 +618,9 @@ def initializeDB(bot):
     q.save()
 
     query: database.CheckInformation = (
-        database.CheckInformation.select().where(database.CheckInformation.id == 1).get()
+        database.CheckInformation.select()
+        .where(database.CheckInformation.id == 1)
+        .get()
     )
     query.PersistantChange = False
     query.save()

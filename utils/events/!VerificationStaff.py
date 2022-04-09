@@ -31,7 +31,6 @@ async def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Mem
             await user.add_roles(helper)
 
 
-
 class VerificationStaff(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -59,9 +58,7 @@ class VerificationStaff(commands.Cog):
         ):
             print(interaction.user.id)
 
-            staffServer: discord.Guild = self.bot.get_guild(
-                interaction.guild_id
-            )
+            staffServer: discord.Guild = self.bot.get_guild(interaction.guild_id)
             print(staffServer)
             StaffServerMember: discord.Member = staffServer.get_member(
                 interaction.user.id
@@ -99,9 +96,7 @@ class VerificationStaff(commands.Cog):
                     return
 
             VerificationChannel = interaction.channel
-            logchannel = self.bot.get_channel(
-                self.staffServer[interaction.guild_id]
-            )
+            logchannel = self.bot.get_channel(self.staffServer[interaction.guild_id])
 
             VerifiedRoles = []
             VerifiedGuilds = []
