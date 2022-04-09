@@ -12,14 +12,14 @@ if TYPE_CHECKING:
     from main import Timmy
 
 QuestionListType = List[Dict[str, Union[bool, str, None]]]
-GithubActionLiteral = Literal["ISSUE",]
+GithubActionLiteral = Literal["ISSUE", ]
 IssueFeatureLiteral = Literal["Command", "Slash Command", "Dropdown or Button", "Other"]
 
 
 class GithubControlModal(discord.ui.Modal):
     def __init__(
             self,
-            bot: 'Timmy',
+            bot: Timmy,
             _type: GithubActionLiteral,
             feature: IssueFeatureLiteral,
             attachment: discord.Attachment,
@@ -95,7 +95,7 @@ class GithubControlModal(discord.ui.Modal):
 
 
 class GithubCommands(commands.Cog):
-    def __init__(self, bot: 'Timmy'):
+    def __init__(self, bot: Timmy):
         self.bot = bot
         self._github_client = Github(os.getenv("GH_TOKEN"))
 
@@ -117,5 +117,5 @@ class GithubCommands(commands.Cog):
         )
 
 
-async def setup(bot: 'Timmy'):
+async def setup(bot: Timmy):
     await bot.add_cog(GithubCommands(bot))
