@@ -25,7 +25,7 @@ class GithubControlModal(discord.ui.Modal):
             attachment: discord.Attachment,
             github_client: Github,
     ):
-        super().__init__(timeout=None)
+        super().__init__(timeout=None, title="Create Issue")
 
         self.bot = bot
         self._type = type_
