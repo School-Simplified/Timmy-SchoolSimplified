@@ -144,7 +144,9 @@ class GSuiteLogin(commands.Cog):
                             now = now.astimezone(pytz.timezone("US/Eastern")).strftime(
                                 "%m/%d/%Y %I:%-M %p"
                             )
-                            logchannel: discord.TextChannel = self.bot.get_channel(self.logchannel)
+                            logchannel: discord.TextChannel = self.bot.get_channel(
+                                self.logchannel
+                            )
 
                             embed = discord.Embed(
                                 title="GSuite Authentication",

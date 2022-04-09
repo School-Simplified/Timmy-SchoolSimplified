@@ -134,8 +134,16 @@ class PunishmentTag(commands.Cog):
         "Moderator", "Mod", "Senior Mod", "Head Mod", 844013914609680384, "HR"
     )
     async def info(
-            self, ctx: commands.Context, user: commands.Greedy[discord.User] = []
+        self, ctx: commands.Context, user: commands.Greedy[discord.User] = []
     ):
+        embed = discord.Embed(
+            title="Queued Query",
+            description=f"I have started a new query for {user.display_name}",
+            color=discord.Color.gold(),
+        )
+        embed.set_footer(text="This may take a moment.")
+        msg = await ctx.send(embed=embed)
+
         for user in user:
             user: discord.User = user
 
@@ -143,15 +151,16 @@ class PunishmentTag(commands.Cog):
             typeval = None
             banreason = None
 
-            embed = discord.Embed(
-                title="Queued Query",
-                description=f"I have started a new query for {user.display_name}",
-                color=discord.Color.gold(),
-            )
-            embed.set_footer(text="This may take a moment.")
-            msg = await ctx.send(embed=embed)
+            try:
+                member = await ctx.guild.fetch_member(user.id)
+            except discord.NotFound:
+                embed = discord.Embed(
+                    title="Query Results",
+                    description=f"{user.display_name} is not in this server.",
+                    color=discord.Color.brand_red(),
+                )
+                return await msg.edit(embed=embed)
 
-            member = ctx.guild.get_member(user.id)
             if member is None:
                 banEntry = await ctx.guild.fetch_ban(user)
 
@@ -206,8 +215,8 @@ class PunishmentTag(commands.Cog):
             await ctx.send(embed=embed)
 
         elif isinstance(
-                error,
-                (commands.MissingRequiredArgument, commands.errors.MissingRequiredArgument),
+            error,
+            (commands.MissingRequiredArgument, commands.errors.MissingRequiredArgument),
         ):
             embed = discord.Embed(
                 title="User Not Found",

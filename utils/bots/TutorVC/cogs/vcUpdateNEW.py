@@ -127,9 +127,7 @@ class TutorVCUpdate(commands.Cog):
         lobbyStart = member.guild.get_channel(self.LobbyStartIDs[member.guild.id])
         if lobbyStart == None:
             try:
-                lobbyStart = self.bot.get_channel(
-                    self.LobbyStartIDs[member.guild.id]
-                )
+                lobbyStart = self.bot.get_channel(self.LobbyStartIDs[member.guild.id])
             except Exception as e:
                 return print(e)
         print(lobbyStart)
@@ -280,15 +278,9 @@ class TutorVCUpdate(commands.Cog):
 
                                     tutorSession = tutorSession.get()
 
-                                    student = self.bot.get_user(
-                                        tutorSession.StudentID
-                                    )
-                                    tutor = self.bot.get_user(
-                                        tutorSession.TutorID
-                                    )
-                                    HOURCH = self.bot.get_channel(
-                                        self.TutorLogID
-                                    )
+                                    student = self.bot.get_user(tutorSession.StudentID)
+                                    tutor = self.bot.get_user(tutorSession.TutorID)
+                                    HOURCH = self.bot.get_channel(self.TutorLogID)
 
                                     hourlog = discord.Embed(
                                         title="Hour Log",
@@ -340,9 +332,7 @@ class TutorVCUpdate(commands.Cog):
             and after.channel.id in self.presetChannels
             and not member.bot
         ):
-            acadChannel = self.bot.get_channel(
-                self.LobbyStartIDs[member.guild.id]
-            )
+            acadChannel = self.bot.get_channel(self.LobbyStartIDs[member.guild.id])
             print(acadChannel, after.channel.guild.id)
             SB = discord.utils.get(member.guild.roles, name=self.SB)
 
@@ -394,9 +384,7 @@ class TutorVCUpdate(commands.Cog):
                     color=discord.Colour.red(),
                 )
                 try:
-                    tutorChannel = self.bot.get_channel(
-                        int(moveToChannel.ChannelID)
-                    )
+                    tutorChannel = self.bot.get_channel(int(moveToChannel.ChannelID))
                     await member.move_to(
                         tutorChannel,
                         reason="Maximum Channel Ownership Allowance [TRUE]",

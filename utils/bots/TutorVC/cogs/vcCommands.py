@@ -12,7 +12,7 @@ from core.common import (
     TUT_ID,
     SandboxConfig,
     SelectMenuHandler,
-    GameDict
+    GameDict,
 )
 from discord.ext import commands
 
@@ -80,12 +80,13 @@ class TutorVCCMD(commands.Cog):
         self.bot = bot
         try:
             q: database.SandboxConfig = (
-                database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
+                database.SandboxConfig.select()
+                .where(database.SandboxConfig.id == 1)
+                .get()
             )
         except:
             q = database.SandboxConfig.create(mode="None")
             q.save()
-
 
         self.channel_id = MAIN_ID.ch_controlPanel
         self.categoryID = [
@@ -181,7 +182,11 @@ class TutorVCCMD(commands.Cog):
 
     async def _create_invite(self, voice, app_id: int, max_age=86400):
         r = Route("POST", "/channels/{channel_id}/invites", channel_id=voice.channel.id)
-        payload = {"max_age": max_age, "target_type": 2, "target_application_id": app_id}
+        payload = {
+            "max_age": max_age,
+            "target_type": 2,
+            "target_application_id": app_id,
+        }
         code = (await self.bot.http.request(r, json=payload))["code"]
         return code
 
@@ -235,7 +240,9 @@ class TutorVCCMD(commands.Cog):
                 GameID = GameDict[SelectedGame]
                 code = str(await self._create_invite(ctx.author.voice, GameID))
                 await ctx.send("Loading...")
-                await ctx.send(f"**Click the link to get started!**\nhttps://discord.gg/{code}")
+                await ctx.send(
+                    f"**Click the link to get started!**\nhttps://discord.gg/{code}"
+                )
 
             else:
                 embed = discord.Embed(
@@ -273,9 +280,7 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = self.bot.get_channel(
-                    q.ChannelID
-                )
+                channel: discord.VoiceChannel = self.bot.get_channel(q.ChannelID)
 
                 view = discord.ui.View()
                 var = SelectMenuHandler(
@@ -285,7 +290,9 @@ class TutorVCCMD(commands.Cog):
                     select_user=ctx.author,
                 )
                 view.add_item(var)
-                await ctx.send("Select a game from the dropdown you wish to initiate.", view=view)
+                await ctx.send(
+                    "Select a game from the dropdown you wish to initiate.", view=view
+                )
                 timeout = await view.wait()
                 if not timeout:
                     SelectedGame = var.view_response
@@ -294,7 +301,9 @@ class TutorVCCMD(commands.Cog):
                 print(SelectedGame)
                 GameID = GameDict[SelectedGame]
                 code = str(await self._create_invite(ctx.author.voice, GameID))
-                await ctx.send(f"**Click the link to get started!**\nhttps://discord.gg/{code}")
+                await ctx.send(
+                    f"**Click the link to get started!**\nhttps://discord.gg/{code}"
+                )
 
             else:
                 embed = discord.Embed(
@@ -367,9 +376,7 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                channel: discord.VoiceChannel = self.bot.get_channel(
-                    q.ChannelID
-                )
+                channel: discord.VoiceChannel = self.bot.get_channel(q.ChannelID)
 
                 GameLink = str(await channel.create_activity_invite(880218394199220334))
                 await ctx.send(f"**Click the link to get started!**\n{GameLink}")

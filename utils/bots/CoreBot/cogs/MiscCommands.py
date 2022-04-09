@@ -30,6 +30,7 @@ from discord import app_commands
 from google.cloud import texttospeech
 from core.common import access_secret
 
+
 class TicTacToeButton(discord.ui.Button["TicTacToe"]):
     def __init__(self, x: int, y: int, xUser: discord.User, yUser: discord.User):
         super().__init__(style=discord.ButtonStyle.secondary, label="\u200b", row=y)
@@ -252,14 +253,14 @@ class MiscCMD(commands.Cog):
         embed = discord.Embed(
             title="Confirmation",
             description="Are you sure you want to submit this suggestion? Creating irrelevant "
-                        "suggestions will warrant a blacklist and you will be subject to a "
-                        "warning/mute.",
+            "suggestions will warrant a blacklist and you will be subject to a "
+            "warning/mute.",
             color=discord.Colour.blurple(),
         )
         embed.add_field(name="Suggestion Collected", value=suggestion)
         embed.set_footer(
             text="Double check this suggestion || MAKE SURE THIS SUGGESTION IS RELATED TO THE BOT, NOT THE DISCORD "
-                 "SERVER! "
+            "SERVER! "
         )
 
         message = await ctx.send(embed=embed)
@@ -269,7 +270,7 @@ class MiscCMD(commands.Cog):
 
         def check2(reaction, user):
             return user == ctx.author and (
-                    str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
+                str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
             )
 
         try:
@@ -325,9 +326,9 @@ class MiscCMD(commands.Cog):
             color=Colors.ss_blurple,
             title=f"Donate",
             description=f"Thank you for your generosity in donating to School Simplified. "
-                        f"We do not charge anything for our services, and your support helps to further our mission "
-                        f"to *empower the next generation to revolutionize the future through learning*."
-                        f"\n\n**Donate here: https://schoolsimplified.org/donate**",
+            f"We do not charge anything for our services, and your support helps to further our mission "
+            f"to *empower the next generation to revolutionize the future through learning*."
+            f"\n\n**Donate here: https://schoolsimplified.org/donate**",
         )
         embedDonate.set_footer(text="Great thanks to all our donors!")
         embedDonate.set_thumbnail(url=f"attachment://{Others.timmyDonation_png}")
@@ -378,7 +379,7 @@ class MiscCMD(commands.Cog):
                 embed = discord.Embed(
                     title="Debate Banned!",
                     description=f"{Emoji.confirm} {member.display_name} has been debate banned!"
-                                f"\n{Emoji.barrow} **Reason:** {reason}",
+                    f"\n{Emoji.barrow} **Reason:** {reason}",
                     color=Colors.yellow,
                 )
                 await ctx.send(embed=embed)
@@ -396,7 +397,7 @@ class MiscCMD(commands.Cog):
                 embed = discord.Embed(
                     title="Debate Unbanned!",
                     description=f"{Emoji.confirm} {member.display_name} has been debate unbanned!"
-                                f"\n{Emoji.barrow} **Reason:** {reason}",
+                    f"\n{Emoji.barrow} **Reason:** {reason}",
                     color=Colors.yellow,
                 )
                 await ctx.send(embed=embed)
@@ -437,7 +438,7 @@ class MiscCMD(commands.Cog):
                 embed = discord.Embed(
                     title="Count Banned!",
                     description=f"{Emoji.confirm} {member.display_name} has been count banned!"
-                                f"\n{Emoji.barrow} **Reason:** {reason}",
+                    f"\n{Emoji.barrow} **Reason:** {reason}",
                     color=Colors.yellow,
                 )
                 await ctx.send(embed=embed)
@@ -455,7 +456,7 @@ class MiscCMD(commands.Cog):
                 embed = discord.Embed(
                     title="Count Unbanned!",
                     description=f"{Emoji.confirm} {member.display_name} has been count unbanned!"
-                                f"\n{Emoji.barrow} **Reason:** {reason}",
+                    f"\n{Emoji.barrow} **Reason:** {reason}",
                     color=Colors.yellow,
                 )
                 await ctx.send(embed=embed)
@@ -548,8 +549,8 @@ class MiscCMD(commands.Cog):
         embed.add_field(
             name="WARNING",
             value="Please not that this will kill the bot immediately and it will not be online unless a "
-                  "developer manually starts the proccess again!"
-                  "\nIf you don't respond in 5 seconds, the process will automatically abort.",
+            "developer manually starts the proccess again!"
+            "\nIf you don't respond in 5 seconds, the process will automatically abort.",
         )
         embed.set_footer(
             text="Abusing this system will subject your authorization removal, so choose wisely you fucking pig."
@@ -563,7 +564,7 @@ class MiscCMD(commands.Cog):
 
         def check2(reaction, user):
             return user == ctx.author and (
-                    str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
+                str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
             )
 
         try:
@@ -602,14 +603,13 @@ class MiscCMD(commands.Cog):
             )
             await message.delete()
 
-
     @commands.command()
     @commands.has_role(MAIN_ID.r_clubPresident)
     async def role(
-            self,
-            ctx: commands.Context,
-            users: commands.Greedy[discord.Member],
-            roles: commands.Greedy[discord.Role],
+        self,
+        ctx: commands.Context,
+        users: commands.Greedy[discord.Member],
+        roles: commands.Greedy[discord.Role],
     ):
         """
         Gives an authorized role to every user provided.
@@ -626,7 +626,7 @@ class MiscCMD(commands.Cog):
         embed = discord.Embed(
             title="Starting Mass Role Function",
             description="Please wait until I finish the role operation, you'll see this message update when I am "
-                        "finished!",
+            "finished!",
             color=discord.Color.gold(),
         )
 
@@ -698,7 +698,7 @@ class MiscCMD(commands.Cog):
         await ctx.channel.purge(check=lambda m: m.author == user, limit=num)
 
     @app_commands.command(description="Play a game of TicTacToe with someone!")
-    @app_commands.describe(user='The user you want to play with.')
+    @app_commands.describe(user="The user you want to play with.")
     async def tictactoe(self, interaction: discord.Interaction, user: discord.Member):
         if interaction.channel.id != MAIN_ID.ch_commands:
             return await interaction.response.send_message(

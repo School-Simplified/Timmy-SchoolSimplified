@@ -757,7 +757,6 @@ class DropdownTickets(commands.Cog):
     async def cog_unload(self):
         self.TicketInactive.cancel()
 
-
     @commands.Cog.listener("on_interaction")
     async def TicketDropdown(self, interaction: discord.Interaction):
         InteractionResponse = interaction.data
@@ -975,7 +974,9 @@ class DropdownTickets(commands.Cog):
 
                         query = (
                             database.TicketInfo.select()
-                            .where(database.TicketInfo.ChannelID == interaction.channel_id)
+                            .where(
+                                database.TicketInfo.ChannelID == interaction.channel_id
+                            )
                             .get()
                         )
 
@@ -983,8 +984,12 @@ class DropdownTickets(commands.Cog):
                         closed_at_raw = datetime.now(tz)
                         opened_at_raw = query.createdAt
 
-                        opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
-                        closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
+                        opened_at = datetime.strftime(
+                            opened_at_raw, "%Y-%m-%d\n%I.%M %p"
+                        )
+                        closed_at = datetime.strftime(
+                            closed_at_raw, "%Y-%m-%d\n%I.%M %p"
+                        )
 
                         row.insert(0, raw_url)
                         row.insert(1, "")  #
@@ -1055,8 +1060,12 @@ class DropdownTickets(commands.Cog):
                         closed_at_raw = datetime.now(tz)
                         opened_at_raw = query.createdAt
 
-                        opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
-                        closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
+                        opened_at = datetime.strftime(
+                            opened_at_raw, "%Y-%m-%d\n%I.%M %p"
+                        )
+                        closed_at = datetime.strftime(
+                            closed_at_raw, "%Y-%m-%d\n%I.%M %p"
+                        )
 
                         row.insert(0, raw_url)
                         row.insert(1, "")  #
@@ -1127,9 +1136,7 @@ class DropdownTickets(commands.Cog):
         TicketInfoTB = database.TicketInfo
         guild = self.bot.get_guild(MAIN_ID.g_main)
         for entry in TicketInfoTB:
-            channel: discord.TextChannel = self.bot.get_channel(
-                entry.ChannelID
-            )
+            channel: discord.TextChannel = self.bot.get_channel(entry.ChannelID)
             if channel is None:
                 continue
 
@@ -1184,7 +1191,8 @@ class DropdownTickets(commands.Cog):
                 overwrite.send_messages = False"""
                 if TicketOwner is not None:
                     await channel.set_permissions(
-                        TicketOwner, reason="Ticket Perms Close (User)",
+                        TicketOwner,
+                        reason="Ticket Perms Close (User)",
                         read_messages=False,
                         send_messages=False,
                     )

@@ -22,7 +22,7 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
     teamTI = ui.TextInput(
         label="Which team is this project for?",
         style=discord.TextStyle.short,
-        max_length=1024
+        max_length=1024,
     )
 
     descriptionTI = ui.TextInput(
@@ -55,12 +55,8 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
         embed.set_author(
             name=interaction.user.name, icon_url=interaction.user.avatar.url
         )
-        embed.add_field(
-            name="Project Title", value=self.titleTI.value, inline=False
-        )
-        embed.add_field(
-            name="Team Requester", value=self.teamTI.value, inline=False
-        )
+        embed.add_field(name="Project Title", value=self.titleTI.value, inline=False)
+        embed.add_field(name="Team Requester", value=self.teamTI.value, inline=False)
         embed.add_field(
             name="Project Description", value=self.descriptionTI.value, inline=False
         )
@@ -91,7 +87,11 @@ class CommissionTechButton(discord.ui.View):
         custom_id="persistent_view:tech_pjt",
         emoji="📝",
     )
-    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def verify(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
+    ):
         modal = BotRequestModal(self.bot)
         return await interaction.response.send_modal(modal)
 
@@ -100,16 +100,15 @@ class TechProjectCMD(commands.Cog):
     """
     Commands for bot commissions
     """
+
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.__cog_name__ = "Bot Commissions"
         self.autoUnarchiveThread.start()
 
-
     @property
     def display_emoji(self) -> str:
         return Emoji.pythonLogo
-
 
     async def cog_unload(self):
         self.autoUnarchiveThread.cancel()
@@ -126,8 +125,8 @@ class TechProjectCMD(commands.Cog):
         )
         embed.set_footer(
             text="The Bot Development Team has the right to cancel and ignore any commissions if deemed appropriate. "
-                 "We also have the right to cancel and ignore any commissions if an improper deadline is given, "
-                 "please make sure you create a commission ahead of time and not right before a due date",
+            "We also have the right to cancel and ignore any commissions if an improper deadline is given, "
+            "please make sure you create a commission ahead of time and not right before a due date",
         )
         view = CommissionTechButton(self.bot)
         await ctx.send(embed=embed, view=view)
@@ -135,34 +134,49 @@ class TechProjectCMD(commands.Cog):
     @app_commands.command()
     @app_commands.guilds(TECH_ID.g_tech)
     @app_commands.checks.cooldown(1, 300, key=lambda i: (i.guild_id, i.channel.id))
-    async def commission(self, interaction: discord.Interaction, action: Literal["close"]):
+    async def commission(
+        self, interaction: discord.Interaction, action: Literal["close"]
+    ):
         channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
         thread = interaction.channel
 
         if not isinstance(thread, discord.Thread):
-            await interaction.response.send_message("This is not a bot commission.", ephemeral=True)
+            await interaction.response.send_message(
+                "This is not a bot commission.", ephemeral=True
+            )
             return
 
         if action == "close":
-            query = database.TechCommissionArchiveLog.select().where(database.TechCommissionArchiveLog.ThreadID == thread.id)
+            query = database.TechCommissionArchiveLog.select().where(
+                database.TechCommissionArchiveLog.ThreadID == thread.id
+            )
             if thread not in channel.threads or query.exists():
-                await interaction.response.send_message("This commission is already closed.", ephemeral=True)
+                await interaction.response.send_message(
+                    "This commission is already closed.", ephemeral=True
+                )
                 return
             else:
                 query = database.TechCommissionArchiveLog.create(ThreadID=thread.id)
                 query.save()
 
-                await interaction.response.send_message("Commission closed! You can find the commission in the archived threads of that channel.")
+                await interaction.response.send_message(
+                    "Commission closed! You can find the commission in the archived threads of that channel."
+                )
                 await thread.edit(archived=True)
-
 
     @commands.Cog.listener("on_message")
     async def auto_open_commission(self, message: discord.Message):
         channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
 
-        if isinstance(message.channel, discord.Thread) and message.type == discord.MessageType.default and message.channel in channel.threads:
+        if (
+            isinstance(message.channel, discord.Thread)
+            and message.type == discord.MessageType.default
+            and message.channel in channel.threads
+        ):
 
-            query = database.TechCommissionArchiveLog.select().where(database.TechCommissionArchiveLog.ThreadID == message.channel.id)
+            query = database.TechCommissionArchiveLog.select().where(
+                database.TechCommissionArchiveLog.ThreadID == message.channel.id
+            )
             if query.exists():
                 result = query.get()
                 result.delete_instance()
