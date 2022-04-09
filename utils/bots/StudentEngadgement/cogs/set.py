@@ -36,7 +36,7 @@ def reload_blacklist():
 
 
 class SetSuggestBlacklist(Group):
-    def __init__(self, bot: 'Timmy'):
+    def __init__(self, bot: Timmy):
         super().__init__(
             name="set_blacklist",
             guild_ids=[MAIN_ID.g_main, SET_ID.g_set]
@@ -101,7 +101,7 @@ class SetSuggestBlacklist(Group):
 class Suggest(Group):
     def __init__(
             self,
-            bot: 'Timmy'
+            bot: Timmy
     ):
         super().__init__(
             name="suggest",
@@ -183,7 +183,7 @@ class Suggest(Group):
 class SuggestModal(discord.ui.Modal):
     def __init__(
             self,
-            bot: 'Timmy',
+            bot: Timmy,
             suggest_type: Literal[
                 "Book",
                 "Movie",
@@ -408,7 +408,7 @@ class Engagement(commands.Cog):
     Commands for Student Engagement
     """
 
-    def __init__(self, bot: 'Timmy'):
+    def __init__(self, bot: Timmy):
         self.bot = bot
         self.__cog_name__ = "Student Engagement"
         self.__cog_app_commands__.append(Suggest(bot))
@@ -456,5 +456,5 @@ class Engagement(commands.Cog):
         await guess_channel.send(embed=embed)
 
 
-async def setup(bot: 'Timmy'):
+async def setup(bot: Timmy):
     await bot.add_cog(Engagement(bot))
