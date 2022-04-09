@@ -6,8 +6,10 @@ import time
 import traceback
 from datetime import datetime
 from difflib import get_close_matches
+from typing import Union
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 import sentry_sdk
 import requests
@@ -235,7 +237,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
         await ctx.send(embed=em)
         return
 
-    elif isinstance(error, commands.BadArgument):
+    elif isinstance(error, (commands.BadArgument, commands.BadLiteralArgument, commands.BadUnionArgument)):
         signature = f"{ctx.prefix}{ctx.command.qualified_name} {ctx.command.signature}"
         if ctx.command.name == "schedule":
             em = discord.Embed(
@@ -255,7 +257,8 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
         else:
             em = discord.Embed(
                 title="Bad Argument!",
-                description=f"Unable to parse arguments, check what arguments you provided.\n\nUsage:\n`{signature}`",
+                description=f"Unable to parse arguments, check what arguments you provided."
+                            f"\n\nUsage:\n`{signature}`",
                 color=Colors.red,
             )
             em.set_thumbnail(url=Others.error_png)
@@ -354,6 +357,112 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
 
             view = FeedbackButton()
             await ctx.send(
+                "Want to help even more? Click here to submit feedback!", view=view
+            )
+            error_file.unlink()
+
+    raise error
+
+
+async def on_app_command_error_(bot: commands.Bot,
+                                interaction: discord.Interaction,
+                                command: Union[app_commands.Command, app_commands.ContextMenu],
+                                error: app_commands.AppCommandError
+                                ):
+    tb = error.__traceback__
+    etype = type(error)
+    exception = traceback.format_exception(etype, error, tb, chain=True)
+    exception_msg = ""
+    for line in exception:
+        exception_msg += line
+
+    if isinstance(error, app_commands.CommandOnCooldown):
+        m, s = divmod(error.retry_after, 60)
+        h, m = divmod(m, 60)
+
+        msg = "This command cannot be used again for {} minutes and {} seconds".format(
+            round(m), round(s)
+        )
+
+        embed = discord.Embed(
+            title="Command On Cooldown", description=msg, color=discord.Color.red()
+        )
+        return await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    else:
+        error_file = Path("error.txt")
+        error_file.touch()
+        with error_file.open("w") as f:
+            f.write(exception_msg)
+        with error_file.open("r") as f:
+            # config, _ = core.common.load_config()
+            data = "\n".join([l.strip() for l in f])
+
+            GITHUB_API = "https://api.github.com"
+            API_TOKEN = os.getenv("GIST")
+            url = GITHUB_API + "/gists"
+            headers = {"Authorization": "token %s" % API_TOKEN}
+            params = {"scope": "gist"}
+            payload = {
+                "description": "Timmy encountered a Traceback!",
+                "public": True,
+                "files": {"error": {"content": f"{data}"}},
+            }
+            res = requests.post(
+                url, headers=headers, params=params, data=json.dumps(payload)
+            )
+            j = json.loads(res.text)
+            ID = j["id"]
+            gisturl = f"https://gist.github.com/{ID}"
+
+            permitlist = []
+            query = database.Administrators.select().where(
+                database.Administrators.TierLevel >= 3
+            )
+            for user in query:
+                permitlist.append(user.discordID)
+
+            if interaction.user.id not in permitlist:
+                embed = discord.Embed(
+                    title="Traceback Detected!",
+                    description="Timmy here has ran into an error!\nPlease check what you sent and/or check out "
+                                "the "
+                                "help command!",
+                    color=Colors.red,
+                )
+                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_footer(text=f"Error: {str(error)}")
+                await interaction.response.send_message(embed=embed)
+            else:
+                embed = discord.Embed(
+                    title="Traceback Detected!",
+                    description="Timmy here has ran into an error!\nTraceback has been attached below.",
+                    color=Colors.red,
+                )
+                embed.add_field(name="GIST URL", value=gisturl)
+                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_footer(text=f"Error: {str(error)}")
+                await interaction.response.send_message(embed=embed)
+
+            guild = bot.get_guild(Me.TechGuild)
+            channel = guild.get_channel(Me.TracebackChannel)
+
+            embed2 = discord.Embed(
+                title="Traceback Detected!",
+                description=f"**Information**\n"
+                            f"**Server:** {interaction.guild.name}\n"
+                            f"**User:** {interaction.user.mention}\n"
+                            f"**Command:** {interaction.command.name}",
+                color=Colors.red,
+            )
+            embed2.add_field(
+                name="Gist URL",
+                value=f"[Uploaded Traceback to GIST](https://gist.github.com/{ID})",
+            )
+            await channel.send(embed=embed2)
+
+            view = FeedbackButton()
+            await interaction.response.send_message(
                 "Want to help even more? Click here to submit feedback!", view=view
             )
             error_file.unlink()

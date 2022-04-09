@@ -37,7 +37,7 @@ class BanUpdate(commands.Cog):
         self.ModLogID = MAIN_ID.ch_actionLogs
 
     @commands.Cog.listener()
-    async def on_member_ban(self, guild, user):
+    async def on_member_ban(self, guild: discord.Guild, user):
         """
         Pycord doesn't give us the information we need so we need to dig deeper and query the audit logs
         """
