@@ -388,8 +388,8 @@ async def on_app_command_error_(bot: commands.Bot,
             title="Command On Cooldown", description=msg, color=discord.Color.red()
         )
         if interaction.response.is_done():
-            return await interaction.followup.send(embed=embed, ephemeral=True)
-        return await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     elif isinstance(error, app_commands.CheckFailure):
         if interaction.response.is_done():
