@@ -9,6 +9,7 @@ class TodoCMD(commands.Cog):
     """
     Todo list management
     """
+
     def __init__(self, bot):
         self.bot = bot
         self.interaction = []

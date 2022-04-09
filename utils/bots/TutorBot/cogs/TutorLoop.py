@@ -147,6 +147,5 @@ class TutorBotLoop(commands.Cog):
         await self.bot.wait_until_ready()
 
 
-
 async def setup(bot: commands.Bot):
     await bot.add_cog(TutorBotLoop(bot))

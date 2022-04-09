@@ -49,7 +49,9 @@ class TutorBotStaffCMD(commands.Cog):
             embed = discord.Embed(
                 title="Scheduled Tutor Sessions", color=discord.Color.dark_blue()
             )
-            embed.add_field(name="Schedule:", value=f"{interaction.user.name}'s Schedule:")
+            embed.add_field(
+                name="Schedule:", value=f"{interaction.user.name}'s Schedule:"
+            )
 
             if query.count() == 0:
                 embed.add_field(
@@ -77,7 +79,7 @@ class TutorBotStaffCMD(commands.Cog):
             embed.set_thumbnail(url=Others.timmyTeacher_png)
             embed.set_footer(
                 text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
-                     "these sessions with a warning sign next to them."
+                "these sessions with a warning sign next to them."
             )
             try:
                 await interaction.response.send_message(embed=embed)
@@ -103,11 +105,11 @@ class TutorBotStaffCMD(commands.Cog):
                 embed.add_field(
                     name="Values",
                     value=f"**Session ID:** `{entry.SessionID}`"
-                          f"\n**Student:** `{student_user.name}`"
-                          f"\n**Tutor:** `{interaction.user.name}`"
-                          f"\n**Date:** <t:{timestamp}:d>"
-                          f"\n**Time:** <t:{timestamp}:t>"
-                          f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
+                    f"\n**Student:** `{student_user.name}`"
+                    f"\n**Tutor:** `{interaction.user.name}`"
+                    f"\n**Date:** <t:{timestamp}:d>"
+                    f"\n**Time:** <t:{timestamp}:t>"
+                    f"\n**Repeat?:** {self.RepeatEmoji[entry.Repeat]}",
                 )
                 embed.set_footer(text=f"Subject: {entry.Subject}")
                 try:
@@ -169,7 +171,7 @@ class TutorBotStaffCMD(commands.Cog):
 
         embed.set_footer(
             text="Tutor Sessions have a 10 minute grace period before they get deleted, you can find "
-                 "these sessions with a warning sign next to them."
+            "these sessions with a warning sign next to them."
         )
         await interaction.response.send_message(embed=embed)
 
@@ -194,7 +196,7 @@ class TutorBotStaffCMD(commands.Cog):
         ampm="AM or PM",
         student="Enter the student ID you'll be tutoring for this session.",
         repeats="Does your Tutoring Session repeat?",
-        subject="Tutoring subject"
+        subject="Tutoring subject",
     )
     async def schedule(
         self,
@@ -326,7 +328,7 @@ class TutorBotStaffCMD(commands.Cog):
         ampm="AM or PM",
         student="Enter the student ID you'll be tutoring for this session.",
         repeats="Does your Tutoring Session repeat?",
-        subject="Tutoring subject"
+        subject="Tutoring subject",
     )
     async def schedule_t(
         self,
@@ -413,7 +415,9 @@ class TutorBotStaffCMD(commands.Cog):
                 query.Date = nextweek
                 query.save()
 
-                await interaction.response.send_message(f"Re-scheduled Session to `{nw}`")
+                await interaction.response.send_message(
+                    f"Re-scheduled Session to `{nw}`"
+                )
             else:
                 embed = discord.Embed(
                     title="Invalid Permissions",
@@ -430,10 +434,7 @@ class TutorBotStaffCMD(commands.Cog):
             )
             await interaction.response.send_message(embed=embed)
 
-    @command(
-        name="remove",
-        description="Remove a tutoring session"
-    )
+    @command(name="remove", description="Remove a tutoring session")
     @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
     async def remove(self, interaction: discord.Interaction, id: str):
         query = database.TutorBot_Sessions.select().where(
@@ -481,7 +482,9 @@ class TutorBotStaffCMD(commands.Cog):
         )
         var = query.count()
         if var == 0:
-            await interaction.response.send_message("You don't have any tutor sessions!")
+            await interaction.response.send_message(
+                "You don't have any tutor sessions!"
+            )
         else:
             for session in query:
                 session.delete_instance()
@@ -563,4 +566,3 @@ class DropdownView(discord.ui.View):
 
         self.add_item(DropdownClass)
         self.InteractionClass = DropdownClass
-

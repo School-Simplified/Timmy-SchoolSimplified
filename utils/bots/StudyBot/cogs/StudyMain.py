@@ -134,12 +134,15 @@ async def addLeaderboardProgress(member: discord.Member):
     """
     xpPerMinute = 30
 
-    StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
+    StudySessionQ = database.StudyVCDB.select().where(
+        database.StudyVCDB.discordID == member.id
+    )
     if StudySessionQ.exists():
         StudySessionQ = StudySessionQ.get()
         totalmin, now = showTotalMinutes(StudySessionQ.StartTime)
         leaderboardQuery = database.StudyVCLeaderboard.select().where(
-            database.StudyVCLeaderboard.discordID == member.id)
+            database.StudyVCLeaderboard.discordID == member.id
+        )
 
         isNewLvl = False
         if leaderboardQuery.exists():
@@ -202,7 +205,7 @@ async def addLeaderboardProgress(member: discord.Member):
                 xp=newXP,
                 totalXP=newTotalXP,
                 level=newLvl,
-                TTSWeek=totalmin
+                TTSWeek=totalmin,
             )
             q.save()
 
@@ -289,8 +292,10 @@ async def addLeaderboardProgress(member: discord.Member):
 
         if isNewLvl:
 
-            dmMSG = f"{member.mention}, you've reached level **{newLvl}** in Study VC!" \
-                    f"{roleStr}"
+            dmMSG = (
+                f"{member.mention}, you've reached level **{newLvl}** in Study VC!"
+                f"{roleStr}"
+            )
             try:
                 await member.send(dmMSG)
             except:
@@ -316,7 +321,9 @@ async def endSession(member: discord.Member):
     :return: Whenever the user has been found in the database: bool
     """
 
-    StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
+    StudySessionQ = database.StudyVCDB.select().where(
+        database.StudyVCDB.discordID == member.id
+    )
     if StudySessionQ.exists():
         StudySessionQ = StudySessionQ.get()
         StudySessionQ.delete_instance()
@@ -368,7 +375,9 @@ class StudyToDo(commands.Cog, Group):
         Adds an item to the study to-do list of the author/owner.
         """
 
-        query: database.StudyVCDB = database.StudyVCDB.select().where(database.StudyVCDB.discordID == interaction.user.id)
+        query: database.StudyVCDB = database.StudyVCDB.select().where(
+            database.StudyVCDB.discordID == interaction.user.id
+        )
         if query.exists():
             query = query.get()
             query.studyTodo = item
@@ -381,7 +390,9 @@ class StudyToDo(commands.Cog, Group):
             embed.set_footer(text="StudyBot")
             await interaction.response.send_message(embed=embed)
         else:
-            return await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
+            return await interaction.response.send_message(
+                f"You don't have a study session yet! Make one by joining any StudyVC!"
+            )
 
     @command()
     async def end(self, interaction: discord.Interaction):
@@ -392,10 +403,14 @@ class StudyToDo(commands.Cog, Group):
 
         if isInDatabase:
             await endSession(interaction.user)
-            await interaction.response.send_message(f"{interaction.user.mention} Your study session ended. To make one again, join any StudyVC!")
+            await interaction.response.send_message(
+                f"{interaction.user.mention} Your study session ended. To make one again, join any StudyVC!"
+            )
 
         else:
-            await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
+            await interaction.response.send_message(
+                f"You don't have a study session yet! Make one by joining any StudyVC!"
+            )
 
     @command()
     async def list(self, interaction: discord.Interaction):
@@ -409,13 +424,13 @@ class StudyToDo(commands.Cog, Group):
                 description=f"Your current goal: {query.studyTodo}",
                 color=Colors.ss_blurple,
             )
-            embed.set_footer(
-                text="You can use +studytodo set (item) to modify this!"
-            )
+            embed.set_footer(text="You can use +studytodo set (item) to modify this!")
             await interaction.response.send_message(embed=embed)
 
         else:
-            return await interaction.response.send_message(f"You don't have a study session yet! Make one by joining any StudyVC!")
+            return await interaction.response.send_message(
+                f"You don't have a study session yet! Make one by joining any StudyVC!"
+            )
 
     @command()
     async def leaderboard(self, interaction: discord.Interaction):
@@ -424,8 +439,10 @@ class StudyToDo(commands.Cog, Group):
 
         lbList = []
         i = 1
-        for entry in database.StudyVCLeaderboard.select().order_by(database.StudyVCLeaderboard.totalXP.desc(),
-                                                                   database.StudyVCLeaderboard.xp.desc()):
+        for entry in database.StudyVCLeaderboard.select().order_by(
+            database.StudyVCLeaderboard.totalXP.desc(),
+            database.StudyVCLeaderboard.xp.desc(),
+        ):
             member = guild.get_member(entry.discordID)
             print(entry, member)
             if member:
@@ -452,9 +469,7 @@ class StudyToDo(commands.Cog, Group):
             description=f"{FormattedList}",
             color=Colors.ss_blurple,
         )
-        embed.set_footer(
-            text="StudyBot"
-        )
+        embed.set_footer(text="StudyBot")
         await interaction.response.send_message(embed=embed)
 
 

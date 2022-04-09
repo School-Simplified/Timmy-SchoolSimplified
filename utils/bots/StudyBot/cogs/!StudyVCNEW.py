@@ -7,7 +7,15 @@ import discord
 from discord.ext import commands, tasks
 
 from core import database
-from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID, TECH_ID, SandboxConfig, SelectMenuHandler
+from core.common import (
+    Emoji,
+    MAIN_ID,
+    STAFF_ID,
+    TUT_ID,
+    TECH_ID,
+    SandboxConfig,
+    SelectMenuHandler,
+)
 from utils.bots.StudyBot.cogs.StudyMain import addLeaderboardProgress
 
 
@@ -32,7 +40,11 @@ async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
     now = datetime.now(EST)
 
     if renew:
-        query = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id).get()
+        query = (
+            database.StudyVCDB.select()
+            .where(database.StudyVCDB.discordID == member.id)
+            .get()
+        )
 
     MSV = discord.ui.View(timeout=60)
     var = SelectMenuHandler(
@@ -42,7 +54,7 @@ async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
 
     msgView = await console.send(
         f"{member.mention} You have joined a study channel. Please choose the duration of your study session!",
-        view=MSV
+        view=MSV,
     )
     timeout = await MSV.wait()
 
@@ -83,7 +95,12 @@ async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
 
     if not renew:
         now = datetime.now(EST)
-        q = database.StudyVCDB.create(discordID = member.id, goal = goal, StartTime = datetime.now(EST), RenewalTime = renewal)
+        q = database.StudyVCDB.create(
+            discordID=member.id,
+            goal=goal,
+            StartTime=datetime.now(EST),
+            RenewalTime=renewal,
+        )
         q.save()
     else:
         await addLeaderboardProgress(member)
@@ -100,7 +117,6 @@ async def setNewStudyGoal(self, console, member: discord.Member, renew: bool):
     return goal, renewal
 
 
-
 def getConsoleCH(column_id):
     q: database.SandboxConfig = (
         database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
@@ -110,7 +126,6 @@ def getConsoleCH(column_id):
         1: q.ch_tv_startvc,
     }
     return ColumnDict[column_id]
-
 
 
 class StudyVCUpdate(commands.Cog):
@@ -147,7 +162,9 @@ class StudyVCUpdate(commands.Cog):
             and not member.bot
         ):
 
-            StudySessionQ = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
+            StudySessionQ = database.StudyVCDB.select().where(
+                database.StudyVCDB.discordID == member.id
+            )
             if StudySessionQ.exists():
                 await addLeaderboardProgress(member)
                 await console.send(
@@ -160,7 +177,9 @@ class StudyVCUpdate(commands.Cog):
             and not member.bot
         ):
 
-            query = database.StudyVCDB.select().where(database.StudyVCDB.discordID == member.id)
+            query = database.StudyVCDB.select().where(
+                database.StudyVCDB.discordID == member.id
+            )
             if not query.exists():
                 goal, renewal = await setNewStudyGoal(self, console, member, False)
             else:
@@ -178,8 +197,8 @@ class StudyVCUpdate(commands.Cog):
                     )
                     goal, renewal = await setNewStudyGoal(self, console, member, True)
                     await console.send(
-                                f"{member.mention} Successfully started your study session! Your study goal is '{goal}'."
-                                f"n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
+                        f"{member.mention} Successfully started your study session! Your study goal is '{goal}'."
+                        f"n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"
                     )
 
                 elif dateObj - datetime.now(EST) < timedelta(minutes=5):
@@ -192,8 +211,7 @@ class StudyVCUpdate(commands.Cog):
                         f"{member.mention} You already have a study session going!\n\nMake sure you come back at {query.RenewalTime.strftime(r'%I:%M %p')} to renew your study session!"
                     )
 
-
-    @tasks.loop(seconds=10) # TODO: change to 60s due of rate limits
+    @tasks.loop(seconds=10)  # TODO: change to 60s due of rate limits
     async def StudyVCChecker(self):
         """Loop through each session and check if a user's study session is about to end"""
         print("loop StudyVCChecker")
@@ -211,7 +229,9 @@ class StudyVCUpdate(commands.Cog):
                     await StudyVCConsoleObj.send(
                         f"{member.mention} Your study session has ended, set a new goal!"
                     )
-                    goal, renewal = await setNewStudyGoal(self, StudyVCConsoleObj, member, True)
+                    goal, renewal = await setNewStudyGoal(
+                        self, StudyVCConsoleObj, member, True
+                    )
                     await StudyVCConsoleObj.send(
                         f"{member.mention} Successfully started your study session! Your study goal is '{goal}'."
                         f"n\n**That's it!** Make sure you come back at {renewal.strftime(r'%I:%M %p')} to renew your study session!"

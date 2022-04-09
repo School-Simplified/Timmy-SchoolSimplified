@@ -130,7 +130,12 @@ class VotingBot(commands.Cog):
         interMsgID = interaction.message.id
         print(f"interMsgID: {interMsgID}")
         if interMsgID in msgIDList:
-            componentsStr = database.Voting.select().where(database.Voting.msgID == interMsgID).get().components
+            componentsStr = (
+                database.Voting.select()
+                .where(database.Voting.msgID == interMsgID)
+                .get()
+                .components
+            )
             componentsDict = ast.literal_eval(componentsStr)
             interactionData = interaction.data
 
