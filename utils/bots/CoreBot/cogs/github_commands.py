@@ -67,7 +67,7 @@ class GithubControlModal(discord.ui.Modal):
         return transformer_dict[_type]
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
-        await interaction.response.defer()
+        await interaction.response.defer(thinking=True)
 
         embed = discord.Embed(title=f"{self._feature_type} Issue", colour=discord.Colour.brand_green())
 
