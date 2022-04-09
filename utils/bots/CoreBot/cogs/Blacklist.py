@@ -10,10 +10,7 @@ load_dotenv()
 
 class BlacklistCMD(commands.Cog, Group):
     def __init__(self, bot):
-        super().__init__(
-            name="blacklist",
-            description="Manage the bot's blacklist"
-        )
+        super().__init__(name="blacklist", description="Manage the bot's blacklist")
         self.bot = bot
 
     @property

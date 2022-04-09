@@ -30,7 +30,7 @@ from core.special_methods import (
     main_mode_check_,
     on_command_error_,
     on_ready_,
-    on_app_command_error_
+    on_app_command_error_,
 )
 
 load_dotenv()
@@ -49,10 +49,10 @@ class TimmyCommandTree(app_commands.CommandTree):
         self.bot = bot
 
     async def on_error(
-            self,
-            interaction: discord.Interaction,
-            command: Union[app_commands.Command, app_commands.ContextMenu],
-            error: app_commands.AppCommandError
+        self,
+        interaction: discord.Interaction,
+        command: Union[app_commands.Command, app_commands.ContextMenu],
+        error: app_commands.AppCommandError,
     ):
         return await on_app_command_error_(self.bot, interaction, command, error)
 
@@ -92,7 +92,12 @@ class Timmy(commands.Bot):
         # for guild in self.guilds:
         #     await self.tree.sync(guild=guild)
 
-        with alive_bar(len(get_extensions()), ctrl_c=False, bar="bubbles", title="Initializing Cogs:") as bar:
+        with alive_bar(
+            len(get_extensions()),
+            ctrl_c=False,
+            bar="bubbles",
+            title="Initializing Cogs:",
+        ) as bar:
             for ext in get_extensions():
                 try:
                     await bot.load_extension(ext)
