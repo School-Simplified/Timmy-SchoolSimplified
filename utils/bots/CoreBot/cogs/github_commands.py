@@ -115,3 +115,7 @@ class GithubCommands(commands.Cog):
                 github_client=self._github_client
             )
         )
+
+
+async def setup(bot: 'Timmy'):
+    await bot.add_cog(GithubCommands(bot))
