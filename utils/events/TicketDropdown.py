@@ -104,6 +104,8 @@ async def TicketExport(
         .get()
     )
     TicketOwner = self.bot.get_user(query.authorID)
+    if TicketOwner is None:
+        TicketOwner = await self.bot.fetch_user(query.authorID)
 
     if transcript is None:
         return
@@ -749,11 +751,12 @@ class DropdownTickets(commands.Cog):
         self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
         self.CHID_DEFAULT = Others.CHID_DEFAULT
         self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
-        self.TicketInactive.start()
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
+        self.TicketInactive.start()
 
     async def cog_unload(self):
         self.TicketInactive.cancel()
+
 
     @commands.Cog.listener("on_interaction")
     async def TicketDropdown(self, interaction: discord.Interaction):
@@ -832,7 +835,7 @@ class DropdownTickets(commands.Cog):
             )
 
             try:
-                TicketOwner = guild.get_member(query.authorID)
+                TicketOwner = await guild.fetch_member(query.authorID)
             except discord.NotFound:
                 await channel.send(
                     f"{author.mention} The ticket owner has left the server."
@@ -920,7 +923,7 @@ class DropdownTickets(commands.Cog):
                 .get()
             )
             try:
-                TicketOwner = guild.get_member(query.authorID)
+                TicketOwner = await guild.fetch_member(query.authorID)
             except discord.NotFound:
                 await channel.send(
                     f"{author.mention} Sorry, but the ticket owner has left the server."
@@ -939,7 +942,7 @@ class DropdownTickets(commands.Cog):
                 await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":
-            channel = interaction.channel
+            channel: discord.TextChannel = interaction.channel
             if interaction.guild.id == MAIN_ID.g_main:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
                     MAIN_ID.ch_transcriptLogs
@@ -952,49 +955,49 @@ class DropdownTickets(commands.Cog):
             msg = await interaction.channel.send(
                 f"Please wait, creating your transcript {Emoji.loadingGIF2}\n**THIS MAY TAKE SOME TIME**"
             )
+            async with channel.typing():
+                msg, file, S3_URL = await TicketExport(
+                    self, channel, ResponseLogChannel, author, None, True
+                )
 
-            msg, file, S3_URL = await TicketExport(
-                self, channel, ResponseLogChannel, author, None, True
-            )
+                if channel.category_id == MAIN_ID.cat_essayTicket:
+                    raw_url = S3_URL.split("](")[1].strip(")")
+                    values = self.sheet.col_values(1)
 
-            if channel.category_id == MAIN_ID.cat_essayTicket:
-                raw_url = S3_URL.split("](")[1].strip(")")
-                values = self.sheet.col_values(1)
+                    if raw_url not in values:
+                        row = []
+                        async for message in channel.history(limit=None):
+                            if (
+                                f"{message.author} ({message.author.id})" not in row
+                                and not message.author.bot
+                            ):
+                                row.append(f"{message.author} ({message.author.id})")
 
-                if raw_url not in values:
-                    row = []
-                    async for message in channel.history(limit=None):
-                        if (
-                            f"{message.author} ({message.author.id})" not in row
-                            and not message.author.bot
-                        ):
-                            row.append(f"{message.author} ({message.author.id})")
+                        query = (
+                            database.TicketInfo.select()
+                            .where(database.TicketInfo.ChannelID == interaction.channel_id)
+                            .get()
+                        )
 
-                    query = (
-                        database.TicketInfo.select()
-                        .where(database.TicketInfo.ChannelID == interaction.channel_id)
-                        .get()
-                    )
+                        tz = timezone("EST")
+                        closed_at_raw = datetime.now(tz)
+                        opened_at_raw = query.createdAt
 
-                    tz = timezone("EST")
-                    closed_at_raw = datetime.now(tz)
-                    opened_at_raw = query.createdAt
+                        opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
+                        closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
 
-                    opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
-                    closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
+                        row.insert(0, raw_url)
+                        row.insert(1, "")  #
+                        row.insert(2, "")  #
+                        row.insert(3, "")  # because of connected cells
+                        row.insert(4, "")  #
+                        row.insert(5, "")  #
+                        row.insert(6, opened_at)
+                        row.insert(7, closed_at)
+                        self.sheet.append_row(row)
+                        self.sheet.sort((8, "des"))
 
-                    row.insert(0, raw_url)
-                    row.insert(1, "")  #
-                    row.insert(2, "")  #
-                    row.insert(3, "")  # because of connected cells
-                    row.insert(4, "")  #
-                    row.insert(5, "")  #
-                    row.insert(6, opened_at)
-                    row.insert(7, closed_at)
-                    self.sheet.append_row(row)
-                    self.sheet.sort((8, "des"))
-
-            await msg.delete()
+                await msg.delete()
             await interaction.channel.send(
                 f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}"
             )
@@ -1018,50 +1021,53 @@ class DropdownTickets(commands.Cog):
             msgO = await interaction.channel.send(
                 f"{author.mention}\nPlease wait, generating a transcript {Emoji.loadingGIF2}\n**THIS MAY TAKE SOME TIME**"
             )
-            TicketOwner = self.bot.get_user(query.authorID)
+            async with channel.typing():
+                TicketOwner = self.bot.get_user(query.authorID)
+                if TicketOwner is None:
+                    TicketOwner = await self.bot.fetch_user(query.authorID)
 
-            messages = [message async for message in channel.history(limit=None)]
-            authorList = []
+                messages = [message async for message in channel.history(limit=None)]
+                authorList = []
 
-            for msg in messages:
-                if msg.author not in authorList:
-                    authorList.append(msg.author)
-            msg, transcript_file, url = await TicketExport(
-                self, channel, ResponseLogChannel, TicketOwner, authorList
-            )
-            # S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
-            # print(transcript_file.filename)
+                for msg in messages:
+                    if msg.author not in authorList:
+                        authorList.append(msg.author)
+                msg, transcript_file, url = await TicketExport(
+                    self, channel, ResponseLogChannel, TicketOwner, authorList
+                )
+                # S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
+                # print(transcript_file.filename)
 
-            if channel.category_id == MAIN_ID.cat_essayTicket:
-                raw_url = url.split("](")[1].strip(")")
-                values = self.sheet.col_values(1)
+                if channel.category_id == MAIN_ID.cat_essayTicket:
+                    raw_url = url.split("](")[1].strip(")")
+                    values = self.sheet.col_values(1)
 
-                if raw_url not in values:
-                    row = []
-                    async for message in channel.history(limit=None):
-                        if (
-                            f"{message.author} ({message.author.id})" not in row
-                            and not message.author.bot
-                        ):
-                            row.append(f"{message.author} ({message.author.id})")
+                    if raw_url not in values:
+                        row = []
+                        async for message in channel.history(limit=None):
+                            if (
+                                f"{message.author} ({message.author.id})" not in row
+                                and not message.author.bot
+                            ):
+                                row.append(f"{message.author} ({message.author.id})")
 
-                    tz = timezone("EST")
-                    closed_at_raw = datetime.now(tz)
-                    opened_at_raw = query.createdAt
+                        tz = timezone("EST")
+                        closed_at_raw = datetime.now(tz)
+                        opened_at_raw = query.createdAt
 
-                    opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
-                    closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
+                        opened_at = datetime.strftime(opened_at_raw, "%Y-%m-%d\n%I.%M %p")
+                        closed_at = datetime.strftime(closed_at_raw, "%Y-%m-%d\n%I.%M %p")
 
-                    row.insert(0, raw_url)
-                    row.insert(1, "")  #
-                    row.insert(2, "")  #
-                    row.insert(3, "")  # because of connected cells
-                    row.insert(4, "")  #
-                    row.insert(5, "")  #
-                    row.insert(6, opened_at)
-                    row.insert(7, closed_at)
-                    self.sheet.append_row(row)
-                    self.sheet.sort((8, "des"))
+                        row.insert(0, raw_url)
+                        row.insert(1, "")  #
+                        row.insert(2, "")  #
+                        row.insert(3, "")  # because of connected cells
+                        row.insert(4, "")  #
+                        row.insert(5, "")  #
+                        row.insert(6, opened_at)
+                        row.insert(7, closed_at)
+                        self.sheet.append_row(row)
+                        self.sheet.sort((8, "des"))
 
             try:
                 await msgO.edit(
@@ -1176,11 +1182,12 @@ class DropdownTickets(commands.Cog):
                 """overwrite = discord.PermissionOverwrite()
                 overwrite.read_messages = False
                 overwrite.send_messages = False"""
-                await channel.set_permissions(
-                    TicketOwner, reason="Ticket Perms Close (User)",
-                    read_messages=False,
-                    send_messages=False,
-                )
+                if TicketOwner is not None:
+                    await channel.set_permissions(
+                        TicketOwner, reason="Ticket Perms Close (User)",
+                        read_messages=False,
+                        send_messages=False,
+                    )
                 await channel.send(
                     f"Ticket has been inactive for 24 hours.\nTicket has been closed.",
                     view=ButtonViews2,
@@ -1209,6 +1216,10 @@ class DropdownTickets(commands.Cog):
 
                 await channel.delete()
                 entry.delete_instance()"""
+
+    @TicketInactive.before_loop
+    async def before_loop_(self):
+        await self.bot.wait_until_ready()
 
     @commands.command()
     @is_botAdmin
