@@ -784,9 +784,19 @@ class TutorVCCMD(commands.Cog):
         "Mod Trainee",
         844013914609680384,
     )
-    async def forceend(self, ctx, channel):
+    async def forceend(self, ctx, channel_id: int):
         database.db.connect(reuse_if_open=True)
-        channel = self.bot.get_channel(channel)
+        channel = self.bot.get_channel(channel_id)
+        if channel is None:
+            try:
+                channel = await self.bot.fetch_channel(channel_id)
+            except discord.NotFound:
+                embed = discord.Embed(
+                    title=f"{Emoji.invalidchannel} Unknown Channel",
+                    description="Unable to find the channel you specified!",
+                    color=discord.Colour.brand_red(),
+                )
+                return await ctx.send(embed=embed)
         print(channel)
 
         if channel.id in self.presetChannels:
