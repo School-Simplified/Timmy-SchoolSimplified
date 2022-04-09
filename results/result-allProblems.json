@@ -1151,6 +1151,34 @@
   "category": "Python",
   "type": "Method is not declared static",
   "severity": "Moderate",
+  "comment": "Method `interaction_check` may be 'static'",
+  "detailsInfo": "Reports any methods that do not require a class instance creation and can be\nmade static.\n\n**Example:**\n\n```\nclass MyClass(object):\n    def my_method(self, x):\n        print(x)\n```\n\nIf a **Make function from method** quick-fix is applied, the code changes to:\n\n```\ndef my_method(x):\n    print(x)\n\n\nclass MyClass(object):\n    pass\n```\n\nIf you select the **Make method static** quick-fix, the `@staticmethod` decorator is added:\n\n```\nclass MyClass(object):\n    @staticmethod\n    def my_method(x):\n        print(x)\n```",
+  "sources": [
+    {
+      "type": "file",
+      "path": "main.py",
+      "language": "Python",
+      "line": 51,
+      "offset": 15,
+      "length": 17,
+      "code": {
+        "startLine": 49,
+        "length": 17,
+        "offset": 38,
+        "surroundingCode": "        self.bot = bot\n\n    async def interaction_check(\n            self,\n            interaction: discord.Interaction,"
+      }
+    }
+  ],
+  "attributes": {
+    "module": "project",
+    "inspectionName": "PyMethodMayBeStaticInspection"
+  },
+  "hash": "3205095dc3a47f2923fdaaa8c130e07950c694d2eb1118437d55cba411e25276"
+},{
+  "tool": "Code Inspection",
+  "category": "Python",
+  "type": "Method is not declared static",
+  "severity": "Moderate",
   "comment": "Method `before_invoke` may be 'static'",
   "detailsInfo": "Reports any methods that do not require a class instance creation and can be\nmade static.\n\n**Example:**\n\n```\nclass MyClass(object):\n    def my_method(self, x):\n        print(x)\n```\n\nIf a **Make function from method** quick-fix is applied, the code changes to:\n\n```\ndef my_method(x):\n    print(x)\n\n\nclass MyClass(object):\n    pass\n```\n\nIf you select the **Make method static** quick-fix, the `@staticmethod` decorator is added:\n\n```\nclass MyClass(object):\n    @staticmethod\n    def my_method(x):\n        print(x)\n```",
   "sources": [
@@ -1158,11 +1186,11 @@
       "type": "file",
       "path": "main.py",
       "language": "Python",
-      "line": 85,
+      "line": 99,
       "offset": 15,
       "length": 13,
       "code": {
-        "startLine": 83,
+        "startLine": 97,
         "length": 13,
         "offset": 72,
         "surroundingCode": "        return await on_command_error_(self, ctx, error)\n\n    async def before_invoke(self, ctx: commands.Context):\n        return await before_invoke_(ctx)\n"
@@ -1173,7 +1201,7 @@
     "module": "project",
     "inspectionName": "PyMethodMayBeStaticInspection"
   },
-  "hash": "7dd77128c78dae3c5a722bba6c80c057d3cac13fc64de7f5c81a39b696285422"
+  "hash": "b8069fc572957fd15a147710b18adddd26ff5a6138b54100577f67b88152da30"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -1186,11 +1214,11 @@
       "type": "file",
       "path": "main.py",
       "language": "Python",
-      "line": 88,
+      "line": 102,
       "offset": 15,
       "length": 5,
       "code": {
-        "startLine": 86,
+        "startLine": 100,
         "length": 5,
         "offset": 56,
         "surroundingCode": "        return await before_invoke_(ctx)\n\n    async def check(self, ctx: commands.Context):\n        return await main_mode_check_(ctx)\n"
@@ -1201,7 +1229,7 @@
     "module": "project",
     "inspectionName": "PyMethodMayBeStaticInspection"
   },
-  "hash": "69d9a3574df046dd7314ee56e470ae877d6218ece91c20d37f2a09c351143d61"
+  "hash": "cfc9e6ad35f07ad7dfd78a0ac4c4c1219ec93d59a71b16448536a3ad0f146ddf"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -1214,11 +1242,11 @@
       "type": "file",
       "path": "main.py",
       "language": "Python",
-      "line": 91,
+      "line": 105,
       "offset": 15,
       "length": 10,
       "code": {
-        "startLine": 89,
+        "startLine": 103,
         "length": 10,
         "offset": 58,
         "surroundingCode": "        return await main_mode_check_(ctx)\n\n    async def setup_hook(self) -> None:\n        # for guild in self.guilds:\n        #     await self.tree.sync(guild=guild)"
@@ -1229,7 +1257,7 @@
     "module": "project",
     "inspectionName": "PyMethodMayBeStaticInspection"
   },
-  "hash": "9313c4570ec08772e3e2a4591e6b9bf3422f64191fc8e0eb7b8864e0b0236fda"
+  "hash": "14921d464397ab9dec04678408df3e9bdfbc8c2e5c03a287b17317083c5a77dc"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -20998,4 +21026,32 @@
     "inspectionName": "PyTypeCheckerInspection"
   },
   "hash": "4fa982abd68ebb84d6b109ecd782faf511fe5a705878e8a903a2253290822fe0"
+},{
+  "tool": "Code Inspection",
+  "category": "Python",
+  "type": "Incorrect type",
+  "severity": "High",
+  "comment": "Expected type 'collections.Iterable', got 'Type\\[Blacklist\\]' instead",
+  "detailsInfo": "Reports type errors in function call expressions, targets, and return values. In a dynamically typed language, this is possible in a limited number of cases.\n\nTypes of function parameters can be specified in\ndocstrings or in Python 3 function annotations.\n\n**Example:**\n\n```\ndef foo() -> int:\n    return \"abc\" # Expected int, got str\n\n\na: str\na = foo() # Expected str, got int\n```\n\nWith the quick-fix, you can modify the problematic types:\n\n```\ndef foo() -> str:\n    return \"abc\"\n\n\na: str\na = foo()\n```",
+  "sources": [
+    {
+      "type": "file",
+      "path": "main.py",
+      "language": "Python",
+      "line": 57,
+      "offset": 51,
+      "length": 18,
+      "code": {
+        "startLine": 55,
+        "length": 18,
+        "offset": 66,
+        "surroundingCode": "    ) -> bool:\n\n        blacklisted_users = [p.discordID for p in database.Blacklist]\n        if interaction.user.id in blacklisted_users:\n            await interaction.response.send_message("
+      }
+    }
+  ],
+  "attributes": {
+    "module": "project",
+    "inspectionName": "PyTypeCheckerInspection"
+  },
+  "hash": "9c6f0c8115ecb3cb9b386d90e1c5da902173de074444a0e35ce60df16a07be8f"
 }]}
