@@ -82,9 +82,9 @@ class AdminAPI(commands.Cog):
             "orgUnitPath": orgUnit[organizationunit],
         }
         service.users().insert(body=user).execute()
-        await interaction.response.send_message(
-            f"{interaction.user.mention} Successfully created **{firstname} {lastname}'s** account.\n"
-            f"**Username:** {firstname}.{lastname}@schoolsimplified.orf\n"
+        await ctx.respond(
+            f"{ctx.author.mention} Successfully created **{firstname} {lastname}'s** account.\n"
+            f"**Username:** {firstname}.{lastname}@schoolsimplified.org\n"
             f"**Organization Unit:** {orgUnit[organizationunit]}",
             ephemeral=False,
         )

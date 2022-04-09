@@ -222,8 +222,9 @@ class StudyVCUpdate(commands.Cog):
                     f"{member.mention} Your study session is ending in **less than 5 minutes**. (Ends at: {dateObj.strftime(r'%I:%M %p')})\n\nMaybe renew your study session?"
                 )
 
-
-
+    @StudyVCChecker.before_loop
+    async def before_loop_(self):
+        await self.bot.wait_until_ready()
 
     
 async def setup(bot):

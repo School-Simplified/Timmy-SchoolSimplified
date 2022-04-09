@@ -163,7 +163,7 @@ load_dotenv()
 class MiscCMD(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.__cog_name__ = "General"
-        self.bot: commands.Bot = bot
+        self.bot = bot
         self.interaction = []
 
         self.client = Hub.current.client
@@ -495,7 +495,7 @@ class MiscCMD(commands.Cog):
             inline=False,
         )
         pingembed.set_footer(
-            text=f"TimmyOS Version: {0.0}", icon_url=ctx.author.avatar.url
+            text=f"TimmyOS Version: {self.bot.version}", icon_url=ctx.author.avatar.url
         )
 
         await ctx.send(embed=pingembed)
