@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import os
 from typing import Dict, List, Literal, TYPE_CHECKING, Union
 
 import discord
@@ -42,26 +44,6 @@ class GithubControlModal(discord.ui.Modal):
                 "placeholder": "A simple summary of your bug report"
             },
             {
-                "title": "Reproducible Steps",
-                "required": True,
-                "placeholder": "What you did to make it happen."
-            },
-            {
-                "title": "Expected Results",
-                "required": True,
-                "placeholder": "What did you expect to happen?"
-            },
-            {
-                "title": "Actual Results",
-                "required": True,
-                "placeholder": "What actually happened?"
-            },
-            {
-                "title": "Location",
-                "required": True,
-                "placeholder": "Server + Channel name"
-            },
-            {
                 "title": "Additional Context",
                 "required": False,
                 "placeholder": "If there is anything else to say, please do so here."
@@ -85,24 +67,37 @@ class GithubControlModal(discord.ui.Modal):
         return transformer_dict[_type]
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
+        await interaction.response.defer()
 
-        embed = discord.Embed(colour=discord.Colour.brand_green())
+        embed = discord.Embed(title=f"{self._feature_type} Issue", colour=discord.Colour.brand_green())
+
+        issue_body = ""
 
         for item, question in zip(self.children, self.transform(self._type)):
             embed.add_field(
-                name=question,
+                name=question["title"],
                 value=str(item),
                 inline=False
             )
+            issue_body += f"**{question['title']}**\n{str(item)}\n\n"
 
         repo = self._gh_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
-        ...
+
+        issue = repo.create_issue(
+            title=str(self.children[0]),
+            body=f"**Issue Feature**\n{self._feature_type}\n\n" + issue_body + self._attachment,
+            labels=[
+                repo.get_label(name="Discord")
+            ]
+        )
+        embed.description = f"[Created Issue!]({issue.url})"
+        await interaction.followup.send(embed=embed)
 
 
 class GithubCommands(commands.Cog):
     def __init__(self, bot: 'Timmy'):
         self.bot = bot
-        self._github_client = Github()
+        self._github_client = Github(os.getenv("GH_TOKEN"))
 
     @command(name="open-issue")
     async def __issue(
