@@ -397,7 +397,14 @@ async def on_app_command_error_(
         embed = discord.Embed(
             title="Command On Cooldown", description=msg, color=discord.Color.red()
         )
-        return await interaction.response.send_message(embed=embed, ephemeral=True)
+        if interaction.response.is_done():
+            await interaction.followup.send(embed=embed, ephemeral=True)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    elif isinstance(error, app_commands.CheckFailure):
+        if interaction.response.is_done():
+            await interaction.followup.send("You cannot run this command!", ephemeral=True)
+        await interaction.response.send_message("You cannot run this command!", ephemeral=True)
 
     else:
         error_file = Path("error.txt")
@@ -442,6 +449,8 @@ async def on_app_command_error_(
                 )
                 embed.set_thumbnail(url=Others.timmyDog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
+                if interaction.response.is_done():
+                    await interaction.followup.send(embed=embed)
                 await interaction.response.send_message(embed=embed)
             else:
                 embed = discord.Embed(
@@ -452,6 +461,8 @@ async def on_app_command_error_(
                 embed.add_field(name="GIST URL", value=gisturl)
                 embed.set_thumbnail(url=Others.timmyDog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
+                if interaction.response.is_done():
+                    await interaction.followup.send(embed=embed)
                 await interaction.response.send_message(embed=embed)
 
             guild = bot.get_guild(Me.TechGuild)
@@ -472,6 +483,10 @@ async def on_app_command_error_(
             await channel.send(embed=embed2)
 
             view = FeedbackButton()
+            if interaction.response.is_done():
+                await interaction.followup.send(
+                    "Want to help even more? Click here to submit feedback!", view=view
+                )
             await interaction.response.send_message(
                 "Want to help even more? Click here to submit feedback!", view=view
             )

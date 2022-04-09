@@ -11,7 +11,7 @@ __author_email__ = "timmy@schoolsimplified.org"
 import faulthandler
 import logging
 import os
-from typing import Optional, Union
+from typing import Union
 
 import discord
 from alive_progress import alive_bar
@@ -47,6 +47,20 @@ class TimmyCommandTree(app_commands.CommandTree):
     def __init__(self, bot: commands.Bot):
         super().__init__(bot)
         self.bot = bot
+
+    async def interaction_check(
+            self,
+            interaction: discord.Interaction,
+            /
+    ) -> bool:
+
+        blacklisted_users = [p.discordID for p in database.Blacklist]
+        if interaction.user.id in blacklisted_users:
+            await interaction.response.send_message(
+                "You have been blacklisted from using commands!", ephemeral=True
+            )
+            return False
+        return True
 
     async def on_error(
         self,

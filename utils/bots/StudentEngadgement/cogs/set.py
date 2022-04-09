@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import Dict, List, Literal, Union, TYPE_CHECKING
 
 from discord.ext import commands
@@ -9,6 +10,14 @@ from core.common import MAIN_ID, SET_ID, Emoji
 
 if TYPE_CHECKING:
     from main import Timmy
+
+
+MediaLiteralType = Literal[
+    "Book", "Movie", "TV Show",
+    "Meme", "Pickup Line", "Puzzle",
+    "Daily Question", "Motivation", "Music"
+]
+
 
 blacklist = []
 
@@ -22,13 +31,16 @@ def spammer_check():
 
 def reload_blacklist():
     blacklist.clear()
-    for user_id in database.ResponseSpamBlacklist:
-        blacklist.append(user_id)
+    for entry in database.ResponseSpamBlacklist:
+        blacklist.append(entry.discordID)
 
 
 class SetSuggestBlacklist(Group):
-    def __init__(self, bot: "Timmy"):
-        super().__init__(name="set_blacklist", guild_ids=[MAIN_ID.g_main, SET_ID.g_set])
+    def __init__(self, bot: Timmy):
+        super().__init__(
+            name="set_blacklist",
+            guild_ids=[MAIN_ID.g_main, SET_ID.g_set]
+        )
         self.bot = bot
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
@@ -87,7 +99,10 @@ class SetSuggestBlacklist(Group):
 
 
 class Suggest(Group):
-    def __init__(self, bot: "Timmy"):
+    def __init__(
+            self,
+            bot: Timmy
+    ):
         super().__init__(
             name="suggest",
             description="Suggest something for community engagement!",
@@ -167,19 +182,19 @@ class Suggest(Group):
 
 class SuggestModal(discord.ui.Modal):
     def __init__(
-        self,
-        bot: "Timmy",
-        suggest_type: Literal[
-            "Book",
-            "Movie",
-            "TV Show",
-            "Meme",
-            "Pickup Line",
-            "Puzzle",
-            "Daily Question",
-            "Motivation",
-            "Music",
-        ],
+            self,
+            bot: Timmy,
+            suggest_type: Literal[
+                "Book",
+                "Movie",
+                "TV Show",
+                "Meme",
+                "Pickup Line",
+                "Puzzle",
+                "Daily Question",
+                "Motivation",
+                "Music"
+            ]
     ):
         super().__init__(timeout=None, title=suggest_type + " Suggestion")
         self.type = suggest_type
@@ -189,6 +204,11 @@ class SuggestModal(discord.ui.Modal):
                 "question": "Which book are you recommending?",
                 "placeholder": None,
                 "required": True,
+            },
+            {
+                "question": "What genre is it?",
+                "placeholder": None,
+                "required": True
             },
             {
                 "question": "What rating does this book have?",
@@ -315,18 +335,9 @@ class SuggestModal(discord.ui.Modal):
             },
         ]
         self.type_to_questions_list: Dict[
-            Literal[
-                "Book",
-                "Movie",
-                "TV Show",
-                "Meme",
-                "Pickup Line",
-                "Puzzle",
-                " Daily Question",
-                "Motivation",
-                "Music",
-            ],
-            List[Dict[str, Union[bool, str, None]]],
+            MediaLiteralType, List[
+                Dict[str, Union[bool, str, None]]
+            ]
         ] = {
             "Book": self.book_question_list,
             "Movie": self.movie_question_list,
@@ -362,8 +373,6 @@ class SuggestModal(discord.ui.Modal):
 
         questions = self.type_to_questions_list[self.type]
 
-        print(f"Items: {self.children} \n\n Questions: {questions}")
-
         for item, question in zip(self.children, questions):
             """
             item: discord.TextInput
@@ -392,7 +401,7 @@ class Engagement(commands.Cog):
     Commands for Student Engagement
     """
 
-    def __init__(self, bot: "Timmy"):
+    def __init__(self, bot: Timmy):
         self.bot = bot
         self.__cog_name__ = "Student Engagement"
         self.__cog_app_commands__.append(Suggest(bot))
@@ -403,8 +412,8 @@ class Engagement(commands.Cog):
         return Emoji.turtlesmirk
 
     async def cog_load(self) -> None:
-        for user_id in database.ResponseSpamBlacklist:
-            blacklist.append(user_id)
+        for item in database.ResponseSpamBlacklist:
+            blacklist.append(item.discordID)
 
     @command(name="acceptance-letter")
     @spammer_check()
@@ -444,5 +453,5 @@ class Engagement(commands.Cog):
         await guess_channel.send(embed=embed)
 
 
-async def setup(bot: "Timmy"):
+async def setup(bot: Timmy):
     await bot.add_cog(Engagement(bot))
