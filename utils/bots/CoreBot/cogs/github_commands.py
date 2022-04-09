@@ -20,7 +20,7 @@ class GithubControlModal(discord.ui.Modal):
     def __init__(
             self,
             bot: Timmy,
-            _type: GithubActionLiteral,
+            type_: GithubActionLiteral,
             feature: IssueFeatureLiteral,
             attachment: discord.Attachment,
             github_client: Github,
@@ -28,7 +28,7 @@ class GithubControlModal(discord.ui.Modal):
         super().__init__(timeout=None)
 
         self.bot = bot
-        self._type = _type
+        self._type = type_
         self._feature_type = feature
         self._attachment = attachment.url
         self._gh_client = github_client
@@ -49,12 +49,12 @@ class GithubControlModal(discord.ui.Modal):
                 "placeholder": "If there is anything else to say, please do so here."
             },
         ]
-        for text_input in self.transform(self._type):
+        for item_blueprint in self.transform(self._type):
             self.add_item(
                 discord.ui.TextInput(
-                    label=text_input["title"],
-                    required=text_input["required"],
-                    placeholder=text_input["placeholder"] if text_input["placeholder"] else None,
+                    label=item_blueprint["title"],
+                    required=item_blueprint["required"],
+                    placeholder=item_blueprint["placeholder"] if item_blueprint["placeholder"] else None,
                     max_length=1024,
                     style=discord.TextStyle.paragraph,
                 )
@@ -109,7 +109,7 @@ class GithubCommands(commands.Cog):
         await interaction.response.send_modal(
             GithubControlModal(
                 bot=self.bot,
-                _type="ISSUE",
+                type_="ISSUE",
                 feature=feature,
                 attachment=screenshot,
                 github_client=self._github_client
