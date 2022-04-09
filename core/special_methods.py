@@ -389,6 +389,9 @@ async def on_app_command_error_(bot: commands.Bot,
         )
         return await interaction.response.send_message(embed=embed, ephemeral=True)
 
+    elif isinstance(error, app_commands.CheckFailure):
+        return await interaction.response.send_message("You cannot run this command!", ephemeral=True)
+
     else:
         error_file = Path("error.txt")
         error_file.touch()
