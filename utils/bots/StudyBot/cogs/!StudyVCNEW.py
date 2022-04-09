@@ -121,12 +121,9 @@ class StudyVCUpdate(commands.Cog):
         self.StudyVCChannels = [954516833694810152]
         self.StudyVCConsole = 954516809577533530
         self.StudyVCGuild = 932066545117585428
-
-
         self.StudyVCChecker.start()
 
-
-    def cog_unload(self):
+    async def cog_unload(self):
         self.StudyVCChecker.stop()
 
     @commands.Cog.listener("on_voice_state_update")
@@ -225,9 +222,10 @@ class StudyVCUpdate(commands.Cog):
                     f"{member.mention} Your study session is ending in **less than 5 minutes**. (Ends at: {dateObj.strftime(r'%I:%M %p')})\n\nMaybe renew your study session?"
                 )
 
+    @StudyVCChecker.before_loop
+    async def before_loop_(self):
+        await self.bot.wait_until_ready()
 
 
-
-    
 async def setup(bot):
     await bot.add_cog(StudyVCUpdate(bot))

@@ -11,7 +11,7 @@ import subprocess
 import sys
 import typing
 from pathlib import Path
-from typing import Any, Awaitable, Callable, List, Tuple, Union
+from typing import Any, Awaitable, Callable, List, Tuple, Union, Optional
 from threading import Thread
 
 import boto3
@@ -1414,8 +1414,8 @@ class ButtonHandler(ui.Button):
                 role in interaction.user.roles for role in self.roles
         ):
             if self.custom_id_ is None:
-                self.view.value = None
-                self.view_response = None
+                self.view.value = self.label_
+                self.view_response = self.label_
             else:
                 self.view.value = self.custom_id_
                 self.view_response = self.custom_id_
@@ -1675,41 +1675,42 @@ class FeedbackButton(discord.ui.View):
         return await interaction.response.send_modal(modal)
 
 
-class LeaderboardPages(menus.ListPageSource):
-    def __init__(self, leaderboard):
-        super().__init__(entries=leaderboard, per_page=25)
+# class LeaderboardPages(menus.ListPageSource):
+#     def __init__(self, leaderboard):
+#         super().__init__(entries=leaderboard, per_page=25)
+#
+#     async def format_page(self, menu, item):
+#
+#         with open('levels.json', 'r') as fcheckrew:
+#             checkrew = json.load(fcheckrew)
+#         if f'{menu.ctx.guild.id}' in checkrew.keys():
+#             if not checkrew[f'{menu.ctx.guild.id}'] == {}:
+#
+#                 listkeys = []
+#                 authorrank = ''
+#                 for key, value in sorted(checkrew[f'{menu.ctx.guild.id}'].items(), key=lambda pair: pair[1]['total'], reverse=True):
+#                     if menu.ctx.guild.get_member(int(key)):
+#                         listkeys.append(key)
+#
+#                         if int(key) == menu.ctx.author.id:
+#                             authorrank_len = int(listkeys.index(str(menu.ctx.author.id))) + 1
+#
+#
+#                 if f'{menu.ctx.author.id}' in listkeys:
+#                     authorrank = f"Your rank: #{authorrank_len}"
+#
+#                 else:
+#                     authorrank = f"You aren't ranked yet."
+#
+#                 joined = '\n'.join(item)
+#                 embed = discord.Embed(color=farbegeneral, title=f'Leaderboard of {menu.ctx.guild.name}', description=
+#                 f'_ _'
+#                 f'\n{joined}')
+#                 embed.set_footer(text=f'{authorrank} | page {menu.current_page + 1}/{self.get_max_pages()}')
+#                 embed.set_thumbnail(url=f'{menu.ctx.guild.icon_url}')
+#
+#                 return embed
 
-    async def format_page(self, menu, item):
-
-        with open('levels.json', 'r') as fcheckrew:
-            checkrew = json.load(fcheckrew)
-        if f'{menu.ctx.guild.id}' in checkrew.keys():
-            if not checkrew[f'{menu.ctx.guild.id}'] == {}:
-
-                listkeys = []
-                authorrank = ''
-                for key, value in sorted(checkrew[f'{menu.ctx.guild.id}'].items(), key=lambda pair: pair[1]['total'], reverse=True):
-                    if menu.ctx.guild.get_member(int(key)):
-                        listkeys.append(key)
-
-                        if int(key) == menu.ctx.author.id:
-                            authorrank_len = int(listkeys.index(str(menu.ctx.author.id))) + 1
-
-
-                if f'{menu.ctx.author.id}' in listkeys:
-                    authorrank = f"Your rank: #{authorrank_len}"
-
-                else:
-                    authorrank = f"You aren't ranked yet."
-
-                joined = '\n'.join(item)
-                embed = discord.Embed(color=farbegeneral, title=f'Leaderboard of {menu.ctx.guild.name}', description=
-                f'_ _'
-                f'\n{joined}')
-                embed.set_footer(text=f'{authorrank} | page {menu.current_page + 1}/{self.get_max_pages()}')
-                embed.set_thumbnail(url=f'{menu.ctx.guild.icon_url}')
-
-                return embed
 
 
 async def id_generator(size=3, chars=string.ascii_uppercase):
@@ -1861,3 +1862,25 @@ def searchCustomEmoji(string: str):
         customEmoji = None
 
     return customEmoji
+
+
+async def get_active_or_archived_thread(guild: discord.Guild, thread_id: int) -> Optional[discord.Thread]:
+
+    active_thread = guild.get_thread(thread_id)
+
+    if active_thread is None:
+
+        thread = None
+        for text_channel in guild.text_channels:
+            if thread is None:
+                async for archived_thread in text_channel.archived_threads():
+                    if archived_thread.id == thread_id:
+                        thread = archived_thread
+                        break
+            else:
+                break
+    else:
+        thread = active_thread
+
+    return thread
+

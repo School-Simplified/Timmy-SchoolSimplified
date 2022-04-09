@@ -4,14 +4,14 @@ Copyright (C) School Simplified - All Rights Reserved
  * Written by School Simplified, IT Dept. <timmy@schoolsimplified.org>, March 2022
 """
 
-__version__ = "3.0.0"
+__version__ = "beta3.0.1"
 __author__ = "School Simplified, IT Dept."
 __author_email__ = "timmy@schoolsimplified.org"
 
 import faulthandler
 import logging
 import os
-from typing import Optional, Union
+from typing import Union
 
 import discord
 from alive_progress import alive_bar
@@ -29,7 +29,8 @@ from core.special_methods import (
     initializeDB,
     main_mode_check_,
     on_command_error_,
-    on_ready_
+    on_ready_,
+    on_app_command_error_
 )
 
 load_dotenv()
@@ -43,26 +44,17 @@ print("Starting Timmy...")
 
 
 class TimmyCommandTree(app_commands.CommandTree):
-    def __init__(self, client: commands.Bot):
-        super().__init__(client)
+    def __init__(self, bot: commands.Bot):
+        super().__init__(bot)
+        self.bot = bot
 
-#     async def on_error(
-#             self,
-#             interaction: discord.Interaction,
-#             command: Optional[Union[app_commands.ContextMenu, app_commands.Command]],
-#             error: app_commands.AppCommandError,
-#     ) -> None:
-#         ...
-
-    # Implement error system
-
-    # async def interaction_check(
-    #         self,
-    #         interaction: discord.Interaction,
-    #         /
-    # ) -> bool:
-    #     ...
-    #  Implement blacklist check for spammers
+    async def on_error(
+            self,
+            interaction: discord.Interaction,
+            command: Union[app_commands.Command, app_commands.ContextMenu],
+            error: app_commands.AppCommandError
+    ):
+        return await on_app_command_error_(self.bot, interaction, command, error)
 
 
 class Timmy(commands.Bot):
@@ -79,7 +71,7 @@ class Timmy(commands.Bot):
             tree_cls=TimmyCommandTree,
             activity=discord.Activity(
                 type=discord.ActivityType.watching,
-                name="+help | timmy.schoolsimplified.org",
+                name="/help | ssimpl.org/timmy",
             ),
         )
         self.help_command = None
@@ -97,8 +89,8 @@ class Timmy(commands.Bot):
         return await main_mode_check_(ctx)
 
     async def setup_hook(self) -> None:
-        for guild in self.guilds:
-            await self.tree.sync(guild=guild)
+        # for guild in self.guilds:
+        #     await self.tree.sync(guild=guild)
 
         with alive_bar(len(get_extensions()), ctrl_c=False, bar="bubbles", title="Initializing Cogs:") as bar:
             for ext in get_extensions():
@@ -124,9 +116,12 @@ class Timmy(commands.Bot):
 
         return await super().is_owner(user)
 
+    @property
+    def version(self):
+        return __version__
+
 
 bot = Timmy()
-
 
 if os.getenv("DSN_SENTRY") is not None:
     sentry_logging = LoggingIntegration(
@@ -140,7 +135,6 @@ if os.getenv("DSN_SENTRY") is not None:
         traces_sample_rate=1.0,
         integrations=[FlaskIntegration(), sentry_logging],
     )
+
 initializeDB(bot)
-
-
 bot.run(os.getenv("TOKEN"))
