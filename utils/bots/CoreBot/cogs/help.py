@@ -626,7 +626,7 @@ class Help(commands.Cog):
         entries: Union[
             Set[Any], List[Union[commands.Command, app_commands.Command]]
         ] = await self._filter_commands(
-            list(itertools.chain.from_iterable(_tuple_of_iter)),
+            set(itertools.chain.from_iterable(_tuple_of_iter)),
             sort=True,
             key=key,
         )
