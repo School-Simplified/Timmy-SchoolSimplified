@@ -377,9 +377,7 @@ class GroupHelpPageSource(menus.ListPageSource):
 class HelpSelectMenu(discord.ui.Select["HelpMenu"]):
     def __init__(
         self,
-        _commands: Dict[
-            commands.Cog, List[Union[commands.Command, app_commands.Command]]
-        ],
+        _commands: Dict[commands.Cog, List[Union[commands.Command, app_commands.Command]]],
         bot: commands.Bot,
     ):
         super().__init__(
@@ -625,10 +623,10 @@ class Help(commands.Cog):
             [
                 x
                 for x in (
-                    *self.bot.tree.walk_commands(
+                    *self.bot.tree.get_commands(
                         guild=discord.Object(interaction.guild.id)
                     ),
-                    *self.bot.tree.walk_commands(),
+                    *self.bot.tree.get_commands(),
                     *self.bot.commands,
                 )
                 if isinstance(x, (app_commands.Command, commands.Command))
