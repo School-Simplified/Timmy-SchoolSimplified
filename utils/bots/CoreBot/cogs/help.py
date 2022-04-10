@@ -616,21 +616,17 @@ class Help(commands.Cog):
                 _cog: commands.Cog = _command.cog
             return _cog.qualified_name if _cog else "\U0010ffff"
 
+        _tuple_of_iter = (
+                    self.bot.tree.get_commands(guild=discord.Object(interaction.guild.id)),
+                    self.bot.tree.get_commands(),
+                    self.bot.commands
+        )
+
         # sort guild and global slash commands, regular commands
         entries: Union[
             Set[Any], List[Union[commands.Command, app_commands.Command]]
         ] = await self._filter_commands(
-            [
-                x
-                for x in (
-                    *self.bot.tree.get_commands(
-                        guild=discord.Object(interaction.guild.id)
-                    ),
-                    *self.bot.tree.get_commands(),
-                    *self.bot.commands,
-                )
-                if isinstance(x, (app_commands.Command, commands.Command))
-            ],
+            list(itertools.chain.from_iterable(_tuple_of_iter)),
             sort=True,
             key=key,
         )
