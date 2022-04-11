@@ -644,11 +644,11 @@ class Help(commands.Cog):
         )
 
         all_commands: TotalMappingDict = {}
-        for name, children in itertools.groupby(entries, key=key):
-            if name == "\U0010ffff":
+        for cog_name, children in itertools.groupby(entries, key=key):
+            if cog_name == "\U0010ffff":
                 continue
 
-            cog = self.bot.get_cog(name)
+            cog = self.bot.get_cog(cog_name)
             all_commands[cog] = sorted(
                 children,
                 key=lambda c: c.qualified_name
@@ -661,7 +661,8 @@ class Help(commands.Cog):
         await menu.start()
 
     async def _send_cog_help(self, interaction: discord.Interaction, cog: commands.Cog):
-        __commands = [*cog.get_commands(), *cog.__cog_app_commands__]
+        __commands_iter = (cog.get_commands(), cog.__cog_app_commands__)
+        __commands = set(itertools.chain.from_iterable(__commands_iter))
         entries = await self._filter_commands(__commands, sort=True)
         menu = HelpMenu(
             GroupHelpPageSource(cog, entries, prefix="/"),
