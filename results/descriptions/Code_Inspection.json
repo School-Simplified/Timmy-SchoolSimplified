@@ -255,16 +255,16 @@
           "description": "Reports invalid usages of a class with `__slots__` definitions.\n\n**Example:**\n\n```\nclass Foo:\n    __slots__ = ['foo', 'bar']\n\n\nfoo = Foo()\nfoo.baz = 'spam'\n```"
         },
         {
-          "shortName": "PyDefaultArgumentInspection",
-          "displayName": "The default argument is mutable",
-          "enabled": true,
-          "description": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
-        },
-        {
           "shortName": "PyMissingConstructorInspection",
           "displayName": "Missed call to '__init__' of the super class",
           "enabled": true,
           "description": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+        },
+        {
+          "shortName": "PyDefaultArgumentInspection",
+          "displayName": "The default argument is mutable",
+          "enabled": true,
+          "description": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
         },
         {
           "shortName": "PyShadowingBuiltinsInspection",
@@ -393,16 +393,16 @@
           "description": "Reports cases in Python 2 when a class has no `__init__` method, neither its parent\nclasses.\n\n**Example:**\n\n```\nclass Book():\n    pass\n```\n\nThe quick-fix adds the `__init__` method:\n\n```\nclass Book():\n    def __init__(self):\n        pass\n```"
         },
         {
-          "shortName": "PyArgumentEqualDefaultInspection",
-          "displayName": "The function argument is equal to the default parameter value",
-          "enabled": false,
-          "description": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
-        },
-        {
           "shortName": "CythonUsageBeforeDeclarationInspection",
           "displayName": "Cython variable is used before its declaration",
           "enabled": false,
           "description": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+        },
+        {
+          "shortName": "PyArgumentEqualDefaultInspection",
+          "displayName": "The function argument is equal to the default parameter value",
+          "enabled": false,
+          "description": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
         },
         {
           "shortName": "PyDictCreationInspection",
@@ -567,16 +567,16 @@
           "description": "Reports invalid usages of final classes,\nmethods and variables.\n\n**Example:**\n\n```\nfrom typing import final\n\n\n@final\nclass A:\n    def a_method(self):\n        pass\n\n\nclass B(A):\n    def a_method(self):\n        pass\n```"
         },
         {
-          "shortName": "PyProtectedMemberInspection",
-          "displayName": "Accessing a protected member of a class or a module",
-          "enabled": true,
-          "description": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
-        },
-        {
           "shortName": "PyStubPackagesCompatibilityInspection",
           "displayName": "Incompatible stub packages",
           "enabled": false,
           "description": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
+        },
+        {
+          "shortName": "PyProtectedMemberInspection",
+          "displayName": "Accessing a protected member of a class or a module",
+          "enabled": true,
+          "description": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
         },
         {
           "shortName": "PyUnboundLocalVariableInspection",

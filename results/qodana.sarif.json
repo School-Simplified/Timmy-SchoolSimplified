@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -2344,19 +2344,19 @@
                 ]
               },
               {
-                "id": "PyArgumentEqualDefaultInspection",
+                "id": "CythonUsageBeforeDeclarationInspection",
                 "shortDescription": {
-                  "text": "The function argument is equal to the default parameter value"
+                  "text": "Cython variable is used before its declaration"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
-                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
+                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
+                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2378,19 +2378,19 @@
                 ]
               },
               {
-                "id": "CythonUsageBeforeDeclarationInspection",
+                "id": "PyArgumentEqualDefaultInspection",
                 "shortDescription": {
-                  "text": "Cython variable is used before its declaration"
+                  "text": "The function argument is equal to the default parameter value"
                 },
                 "fullDescription": {
-                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
-                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
+                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3636,19 +3636,19 @@
                 ]
               },
               {
-                "id": "PyProtectedMemberInspection",
+                "id": "PyStubPackagesCompatibilityInspection",
                 "shortDescription": {
-                  "text": "Accessing a protected member of a class or a module"
+                  "text": "Incompatible stub packages"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
-                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
+                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
+                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3670,19 +3670,19 @@
                 ]
               },
               {
-                "id": "PyStubPackagesCompatibilityInspection",
+                "id": "PyProtectedMemberInspection",
                 "shortDescription": {
-                  "text": "Incompatible stub packages"
+                  "text": "Accessing a protected member of a class or a module"
                 },
                 "fullDescription": {
-                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
-                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
+                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
+                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -4702,40 +4702,6 @@
                 ]
               },
               {
-                "id": "DuplicatedCode",
-                "shortDescription": {
-                  "text": "Duplicated code fragment"
-                },
-                "fullDescription": {
-                  "text": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in File | Settings | Editor | Duplicates.",
-                  "markdown": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in [File \\| Settings \\| Editor \\| Duplicates](settings://duplicates.index)."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "General",
-                      "index": 9,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RequiredAttributes",
                 "shortDescription": {
                   "text": "Missing required attribute"
@@ -4759,6 +4725,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DuplicatedCode",
+                "shortDescription": {
+                  "text": "Duplicated code fragment"
+                },
+                "fullDescription": {
+                  "text": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in File | Settings | Editor | Duplicates.",
+                  "markdown": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in [File \\| Settings \\| Editor \\| Duplicates](settings://duplicates.index)."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "General",
+                      "index": 9,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5688,40 +5688,6 @@
                 ]
               },
               {
-                "id": "HtmlExtraClosingTag",
-                "shortDescription": {
-                  "text": "Redundant closing tag"
-                },
-                "fullDescription": {
-                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
-                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "ideaSeverity": "ERROR",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpOctalEscape",
                 "shortDescription": {
                   "text": "Octal escape"
@@ -5745,6 +5711,40 @@
                     "target": {
                       "id": "RegExp",
                       "index": 5,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "HtmlExtraClosingTag",
+                "shortDescription": {
+                  "text": "Redundant closing tag"
+                },
+                "fullDescription": {
+                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
+                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "error",
+                  "parameters": {
+                    "ideaSeverity": "ERROR",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "3abd9b7a42a25fc5525fbadfdfeab9fd47c2ead1",
+          "revisionId": "dfc0c9fbdc244e8ddab32c30747f104507d5e68e",
           "branch": "beta",
           "properties": {
             "lastAuthorName": "pandabear189",
@@ -8782,9 +8782,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 478,
+                  "startLine": 484,
                   "startColumn": 9,
-                  "charOffset": 17211,
+                  "charOffset": 17221,
                   "charLength": 13,
                   "snippet": {
                     "text": "is_paginating"
@@ -8792,9 +8792,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 476,
+                  "startLine": 482,
                   "startColumn": 1,
-                  "charOffset": 17161,
+                  "charOffset": 17171,
                   "charLength": 165,
                   "snippet": {
                     "text": "\nclass FrontPageSource(menus.PageSource):\n    def is_paginating(self) -> bool:\n        # This forces the buttons to appear even in the front page\n        return True"
@@ -8810,7 +8810,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "a66952d324d5185df5415a1a21274170bb7765d57259c974be3d58c74abbc3aa"
+            "equalIndicator/v1": "db3d7e9652dbb8174d08d0b871b468e9bd5a70adda66de2447c96e2ee436c4f0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -8835,9 +8835,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 482,
+                  "startLine": 488,
                   "startColumn": 9,
-                  "charOffset": 17336,
+                  "charOffset": 17346,
                   "charLength": 13,
                   "snippet": {
                     "text": "get_max_pages"
@@ -8845,9 +8845,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 480,
+                  "startLine": 486,
                   "startColumn": 1,
-                  "charOffset": 17307,
+                  "charOffset": 17317,
                   "charLength": 184,
                   "snippet": {
                     "text": "        return True\n\n    def get_max_pages(self) -> Optional[int]:\n        # There's only one actual page in the front page\n        # However we need at least 2 to show all the buttons"
@@ -8863,7 +8863,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "28d9e9f1dfec27de7975d2dff4b54a4daf7b959c0840bd35f687a7fe5281c96f"
+            "equalIndicator/v1": "d87ca28d03ebd936ba24ece3c05289bc7005221a21a066564d7a58b0ddc4aa97"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11114,9 +11114,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 181,
+                  "startLine": 191,
                   "startColumn": 13,
-                  "charOffset": 6905,
+                  "charOffset": 7091,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11124,9 +11124,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 179,
+                  "startLine": 189,
                   "startColumn": 1,
-                  "charOffset": 6829,
+                  "charOffset": 7015,
                   "charLength": 144,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"go to the first page\"\"\""
@@ -11142,7 +11142,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "73367fa00e635952f2787120faaf5654f3bc76767a4b00d10859cead396dcc85"
+            "equalIndicator/v1": "9817c17733cc242946cb88fdf893e37f659377b979114d547dd55b90ef8c1b5f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11167,9 +11167,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 188,
+                  "startLine": 198,
                   "startColumn": 53,
-                  "charOffset": 7179,
+                  "charOffset": 7365,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11177,9 +11177,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 186,
+                  "startLine": 196,
                   "startColumn": 1,
-                  "charOffset": 7020,
+                  "charOffset": 7206,
                   "charLength": 229,
                   "snippet": {
                     "text": "    @discord.ui.button(label=\"Back\", style=discord.ButtonStyle.blurple)\n    async def go_to_previous_page(\n            self, interaction: discord.Interaction, button: discord.ui.Button\n    ):\n        \"\"\"go to the previous page\"\"\""
@@ -11195,7 +11195,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "a6a50bbdd8b5348dd8054b13d383891e231806f855092a0d9e2c77ab75d6df94"
+            "equalIndicator/v1": "afe98a547a5e70422e35f5ca6906df8ccc58dd15e9e2cf44dc1afc41f0a57be0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11220,9 +11220,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 203,
+                  "startLine": 213,
                   "startColumn": 13,
-                  "charOffset": 7723,
+                  "charOffset": 7909,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11230,9 +11230,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 201,
+                  "startLine": 211,
                   "startColumn": 1,
-                  "charOffset": 7647,
+                  "charOffset": 7833,
                   "charLength": 143,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"go to the next page\"\"\""
@@ -11248,60 +11248,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "7b30eda82ebb201bb577e7d8e1f33263f38dc50a14336e1859fb4de5a15a48ee"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyUnusedLocalInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Parameter 'button' value is not used",
-            "markdown": "Parameter 'button' value is not used"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/bots/CoreBot/cogs/help.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 212,
-                  "startColumn": 13,
-                  "charOffset": 8038,
-                  "charLength": 25,
-                  "snippet": {
-                    "text": "button: discord.ui.Button"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 210,
-                  "startColumn": 1,
-                  "charOffset": 7962,
-                  "charLength": 143,
-                  "snippet": {
-                    "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"go to the last page\"\"\""
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "48bda1dacf3e15b5cda53fc56ba3a4dc71d32ad4a722f7052cd2a5860e81dfb5"
+            "equalIndicator/v1": "c25efe3744eb36fc0fe6e11183f3178e4e8f165d23d1743f1135cb20f133841a"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11328,7 +11275,7 @@
                 "region": {
                   "startLine": 222,
                   "startColumn": 13,
-                  "charOffset": 8431,
+                  "charOffset": 8224,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11338,10 +11285,10 @@
                 "contextRegion": {
                   "startLine": 220,
                   "startColumn": 1,
-                  "charOffset": 8355,
-                  "charLength": 160,
+                  "charOffset": 8148,
+                  "charLength": 143,
                   "snippet": {
-                    "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"lets you type a page number to go to\"\"\""
+                    "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"go to the last page\"\"\""
                   }
                 }
               },
@@ -11354,7 +11301,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0811b72ece1106a23b3a0fc83fa253bd9e6713dd77c0dcbb18e2c1d3080de3e3"
+            "equalIndicator/v1": "87218d50a72a624c0b3f9b2e274acad1c64dcb81ddc38d37d14bf6c2d8ba2b2a"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11379,9 +11326,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 264,
+                  "startLine": 232,
                   "startColumn": 13,
-                  "charOffset": 9907,
+                  "charOffset": 8617,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11389,9 +11336,62 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 262,
+                  "startLine": 230,
                   "startColumn": 1,
-                  "charOffset": 9831,
+                  "charOffset": 8541,
+                  "charLength": 160,
+                  "snippet": {
+                    "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"lets you type a page number to go to\"\"\""
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "dc7f1606e42bd57eec09e8f98469badfcb06c3efad0c170e37a3244aa7562d95"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyUnusedLocalInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Parameter 'button' value is not used",
+            "markdown": "Parameter 'button' value is not used"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/bots/CoreBot/cogs/help.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 274,
+                  "startColumn": 13,
+                  "charOffset": 10093,
+                  "charLength": 25,
+                  "snippet": {
+                    "text": "button: discord.ui.Button"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 272,
+                  "startColumn": 1,
+                  "charOffset": 10017,
                   "charLength": 153,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"stops the pagination session.\"\"\""
@@ -11407,7 +11407,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "862538666b9904c57d65522633017d1a69dfd313c99f5b699da6fac0fddf3446"
+            "equalIndicator/v1": "fa35265b4f6b6774e225e6fed3ebd409d940037aacec82d0387f9057750236c3"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11432,9 +11432,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 492,
+                  "startLine": 498,
                   "startColumn": 27,
-                  "charOffset": 17681,
+                  "charOffset": 17691,
                   "charLength": 14,
                   "snippet": {
                     "text": "menu: HelpMenu"
@@ -11442,9 +11442,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 490,
+                  "startLine": 496,
                   "startColumn": 1,
-                  "charOffset": 17634,
+                  "charOffset": 17644,
                   "charLength": 196,
                   "snippet": {
                     "text": "        return self\n\n    def format_page(self, menu: HelpMenu, page):\n        embed = discord.Embed(title=\"Bot Help\", colour=discord.Colour.blurple())\n        embed.description = inspect.cleandoc("
@@ -11460,7 +11460,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "dc7935764f0e659c9b35766f29e1495a3fb934e59fdb5c10eea5fbc08a2bba23"
+            "equalIndicator/v1": "be250cfdbdb4cd41cbf73e9d61cfad9977381eeba3a19cbfd73ba8d1fd40cfeb"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11485,9 +11485,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 492,
+                  "startLine": 498,
                   "startColumn": 43,
-                  "charOffset": 17697,
+                  "charOffset": 17707,
                   "charLength": 4,
                   "snippet": {
                     "text": "page"
@@ -11495,9 +11495,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 490,
+                  "startLine": 496,
                   "startColumn": 1,
-                  "charOffset": 17634,
+                  "charOffset": 17644,
                   "charLength": 196,
                   "snippet": {
                     "text": "        return self\n\n    def format_page(self, menu: HelpMenu, page):\n        embed = discord.Embed(title=\"Bot Help\", colour=discord.Colour.blurple())\n        embed.description = inspect.cleandoc("
@@ -11513,7 +11513,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8e8a5e65ccc17c363f5a1cebf88238f126dd80fa94c3895dd0dd90212b6c5b35"
+            "equalIndicator/v1": "870822babe7b9d4516ba9bfc4bfec84d7cc5a0b9d579617222deb353e71c9eba"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -43391,9 +43391,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 489,
+                  "startLine": 495,
                   "startColumn": 9,
-                  "charOffset": 17609,
+                  "charOffset": 17619,
                   "charLength": 10,
                   "snippet": {
                     "text": "self.index"
@@ -43401,9 +43401,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 487,
+                  "startLine": 493,
                   "startColumn": 1,
-                  "charOffset": 17510,
+                  "charOffset": 17520,
                   "charLength": 144,
                   "snippet": {
                     "text": "    async def get_page(self, page_number: int) -> Any:\n        # The front page is a dummy\n        self.index = page_number\n        return self\n"
@@ -43419,7 +43419,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "cd523eb3c998dadd75ab273028f80044f108ba00b07d47ff6b0966de9f32eee5"
+            "equalIndicator/v1": "8d8cae9c78cdfa38abac0fc64a272bdb58ca8b8e8a09575230171e492d979c53"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -45723,9 +45723,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 508,
+                  "startLine": 514,
                   "startColumn": 23,
-                  "charOffset": 18358,
+                  "charOffset": 18368,
                   "charLength": 38,
                   "snippet": {
                     "text": "(\"https://timmy.schoolsimplified.org\")"
@@ -45733,9 +45733,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 506,
+                  "startLine": 512,
                   "startColumn": 1,
-                  "charOffset": 18264,
+                  "charOffset": 18274,
                   "charLength": 177,
                   "snippet": {
                     "text": "            embed.add_field(\n                name=\"Documentation Page\",\n                value=(\"https://timmy.schoolsimplified.org\"),\n                inline=False,\n            )"
@@ -45751,7 +45751,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "480c58f9d5a6262a25ded0cd787227d5a34a8937f008f5f5e0c6b742227f9cfb"
+            "equalIndicator/v1": "7be453ba248dd172da54231f70eb763cadb008e8a0e66f374d3f9bc8ac406af4"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -45829,9 +45829,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 171,
+                  "startLine": 181,
                   "startColumn": 15,
-                  "charOffset": 6481,
+                  "charOffset": 6667,
                   "charLength": 25,
                   "snippet": {
                     "text": "self.source._prepare_once"
@@ -45839,9 +45839,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 169,
+                  "startLine": 179,
                   "startColumn": 1,
-                  "charOffset": 6447,
+                  "charOffset": 6633,
                   "charLength": 162,
                   "snippet": {
                     "text": "            return\n\n        await self.source._prepare_once()\n        page = await self.source.get_page(0)\n        kwargs = await self._get_kwargs_from_page(page)"
@@ -45857,7 +45857,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "53cef2e286a85b0ea81cebcd52d8cfa38006478c11d70457df827c18452943bc"
+            "equalIndicator/v1": "aefa3c7b26eb7dcca580272f8df21173a9139b95d9f52a2d6ab1a73591797e2d"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -45882,9 +45882,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 470,
+                  "startLine": 476,
                   "startColumn": 15,
-                  "charOffset": 16931,
+                  "charOffset": 16941,
                   "charLength": 25,
                   "snippet": {
                     "text": "self.source._prepare_once"
@@ -45892,9 +45892,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 468,
+                  "startLine": 474,
                   "startColumn": 1,
-                  "charOffset": 16886,
+                  "charOffset": 16896,
                   "charLength": 173,
                   "snippet": {
                     "text": "        self.current_page = 0\n\n        await self.source._prepare_once()\n        page = await self.source.get_page(0)\n        kwargs = await self._get_kwargs_from_page(page)"
@@ -45910,7 +45910,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "67275bf3e5e144864a446f27aadedf32f99d53386bae06ec9b38ac4ab69cf85b"
+            "equalIndicator/v1": "fd430df5be9efaa45bfaf9ae5a2b7f34bc5291c6f076e59737ca583a94e50101"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -46717,7 +46717,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-04-11",
-        "guid": "7763cf79-80c1-487a-ac7f-fc625bb2826b"
+        "guid": "92c6c066-bc03-4be7-8ab6-5c1fa5f6184a"
       },
       "newlineSequences": [
         "\r\n",
@@ -47194,7 +47194,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 30225,
+                    "charLength": 30235,
                     "snippet": {
                       "text": "# Copyright (c) 2015-2021 Rapptz # Copyright (c) 2022-present School Simplified import asyncio imp..."
                     },
@@ -47219,7 +47219,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "97c2bbf3c55683ce5f0df5f095b533879225fbc32b58537975183245f60a7013"
+              "equalIndicator/v1": "56e5a8bd37dafb8136a44bf6521e54299dba9ba90dde6720304ec87c3797fabb"
             },
             "properties": {
               "ideaSeverity": "ERROR"
