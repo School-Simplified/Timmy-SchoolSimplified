@@ -1,16 +1,19 @@
 # Copyright (c) 2015-2021 Rapptz
 # Copyright (c) 2022-present School Simplified
-
+from __future__ import annotations
 
 import asyncio
 import inspect
 import itertools
-from typing import Any, Coroutine, Dict, List, Optional, Set, Union
+from typing import Any, Coroutine, Dict, List, Optional, Set, TYPE_CHECKING, Union
 from discord import app_commands
 import discord
 from discord.app_commands import command, describe, guilds
 from discord.ext import commands, menus
 from core.common import Others
+
+if TYPE_CHECKING:
+    from main import Timmy
 
 TotalMappingDict = Dict[
     commands.Cog,
@@ -45,7 +48,7 @@ class RoboPages(discord.ui.View):
             interaction: discord.Interaction,
             check_embeds: bool = True,
             compact: bool = False,
-            bot: commands.Bot,
+            bot: Timmy,
     ):
         super().__init__()
         self.source: menus.PageSource = source
@@ -401,8 +404,8 @@ class GroupHelpPageSource(menus.ListPageSource):
 class HelpSelectMenu(discord.ui.Select["HelpMenu"]):
     def __init__(
             self,
-            _commands: Dict[commands.Cog, List[Union[commands.Command, app_commands.Command]]],
-            bot: commands.Bot,
+            _commands: TotalMappingDict,
+            bot: Timmy,
     ):
         super().__init__(
             placeholder="Select a category...",
@@ -462,7 +465,7 @@ class HelpMenu(RoboPages):
             self,
             source: menus.PageSource,
             interaction: discord.Interaction,
-            bot: commands.Bot,
+            bot: Timmy,
     ):
         super().__init__(source, interaction=interaction, compact=True, bot=bot)
 
@@ -549,7 +552,7 @@ class Help(commands.Cog):
     Help command
     """
 
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: Timmy):
         self.bot = bot
 
     @staticmethod
@@ -781,11 +784,11 @@ class Help(commands.Cog):
 
         if isinstance(slash, app_commands.Command):
             return await self._send_command_help(interaction, slash)
-        if isinstance(slash, app_commands.Group):
+        elif isinstance(slash, app_commands.Group):
             return await self._send_group_help(interaction, slash)
         if isinstance(regular_command, commands.Group):
             return await self._send_group_help(interaction, regular_command)
-        if isinstance(regular_command, commands.Command):
+        elif isinstance(regular_command, commands.Command):
             return await self._send_command_help(interaction, regular_command)
         if cog:
             return await self._send_cog_help(interaction, cog)
@@ -831,5 +834,5 @@ class Help(commands.Cog):
         # Maybe add autocomplete for commands in the future
 
 
-async def setup(bot: commands.Bot):
+async def setup(bot: Timmy):
     await bot.add_cog(Help(bot))
