@@ -24,13 +24,15 @@ TotalMappingDict = Dict[
         ]]],
 ]
 
-CommandsListType = List[
-    Union[
-        commands.Command,
-        commands.Group,
-        app_commands.Group,
-        app_commands.Command,
-        app_commands.ContextMenu
+CommandsListType = Union[
+    Set, List[
+        Union[
+            commands.Command,
+            commands.Group,
+            app_commands.Group,
+            app_commands.Command,
+            app_commands.ContextMenu
+        ]
     ]
 ]
 
@@ -361,7 +363,6 @@ class GroupHelpPageSource(menus.ListPageSource):
                 )
             # elif isinstance(command_, app_commands.ContextMenu)
 
-
         maximum = self.get_max_pages()
         if maximum > 1:
             embed.set_author(
@@ -516,7 +517,7 @@ class FrontPageSource(menus.PageSource):
         if self.index == 0:
             embed.add_field(
                 name="Documentation Page",
-                value=("https://timmy.schoolsimplified.org"),
+                value="https://timmy.schoolsimplified.org",
                 inline=False,
             )
         elif self.index == 1:
@@ -553,9 +554,7 @@ class Help(commands.Cog):
 
     @staticmethod
     async def _filter_commands(
-            _commands: Union[
-                Set[Any], List[Union[app_commands.Command, commands.Command, Any]]
-            ],
+            _commands: CommandsListType,
             *,
             sort=False,
             key=None,
