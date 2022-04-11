@@ -307,11 +307,11 @@ class GroupHelpPageSource(menus.ListPageSource):
     def __init__(
             self,
             group: Union[commands.Group, commands.Cog, app_commands.Group],
-            commands: CommandsListType,
+            commands_: CommandsListType,
             *,
             prefix: str,
     ):
-        super().__init__(entries=commands, per_page=6)
+        super().__init__(entries=commands_, per_page=6)
         self.group = group
         self.prefix = prefix
         self.title = f"{self.group.qualified_name} Commands"
@@ -320,7 +320,7 @@ class GroupHelpPageSource(menus.ListPageSource):
     async def format_page(
             self,
             menu,
-            _commands: CommandsListType,
+            commands_: CommandsListType,
     ) -> discord.Embed:
 
         embed = discord.Embed(
@@ -328,34 +328,39 @@ class GroupHelpPageSource(menus.ListPageSource):
             description=self.description,
             colour=discord.Colour.fuchsia(),
         )
-        for _command in _commands:
-            if isinstance(_command, commands.Command):
-                signature = f"{_command.qualified_name} {_command.signature}"
+        for command_ in commands_:
+            if isinstance(command_, commands.Command):
+                signature = f"{command_.qualified_name} {command_.signature}"
                 embed.add_field(
                     name=signature,
-                    value=_command.short_doc or "No help given...",
+                    value=command_.short_doc or "No help given...",
                     inline=False,
                 )
-            elif isinstance(_command, app_commands.Command):
-                params = self.slash_param_signature(_command)
+            elif isinstance(command_, app_commands.Command):
+                params = self.slash_param_signature(command_)
                 signature = (
-                    f"{_command.root_parent} {_command.name} {params}"
-                    if _command.root_parent
-                    else f"{_command.name} {params}"
+                    f"{command_.root_parent} {command_.name} {params}"
+                    if command_.root_parent
+                    else f"{command_.name} {params}"
                 )
                 embed.add_field(
                     name=signature[:256],
-                    value=_command.description[:1024] or "No help given...",
+                    value=command_.description[:1024] or "No help given...",
                     inline=False,
                 )
-            elif isinstance(_command, app_commands.Group):
-                subcommands = self.slash_param_signature(_command)
-                signature = f"{_command.name} {subcommands}"
+            elif isinstance(command_, app_commands.Group):
+                description = (
+                    f"Use /help `{command_.name}` for subcommands help\n" + command_.description
+                    if not command_.description == "…"
+                    else f"Use /help `{command_.name}` for subcommands help\n"
+                )
                 embed.add_field(
-                    name=signature[:256],
-                    value=_command.description[:1024] or "No help given...",
+                    name=f"{command_.name} [subcommands]",
+                    value=description[:1024],
                     inline=False,
                 )
+            # elif isinstance(command_, app_commands.ContextMenu)
+
 
         maximum = self.get_max_pages()
         if maximum > 1:
