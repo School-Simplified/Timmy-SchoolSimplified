@@ -24,6 +24,16 @@ TotalMappingDict = Dict[
         ]]],
 ]
 
+CommandsListType = List[
+    Union[
+        commands.Command,
+        commands.Group,
+        app_commands.Group,
+        app_commands.Command,
+        app_commands.ContextMenu
+    ]
+]
+
 
 class RoboPages(discord.ui.View):
     def __init__(
@@ -297,9 +307,7 @@ class GroupHelpPageSource(menus.ListPageSource):
     def __init__(
             self,
             group: Union[commands.Group, commands.Cog, app_commands.Group],
-            commands: List[
-                Union[commands.Command, app_commands.Command, app_commands.ContextMenu]
-            ],
+            commands: CommandsListType,
             *,
             prefix: str,
     ):
@@ -312,9 +320,7 @@ class GroupHelpPageSource(menus.ListPageSource):
     async def format_page(
             self,
             menu,
-            _commands: List[
-                Union[commands.Command, app_commands.Command, app_commands.Group]
-            ],
+            _commands: CommandsListType,
     ) -> discord.Embed:
 
         embed = discord.Embed(
