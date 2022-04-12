@@ -28,6 +28,10 @@ class BlacklistCMD(commands.Cog, Group):
     def display_emoji(self) -> str:
         return "🔒"
 
+    @property
+    def cog(self) -> commands.Cog:
+        return self.bot.get_cog("Set Blacklist")
+
     @command()
     @slash_is_bot_admin_4()
     async def add(self, interaction: discord.Interaction, user: discord.User):
