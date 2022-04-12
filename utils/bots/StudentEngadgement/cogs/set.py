@@ -166,7 +166,7 @@ class Suggest(Group):
 
     @command(name="music")
     @spammer_check()
-    async def __motivation(self, interaction: discord.Interaction):
+    async def __music(self, interaction: discord.Interaction):
         """Make a music suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Music"))
 
