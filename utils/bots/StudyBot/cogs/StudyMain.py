@@ -342,12 +342,16 @@ class StudyToDo(commands.Cog, Group):
     def __init__(self, bot: commands.Bot):
         super().__init__(name="studytodo", description="Study ToDo Commands")
         self.bot = bot
-
+        self.__cog_name__ = "Study ToDo"
         self.StudyVCGuildID = TECH_ID.g_tech
 
     @property
     def display_emoji(self) -> str:
         return Emoji.timmyBook
+
+    @property
+    def cog(self) -> commands.Cog:
+        return self.bot.get_cog("Study ToDo")
 
     # @commands.group(aliases=["study-todo"])
     # async def studytodo(self, ctx: commands.Context):
