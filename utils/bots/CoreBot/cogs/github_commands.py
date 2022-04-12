@@ -85,10 +85,8 @@ class GithubControlModal(discord.ui.Modal):
         issue = repo.create_issue(
             title=str(self.children[0]),
             body=f"**Issue Feature**\n{self._feature_type}\n\n" + issue_body + self._attachment,
-            labels=[
-                repo.get_label(name="Discord")
-            ]
         )
+        issue.add_to_labels(repo.get_label(name="Discord"))
         url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue.number}"
         embed.description = f"[Created Issue!]({url})"
         await interaction.followup.send(embed=embed)
