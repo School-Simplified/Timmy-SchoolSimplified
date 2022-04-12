@@ -112,6 +112,10 @@ class Suggest(Group):
         )
         self.bot = bot
 
+    @property
+    def cog(self) -> commands.Cog:
+        return self.bot.get_cog("Student Engagement")
+
     @command(name="book")
     @spammer_check()
     async def __book(self, interaction: discord.Interaction):
