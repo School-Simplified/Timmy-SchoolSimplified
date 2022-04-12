@@ -12,10 +12,12 @@ if TYPE_CHECKING:
     from main import Timmy
 
 
+QuestionLiteral = List[Dict[str, Union[str, bool, None]]]
 MediaLiteralType = Literal[
     "Book", "Movie", "TV Show",
     "Meme", "Pickup Line", "Puzzle",
-    "Daily Question", "Motivation", "Music"
+    "Daily Question", "Motivation", "Music",
+    "Opportunities"
 ]
 
 
@@ -184,22 +186,12 @@ class SuggestModal(discord.ui.Modal):
     def __init__(
             self,
             bot: Timmy,
-            suggest_type: Literal[
-                "Book",
-                "Movie",
-                "TV Show",
-                "Meme",
-                "Pickup Line",
-                "Puzzle",
-                "Daily Question",
-                "Motivation",
-                "Music"
-            ]
+            suggest_type: MediaLiteralType
     ):
         super().__init__(timeout=None, title=suggest_type + " Suggestion")
         self.type = suggest_type
         self.bot = bot
-        self.book_question_list: List[Dict[str, Union[str, bool, None]]] = [
+        self.book_question_list: QuestionLiteral = [
             {
                 "question": "Which book are you recommending?",
                 "placeholder": None,
@@ -226,7 +218,7 @@ class SuggestModal(discord.ui.Modal):
                 "required": False,
             },
         ]
-        self.movie_question_list: List[Dict[str, Union[str, bool, None]]] = [
+        self.movie_question_list: QuestionLiteral = [
             {
                 "question": "Which movie are you recommending?",
                 "placeholder": None,
@@ -249,7 +241,7 @@ class SuggestModal(discord.ui.Modal):
                 "required": False,
             },
         ]
-        self.tv_question_list: List[Dict[str, Union[str, bool, None]]] = [
+        self.tv_question_list: QuestionLiteral = [
             {
                 "question": "Which TV show are you recommending?",
                 "placeholder": None,
@@ -272,21 +264,21 @@ class SuggestModal(discord.ui.Modal):
                 "required": False,
             },
         ]
-        self.meme_question_list: List[Dict[str, Union[str, bool, None]]] = [
+        self.meme_question_list: QuestionLiteral = [
             {
                 "question": "Upload your meme here",
                 "placeholder": "You can link the file, Google Doc, or use any other method that works for you.",
                 "required": True,
             },
         ]
-        self.pickup_question_list: List[Dict[str, Union[str, bool, None]]] = [
+        self.pickup_question_list: QuestionLiteral = [
             {
                 "question": "Type your pickup line here.",
                 "placeholder": "Make sure it is appropriate",
                 "required": True,
             },
         ]
-        self.puzzle_question_list: List[Dict[str, Union[str, bool, None]]] = [
+        self.puzzle_question_list: QuestionLiteral = [
             {
                 "question": "What puzzle are you suggesting?",
                 "placeholder": None,
@@ -298,14 +290,14 @@ class SuggestModal(discord.ui.Modal):
                 "required": True,
             },
         ]
-        self.daily_q_question_list: List[Dict[str, Union[str, bool, None]]] = [
+        self.daily_q_question_list: QuestionLiteral = [
             {
                 "question": "What question are you suggesting?",
                 "placeholder": "Questions should be thoughtful and not shallow.",
                 "required": True,
             },
         ]
-        self.motivation_question_list: List[Dict[str, Union[str, bool, None]]] = [
+        self.motivation_question_list: QuestionLiteral = [
             {
                 "question": "What quote are you suggesting?",
                 "placeholder": "Make sure to include who said it.",
@@ -317,7 +309,7 @@ class SuggestModal(discord.ui.Modal):
                 "required": False,
             },
         ]
-        self.music_question_list: List[Dict[str, Union[str, bool, None]]] = [
+        self.music_question_list: QuestionLiteral = [
             {
                 "question": "What song are you recommending?",
                 "placeholder": "Give the artist(s) as well.",
@@ -334,22 +326,7 @@ class SuggestModal(discord.ui.Modal):
                 "required": False,
             },
         ]
-        self.type_to_questions_list: Dict[
-            MediaLiteralType, List[
-                Dict[str, Union[bool, str, None]]
-            ]
-        ] = {
-            "Book": self.book_question_list,
-            "Movie": self.movie_question_list,
-            "TV Show": self.tv_question_list,
-            "Meme": self.meme_question_list,
-            "Pickup Line": self.pickup_question_list,
-            "Puzzle": self.puzzle_question_list,
-            "Daily Question": self.daily_q_question_list,
-            "Motivation": self.motivation_question_list,
-            "Music": self.music_question_list,
-        }
-        for question in self.type_to_questions_list[self.type]:
+        for question in self._transform(type_=self.type):
             self.add_item(
                 discord.ui.TextInput(
                     label=question["question"],
@@ -362,6 +339,20 @@ class SuggestModal(discord.ui.Modal):
                 )
             )
 
+    def _transform(self, type_: MediaLiteralType) -> QuestionLiteral:
+        transform_dict: Dict[MediaLiteralType, QuestionLiteral] = {
+            "Book": self.book_question_list,
+            "Movie": self.movie_question_list,
+            "TV Show": self.tv_question_list,
+            "Meme": self.meme_question_list,
+            "Pickup Line": self.pickup_question_list,
+            "Puzzle": self.puzzle_question_list,
+            "Daily Question": self.daily_q_question_list,
+            "Motivation": self.motivation_question_list,
+            "Music": self.music_question_list,
+        }
+        return transform_dict[type_]
+
     async def on_submit(self, interaction: discord.Interaction) -> None:
         await interaction.response.send_message("Submitted!")
         embed = discord.Embed(
@@ -371,19 +362,15 @@ class SuggestModal(discord.ui.Modal):
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
 
-        questions = self.type_to_questions_list[self.type]
-
-        for item, question in zip(self.children, questions):
+        for item, question in zip(self.children, self._transform(type_=self.type)):
             """
-            item: discord.TextInput
-                if isinstance(item, discord.TextInput)
-                ensures item is type TextInput and not another subclass of discord.Item
+            item: discord.ui.TextInput|discord.ui.Item
 
             question: Dict[str, Union[str, None, bool]]
                 exe: question = {"question": "How is your day?", "placeholder": None ,"required": True}
 
             """
-            print(f"Question: {question['question']} \n\n Answer: {str(item)}")
+
             embed.add_field(
                 name=question["question"],
                 value=str(item) if str(item) != "" else "None",
@@ -442,7 +429,7 @@ class Engagement(commands.Cog):
         embed = discord.Embed(
             color=0xC387FF,
             title="Puzzle Guess",
-            description=f"```{guess}```",
+            description=f"{guess}",
             timestamp=discord.utils.utcnow(),
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)

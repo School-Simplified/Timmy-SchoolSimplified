@@ -67,7 +67,7 @@ class GithubControlModal(discord.ui.Modal):
         return transformer_dict[_type]
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
-        await interaction.response.defer()
+        repo = self._gh_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
 
         embed = discord.Embed(title=f"{self._feature_type} Issue", colour=discord.Colour.brand_green())
 
@@ -81,8 +81,6 @@ class GithubControlModal(discord.ui.Modal):
             )
             issue_body += f"**{question['title']}**\n{str(item)}\n\n"
 
-        repo = self._gh_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
-
         issue = repo.create_issue(
             title=str(self.children[0]),
             body=f"**Issue Feature**\n{self._feature_type}\n\n" + issue_body + self._attachment,
@@ -91,7 +89,7 @@ class GithubControlModal(discord.ui.Modal):
             ]
         )
         embed.description = f"[Created Issue!]({issue.url})"
-        await interaction.followup.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
 class GithubCommands(commands.Cog):
