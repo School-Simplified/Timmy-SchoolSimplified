@@ -471,7 +471,7 @@ async def on_app_command_error_(
             embed2 = discord.Embed(
                 title="Traceback Detected!",
                 description=f"**Information**\n"
-                f"**Server:** {interaction.guild.name}\n"
+                f"**Server:** {interaction.user.guild.name}\n"
                 f"**User:** {interaction.user.mention}\n"
                 f"**Command:** {interaction.command.name}",
                 color=Colors.red,
