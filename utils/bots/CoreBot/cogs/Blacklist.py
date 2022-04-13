@@ -62,7 +62,7 @@ class BlacklistCMD(commands.Cog, Group):
                 description=f"{user.mention} has been removed from the blacklist!",
                 color=discord.Color.brand_green(),
             )
-            await interaction.respond(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         else:
             embed = discord.Embed(
@@ -70,7 +70,7 @@ class BlacklistCMD(commands.Cog, Group):
                 description="Invalid Provided: (No Record Found)",
                 color=discord.Color.brand_red(),
             )
-            await interaction.respond(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         database.db.close()
 
