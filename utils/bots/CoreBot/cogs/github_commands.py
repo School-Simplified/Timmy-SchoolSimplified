@@ -135,7 +135,6 @@ class GithubIssues(Group):
         )
 
     @command(name="close")
-    @guilds(TECH_ID.g_tech)
     @slash_is_bot_admin_4()
     async def __close(self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None):
         await interaction.response.defer(thinking=True)
