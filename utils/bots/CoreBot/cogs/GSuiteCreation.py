@@ -85,14 +85,15 @@ class AdminAPI(commands.Cog):
             "orgUnitPath": orgUnit[organizationunit],
         }
         service.users().insert(body=user).execute()
-        await ctx.respond(
-            f"{ctx.author.mention} Successfully created **{firstname} {lastname}'s** account.\n"
+        await interaction.response.send_message(
+            f"{interaction.user.mention} Successfully created **{firstname} {lastname}'s** account.\n"
             f"**Username:** {firstname}.{lastname}@schoolsimplified.org\n"
             f"**Organization Unit:** {orgUnit[organizationunit]}",
             ephemeral=False,
         )
         await interaction.response.send_message(
-            f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",
+            f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary "
+            f"Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",
             ephemeral=True,
         )
 

@@ -112,6 +112,10 @@ class Suggest(Group):
         )
         self.bot = bot
 
+    @property
+    def cog(self) -> commands.Cog:
+        return self.bot.get_cog("Student Engagement")
+
     @command(name="book")
     @spammer_check()
     async def __book(self, interaction: discord.Interaction):
@@ -162,7 +166,7 @@ class Suggest(Group):
 
     @command(name="music")
     @spammer_check()
-    async def __motivation(self, interaction: discord.Interaction):
+    async def __music(self, interaction: discord.Interaction):
         """Make a music suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Music"))
 

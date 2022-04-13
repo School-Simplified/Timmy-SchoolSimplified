@@ -1,18 +1,24 @@
 from __future__ import annotations
 
+import itertools
 import os
-from typing import Dict, List, Literal, TYPE_CHECKING, Union
+from typing import Any, Dict, List, Literal, TYPE_CHECKING, Union, Optional
 
+from discord import app_commands
+
+from core.checks import slash_is_bot_admin_4
 import discord
 from github import Github
 from discord.ext import commands
-from discord.app_commands import command
+from discord.app_commands import command, Group, guilds
+
+from core.common import TECH_ID
 
 if TYPE_CHECKING:
     from main import Timmy
 
 QuestionListType = List[Dict[str, Union[bool, str, None]]]
-GithubActionLiteral = Literal["ISSUE", ]
+GithubActionLiteral = Literal["ISSUE",]
 IssueFeatureLiteral = Literal["Command", "Slash Command", "Dropdown or Button", "Other"]
 
 
@@ -22,15 +28,17 @@ class GithubControlModal(discord.ui.Modal):
             bot: Timmy,
             type_: GithubActionLiteral,
             feature: IssueFeatureLiteral,
-            attachment: discord.Attachment,
             github_client: Github,
+            attachment: Optional[discord.Attachment] = None,
+            gist_url: Optional[str] = None,
     ):
         super().__init__(timeout=None, title="Create Issue")
 
         self.bot = bot
         self._type = type_
         self._feature_type = feature
-        self._attachment = attachment.url
+        self._attachment = attachment.url if attachment else None
+        self._gist_url = gist_url if gist_url else None
         self._gh_client = github_client
         self.issue_list: QuestionListType = [
             {
@@ -67,6 +75,7 @@ class GithubControlModal(discord.ui.Modal):
         return transformer_dict[_type]
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
+        await interaction.response.defer(thinking=True)
         repo = self._gh_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
 
         embed = discord.Embed(title=f"{self._feature_type} Issue", colour=discord.Colour.brand_green())
@@ -84,21 +93,32 @@ class GithubControlModal(discord.ui.Modal):
         issue = repo.create_issue(
             title=str(self.children[0]),
             body=f"**Issue Feature**\n{self._feature_type}\n\n" + issue_body + self._attachment,
-            labels=[
-                repo.get_label(name="Discord")
-            ]
         )
-        embed.description = f"[Created Issue!]({issue.url})"
-        await interaction.response.send_message(embed=embed)
+        issue.add_to_labels(repo.get_label(name="Discord"))
+        url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue.number}"
+        embed.description = f"[Created Issue!]({url})"
+        await interaction.followup.send(embed=embed)
 
 
-class GithubCommands(commands.Cog):
-    def __init__(self, bot: Timmy):
+class GithubIssues(Group):
+    def __init__(
+            self,
+            bot: Timmy,
+            github_client: Github,
+    ):
+        super().__init__(
+            name="issue",
+            description="Open an issue for a bug related to the bot"
+        )
         self.bot = bot
-        self._github_client = Github(os.getenv("GH_TOKEN"))
+        self._github_client = github_client
 
-    @command(name="open-issue")
-    async def __issue(
+    @property
+    def cog(self) -> commands.Cog:
+        return self.bot.get_cog("Github")
+
+    @command(name="open")
+    async def __open(
             self,
             interaction: discord.Interaction,
             feature: IssueFeatureLiteral,
@@ -113,6 +133,29 @@ class GithubCommands(commands.Cog):
                 github_client=self._github_client
             )
         )
+
+    @command(name="close")
+    @slash_is_bot_admin_4()
+    async def __close(self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None):
+        await interaction.response.defer(thinking=True)
+        r = self._github_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
+        try:
+            issue_ = r.get_issue(issue)
+        except:
+            return await interaction.followup.send("Couldn't find issue")
+        issue_.edit(state="closed")
+        url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue}"
+        await interaction.followup.send(f"Closed issue {url}")
+        if reason:
+            issue_.create_comment(reason)
+
+
+class GithubCommands(commands.Cog):
+    def __init__(self, bot: Timmy):
+        self.bot = bot
+        self._github_client = Github(os.getenv("GH_TOKEN"))
+        self.__cog_app_commands__.append(GithubIssues(self.bot, self._github_client))
+        self.__cog_name__ = "Github"
 
 
 async def setup(bot: Timmy):

@@ -22,11 +22,15 @@ class BlacklistCMD(commands.Cog, Group):
             description="Manage the bot's blacklist"
         )
         self.bot = bot
-        self.__cog_name__ = "Set Blacklist"
+        self.__cog_name__ = "Blacklist"
 
     @property
     def display_emoji(self) -> str:
         return "🔒"
+
+    @property
+    def cog(self) -> commands.Cog:
+        return self.bot.get_cog("Blacklist")
 
     @command()
     @slash_is_bot_admin_4()
