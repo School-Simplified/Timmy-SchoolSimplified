@@ -139,23 +139,15 @@ class GithubIssues(Group):
     async def __close(self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None):
         await interaction.response.defer(thinking=True)
         r = self._github_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
-        issue_ = r.get_issue(issue)
+        try:
+            issue_ = r.get_issue(issue)
+        except:
+            return await interaction.followup.send("Couldn't find issue")
         issue_.edit(state="closed")
         url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue}"
         await interaction.followup.send(f"Closed issue {url}")
         if reason:
             issue_.create_comment(reason)
-
-    @__close.autocomplete(name="issue")
-    async def _close_autocomplete(self, interaction: discord.Interaction, value: str) -> List[app_commands.Choice[int]]:
-        r = self._github_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
-        issues = [i.number for i in list(r.get_issues(state="open"))]
-
-        return [
-            app_commands.Choice(name=str(issue), value=issue)
-            for issue in issues
-            if value.lower().startswith(str(issue or "").lower())
-        ]
 
 
 class GithubCommands(commands.Cog):
