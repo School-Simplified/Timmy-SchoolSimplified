@@ -402,6 +402,18 @@ class MAIN_ID:
     r_essayReviser = int(
         ConfigcatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369)
     )
+    r_moderator = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("r_moderator", 951302697263452240)
+    )
+    r_debateban = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("r_debateban", 951302659657334784)
+    )
+    r_ticketban = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("r_ticketban", 951302690011492452)
+    )
+    r_countban = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("r_countban", 951302821079318539)
+    )
 
     # *** Messages ***
     msg_math = int(ConfigcatClient.MAIN_ID_CC.get_value("msg_math", 866904767568543744))
