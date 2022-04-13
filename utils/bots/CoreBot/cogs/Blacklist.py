@@ -17,10 +17,7 @@ load_dotenv()
 
 class BlacklistCMD(commands.Cog, Group):
     def __init__(self, bot: Timmy):
-        super().__init__(
-            name="blacklist",
-            description="Manage the bot's blacklist"
-        )
+        super().__init__(name="blacklist", description="Manage the bot's blacklist")
         self.bot = bot
         self.__cog_name__ = "Blacklist"
 
@@ -65,7 +62,7 @@ class BlacklistCMD(commands.Cog, Group):
                 description=f"{user.mention} has been removed from the blacklist!",
                 color=discord.Color.brand_green(),
             )
-            await interaction.respond(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         else:
             embed = discord.Embed(
@@ -73,7 +70,7 @@ class BlacklistCMD(commands.Cog, Group):
                 description="Invalid Provided: (No Record Found)",
                 color=discord.Color.brand_red(),
             )
-            await interaction.respond(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         database.db.close()
 
