@@ -148,7 +148,7 @@ class GithubIssues(Group):
             issue_.create_comment(reason)
 
     @__close.autocomplete(name="issue")
-    async def _close_autocomplete(self, value: str) -> List[app_commands.Choice[int]]:
+    async def _close_autocomplete(self, interaction: discord.Interaction, value: str) -> List[app_commands.Choice[int]]:
         r = self._github_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
         issues = [i.number for i in list(r.get_issues(state="open"))]
 
