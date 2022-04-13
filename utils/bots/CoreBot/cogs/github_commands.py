@@ -18,19 +18,21 @@ if TYPE_CHECKING:
     from main import Timmy
 
 QuestionListType = List[Dict[str, Union[bool, str, None]]]
-GithubActionLiteral = Literal["ISSUE",]
+GithubActionLiteral = Literal[
+    "ISSUE",
+]
 IssueFeatureLiteral = Literal["Command", "Slash Command", "Dropdown or Button", "Other"]
 
 
 class GithubControlModal(discord.ui.Modal):
     def __init__(
-            self,
-            bot: Timmy,
-            type_: GithubActionLiteral,
-            feature: IssueFeatureLiteral,
-            github_client: Github,
-            attachment: Optional[discord.Attachment] = None,
-            gist_url: Optional[str] = None,
+        self,
+        bot: Timmy,
+        type_: GithubActionLiteral,
+        feature: IssueFeatureLiteral,
+        github_client: Github,
+        attachment: Optional[discord.Attachment] = None,
+        gist_url: Optional[str] = None,
     ):
         super().__init__(timeout=None, title="Create Issue")
 
@@ -41,20 +43,16 @@ class GithubControlModal(discord.ui.Modal):
         self._gist_url = gist_url if gist_url else None
         self._gh_client = github_client
         self.issue_list: QuestionListType = [
-            {
-                "title": "Issue Title",
-                "required": True,
-                "placeholder": None
-            },
+            {"title": "Issue Title", "required": True, "placeholder": None},
             {
                 "title": "Issue Summary",
                 "required": True,
-                "placeholder": "A simple summary of your bug report"
+                "placeholder": "A simple summary of your bug report",
             },
             {
                 "title": "Additional Context",
                 "required": False,
-                "placeholder": "If there is anything else to say, please do so here."
+                "placeholder": "If there is anything else to say, please do so here.",
             },
         ]
         for item_blueprint in self.transform(self._type):
@@ -62,7 +60,9 @@ class GithubControlModal(discord.ui.Modal):
                 discord.ui.TextInput(
                     label=item_blueprint["title"],
                     required=item_blueprint["required"],
-                    placeholder=item_blueprint["placeholder"] if item_blueprint["placeholder"] else None,
+                    placeholder=item_blueprint["placeholder"]
+                    if item_blueprint["placeholder"]
+                    else None,
                     max_length=1024,
                     style=discord.TextStyle.paragraph,
                 )
@@ -78,21 +78,21 @@ class GithubControlModal(discord.ui.Modal):
         await interaction.response.defer(thinking=True)
         repo = self._gh_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
 
-        embed = discord.Embed(title=f"{self._feature_type} Issue", colour=discord.Colour.brand_green())
+        embed = discord.Embed(
+            title=f"{self._feature_type} Issue", colour=discord.Colour.brand_green()
+        )
 
         issue_body = ""
 
         for item, question in zip(self.children, self.transform(self._type)):
-            embed.add_field(
-                name=question["title"],
-                value=str(item),
-                inline=False
-            )
+            embed.add_field(name=question["title"], value=str(item), inline=False)
             issue_body += f"**{question['title']}**\n{str(item)}\n\n"
 
         issue = repo.create_issue(
             title=str(self.children[0]),
-            body=f"**Issue Feature**\n{self._feature_type}\n\n" + issue_body + self._attachment,
+            body=f"**Issue Feature**\n{self._feature_type}\n\n"
+            + issue_body
+            + self._attachment,
         )
         issue.add_to_labels(repo.get_label(name="Discord"))
         url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue.number}"
@@ -102,13 +102,12 @@ class GithubControlModal(discord.ui.Modal):
 
 class GithubIssues(Group):
     def __init__(
-            self,
-            bot: Timmy,
-            github_client: Github,
+        self,
+        bot: Timmy,
+        github_client: Github,
     ):
         super().__init__(
-            name="issue",
-            description="Open an issue for a bug related to the bot"
+            name="issue", description="Open an issue for a bug related to the bot"
         )
         self.bot = bot
         self._github_client = github_client
@@ -119,10 +118,10 @@ class GithubIssues(Group):
 
     @command(name="open")
     async def __open(
-            self,
-            interaction: discord.Interaction,
-            feature: IssueFeatureLiteral,
-            screenshot: discord.Attachment
+        self,
+        interaction: discord.Interaction,
+        feature: IssueFeatureLiteral,
+        screenshot: discord.Attachment,
     ):
         await interaction.response.send_modal(
             GithubControlModal(
@@ -130,13 +129,15 @@ class GithubIssues(Group):
                 type_="ISSUE",
                 feature=feature,
                 attachment=screenshot,
-                github_client=self._github_client
+                github_client=self._github_client,
             )
         )
 
     @command(name="close")
     @slash_is_bot_admin_4()
-    async def __close(self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None):
+    async def __close(
+        self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None
+    ):
         await interaction.response.defer(thinking=True)
         r = self._github_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
         try:

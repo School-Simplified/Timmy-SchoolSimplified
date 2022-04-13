@@ -102,21 +102,35 @@ class AdminAPI(commands.Cog):
         description="Suspend/Delete a GSuite Account",
     )
     @app_commands.guilds(HR_ID.g_hr)
-    async def delete_gsuite(self, interaction: discord.Interaction, email: str):
+    async def delete_gsuite(
+        self, interaction: discord.Interaction, email: str, suspend: bool
+    ):
         HR_Role = discord.utils.get(interaction.guild.roles, id=HR_ID.r_hrStaff)
         if HR_Role not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the required permissions to use this command."
             )
 
-        try:
-            service.users().delete(userKey=email).execute()
-        except:
-            return await interaction.response.send_message(
-                f"{interaction.user.mention} The account **{email}** does not exist."
-            )
+        if suspend:
+            try:
+                user = service.users().get(userKey=email).execute()
+                user['suspended'] = True
+                service.users().update(userKey=email, body=user).execute()
+            except:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention} The account **{email}** does not exist."
+                )
+            else:
+                await interaction.response.send_message("Successfully suspended the account.")
         else:
-            await interaction.response.send_message("Successfully deleted the account.")
+            try:
+                service.users().delete(userKey=email).execute()
+            except:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} The account **{email}** does not exist."
+                )
+            else:
+                await interaction.response.send_message("Successfully deleted the account.")
 
 
 async def setup(bot):
