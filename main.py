@@ -48,11 +48,7 @@ class TimmyCommandTree(app_commands.CommandTree):
         super().__init__(bot)
         self.bot = bot
 
-    async def interaction_check(
-            self,
-            interaction: discord.Interaction,
-            /
-    ) -> bool:
+    async def interaction_check(self, interaction: discord.Interaction, /) -> bool:
 
         blacklisted_users = [p.discordID for p in database.Blacklist]
         if interaction.user.id in blacklisted_users:

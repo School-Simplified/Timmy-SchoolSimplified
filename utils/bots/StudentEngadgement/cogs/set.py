@@ -14,10 +14,16 @@ if TYPE_CHECKING:
 
 QuestionLiteral = List[Dict[str, Union[str, bool, None]]]
 MediaLiteralType = Literal[
-    "Book", "Movie", "TV Show",
-    "Meme", "Pickup Line", "Puzzle",
-    "Daily Question", "Motivation", "Music",
-    "Opportunities"
+    "Book",
+    "Movie",
+    "TV Show",
+    "Meme",
+    "Pickup Line",
+    "Puzzle",
+    "Daily Question",
+    "Motivation",
+    "Music",
+    "Opportunities",
 ]
 
 
@@ -39,10 +45,7 @@ def reload_blacklist():
 
 class SetSuggestBlacklist(Group):
     def __init__(self, bot: Timmy):
-        super().__init__(
-            name="set_blacklist",
-            guild_ids=[MAIN_ID.g_main, SET_ID.g_set]
-        )
+        super().__init__(name="set_blacklist", guild_ids=[MAIN_ID.g_main, SET_ID.g_set])
         self.bot = bot
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
@@ -101,10 +104,7 @@ class SetSuggestBlacklist(Group):
 
 
 class Suggest(Group):
-    def __init__(
-            self,
-            bot: Timmy
-    ):
+    def __init__(self, bot: Timmy):
         super().__init__(
             name="suggest",
             description="Suggest something for community engagement!",
@@ -187,11 +187,7 @@ class Suggest(Group):
 
 
 class SuggestModal(discord.ui.Modal):
-    def __init__(
-            self,
-            bot: Timmy,
-            suggest_type: MediaLiteralType
-    ):
+    def __init__(self, bot: Timmy, suggest_type: MediaLiteralType):
         super().__init__(timeout=None, title=suggest_type + " Suggestion")
         self.type = suggest_type
         self.bot = bot
@@ -201,11 +197,7 @@ class SuggestModal(discord.ui.Modal):
                 "placeholder": None,
                 "required": True,
             },
-            {
-                "question": "What genre is it?",
-                "placeholder": None,
-                "required": True
-            },
+            {"question": "What genre is it?", "placeholder": None, "required": True},
             {
                 "question": "What rating does this book have?",
                 "placeholder": "Example: YA (Young Adult)",
