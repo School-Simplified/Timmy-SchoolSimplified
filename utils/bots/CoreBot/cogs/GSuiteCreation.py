@@ -92,7 +92,8 @@ class AdminAPI(commands.Cog):
             ephemeral=False,
         )
         await interaction.response.send_message(
-            f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",
+            f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary "
+            f"Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",
             ephemeral=True,
         )
 
