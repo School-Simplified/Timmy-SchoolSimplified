@@ -154,7 +154,7 @@ class GithubIssues(Group):
         return [
             app_commands.Choice(name=str(issue), value=issue)
             for issue in issues
-            if str(issue).lower() in (str(value or "").lower())
+            if value.lower() in str(issue).lower()
         ]
 
 
