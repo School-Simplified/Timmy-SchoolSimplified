@@ -147,7 +147,10 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} The account **{email}** does not exist."
             )
         else:
-            await interaction.response.send_message("Successfully suspended the account.")
+            if suspend:
+                await interaction.response.send_message("Successfully suspended the account.")
+            else:
+                await interaction.response.send_message("Successfully restored the account.")
 
 
 async def setup(bot):
