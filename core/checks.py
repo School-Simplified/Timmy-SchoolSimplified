@@ -13,7 +13,8 @@ import re
 
 import discord
 from discord.ext import commands
-from core import MKT_ID, database
+from core import database
+from core.common import MKT_ID
 
 
 def predicate_LV1(ctx) -> bool:
