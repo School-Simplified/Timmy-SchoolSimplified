@@ -136,7 +136,7 @@ async def on_ready_(bot: commands.Bot):
 
             Bot Account: {bot.user.name} | {bot.user.id}
             {bcolors.OKCYAN}Discord API Wrapper Version: {discord.__version__}{bcolors.ENDC}
-            {bcolors.WARNING}TimmyOS Version: {output}{bcolors.ENDC}
+            {bcolors.WARNING}TimmyOS Version: {bot.version}{bcolors.ENDC} | {output}
             {databaseField}
 
             {bcolors.OKCYAN}Current Time: {now}{bcolors.ENDC}
