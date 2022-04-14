@@ -387,6 +387,12 @@ class MiscCMD(commands.Cog):
         await ctx.send("ok i did join")
 
     @commands.command()
+    @is_botAdmin
+    async def error_test(self, ctx):
+        """This command is used to test error handling"""
+        raise discord.DiscordException
+
+    @commands.command()
     async def ping(self, ctx):
         database.db.connect(reuse_if_open=True)
 

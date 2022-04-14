@@ -329,15 +329,18 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
 
             if ctx.author.id not in permitlist:
                 embed = discord.Embed(
-                    title="Traceback Detected!",
-                    description="Timmy here has ran into an error!\nPlease check what you sent and/or check out "
-                    "the "
-                    "help command!",
+                    title="Error Detected!",
+                    description="Seems like I've ran into an unexpected error!",
                     color=Colors.red,
                 )
                 embed.set_thumbnail(url=Others.timmyDog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 await ctx.send(embed=embed)
+
+                view = FeedbackButton(bot)
+                await ctx.send(
+                    "Want to help even more? Click here to submit feedback!", view=view
+                )
             else:
                 embed = discord.Embed(
                     title="Traceback Detected!",
@@ -365,11 +368,6 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                 value=f"[Uploaded Traceback to GIST](https://gist.github.com/{ID})",
             )
             await channel.send(embed=embed2)
-
-            view = FeedbackButton()
-            await ctx.send(
-                "Want to help even more? Click here to submit feedback!", view=view
-            )
             error_file.unlink()
 
     raise error

@@ -20,6 +20,7 @@ import configcatclient
 import discord
 import requests
 import sentry_sdk
+from github import Github
 from botocore.exceptions import ClientError
 from discord import (
     Button,
@@ -41,7 +42,7 @@ load_dotenv()
 
 # module variables
 coroutineType = Callable[[Any, Any], Awaitable[Any]]
-
+g = Github(os.getenv("GH_TOKEN"))
 
 class ConfigcatClient:
     SET_ID_CC = configcatclient.create_client(os.getenv("SET_ID_CC"))
@@ -1716,8 +1717,9 @@ class TicketTempConfirm(discord.ui.View):
 
 
 class FeedbackModel(discord.ui.Modal, title="Submit Feedback"):
-    def __init__(self) -> None:
+    def __init__(self, bot) -> None:
         super().__init__()
+        self.bot = bot
         self.add_item(
             discord.ui.TextInput(
                 label="What did you try to do?",
@@ -1727,7 +1729,7 @@ class FeedbackModel(discord.ui.Modal, title="Submit Feedback"):
         self.add_item(
             discord.ui.TextInput(
                 label="Describe the steps to reproduce the issue",
-                style=discord.TextStyle.short,
+                style=discord.TextStyle.long,
             )
         )
         self.add_item(
@@ -1746,29 +1748,36 @@ class FeedbackModel(discord.ui.Modal, title="Submit Feedback"):
             discord.ui.TextInput(
                 label="Anything else?",
                 style=discord.TextStyle.long,
+                placeholder="Add pictures or links here to help us understand your issue.",
                 required=False,
             )
         )
 
     async def on_submit(self, interaction: discord.Interaction):
-        response = f"User Action: {self.children[0]}\nSteps to reproduce the issue: {self.children[1]}\nWhat happened: {self.children[2]}\nExpected Result: {self.children[3]}\nAnything else: {self.children[4]}"
-        url = f"https://sentry.io/api/0/projects/schoolsimplified/timmy/user-feedback/"
-        headers = {"Authorization": f'Bearer {os.getenv("FDB_SENTRY")}'}
+        response = f"- User Action: {self.children[0]}\n\n- Steps to reproduce the issue: {self.children[1]}\n\n- What happened: {self.children[2]}\n\n- Expected Result: {self.children[3]}\n\n- Anything else: {self.children[4]}"
+        repo = g.get_repo(full_name_or_id="School-Simplified/Timmy-SchoolSimplified")
+        issue = repo.create_issue(
+            title=f"{interaction.user.name} | {interaction.user.id} Issue/Feedback",
+            body=f"**Feedback:**\n\n{response}"
+        )
+        issue.add_to_labels(repo.get_label(name="Discord"), repo.get_label(name="question"))
+        url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue.number}"
+        await interaction.response.send_message("Your issue has been submitted!\nA developer will reach out soon to respond to your issue.", ephemeral=True)
 
-        data = {
-            "event_id": sentry_sdk.last_event_id(),
-            "name": interaction.user.name,
-            "id": interaction.user.id,
-            "comments": response,
-        }
-
-        response = requests.post(url, headers=headers, data=str(data))
+        devChannel = self.bot.get_channel(TECH_ID.ch_tracebacks)
+        embed = discord.Embed(
+            title="New Issue",
+            description=f"{interaction.user.mention} has submitted a new issue!\n[Click here to view the issue]({url})",
+            color=discord.Color.brand_red(),
+        )
+        await devChannel.send(embed=embed)
 
 
 class FeedbackButton(discord.ui.View):
-    def __init__(self):
+    def __init__(self, bot):
         super().__init__(timeout=500.0)
         self.value = None
+        self.bot = bot
 
     @discord.ui.button(
         label="Submit Feedback",
@@ -1781,7 +1790,7 @@ class FeedbackButton(discord.ui.View):
         interaction: discord.Interaction,
         button: discord.ui.Button,
     ):
-        modal = FeedbackModel()
+        modal = FeedbackModel(self.bot)
         return await interaction.response.send_modal(modal)
 
 
