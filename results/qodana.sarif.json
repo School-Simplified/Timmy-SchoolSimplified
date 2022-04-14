@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1936,13 +1936,13 @@
                 ]
               },
               {
-                "id": "PyMethodParametersInspection",
+                "id": "PyChainedComparisonsInspection",
                 "shortDescription": {
-                  "text": "Improper first parameter"
+                  "text": "Too complex chained comparisons"
                 },
                 "fullDescription": {
-                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
-                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
+                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
+                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1970,13 +1970,13 @@
                 ]
               },
               {
-                "id": "PyChainedComparisonsInspection",
+                "id": "PyMethodParametersInspection",
                 "shortDescription": {
-                  "text": "Too complex chained comparisons"
+                  "text": "Improper first parameter"
                 },
                 "fullDescription": {
-                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
-                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
+                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
+                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -2344,19 +2344,19 @@
                 ]
               },
               {
-                "id": "PyArgumentEqualDefaultInspection",
+                "id": "CythonUsageBeforeDeclarationInspection",
                 "shortDescription": {
-                  "text": "The function argument is equal to the default parameter value"
+                  "text": "Cython variable is used before its declaration"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
-                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
+                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
+                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2378,19 +2378,19 @@
                 ]
               },
               {
-                "id": "CythonUsageBeforeDeclarationInspection",
+                "id": "PyArgumentEqualDefaultInspection",
                 "shortDescription": {
-                  "text": "Cython variable is used before its declaration"
+                  "text": "The function argument is equal to the default parameter value"
                 },
                 "fullDescription": {
-                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
-                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
+                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2888,40 +2888,6 @@
                 ]
               },
               {
-                "id": "PyTrailingSemicolonInspection",
-                "shortDescription": {
-                  "text": "Prohibited trailing semicolon in a statement"
-                },
-                "fullDescription": {
-                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
-                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "PyRedundantParenthesesInspection",
                 "shortDescription": {
                   "text": "Redundant parentheses"
@@ -2956,19 +2922,19 @@
                 ]
               },
               {
-                "id": "PyAbstractClassInspection",
+                "id": "PyTrailingSemicolonInspection",
                 "shortDescription": {
-                  "text": "Class must implement all abstract methods"
+                  "text": "Prohibited trailing semicolon in a statement"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when not all abstract properties or methods are defined in a subclass. Example: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n When the quick-fix is applied, the IDE implements an abstract method for the 'Triangle' class: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass",
-                  "markdown": "Reports cases when not all abstract properties or methods are defined in\na subclass.\n\n**Example:**\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n```\n\nWhen the quick-fix is applied, the IDE implements an abstract method for the `Triangle` class:\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass\n```"
+                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
+                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3003,6 +2969,40 @@
                   "level": "warning",
                   "parameters": {
                     "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyAbstractClassInspection",
+                "shortDescription": {
+                  "text": "Class must implement all abstract methods"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when not all abstract properties or methods are defined in a subclass. Example: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n When the quick-fix is applied, the IDE implements an abstract method for the 'Triangle' class: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass",
+                  "markdown": "Reports cases when not all abstract properties or methods are defined in\na subclass.\n\n**Example:**\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n```\n\nWhen the quick-fix is applied, the IDE implements an abstract method for the `Triangle` class:\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass\n```"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3602,40 +3602,6 @@
                 ]
               },
               {
-                "id": "PyProtectedMemberInspection",
-                "shortDescription": {
-                  "text": "Accessing a protected member of a class or a module"
-                },
-                "fullDescription": {
-                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
-                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "DjangoCloseTagInspection",
                 "shortDescription": {
                   "text": "Mismatched opening and closing tags"
@@ -3683,6 +3649,40 @@
                   "level": "warning",
                   "parameters": {
                     "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyProtectedMemberInspection",
+                "shortDescription": {
+                  "text": "Accessing a protected member of a class or a module"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
+                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -4464,40 +4464,6 @@
                 ]
               },
               {
-                "id": "XmlDuplicatedId",
-                "shortDescription": {
-                  "text": "Duplicate 'id' attribute"
-                },
-                "fullDescription": {
-                  "text": "Reports a duplicate 'id' attribute in XML.",
-                  "markdown": "Reports a duplicate `id` attribute in XML."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "ideaSeverity": "ERROR",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "XML",
-                      "index": 3,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "JsonSchemaDeprecation",
                 "shortDescription": {
                   "text": "Deprecated JSON property"
@@ -4521,6 +4487,40 @@
                     "target": {
                       "id": "JSON and JSON5",
                       "index": 4,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "XmlDuplicatedId",
+                "shortDescription": {
+                  "text": "Duplicate 'id' attribute"
+                },
+                "fullDescription": {
+                  "text": "Reports a duplicate 'id' attribute in XML.",
+                  "markdown": "Reports a duplicate `id` attribute in XML."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "error",
+                  "parameters": {
+                    "ideaSeverity": "ERROR",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "XML",
+                      "index": 3,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5586,40 +5586,6 @@
                 ]
               },
               {
-                "id": "XmlDeprecatedElement",
-                "shortDescription": {
-                  "text": "Deprecated symbol"
-                },
-                "fullDescription": {
-                  "text": "Reports a deprecated XML element or attribute. Symbols can be marked by XML comment or documentation tag with text 'deprecated'.",
-                  "markdown": "Reports a deprecated XML element or attribute.\n\nSymbols can be marked by XML comment or documentation tag with text 'deprecated'."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "XML",
-                      "index": 3,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpRedundantNestedCharacterClass",
                 "shortDescription": {
                   "text": "Redundant nested character class"
@@ -5643,6 +5609,40 @@
                     "target": {
                       "id": "RegExp",
                       "index": 5,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "XmlDeprecatedElement",
+                "shortDescription": {
+                  "text": "Deprecated symbol"
+                },
+                "fullDescription": {
+                  "text": "Reports a deprecated XML element or attribute. Symbols can be marked by XML comment or documentation tag with text 'deprecated'.",
+                  "markdown": "Reports a deprecated XML element or attribute.\n\nSymbols can be marked by XML comment or documentation tag with text 'deprecated'."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "XML",
+                      "index": 3,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "cfa6f35f83a69157d88cdbaaa13580269ab68e53",
+          "revisionId": "f153de44fa8ae48cbdbd6c043d1cbba502ff144a",
           "branch": "beta",
           "properties": {
             "lastAuthorName": "SpaceT0",
@@ -9259,9 +9259,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 489,
+                  "startLine": 492,
                   "startColumn": 35,
-                  "charOffset": 17832,
+                  "charOffset": 18338,
                   "charLength": 1,
                   "snippet": {
                     "text": ")"
@@ -9269,9 +9269,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 487,
+                  "startLine": 490,
                   "startColumn": 1,
-                  "charOffset": 17752,
+                  "charOffset": 18258,
                   "charLength": 177,
                   "snippet": {
                     "text": "            await channel.send(embed=embed2)\n\n            view = FeedbackButton()\n            if interaction.response.is_done():\n                await interaction.followup.send("
@@ -9287,7 +9287,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "69e4e23e5f60cb549d2a6a4794e1d22562e70ddba78cd59d8df0ec839db3b2e9"
+            "equalIndicator/v1": "14a021e4ac52961c75b896d39d2bcd53bd4972eb2d88c2852d667e8fbd8a178a"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -10745,7 +10745,7 @@
                 "region": {
                   "startLine": 379,
                   "startColumn": 5,
-                  "charOffset": 13353,
+                  "charOffset": 13560,
                   "charLength": 62,
                   "snippet": {
                     "text": "command: Union[app_commands.Command, app_commands.ContextMenu]"
@@ -10755,7 +10755,7 @@
                 "contextRegion": {
                   "startLine": 377,
                   "startColumn": 1,
-                  "charOffset": 13288,
+                  "charOffset": 13495,
                   "charLength": 172,
                   "snippet": {
                     "text": "    bot: commands.Bot,\n    interaction: discord.Interaction,\n    command: Union[app_commands.Command, app_commands.ContextMenu],\n    error: app_commands.AppCommandError,\n):"
@@ -10771,7 +10771,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "cbb1fbc5d73721a54f324ebcd7c353ed1adea8a2f6fcfe4f5af0c397d2fffbcb"
+            "equalIndicator/v1": "c030aa376e66843fe966c6cc553e18576fff40665b44531e1fd83a5cb57a1c96"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -12958,6 +12958,165 @@
           "kind": "fail",
           "level": "note",
           "message": {
+            "text": "Local variable 'val' value is not used",
+            "markdown": "Local variable 'val' value is not used"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 45,
+                  "startColumn": 13,
+                  "charOffset": 1404,
+                  "charLength": 3,
+                  "snippet": {
+                    "text": "val"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 43,
+                  "startColumn": 1,
+                  "charOffset": 1378,
+                  "charLength": 108,
+                  "snippet": {
+                    "text": "\n        try:\n            val = InteractionResponse[\"custom_id\"]\n        except KeyError:\n            return"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "011ceafe698db24801aeede2f12e21b66d4e79a6c1db1cc61ce5f07bb7f1176e"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyUnusedLocalInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Local variable 'channel' value is not used",
+            "markdown": "Local variable 'channel' value is not used"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 58,
+                  "startColumn": 13,
+                  "charOffset": 1789,
+                  "charLength": 7,
+                  "snippet": {
+                    "text": "channel"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 56,
+                  "startColumn": 1,
+                  "charOffset": 1758,
+                  "charLength": 169,
+                  "snippet": {
+                    "text": "                )\n\n            channel = self.bot.get_channel(interaction.channel_id)\n            guild = interaction.message.guild\n            author = interaction.user"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "49dc3876f776220d5fe9438091b8f783136f1b8c011e90c7cc64d0455d92a43f"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyUnusedLocalInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Local variable 'e' value is not used",
+            "markdown": "Local variable 'e' value is not used"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 110,
+                  "startColumn": 41,
+                  "charOffset": 4207,
+                  "charLength": 1,
+                  "snippet": {
+                    "text": "e"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 108,
+                  "startColumn": 1,
+                  "charOffset": 4074,
+                  "charLength": 250,
+                  "snippet": {
+                    "text": "                    try:\n                        self.flow.fetch_token(code=answer1.content)\n                    except Exception as e:\n                        return await dm_channel.send(\"Invalid code, try again later...\")\n                    else:"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "ad83e3cabddfddd78211e41cbce2dc60021fbefe7c8ec99e492b00a1249d0297"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyUnusedLocalInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
             "text": "Parameter 'directTranscript' value is not used",
             "markdown": "Parameter 'directTranscript' value is not used"
           },
@@ -13687,165 +13846,6 @@
           ],
           "partialFingerprints": {
             "equalIndicator/v1": "b768ab7956171515b165c60707a3393ca73219ae31854996e0616e8ae27adac8"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyUnusedLocalInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Local variable 'val' value is not used",
-            "markdown": "Local variable 'val' value is not used"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 45,
-                  "startColumn": 13,
-                  "charOffset": 1404,
-                  "charLength": 3,
-                  "snippet": {
-                    "text": "val"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 43,
-                  "startColumn": 1,
-                  "charOffset": 1378,
-                  "charLength": 108,
-                  "snippet": {
-                    "text": "\n        try:\n            val = InteractionResponse[\"custom_id\"]\n        except KeyError:\n            return"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "011ceafe698db24801aeede2f12e21b66d4e79a6c1db1cc61ce5f07bb7f1176e"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyUnusedLocalInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Local variable 'channel' value is not used",
-            "markdown": "Local variable 'channel' value is not used"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 58,
-                  "startColumn": 13,
-                  "charOffset": 1789,
-                  "charLength": 7,
-                  "snippet": {
-                    "text": "channel"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 56,
-                  "startColumn": 1,
-                  "charOffset": 1758,
-                  "charLength": 169,
-                  "snippet": {
-                    "text": "                )\n\n            channel = self.bot.get_channel(interaction.channel_id)\n            guild = interaction.message.guild\n            author = interaction.user"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "49dc3876f776220d5fe9438091b8f783136f1b8c011e90c7cc64d0455d92a43f"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyUnusedLocalInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Local variable 'e' value is not used",
-            "markdown": "Local variable 'e' value is not used"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 110,
-                  "startColumn": 41,
-                  "charOffset": 4207,
-                  "charLength": 1,
-                  "snippet": {
-                    "text": "e"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 108,
-                  "startColumn": 1,
-                  "charOffset": 4074,
-                  "charLength": 250,
-                  "snippet": {
-                    "text": "                    try:\n                        self.flow.fetch_token(code=answer1.content)\n                    except Exception as e:\n                        return await dm_channel.send(\"Invalid code, try again later...\")\n                    else:"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "ad83e3cabddfddd78211e41cbce2dc60021fbefe7c8ec99e492b00a1249d0297"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -15513,9 +15513,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 502,
+                  "startLine": 505,
                   "startColumn": 7,
-                  "charOffset": 18244,
+                  "charOffset": 18750,
                   "charLength": 2,
                   "snippet": {
                     "text": "Me"
@@ -15523,9 +15523,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 500,
+                  "startLine": 503,
                   "startColumn": 1,
-                  "charOffset": 18236,
+                  "charOffset": 18742,
                   "charLength": 56,
                   "snippet": {
                     "text": "\n\nclass Me:\n    publicCH = [\n        MAIN_ID.cat_casual,"
@@ -15541,7 +15541,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "655c68ecd43b496593c3984f63c5818148713e673dab032d4cb6411da4155d87"
+            "equalIndicator/v1": "de73606a6e02584785fbc15063f8375e8aaf46f318f515e9216ff26e12c7afc9"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19437,7 +19437,7 @@
                 "region": {
                   "startLine": 422,
                   "startColumn": 13,
-                  "charOffset": 14898,
+                  "charOffset": 15105,
                   "charLength": 10,
                   "snippet": {
                     "text": "GITHUB_API"
@@ -19447,7 +19447,7 @@
                 "contextRegion": {
                   "startLine": 420,
                   "startColumn": 1,
-                  "charOffset": 14832,
+                  "charOffset": 15039,
                   "charLength": 185,
                   "snippet": {
                     "text": "            data = \"\\n\".join([l.strip() for l in f])\n\n            GITHUB_API = \"https://api.github.com\"\n            API_TOKEN = os.getenv(\"GIST\")\n            url = GITHUB_API + \"/gists\""
@@ -19463,7 +19463,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "9f6ddd2620fd95f3cb31376b5439356868f08b81ba35b24cffa5763ce725172c"
+            "equalIndicator/v1": "f3a3e338ad52a537df18b9c0d242c6ea2b95bee29a30a309c26c488eca173644"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19490,7 +19490,7 @@
                 "region": {
                   "startLine": 423,
                   "startColumn": 13,
-                  "charOffset": 14948,
+                  "charOffset": 15155,
                   "charLength": 9,
                   "snippet": {
                     "text": "API_TOKEN"
@@ -19500,7 +19500,7 @@
                 "contextRegion": {
                   "startLine": 421,
                   "startColumn": 1,
-                  "charOffset": 14885,
+                  "charOffset": 15092,
                   "charLength": 196,
                   "snippet": {
                     "text": "\n            GITHUB_API = \"https://api.github.com\"\n            API_TOKEN = os.getenv(\"GIST\")\n            url = GITHUB_API + \"/gists\"\n            headers = {\"Authorization\": \"token %s\" % API_TOKEN}"
@@ -19516,7 +19516,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "546fb6309f9e905ba7ad2cfe2faa760f7aaccf013d98993571d6664f537cb25a"
+            "equalIndicator/v1": "df226897da6f9b590e045e2461609da9855614596727fdf0bcb411f8cb8c8fe0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19543,7 +19543,7 @@
                 "region": {
                   "startLine": 436,
                   "startColumn": 13,
-                  "charOffset": 15490,
+                  "charOffset": 15697,
                   "charLength": 2,
                   "snippet": {
                     "text": "ID"
@@ -19553,7 +19553,7 @@
                 "contextRegion": {
                   "startLine": 434,
                   "startColumn": 1,
-                  "charOffset": 15427,
+                  "charOffset": 15634,
                   "charLength": 130,
                   "snippet": {
                     "text": "            )\n            j = json.loads(res.text)\n            ID = j[\"id\"]\n            gisturl = f\"https://gist.github.com/{ID}\"\n"
@@ -19569,7 +19569,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "c20b5db0738ec3be5a21ad0106dcdaf3f948594fb1b1e3b6a5116e3c84213b8e"
+            "equalIndicator/v1": "4adae8d7edee825c10b635ecb69944d5c9edc0e6e37037869d0e6777f0e0ba18"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19594,9 +19594,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 525,
+                  "startLine": 528,
                   "startColumn": 5,
-                  "charOffset": 18953,
+                  "charOffset": 19459,
                   "charLength": 8,
                   "snippet": {
                     "text": "adminIDs"
@@ -19604,9 +19604,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 523,
+                  "startLine": 526,
                   "startColumn": 1,
-                  "charOffset": 18902,
+                  "charOffset": 19408,
                   "charLength": 163,
                   "snippet": {
                     "text": "        blacklisted_users.append(p.discordID)\n\n    adminIDs = []\n    query = database.Administrators.select().where(\n        database.Administrators.TierLevel == 4"
@@ -19622,7 +19622,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "d30c731b781b880286d64499d77278c73137dc4965ac32a4f6af0f23f2635ec6"
+            "equalIndicator/v1": "6d628545e759d5561014afb4270c1ace374988268055853ce631f0018b85b26a"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19647,9 +19647,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 575,
+                  "startLine": 578,
                   "startColumn": 5,
-                  "charOffset": 20277,
+                  "charOffset": 20783,
                   "charLength": 12,
                   "snippet": {
                     "text": "initializeDB"
@@ -19657,9 +19657,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 573,
+                  "startLine": 576,
                   "startColumn": 1,
-                  "charOffset": 20271,
+                  "charOffset": 20777,
                   "charLength": 117,
                   "snippet": {
                     "text": "\n\ndef initializeDB(bot):\n    \"\"\"\n    Initializes the database, and creates the needed table data if they don't exist."
@@ -19675,166 +19675,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "aede6a73dc8b6c3337ced7e45664f57a27a077a38994ed6b27a1a67272f42438"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "core/special_methods.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 580,
-                  "startColumn": 5,
-                  "charOffset": 20445,
-                  "charLength": 3,
-                  "snippet": {
-                    "text": "UpQ"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 578,
-                  "startColumn": 1,
-                  "charOffset": 20389,
-                  "charLength": 285,
-                  "snippet": {
-                    "text": "    \"\"\"\n    database.db.connect(reuse_if_open=True)\n    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "d157624a17f955b17fae98b6217184cf1661409f5e3dfdce12194f785d352783"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "core/special_methods.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 581,
-                  "startColumn": 5,
-                  "charOffset": 20511,
-                  "charLength": 3,
-                  "snippet": {
-                    "text": "CIQ"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 579,
-                  "startColumn": 1,
-                  "charOffset": 20397,
-                  "charLength": 356,
-                  "snippet": {
-                    "text": "    database.db.connect(reuse_if_open=True)\n    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "14cb2a6be71cd08585efcf036c35a09a54e03ca377b2cd616ed522f54af3fd99"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "core/special_methods.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 582,
-                  "startColumn": 5,
-                  "charOffset": 20597,
-                  "charLength": 3,
-                  "snippet": {
-                    "text": "BTE"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 580,
-                  "startColumn": 1,
-                  "charOffset": 20441,
-                  "charLength": 313,
-                  "snippet": {
-                    "text": "    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)\n"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "718a7d148cc99fecd4b92152b6ee7ccc0580cc880013d0415707ac84aa02aef9"
+            "equalIndicator/v1": "257d699c13937dba80e91b707481885a648fdb8d348aa92ee0c9b9e7f098f853"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19861,7 +19702,166 @@
                 "region": {
                   "startLine": 583,
                   "startColumn": 5,
-                  "charOffset": 20679,
+                  "charOffset": 20951,
+                  "charLength": 3,
+                  "snippet": {
+                    "text": "UpQ"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 581,
+                  "startColumn": 1,
+                  "charOffset": 20895,
+                  "charLength": 285,
+                  "snippet": {
+                    "text": "    \"\"\"\n    database.db.connect(reuse_if_open=True)\n    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "7fefb33769e1e273e4b7fc88803da151834ed062622cb9110479fa16baf914f8"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "core/special_methods.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 584,
+                  "startColumn": 5,
+                  "charOffset": 21017,
+                  "charLength": 3,
+                  "snippet": {
+                    "text": "CIQ"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 582,
+                  "startColumn": 1,
+                  "charOffset": 20903,
+                  "charLength": 356,
+                  "snippet": {
+                    "text": "    database.db.connect(reuse_if_open=True)\n    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "4142942ed9e8d2e01c85b07c73b52249fe91b54c223f92ff27489c21c69f30db"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "core/special_methods.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 585,
+                  "startColumn": 5,
+                  "charOffset": 21103,
+                  "charLength": 3,
+                  "snippet": {
+                    "text": "BTE"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 583,
+                  "startColumn": 1,
+                  "charOffset": 20947,
+                  "charLength": 313,
+                  "snippet": {
+                    "text": "    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)\n"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "45960f16f3eaf7d2eff44c43482c58fd7ef046c52fe74af7d8f2b32713249489"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "core/special_methods.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 586,
+                  "startColumn": 5,
+                  "charOffset": 21185,
                   "charLength": 2,
                   "snippet": {
                     "text": "SM"
@@ -19869,9 +19869,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 581,
+                  "startLine": 584,
                   "startColumn": 1,
-                  "charOffset": 20507,
+                  "charOffset": 21013,
                   "charLength": 272,
                   "snippet": {
                     "text": "    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)\n\n    if not UpQ.exists():"
@@ -19887,7 +19887,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "5a8fc7e0f2fd35ca41232fc7d183ddf695c17992482fa547d2cdfac96c165e5e"
+            "equalIndicator/v1": "3b971b30049be9e1551b99fec3328eadf35068b98a0be8a8539aa624ad439a5b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -37345,6 +37345,218 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 39,
+                  "startColumn": 15,
+                  "charOffset": 1218,
+                  "charLength": 12,
+                  "snippet": {
+                    "text": "GSuiteVerify"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 37,
+                  "startColumn": 1,
+                  "charOffset": 1158,
+                  "charLength": 200,
+                  "snippet": {
+                    "text": "\n    @commands.Cog.listener(\"on_interaction\")\n    async def GSuiteVerify(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n        if interaction.message is None:"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "e0db664ed9d3a6f977b746e007a78d2934da1019901ff8d31e58cd2edf3cd1a3"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 40,
+                  "startColumn": 9,
+                  "charOffset": 1280,
+                  "charLength": 19,
+                  "snippet": {
+                    "text": "InteractionResponse"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 38,
+                  "startColumn": 1,
+                  "charOffset": 1159,
+                  "charLength": 218,
+                  "snippet": {
+                    "text": "    @commands.Cog.listener(\"on_interaction\")\n    async def GSuiteVerify(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n        if interaction.message is None:\n            return"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "2c96d0baada745254d3dd55f28008f844776e1737d120c2f32a4b3f8415da2a7"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Function name should be lowercase",
+            "markdown": "Function name should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 179,
+                  "startColumn": 15,
+                  "charOffset": 7728,
+                  "charLength": 17,
+                  "snippet": {
+                    "text": "pasteGSuiteButton"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 177,
+                  "startColumn": 1,
+                  "charOffset": 7673,
+                  "charLength": 166,
+                  "snippet": {
+                    "text": "    @commands.command()\n    @is_botAdmin\n    async def pasteGSuiteButton(self, ctx):\n        embed = discord.Embed(\n            title=\"Alternate Verification Method\","
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "5ad9a6ad955fc37d7a71ae4eba76dad1bab2fb6e7e919309a9c95c715ef882e3"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Variable in function should be lowercase",
+            "markdown": "Variable in function should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/events/verifystaffGsuite.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 186,
+                  "startColumn": 9,
+                  "charOffset": 8041,
+                  "charLength": 12,
+                  "snippet": {
+                    "text": "GSuiteButton"
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 184,
+                  "startColumn": 1,
+                  "charOffset": 7982,
+                  "charLength": 144,
+                  "snippet": {
+                    "text": "            color=discord.Color.green(),\n        )\n        GSuiteButton = GSuiteVerify()\n        await ctx.send(embed=embed, view=GSuiteButton)\n"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "1d15c409f07bd04f740f2e237a1b1fe36e96cdc5d85fee97e19249951f06b38b"
+          },
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyPep8NamingInspection",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Function name should be lowercase",
+            "markdown": "Function name should be lowercase"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "utils/events/TicketDropdown.py",
                   "uriBaseId": "SRCROOT"
                 },
@@ -41161,218 +41373,6 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 39,
-                  "startColumn": 15,
-                  "charOffset": 1218,
-                  "charLength": 12,
-                  "snippet": {
-                    "text": "GSuiteVerify"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 37,
-                  "startColumn": 1,
-                  "charOffset": 1158,
-                  "charLength": 200,
-                  "snippet": {
-                    "text": "\n    @commands.Cog.listener(\"on_interaction\")\n    async def GSuiteVerify(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n        if interaction.message is None:"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "e0db664ed9d3a6f977b746e007a78d2934da1019901ff8d31e58cd2edf3cd1a3"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 40,
-                  "startColumn": 9,
-                  "charOffset": 1280,
-                  "charLength": 19,
-                  "snippet": {
-                    "text": "InteractionResponse"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 38,
-                  "startColumn": 1,
-                  "charOffset": 1159,
-                  "charLength": 218,
-                  "snippet": {
-                    "text": "    @commands.Cog.listener(\"on_interaction\")\n    async def GSuiteVerify(self, interaction: discord.Interaction):\n        InteractionResponse = interaction.data\n        if interaction.message is None:\n            return"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "2c96d0baada745254d3dd55f28008f844776e1737d120c2f32a4b3f8415da2a7"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Function name should be lowercase",
-            "markdown": "Function name should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 179,
-                  "startColumn": 15,
-                  "charOffset": 7728,
-                  "charLength": 17,
-                  "snippet": {
-                    "text": "pasteGSuiteButton"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 177,
-                  "startColumn": 1,
-                  "charOffset": 7673,
-                  "charLength": 166,
-                  "snippet": {
-                    "text": "    @commands.command()\n    @is_botAdmin\n    async def pasteGSuiteButton(self, ctx):\n        embed = discord.Embed(\n            title=\"Alternate Verification Method\","
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "5ad9a6ad955fc37d7a71ae4eba76dad1bab2fb6e7e919309a9c95c715ef882e3"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Variable in function should be lowercase",
-            "markdown": "Variable in function should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/events/verifystaffGsuite.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 186,
-                  "startColumn": 9,
-                  "charOffset": 8041,
-                  "charLength": 12,
-                  "snippet": {
-                    "text": "GSuiteButton"
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 184,
-                  "startColumn": 1,
-                  "charOffset": 7982,
-                  "charLength": 144,
-                  "snippet": {
-                    "text": "            color=discord.Color.green(),\n        )\n        GSuiteButton = GSuiteVerify()\n        await ctx.send(embed=embed, view=GSuiteButton)\n"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "1d15c409f07bd04f740f2e237a1b1fe36e96cdc5d85fee97e19249951f06b38b"
-          },
-          "properties": {
-            "ideaSeverity": "WEAK WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyPep8NamingInspection",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Function name should be lowercase",
-            "markdown": "Function name should be lowercase"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
                   "uri": "utils/events/!VerificationStaff.py",
                   "uriBaseId": "SRCROOT"
                 },
@@ -44981,9 +44981,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 522,
+                  "startLine": 525,
                   "startColumn": 14,
-                  "charOffset": 18888,
+                  "charOffset": 19394,
                   "charLength": 12,
                   "snippet": {
                     "text": "db_blacklist"
@@ -44991,9 +44991,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 520,
+                  "startLine": 523,
                   "startColumn": 1,
-                  "charOffset": 18788,
+                  "charOffset": 19294,
                   "charLength": 160,
                   "snippet": {
                     "text": "    blacklisted_users = []\n    db_blacklist: collections.Iterable = database.Blacklist\n    for p in db_blacklist:\n        blacklisted_users.append(p.discordID)\n"
@@ -45009,7 +45009,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "bc656e921d3a953fecad502f66faab01c4db7f0ed609168556eca85d011cde08"
+            "equalIndicator/v1": "ab814e8036229853254a21e6a1c2911deaf6f31b58ce176d5b693e85388c1029"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -45710,7 +45710,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-04-14",
-        "guid": "e78f3701-3678-4efe-981c-19593fe69262"
+        "guid": "cbae6187-ed68-43f5-a48c-92192c0fe0c4"
       },
       "newlineSequences": [
         "\r\n",
@@ -45987,7 +45987,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 22190,
+                    "charLength": 22696,
                     "snippet": {
                       "text": "from __future__ import annotations import collections import json import os import subprocess impor..."
                     },
@@ -46012,7 +46012,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "8f7d1b416410755b5ae8cd1a4df03b36184baf5ccc02694764fdc3519ea45bca"
+              "equalIndicator/v1": "6e6f05b669230abacc357370e3d3f1fd6933283c46b15f0d813cf7fc85b61395"
             },
             "properties": {
               "ideaSeverity": "ERROR"
