@@ -328,19 +328,19 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                 permitlist.append(user.discordID)
 
             if ctx.author.id not in permitlist:
+                view = FeedbackButton(bot)
                 embed = discord.Embed(
                     title="Error Detected!",
                     description="Seems like I've ran into an unexpected error!",
-                    color=Colors.red,
+                    color=discord.Color.brand_red(),
+                )
+                embed.add_field(
+                    name="Error Message",
+                    value="I've contacted the IT Department and they have been notified, meanwhile, please double check the command you've sent for any issues.\nConsult the help command for more information."
                 )
                 embed.set_thumbnail(url=Others.timmyDog_png)
-                embed.set_footer(text=f"Error: {str(error)}")
-                await ctx.send(embed=embed)
-
-                view = FeedbackButton(bot)
-                await ctx.send(
-                    "Want to help even more? Click here to submit feedback!", view=view
-                )
+                embed.set_footer(text="Submit a bug report or feedback below!")
+                await ctx.send(embed=embed, view=view)
             else:
                 embed = discord.Embed(
                     title="Traceback Detected!",
@@ -444,18 +444,21 @@ async def on_app_command_error_(
                 permitlist.append(user.discordID)
 
             if interaction.user.id not in permitlist:
+                view = FeedbackButton(bot)
                 embed = discord.Embed(
-                    title="Traceback Detected!",
-                    description="Timmy here has ran into an error!\nPlease check what you sent and/or check out "
-                    "the "
-                    "help command!",
-                    color=Colors.red,
+                    title="Error Detected!",
+                    description="Seems like I've ran into an unexpected error!",
+                    color=discord.Color.brand_red(),
+                )
+                embed.add_field(
+                    name="Error Message",
+                    value="I've contacted the IT Department and they have been notified, meanwhile, please double check the command you've sent for any issues.\nConsult the help command for more information."
                 )
                 embed.set_thumbnail(url=Others.timmyDog_png)
-                embed.set_footer(text=f"Error: {str(error)}")
+                embed.set_footer(text="Submit a bug report or feedback below!")
                 if interaction.response.is_done():
-                    await interaction.followup.send(embed=embed)
-                await interaction.response.send_message(embed=embed)
+                    await interaction.followup.send(embed=embed, view=view)
+                await interaction.response.send_message(embed=embed, view=view)
             else:
                 embed = discord.Embed(
                     title="Traceback Detected!",
