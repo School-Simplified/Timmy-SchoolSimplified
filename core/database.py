@@ -1,6 +1,5 @@
 import collections
 import os
-import sys
 from datetime import datetime
 from distutils.util import strtobool
 
