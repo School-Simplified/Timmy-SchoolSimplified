@@ -28,6 +28,12 @@ class GithubControlModal(discord.ui.Modal):
             attachment: Optional[discord.Attachment] = None,
             gist_url: Optional[str] = None,
     ):
+        super().__init__(
+            timeout=None,
+            title="Create Issue" if type_ == "ISSUE"
+            else "Submit Feedback" if type_ == "FEEDBACK"
+            else "Error has Occurred!"
+        )
         self.bot = bot
         self._type = type_
         self._feature_type = feature if feature else None
@@ -89,12 +95,6 @@ class GithubControlModal(discord.ui.Modal):
                     max_length=1024,
                     style=discord.TextStyle.paragraph,
                 )
-            )
-            super().__init__(
-                timeout=None,
-                title="Create Issue" if type_ == "ISSUE"
-                else "Submit Feedback" if type_ == "FEEDBACK"
-                else "Error has Occurred!"
             )
 
     def _transform(self) -> QuestionListType:
