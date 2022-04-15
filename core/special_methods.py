@@ -18,7 +18,6 @@ import requests
 from core import database
 from core.common import (
     bcolors,
-    FeedbackButton,
     GSuiteVerify,
     Colors,
     LockButton,
@@ -28,9 +27,13 @@ from core.common import (
     CheckDB_CC,
     Emoji,
 )
+from core.gh_modals import FeedbackButton
 from utils.events.TicketDropdown import TicketButton
 from utils.bots.CoreBot.cogs.techCommissions import CommissionTechButton
 from pathlib import Path
+
+if TYPE_CHECKING:
+    from main import Timmy
 
 
 class VerifyButton(discord.ui.View):
@@ -84,7 +87,7 @@ async def before_invoke_(ctx: commands.Context):
         )
 
 
-async def on_ready_(bot: commands.Bot):
+async def on_ready_(bot: Timmy):
     now = datetime.now()
     query: database.CheckInformation = (
         database.CheckInformation.select()
@@ -150,7 +153,7 @@ async def on_ready_(bot: commands.Bot):
     )
 
 
-async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exception):
+async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception):
     tb = error.__traceback__
     etype = type(error)
     exception = traceback.format_exception(etype, error, tb, chain=True)
@@ -337,7 +340,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                 embed.set_footer(text=f"Error: {str(error)}")
                 await ctx.send(embed=embed)
 
-                view = FeedbackButton(bot)
+                view = FeedbackButton(bot=bot, gist_url=gisturl)
                 await ctx.send(
                     "Want to help even more? Click here to submit feedback!", view=view
                 )
@@ -374,7 +377,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
 
 
 async def on_app_command_error_(
-    bot: commands.Bot,
+    bot: Timmy,
     interaction: discord.Interaction,
     command: Union[app_commands.Command, app_commands.ContextMenu],
     error: app_commands.AppCommandError,
@@ -486,7 +489,7 @@ async def on_app_command_error_(
             )
             await channel.send(embed=embed2)
 
-            view = FeedbackButton()
+            view = FeedbackButton(bot=bot, gist_url=gisturl)
             if interaction.response.is_done():
                 await interaction.followup.send(
                     "Want to help even more? Click here to submit feedback!", view=view
