@@ -123,7 +123,7 @@ class GithubControlModal(discord.ui.Modal):
 
         for item, question in zip(self.children, self._transform()):
             embed.add_field(name=question["title"], value=str(item), inline=False)
-            none_text = " "
+            none_text = "None"
             issue_body += f"**{question['title']}**\n{str(item) if item else none_text}\n\n"
 
         issue = repo.create_issue(
