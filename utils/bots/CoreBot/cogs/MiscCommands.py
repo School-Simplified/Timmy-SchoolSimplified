@@ -345,7 +345,9 @@ class MiscCMD(commands.Cog):
 
     @app_commands.command(description="Ban a user from a specific server feature.")
     @app_commands.describe(
-        role="What should the user be banned from?"
+        user="The user to service ban",
+        role="What should the user be banned from?",
+        reason="Why is the user being banned?",
     )
     @app_commands.guilds(MAIN_ID.g_main)
     async def miscban(
