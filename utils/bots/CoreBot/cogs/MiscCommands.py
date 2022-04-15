@@ -343,7 +343,7 @@ class MiscCMD(commands.Cog):
         else:
             await ctx.send(masa.mention)
 
-    @app_commands.command()
+    @app_commands.command(description="Ban a user from a specific server feature.")
     @app_commands.describe(
         role="What should the user be banned from?"
     )
