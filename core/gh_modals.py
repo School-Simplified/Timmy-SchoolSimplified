@@ -5,7 +5,7 @@ from typing import Dict, Literal, TYPE_CHECKING, Union, List, Optional
 import discord
 from github import Github
 
-from core.common import TECH_ID
+from core.common import Colors, TECH_ID
 
 QuestionListType = List[Dict[str, Union[bool, str, None]]]
 GithubActionLiteral = Literal[
@@ -105,7 +105,6 @@ class GithubControlModal(discord.ui.Modal):
         }
         return transformer_dict[self._type]
 
-
     async def on_submit(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=True)
         repo = self._gh_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
@@ -157,9 +156,13 @@ class GithubControlModal(discord.ui.Modal):
         )
         issue.add_to_labels(repo.get_label(name="Discord"), repo.get_label(name="question"))
         url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue.number}"
-        await interaction.followup.send(
-            "Your issue has been submitted!\nA developer will reach out soon to respond to your issue."
+        user_embed = discord.Embed(
+            title="Your issue has been submitted!",
+            description="A developer will reach out soon to respond to your issue.\n"
+                        f"You can view your issue [here!]({url})",
+            colour=Colors.green
         )
+        await interaction.followup.send(embed=user_embed)
 
         dev_channel = self.bot.get_channel(TECH_ID.ch_tracebacks)
         embed = discord.Embed(
@@ -202,7 +205,6 @@ class FeedbackButton(discord.ui.View):
             )
         )
 
-
 # class FeedbackModel(discord.ui.Modal, title="Submit Feedback"):
 #     def __init__(self, bot) -> None:
 #         super().__init__()
@@ -242,4 +244,3 @@ class FeedbackButton(discord.ui.View):
 #
 #     async def on_submit(self, interaction: discord.Interaction):
 #         ...
-
