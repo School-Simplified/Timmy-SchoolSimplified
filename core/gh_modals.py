@@ -158,7 +158,8 @@ class GithubControlModal(discord.ui.Modal):
         dev_channel = self.bot.get_channel(TECH_ID.ch_tracebacks)
         embed = discord.Embed(
             title="New Issue",
-            description=f"{interaction.user.mention} has submitted a new issue!\n[Click here to view the issue]({url})",
+            description=f"{interaction.user.mention} has submitted a new issue! `#{issue.number}` "
+                        f"\n[Click here to view the issue]({url})",
             color=discord.Color.brand_red(),
         )
         await dev_channel.send(embed=embed)
