@@ -44,7 +44,7 @@ print("Starting Timmy...")
 
 
 class TimmyCommandTree(app_commands.CommandTree):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot):
         super().__init__(bot)
         self.bot = bot
 
