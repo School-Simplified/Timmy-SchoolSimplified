@@ -90,17 +90,12 @@ class GithubControlModal(discord.ui.Modal):
                     style=discord.TextStyle.paragraph,
                 )
             )
-        super().__init__(
-            timeout=None,
-            title=self._title_transformer()
-        )
-
-    def _title_transformer(self) -> str:
-        transformer_dict: Dict[GithubActionLiteral, str] = {
-            "ISSUE": "Create Issue",
-            "FEEDBACK": "Submit Feedback",
-        }
-        return transformer_dict[self._type]
+            super().__init__(
+                timeout=None,
+                title="Create Issue" if type_ == "ISSUE"
+                else "Submit Feedback" if type_ == "FEEDBACK"
+                else "Error has Occurred!"
+            )
 
     def _transform(self) -> QuestionListType:
         transformer_dict: Dict[GithubActionLiteral, QuestionListType] = {
