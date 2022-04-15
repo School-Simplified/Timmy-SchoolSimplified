@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1800,19 +1800,19 @@
                 ]
               },
               {
-                "id": "CommandLineInspection",
+                "id": "PyComparisonWithNoneInspection",
                 "shortDescription": {
-                  "text": "Incorrect CLI syntax"
+                  "text": "Using equality operators to compare with None"
                 },
                 "fullDescription": {
-                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
-                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
+                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
+                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1834,19 +1834,19 @@
                 ]
               },
               {
-                "id": "PyComparisonWithNoneInspection",
+                "id": "CommandLineInspection",
                 "shortDescription": {
-                  "text": "Using equality operators to compare with None"
+                  "text": "Incorrect CLI syntax"
                 },
                 "fullDescription": {
-                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
-                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
+                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
+                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2344,19 +2344,19 @@
                 ]
               },
               {
-                "id": "PyArgumentEqualDefaultInspection",
+                "id": "CythonUsageBeforeDeclarationInspection",
                 "shortDescription": {
-                  "text": "The function argument is equal to the default parameter value"
+                  "text": "Cython variable is used before its declaration"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
-                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
+                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
+                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2378,19 +2378,19 @@
                 ]
               },
               {
-                "id": "CythonUsageBeforeDeclarationInspection",
+                "id": "PyArgumentEqualDefaultInspection",
                 "shortDescription": {
-                  "text": "Cython variable is used before its declaration"
+                  "text": "The function argument is equal to the default parameter value"
                 },
                 "fullDescription": {
-                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
-                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
+                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2888,40 +2888,6 @@
                 ]
               },
               {
-                "id": "PyTrailingSemicolonInspection",
-                "shortDescription": {
-                  "text": "Prohibited trailing semicolon in a statement"
-                },
-                "fullDescription": {
-                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
-                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "PyRedundantParenthesesInspection",
                 "shortDescription": {
                   "text": "Redundant parentheses"
@@ -2956,13 +2922,13 @@
                 ]
               },
               {
-                "id": "PyOldStyleClassesInspection",
+                "id": "PyTrailingSemicolonInspection",
                 "shortDescription": {
-                  "text": "Old-style class contains new-style class features"
+                  "text": "Prohibited trailing semicolon in a statement"
                 },
                 "fullDescription": {
-                  "text": "Reports occurrences of new-style class features in old-style classes. The inspection highlights '__slots__', '__getattribute__', and 'super()' inside old-style classes.",
-                  "markdown": "Reports occurrences of\n[new-style class features](https://www.python.org/doc/newstyle/)\nin old-style classes. The inspection highlights\n`__slots__`, `__getattribute__`, and `super()`\ninside old-style classes."
+                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
+                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -3003,6 +2969,40 @@
                   "level": "note",
                   "parameters": {
                     "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyOldStyleClassesInspection",
+                "shortDescription": {
+                  "text": "Old-style class contains new-style class features"
+                },
+                "fullDescription": {
+                  "text": "Reports occurrences of new-style class features in old-style classes. The inspection highlights '__slots__', '__getattribute__', and 'super()' inside old-style classes.",
+                  "markdown": "Reports occurrences of\n[new-style class features](https://www.python.org/doc/newstyle/)\nin old-style classes. The inspection highlights\n`__slots__`, `__getattribute__`, and `super()`\ninside old-style classes."
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3636,19 +3636,19 @@
                 ]
               },
               {
-                "id": "PyStubPackagesCompatibilityInspection",
+                "id": "PyProtectedMemberInspection",
                 "shortDescription": {
-                  "text": "Incompatible stub packages"
+                  "text": "Accessing a protected member of a class or a module"
                 },
                 "fullDescription": {
-                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
-                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
+                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
+                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3670,19 +3670,19 @@
                 ]
               },
               {
-                "id": "PyProtectedMemberInspection",
+                "id": "PyStubPackagesCompatibilityInspection",
                 "shortDescription": {
-                  "text": "Accessing a protected member of a class or a module"
+                  "text": "Incompatible stub packages"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
-                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
+                  "text": "Reports stub packages that do not support the version of the corresponding runtime package. A stub package contains type information for some runtime package.",
+                  "markdown": "Reports stub packages that do not support the version of the corresponding runtime package.\n\nA [stub package](https://www.python.org/dev/peps/pep-0561/) contains type information for some runtime package."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -5756,40 +5756,6 @@
                 ]
               },
               {
-                "id": "HtmlUnknownAnchorTarget",
-                "shortDescription": {
-                  "text": "Unresolved fragment in a link"
-                },
-                "fullDescription": {
-                  "text": "Reports an unresolved last part of an URL after the '#' sign.",
-                  "markdown": "Reports an unresolved last part of an URL after the `#` sign."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "UnusedDefine",
                 "shortDescription": {
                   "text": "Unused define"
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "RELAX NG",
                       "index": 11,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "HtmlUnknownAnchorTarget",
+                "shortDescription": {
+                  "text": "Unresolved fragment in a link"
+                },
+                "fullDescription": {
+                  "text": "Reports an unresolved last part of an URL after the '#' sign.",
+                  "markdown": "Reports an unresolved last part of an URL after the `#` sign."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "122f0073ca9edb83593ab82a44e383a76d7bd9a3",
+          "revisionId": "fce5a3a231b54d57ceed2caf3ee3878f7e792a7c",
           "branch": "beta",
           "properties": {
             "lastAuthorName": "pandabear189",
@@ -15513,9 +15513,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 505,
+                  "startLine": 509,
                   "startColumn": 7,
-                  "charOffset": 18338,
+                  "charOffset": 18727,
                   "charLength": 2,
                   "snippet": {
                     "text": "Me"
@@ -15523,9 +15523,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 503,
+                  "startLine": 507,
                   "startColumn": 1,
-                  "charOffset": 18330,
+                  "charOffset": 18719,
                   "charLength": 56,
                   "snippet": {
                     "text": "\n\nclass Me:\n    publicCH = [\n        MAIN_ID.cat_casual,"
@@ -15541,7 +15541,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0c598add1e9eba0421a8e5f4bb05f0eef3d1abf5c6f8c0d79bb94feb202ebf8e"
+            "equalIndicator/v1": "a1375288158a2cc0d0de1511b276a7a171dc0073fdd47522503e919e3d2fb5b9"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19541,9 +19541,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 528,
+                  "startLine": 532,
                   "startColumn": 5,
-                  "charOffset": 19047,
+                  "charOffset": 19436,
                   "charLength": 8,
                   "snippet": {
                     "text": "adminIDs"
@@ -19551,9 +19551,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 526,
+                  "startLine": 530,
                   "startColumn": 1,
-                  "charOffset": 18996,
+                  "charOffset": 19385,
                   "charLength": 163,
                   "snippet": {
                     "text": "        blacklisted_users.append(p.discordID)\n\n    adminIDs = []\n    query = database.Administrators.select().where(\n        database.Administrators.TierLevel == 4"
@@ -19569,7 +19569,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "b3e1ffad725bc0ade21288c3880cf129e6356b19dc02eefc0241f736024367fe"
+            "equalIndicator/v1": "22f9389dced5589c063471cead6d63b4b790c25e1a254d1020405059438e690f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19594,9 +19594,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 578,
+                  "startLine": 582,
                   "startColumn": 5,
-                  "charOffset": 20371,
+                  "charOffset": 20760,
                   "charLength": 12,
                   "snippet": {
                     "text": "initializeDB"
@@ -19604,9 +19604,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 576,
+                  "startLine": 580,
                   "startColumn": 1,
-                  "charOffset": 20365,
+                  "charOffset": 20754,
                   "charLength": 117,
                   "snippet": {
                     "text": "\n\ndef initializeDB(bot):\n    \"\"\"\n    Initializes the database, and creates the needed table data if they don't exist."
@@ -19622,7 +19622,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "4b693b684320039c863e399cf89ea05645e5d1c7b2d7bb597e8e99037e16e939"
+            "equalIndicator/v1": "363666d933a1170761c4dd90059d57509bcf86866efd9f75137b5b23a1bb6c1f"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19647,9 +19647,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 583,
+                  "startLine": 587,
                   "startColumn": 5,
-                  "charOffset": 20539,
+                  "charOffset": 20928,
                   "charLength": 3,
                   "snippet": {
                     "text": "UpQ"
@@ -19657,9 +19657,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 581,
+                  "startLine": 585,
                   "startColumn": 1,
-                  "charOffset": 20483,
+                  "charOffset": 20872,
                   "charLength": 285,
                   "snippet": {
                     "text": "    \"\"\"\n    database.db.connect(reuse_if_open=True)\n    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)"
@@ -19675,7 +19675,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "cbd01933d1eff0c8a1e4f755e79f5e40e6ae48e929eac59ac969341f338d7ee1"
+            "equalIndicator/v1": "a2f1e97b9633c46b8e8f924b96b2e4f2a4d6174074cdb159315c534d92406935"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19700,9 +19700,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 584,
+                  "startLine": 588,
                   "startColumn": 5,
-                  "charOffset": 20605,
+                  "charOffset": 20994,
                   "charLength": 3,
                   "snippet": {
                     "text": "CIQ"
@@ -19710,9 +19710,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 582,
+                  "startLine": 586,
                   "startColumn": 1,
-                  "charOffset": 20491,
+                  "charOffset": 20880,
                   "charLength": 356,
                   "snippet": {
                     "text": "    database.db.connect(reuse_if_open=True)\n    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)"
@@ -19728,7 +19728,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "f98c794bc1f6941094e2f4b2e551aed7f0d49ee88333d329a014601e456bd7f6"
+            "equalIndicator/v1": "2f911eac48e4b00382d91bdb5c8ebd489497e4b1416287f992dec6b1c73faa9b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19753,9 +19753,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 585,
+                  "startLine": 589,
                   "startColumn": 5,
-                  "charOffset": 20691,
+                  "charOffset": 21080,
                   "charLength": 3,
                   "snippet": {
                     "text": "BTE"
@@ -19763,9 +19763,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 583,
+                  "startLine": 587,
                   "startColumn": 1,
-                  "charOffset": 20535,
+                  "charOffset": 20924,
                   "charLength": 313,
                   "snippet": {
                     "text": "    UpQ = database.Uptime.select().where(database.Uptime.id == 1)\n    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)\n"
@@ -19781,7 +19781,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8a7cb3f6198a1ef613eee93d9a5a3bbc6f438e65b41cf609e40b79a3db7d712b"
+            "equalIndicator/v1": "d326b77e5cf675fca7a7709f368482a1f432ffdbf0980d133af3cbacef8a4d97"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -19806,9 +19806,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 586,
+                  "startLine": 590,
                   "startColumn": 5,
-                  "charOffset": 20773,
+                  "charOffset": 21162,
                   "charLength": 2,
                   "snippet": {
                     "text": "SM"
@@ -19816,9 +19816,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 584,
+                  "startLine": 588,
                   "startColumn": 1,
-                  "charOffset": 20601,
+                  "charOffset": 20990,
                   "charLength": 272,
                   "snippet": {
                     "text": "    CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)\n    BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)\n    SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)\n\n    if not UpQ.exists():"
@@ -19834,7 +19834,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0a83ab8d4caadb133a6eb6af163aa956236661f4842c3b5a54fc41184ce75697"
+            "equalIndicator/v1": "509196254278768eb6d8c614696e5be78fd62303b6fd8009ff2dcecead6b8e01"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -44928,9 +44928,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 525,
+                  "startLine": 529,
                   "startColumn": 14,
-                  "charOffset": 18982,
+                  "charOffset": 19371,
                   "charLength": 12,
                   "snippet": {
                     "text": "db_blacklist"
@@ -44938,9 +44938,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 523,
+                  "startLine": 527,
                   "startColumn": 1,
-                  "charOffset": 18882,
+                  "charOffset": 19271,
                   "charLength": 160,
                   "snippet": {
                     "text": "    blacklisted_users = []\n    db_blacklist: collections.Iterable = database.Blacklist\n    for p in db_blacklist:\n        blacklisted_users.append(p.discordID)\n"
@@ -44956,7 +44956,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0c2253015239e5accedefb28b640f163942c49f657b49ba4252dea5805b2f1ae"
+            "equalIndicator/v1": "29d9a1d8f19e766aa00e6b7b8784fb47db4525ef9e183835ded3465db9f382bb"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -45657,7 +45657,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-04-15",
-        "guid": "1a842825-bdbc-4893-b821-c4eb73e6d9a1"
+        "guid": "6cc5e1e4-135d-406d-9c6b-b11858ad23b9"
       },
       "newlineSequences": [
         "\r\n",
@@ -45984,7 +45984,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 22284,
+                    "charLength": 22673,
                     "snippet": {
                       "text": "from __future__ import annotations import collections import json import os import subprocess impor..."
                     },
@@ -46009,7 +46009,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "81ab52b3d9eb01d6024dc1257f43e2da69e2878587bb9922fa85c8dc66acb63b"
+              "equalIndicator/v1": "529ceba1b104e9b497c55affbb2f9ca635940922742f0a50b71beb29e21b59d3"
             },
             "properties": {
               "ideaSeverity": "ERROR"
