@@ -28,13 +28,6 @@ class GithubControlModal(discord.ui.Modal):
             attachment: Optional[discord.Attachment] = None,
             gist_url: Optional[str] = None,
     ):
-        super().__init__(
-            timeout=None,
-            title="Create Issue" if type_ == "ISSUE"
-            else "Submit Feedback" if type_ == "FEEDBACK"
-            else " "
-        )
-
         self.bot = bot
         self._type = type_
         self._feature_type = feature if feature else None
@@ -97,6 +90,17 @@ class GithubControlModal(discord.ui.Modal):
                     style=discord.TextStyle.paragraph,
                 )
             )
+        super().__init__(
+            timeout=None,
+            title=self._title_transformer()
+        )
+
+    def _title_transformer(self) -> str:
+        transformer_dict: Dict[GithubActionLiteral, str] = {
+            "ISSUE": "Create Issue",
+            "FEEDBACK": "Submit Feedback",
+        }
+        return transformer_dict[self._type]
 
     def _transform(self) -> QuestionListType:
         transformer_dict: Dict[GithubActionLiteral, QuestionListType] = {
