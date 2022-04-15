@@ -10,6 +10,8 @@ from discord import app_commands
 import discord
 from discord.app_commands import command, describe, guilds
 from discord.ext import commands, menus
+from discord.utils import maybe_coroutine
+
 from core.common import Others
 
 if TYPE_CHECKING:
@@ -564,6 +566,7 @@ class Help(commands.Cog):
     @staticmethod
     async def _filter_commands(
         _commands: CommandsListType,
+        interaction: discord.Interaction,
         *,
         sort=False,
         key=None,
@@ -596,25 +599,29 @@ class Help(commands.Cog):
             )
         #
         iterator = _commands
-        # iterator = commands if show_hidden else filter(lambda c: not c.hidden, commands)
         #
         # async def predicate(
-        #         cmd: Union[app_commands.Command[Any], commands.Command[Any, Any, Any]]
-        # ) -> bool:
-        #     try:
-        #         return await cmd.can_run()
-        #     except commands.CommandError:
-        #         return False
+        #         c: Union[app_commands.Command, app_commands.Group],
+        #         interaction_: discord.Interaction
+        # ):
+        #     if c.binding is not None:
+        #         try:
+        #             # Type checker does not like runtime attribute retrieval
+        #             check: AppCommandCheck = c.binding.interaction_check  # type: ignore
+        #         except AttributeError:
+        #             pass
+        #         else:
+        #             ret = await maybe_coroutine(check, interaction_)
+        #             if not ret:
+        #                 return False
         #
         # ret = []
-        # for cmd in iterator:
-        #     valid = await predicate(cmd)
+        # for cmd in [x for x in iterator if isinstance(x, (app_commands.Command, app_commands.Group))]:
+        #     valid = await predicate(cmd, interaction_=interaction)
         #     if valid:
         #         ret.append(cmd)
         #
-        # if sort:
-        #     ret.sort(key=key)
-        # return ret
+
         # TODO IMPLEMENT CHECKS
 
         return sorted(iterator, key=key) if sort else list(iterator)
@@ -658,6 +665,7 @@ class Help(commands.Cog):
             Set[Any], List[Union[commands.Command, app_commands.Command]]
         ] = await self._filter_commands(
             set(itertools.chain.from_iterable(_tuple_of_iter)),
+            interaction=interaction,
             sort=True,
             key=key,
         )
@@ -682,7 +690,7 @@ class Help(commands.Cog):
     async def _send_cog_help(self, interaction: discord.Interaction, cog: commands.Cog):
         __commands_iter = (cog.get_commands(), cog.__cog_app_commands__)
         __commands = set(itertools.chain.from_iterable(__commands_iter))
-        entries = await self._filter_commands(__commands, sort=True)
+        entries = await self._filter_commands(__commands, interaction=interaction, sort=True)
         menu = HelpMenu(
             GroupHelpPageSource(cog, entries, prefix="/"),
             interaction=interaction,
@@ -724,7 +732,7 @@ class Help(commands.Cog):
             subcommands = group.commands
             if len(subcommands) == 0:
                 return await self._send_command_help(interaction, group)
-            entries = await self._filter_commands(subcommands, sort=True)
+            entries = await self._filter_commands(subcommands, interaction=interaction, sort=True)
             if len(entries) == 0:
                 return await self._send_command_help(interaction, group)
 
@@ -733,7 +741,7 @@ class Help(commands.Cog):
             if len(subcommands) == 0:
                 return await self._send_command_help(interaction, group)
 
-            entries = await self._filter_commands(subcommands, sort=True)
+            entries = await self._filter_commands(subcommands, interaction=interaction,sort=True)
             if len(entries) == 0:
                 return await self._send_command_help(interaction, group)
 
