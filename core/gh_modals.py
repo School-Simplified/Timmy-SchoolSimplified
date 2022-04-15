@@ -28,7 +28,12 @@ class GithubControlModal(discord.ui.Modal):
             attachment: Optional[discord.Attachment] = None,
             gist_url: Optional[str] = None,
     ):
-        super().__init__(timeout=None)
+        super().__init__(
+            timeout=None,
+            title="Create Issue" if type_ == "ISSUE"
+            else "Submit Feedback" if type_ == "FEEDBACK"
+            else " "
+        )
 
         self.bot = bot
         self._type = type_
@@ -36,7 +41,6 @@ class GithubControlModal(discord.ui.Modal):
         self._attachment = attachment.url if attachment else None
         self._gist_url = gist_url if gist_url else None
         self._gh_client = github_client
-        self.title = self._title_from_action()
         self.issue_list: QuestionListType = [
             {
                 "title": "Issue Title",
@@ -101,12 +105,6 @@ class GithubControlModal(discord.ui.Modal):
         }
         return transformer_dict[self._type]
 
-    def _title_from_action(self) -> str:
-        transformer_dict: Dict[GithubActionLiteral, str] = {
-            "ISSUE": "Create Issue",
-            "FEEDBACK": "Submit Feedback",
-        }
-        return transformer_dict[self._type]
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=True)
