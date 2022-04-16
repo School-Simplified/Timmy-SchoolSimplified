@@ -599,38 +599,7 @@ class Help(commands.Cog):
             )
         #
         iterator = _commands
-        ctx: commands.Context[Timmy] = await self.bot.get_context(interaction.message)
-
-        async def predicate(
-                c: Union[app_commands.Command, app_commands.Group],
-                interaction_: discord.Interaction
-        ):
-            if c.binding is not None:
-                try:
-                    # Type checker does not like runtime attribute retrieval
-                    check: AppCommandCheck = c.binding.interaction_check  # type: ignore
-                except AttributeError:
-                    pass
-                else:
-                    ret = await maybe_coroutine(check, interaction_)
-                    if not ret:
-                        return False
-
-        ret = []
-        for cmd in iterator:
-            if isinstance(cmd, (app_commands.Group, app_commands.Command)):
-                valid = await predicate(cmd, interaction_=interaction)
-                if valid:
-                    ret.append(cmd)
-            elif isinstance(cmd, (commands.Command, commands.Group)):
-                valid = await cmd.can_run(ctx)
-                if valid:
-                    ret.append(cmd)
-
-        if sort:
-            ret.sort(key=key)
-        return ret
-
+        return sorted(iterator, key=key) if sort else list(iterator)
 
     @staticmethod
     def get_command_signature(_command: Union[app_commands.Command, commands.Command]):
