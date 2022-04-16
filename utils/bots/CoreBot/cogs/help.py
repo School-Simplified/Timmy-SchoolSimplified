@@ -599,7 +599,7 @@ class Help(commands.Cog):
             )
         #
         iterator = _commands
-        ctx: commands.Context[Timmy] = await self.bot.get_context(interaction)
+        ctx: commands.Context[Timmy] = await self.bot.get_context(interaction.message)
 
         async def predicate(
                 c: Union[app_commands.Command, app_commands.Group],
