@@ -62,7 +62,7 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
         )
         embed.add_field(name="Approval", value=self.approvalTI.value, inline=False)
         embed.add_field(
-            name="Anything else?", value=self.anythingElseTI.value, inline=False
+            name="Anything else?", value=f"E: {self.anythingElseTI.value}", inline=False
         )
         embed.set_footer(text="Bot Developer Commission")
 
