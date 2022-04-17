@@ -761,10 +761,9 @@ class Help(commands.Cog):
             self.bot.tree.get_command(
                 _command,
                 guild=interaction.guild,
-                type=discord.AppCommandType.chat_input,
             ),
             self.bot.tree.get_command(
-                _command, guild=None, type=discord.AppCommandType.chat_input
+                _command, guild=None
             ),
         )[0]
 
