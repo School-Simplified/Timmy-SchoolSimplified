@@ -563,8 +563,8 @@ class Help(commands.Cog):
     def __init__(self, bot: Timmy):
         self.bot = bot
 
-    @staticmethod
     async def _filter_commands(
+        self,
         _commands: CommandsListType,
         interaction: discord.Interaction,
         *,
@@ -599,31 +599,6 @@ class Help(commands.Cog):
             )
         #
         iterator = _commands
-        #
-        # async def predicate(
-        #         c: Union[app_commands.Command, app_commands.Group],
-        #         interaction_: discord.Interaction
-        # ):
-        #     if c.binding is not None:
-        #         try:
-        #             # Type checker does not like runtime attribute retrieval
-        #             check: AppCommandCheck = c.binding.interaction_check  # type: ignore
-        #         except AttributeError:
-        #             pass
-        #         else:
-        #             ret = await maybe_coroutine(check, interaction_)
-        #             if not ret:
-        #                 return False
-        #
-        # ret = []
-        # for cmd in [x for x in iterator if isinstance(x, (app_commands.Command, app_commands.Group))]:
-        #     valid = await predicate(cmd, interaction_=interaction)
-        #     if valid:
-        #         ret.append(cmd)
-        #
-
-        # TODO IMPLEMENT CHECKS
-
         return sorted(iterator, key=key) if sort else list(iterator)
 
     @staticmethod
@@ -664,7 +639,7 @@ class Help(commands.Cog):
         entries: Union[
             Set[Any], List[Union[commands.Command, app_commands.Command]]
         ] = await self._filter_commands(
-            set(itertools.chain.from_iterable(_tuple_of_iter)),
+            _commands=set(itertools.chain.from_iterable(_tuple_of_iter)),
             interaction=interaction,
             sort=True,
             key=key,
@@ -718,7 +693,7 @@ class Help(commands.Cog):
         if isinstance(_command, commands.Command):
             self.reg_common_command_formatting(embed, _command)
 
-        if isinstance(_command, app_commands.Command):
+        elif isinstance(_command, app_commands.Command):
             self._common_command_formatting(embed, _command)
 
         await interaction.response.send_message(embed=embed)
@@ -786,10 +761,9 @@ class Help(commands.Cog):
             self.bot.tree.get_command(
                 _command,
                 guild=interaction.guild,
-                type=discord.AppCommandType.chat_input,
             ),
             self.bot.tree.get_command(
-                _command, guild=None, type=discord.AppCommandType.chat_input
+                _command, guild=None
             ),
         )[0]
 
