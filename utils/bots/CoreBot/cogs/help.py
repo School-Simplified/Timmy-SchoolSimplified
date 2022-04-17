@@ -693,7 +693,7 @@ class Help(commands.Cog):
         if isinstance(_command, commands.Command):
             self.reg_common_command_formatting(embed, _command)
 
-        if isinstance(_command, app_commands.Command):
+        elif isinstance(_command, app_commands.Command):
             self._common_command_formatting(embed, _command)
 
         await interaction.response.send_message(embed=embed)
