@@ -378,7 +378,6 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
 async def on_app_command_error_(
     bot: commands.Bot,
     interaction: discord.Interaction,
-    command: Union[app_commands.Command, app_commands.ContextMenu],
     error: app_commands.AppCommandError,
 ):
     tb = error.__traceback__
