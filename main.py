@@ -16,6 +16,7 @@ from typing import Union
 import discord
 from alive_progress import alive_bar
 from discord import app_commands
+from discord.app_commands import AppCommandError
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
@@ -58,11 +59,7 @@ class TimmyCommandTree(app_commands.CommandTree):
             return False
         return True
 
-    async def on_error(
-        self,
-        interaction: discord.Interaction,
-        error: app_commands.AppCommandError,
-    ):
+    async def on_error(self, interaction: discord.Interaction, error: AppCommandError):
         return await on_app_command_error_(self.bot, interaction, error)
 
 

@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Union
 
 import discord
 from discord import app_commands
+from discord.app_commands import AppCommandError
 from discord.ext import commands
 import sentry_sdk
 import requests
@@ -375,11 +376,7 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
     raise error
 
 
-async def on_app_command_error_(
-    bot: commands.Bot,
-    interaction: discord.Interaction,
-    error: app_commands.AppCommandError,
-):
+async def on_app_command_error_(bot: commands.Bot, interaction: discord.Interaction, error: AppCommandError):
     tb = error.__traceback__
     etype = type(error)
     exception = traceback.format_exception(etype, error, tb, chain=True)
