@@ -13,7 +13,7 @@ class Webserver(commands.Cog):
 
     @app.route('/')
     async def index(self):
-        return 'https://timmy.schoolsimplified.org'
+        return 500
 
 async def setup(bot):
     await app.run(debug=False, port=80, host='0.0.0.0')

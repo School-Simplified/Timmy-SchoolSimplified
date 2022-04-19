@@ -7,7 +7,7 @@ import pytz
 
 import discord
 from core import database
-from core.common import MAIN_ID, TUT_ID, Others, Emoji
+from core.common import MAIN_ID, TUT_ID, Others, Emoji, PS_ID
 from discord.app_commands import command, describe, guilds
 from discord.ext import commands
 
@@ -37,7 +37,7 @@ class TutorBotStaffCMD(commands.Cog):
         return Emoji.timmyTutoring
 
     @command(name="view")
-    @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
+    @guilds(MAIN_ID.g_main, TUT_ID.g_tut, PS_ID.g_ps)
     async def view(self, interaction: discord.Interaction, session_id: str = None):
         if session_id is None:
             query: database.TutorBot_Sessions = (
@@ -131,7 +131,7 @@ class TutorBotStaffCMD(commands.Cog):
         name="mview",
         description="View someone else's tutor sessions",
     )
-    @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
+    @guilds(MAIN_ID.g_main, TUT_ID.g_tut, PS_ID.g_ps)
     # @permissions.has_role("Tutoring Director")
     async def mview(self, interaction: discord.Interaction, user: discord.User):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
@@ -321,7 +321,7 @@ class TutorBotStaffCMD(commands.Cog):
         name="schedule",
         description="Create a Tutor Session",
     )
-    @guilds(TUT_ID.g_tut)
+    @guilds(TUT_ID.g_tut, PS_ID.g_ps)
     @describe(
         date="Enter a date in MM/DD format. EX: 02/02",
         time="Enter a time in HH:MM format in EST. EX: 3:00",
@@ -397,7 +397,7 @@ class TutorBotStaffCMD(commands.Cog):
         name="skip",
         description="Skip a tutoring session",
     )
-    @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
+    @guilds(MAIN_ID.g_main, TUT_ID.g_tut, PS_ID.g_ps)
     async def skip(self, interaction: discord.Interaction, id: str):
         query: database.TutorBot_Sessions = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
@@ -435,7 +435,7 @@ class TutorBotStaffCMD(commands.Cog):
             await interaction.response.send_message(embed=embed)
 
     @command(name="remove", description="Remove a tutoring session")
-    @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
+    @guilds(MAIN_ID.g_main, TUT_ID.g_tut, PS_ID.g_ps)
     async def remove(self, interaction: discord.Interaction, id: str):
         query = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.SessionID == id
@@ -475,7 +475,7 @@ class TutorBotStaffCMD(commands.Cog):
         name="clear",
         description="Clear a tutoring session",
     )
-    @guilds(MAIN_ID.g_main, TUT_ID.g_tut)
+    @guilds(MAIN_ID.g_main, TUT_ID.g_tut, PS_ID.g_ps)
     async def clear(self, interaction: discord.Interaction):
         query = database.TutorBot_Sessions.select().where(
             database.TutorBot_Sessions.TutorID == interaction.user.id

@@ -46,6 +46,7 @@ g = Github(os.getenv("GH_TOKEN"))
 
 
 class ConfigcatClient:
+    PS_ID_CC = configcatclient.create_client(os.getenv("PS_ID_CC"))
     SET_ID_CC = configcatclient.create_client(os.getenv("SET_ID_CC"))
     MAIN_ID_CC = configcatclient.create_client(os.getenv("MAINID_CC"))
     STAFF_ID_CC = configcatclient.create_client(os.getenv("STAFFID_CC"))
@@ -922,6 +923,24 @@ class HR_ID:
 
     # *** Roles ***
     r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+
+class PS_ID:
+    """
+    IDs of the Programming Simplified server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_ps = int(ConfigcatClient.PS_ID_CC.get_value("g_ps", 952287046750310440))
+
+    # *** Roles ***
+    r_pstut = int(ConfigcatClient.PS_ID_CC.get_value("r_pstut", 952287047056511076))
 
 
 class LEADER_ID:
