@@ -337,8 +337,8 @@ class TutorVCCMD(commands.Cog):
                 channel: discord.VoiceChannel = self.bot.get_channel(
                     int(query.ChannelID)
                 )
-                GameLink = str(await channel.create_activity_invite(880218394199220334))
-                await ctx.send(f"**Click the link to get started!**\n{GameLink}")
+                gamelink = await channel.create_invite(target_application_id=880218394199220334)
+                await ctx.send(f"**Click the link to get started!**\n{gamelink.url}")
 
             else:
                 embed = discord.Embed(
@@ -1403,7 +1403,7 @@ class TutorVCCMD(commands.Cog):
                 )
                 return await ctx.send(embed=embed)
 
-            if member.voice.channel.category_id in self.categoryID:
+            elif member.voice.channel.category_id in self.categoryID:
                 query = database.VCChannelInfo.select().where(
                     (database.VCChannelInfo.authorID == ctx.author.id)
                     & (database.VCChannelInfo.ChannelID == voice_state.channel.id)
@@ -1433,6 +1433,12 @@ class TutorVCCMD(commands.Cog):
                                 )
 
                             elif ctx.guild.id == STAFF_ID.g_staff:
+                                await member.voice.channel.edit(user_limit=voiceLIMIT)
+                                return await ctx.send(
+                                    f"{Emoji.confirm} Successfully modified voice limit!"
+                                )
+
+                            else:
                                 await member.voice.channel.edit(user_limit=voiceLIMIT)
                                 return await ctx.send(
                                     f"{Emoji.confirm} Successfully modified voice limit!"
@@ -1485,6 +1491,7 @@ class TutorVCCMD(commands.Cog):
                     "Please execute the command under a channel you own!",
                     color=discord.Colour.red(),
                 )
+                await ctx.send(embed=embed)
 
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)

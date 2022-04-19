@@ -556,7 +556,7 @@ class TicketBT(discord.ui.Button):
                     # "Board Member",
                     # "Senior Executive",
                     # "Executive",
-                    "Head Moderator",
+                    # "Head Moderator",
                     "Moderator",
                     "Lead Helper",
                     "Chat Helper",
@@ -567,41 +567,42 @@ class TicketBT(discord.ui.Button):
                     RoleOBJ = discord.utils.get(
                         interaction.message.guild.roles, name=role
                     )
-                    await channel.set_permissions(
-                        RoleOBJ,
-                        read_messages=True,
-                        send_messages=True,
-                        manage_messages=True,
-                        reason="Ticket Perms",
-                    )
-                    RoleOBJ = discord.utils.get(guild.roles, name=role)
-                    if (
-                        not (
-                            RoleOBJ.id == MAIN_ID.r_chatHelper
-                            or RoleOBJ.id == MAIN_ID.r_leadHelper
-                        )
-                        and not channel.category.id == MAIN_ID.cat_essayTicket
-                    ):
-                        if RoleOBJ.id == MAIN_ID.r_essayReviser:
-                            if (
-                                channel.category.id == MAIN_ID.cat_essayTicket
-                                or channel.category.id == MAIN_ID.cat_englishTicket
-                            ):
-                                await channel.set_permissions(
-                                    RoleOBJ,
-                                    read_messages=True,
-                                    send_messages=True,
-                                    reason="Ticket Perms",
-                                )
-                            else:
-                                continue
-                    else:
+                    if RoleOBJ is not None:
                         await channel.set_permissions(
                             RoleOBJ,
                             read_messages=True,
                             send_messages=True,
+                            manage_messages=True,
                             reason="Ticket Perms",
                         )
+                        RoleOBJ = discord.utils.get(guild.roles, name=role)
+                        if (
+                            not (
+                                RoleOBJ.id == MAIN_ID.r_chatHelper
+                                or RoleOBJ.id == MAIN_ID.r_leadHelper
+                            )
+                            and not channel.category.id == MAIN_ID.cat_essayTicket
+                        ):
+                            if RoleOBJ.id == MAIN_ID.r_essayReviser:
+                                if (
+                                    channel.category.id == MAIN_ID.cat_essayTicket
+                                    or channel.category.id == MAIN_ID.cat_englishTicket
+                                ):
+                                    await channel.set_permissions(
+                                        RoleOBJ,
+                                        read_messages=True,
+                                        send_messages=True,
+                                        reason="Ticket Perms",
+                                    )
+                                else:
+                                    continue
+                        else:
+                            await channel.set_permissions(
+                                RoleOBJ,
+                                read_messages=True,
+                                send_messages=True,
+                                reason="Ticket Perms",
+                            )
 
                 if channel.category_id in self.EssayCategory:
                     roles = ["Essay Reviser"]
@@ -810,18 +811,12 @@ class DropdownTickets(commands.Cog):
                 )
             )
             try:
-                await interaction.followup.send(
+                await interaction.response.send_message(
                     f"{author.mention}\n", embed=embed, view=ButtonViews
                 )
-            except:
-                try:
-                    await interaction.response.send_message(
-                        f"{author.mention}\n", embed=embed, view=ButtonViews
-                    )
-                except:
-                    await channel.send(
-                        f"{author.mention}\n", embed=embed, view=ButtonViews
-                    )
+            except Exception:
+                await interaction.followup.send(f"{author.mention}\n", embed=embed, view=ButtonViews)
+
 
         elif InteractionResponse["custom_id"] == "ch_lock_CONFIRM":
             channel = interaction.message.channel
@@ -836,9 +831,12 @@ class DropdownTickets(commands.Cog):
             try:
                 TicketOwner = await guild.fetch_member(query.authorID)
             except discord.NotFound:
-                await channel.send(
-                    f"{author.mention} The ticket owner has left the server."
-                )
+                try:
+                    await interaction.response.send_message(
+                        f"{author.mention} The ticket owner has left the server."
+                    )
+                except Exception:
+                    await interaction.followup.send(f"{author.mention} The ticket owner has left the server.")
             else:
                 await channel.set_permissions(
                     TicketOwner, read_messages=False, reason="Ticket Perms Close(User)"
@@ -884,15 +882,22 @@ class DropdownTickets(commands.Cog):
                     emoji="❌",
                 )
             )
-
-            await channel.send(author.mention, embed=embed, view=ButtonViews2)
+            try:
+                await interaction.response.send_message(
+                    author.mention, embed=embed, view=ButtonViews2
+                )
+            except Exception:
+                await interaction.followup.send(author.mention, embed=embed, view=ButtonViews2)
 
         elif InteractionResponse["custom_id"] == "ch_lock_CANCEL":
             channel = interaction.message.channel
             author = interaction.user
-            await interaction.channel.send(
-                f"{author.mention} Alright, canceling request.", delete_after=5.0
-            )
+            try:
+                await interaction.response.send_message(
+                    f"{author.mention} Alright, canceling request.", delete_after=5.0
+                )
+            except Exception:
+                await interaction.followup.send(f"{author.mention} Alright, canceling request.", delete_after=5.0)
             await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_C":
@@ -904,7 +909,7 @@ class DropdownTickets(commands.Cog):
                     f"{author.mention} Alright, canceling request.", delete_after=5.0
                 )
             except Exception:
-                await interaction.channel.send(
+                await interaction.followup.send(
                     f"{author.mention} Alright, canceling request.", delete_after=5.0
                 )
             await interaction.message.delete()
@@ -924,9 +929,14 @@ class DropdownTickets(commands.Cog):
             try:
                 TicketOwner = await guild.fetch_member(query.authorID)
             except discord.NotFound:
-                await channel.send(
-                    f"{author.mention} Sorry, but the ticket owner has left the server."
-                )
+                try:
+                    await interaction.response.send_message(
+                        f"{author.mention} Sorry, but the ticket owner has left the server."
+                    )
+                except Exception:
+                    await interaction.followup.send(
+                        f"{author.mention} Sorry, but the ticket owner has left the server."
+                    )
                 return
             else:
                 await channel.set_permissions(
@@ -935,9 +945,14 @@ class DropdownTickets(commands.Cog):
                     send_messages=True,
                     reason="Ticket Perms Re-Open (User)",
                 )
-                await channel.send(
-                    f"{author.mention} Alright, the ticket has been re-opened."
-                )
+                try:
+                    await interaction.response.send_message(
+                        f"{author.mention} Alright, the ticket has been re-opened."
+                    )
+                except Exception:
+                    await interaction.followup.send(
+                        f"{author.mention} Alright, the ticket has been re-opened."
+                    )
                 await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":

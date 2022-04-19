@@ -1,6 +1,5 @@
 import collections
 import os
-import sys
 from datetime import datetime
 from distutils.util import strtobool
 
@@ -710,6 +709,19 @@ class StudyVCLeaderboard(BaseModel):
     xp = BigIntegerField(default=0)
     totalXP = BigIntegerField(default=0)
 
+class AuthorizedGuilds(BaseModel):
+    """
+    #AuthorizedGuilds
+
+    `id`: AutoField()
+    Database Entry ID
+
+    `guildID`: BigIntegerField()
+    Guild ID of the guild.
+    """
+
+    id = AutoField()
+    guildID = BigIntegerField()
 
 app = Flask(__name__)
 
@@ -758,6 +770,7 @@ tables = {
     "StudyVCDB": StudyVCDB,
     "StudyVCLeaderboard": StudyVCLeaderboard,
     "ResponseSpamBlacklist": ResponseSpamBlacklist,
+    "AuthorizedGuilds": AuthorizedGuilds
 }
 
 iter_table(tables)

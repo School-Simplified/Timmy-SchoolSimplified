@@ -18,7 +18,6 @@ import requests
 from core import database
 from core.common import (
     bcolors,
-    FeedbackButton,
     GSuiteVerify,
     Colors,
     LockButton,
@@ -28,9 +27,13 @@ from core.common import (
     CheckDB_CC,
     Emoji,
 )
+from core.gh_modals import FeedbackButton
 from utils.events.TicketDropdown import TicketButton
 from utils.bots.CoreBot.cogs.techCommissions import CommissionTechButton
 from pathlib import Path
+
+if TYPE_CHECKING:
+    from main import Timmy
 
 
 class VerifyButton(discord.ui.View):
@@ -84,7 +87,7 @@ async def before_invoke_(ctx: commands.Context):
         )
 
 
-async def on_ready_(bot: commands.Bot):
+async def on_ready_(bot: Timmy):
     now = datetime.now()
     query: database.CheckInformation = (
         database.CheckInformation.select()
@@ -150,7 +153,7 @@ async def on_ready_(bot: commands.Bot):
     )
 
 
-async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exception):
+async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception):
     tb = error.__traceback__
     etype = type(error)
     exception = traceback.format_exception(etype, error, tb, chain=True)
@@ -329,15 +332,18 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
 
             if ctx.author.id not in permitlist:
                 embed = discord.Embed(
-                    title="Traceback Detected!",
-                    description="Timmy here has ran into an error!\nPlease check what you sent and/or check out "
-                    "the "
-                    "help command!",
+                    title="Error Detected!",
+                    description="Seems like I've ran into an unexpected error!",
                     color=Colors.red,
                 )
                 embed.set_thumbnail(url=Others.timmyDog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 await ctx.send(embed=embed)
+
+                view = FeedbackButton(bot=bot, gist_url=gisturl)
+                await ctx.send(
+                    "Want to help even more? Click here to submit feedback!", view=view
+                )
             else:
                 embed = discord.Embed(
                     title="Traceback Detected!",
@@ -365,18 +371,13 @@ async def on_command_error_(bot: commands.Bot, ctx: commands.Context, error: Exc
                 value=f"[Uploaded Traceback to GIST](https://gist.github.com/{ID})",
             )
             await channel.send(embed=embed2)
-
-            view = FeedbackButton()
-            await ctx.send(
-                "Want to help even more? Click here to submit feedback!", view=view
-            )
             error_file.unlink()
 
     raise error
 
 
 async def on_app_command_error_(
-    bot: commands.Bot,
+    bot: Timmy,
     interaction: discord.Interaction,
     command: Union[app_commands.Command, app_commands.ContextMenu],
     error: app_commands.AppCommandError,
@@ -447,17 +448,21 @@ async def on_app_command_error_(
 
             if interaction.user.id not in permitlist:
                 embed = discord.Embed(
-                    title="Traceback Detected!",
-                    description="Timmy here has ran into an error!\nPlease check what you sent and/or check out "
-                    "the "
-                    "help command!",
-                    color=Colors.red,
+                    title="Error Detected!",
+                    description="Seems like I've ran into an unexpected error!",
+                    color=discord.Color.brand_red(),
+                )
+                embed.add_field(
+                    name="Error Message",
+                    value="I've contacted the IT Department and they have been notified, meanwhile, please double "
+                          "check the command you've sent for any issues.\n "
+                          "Consult the help command for more information."
                 )
                 embed.set_thumbnail(url=Others.timmyDog_png)
-                embed.set_footer(text=f"Error: {str(error)}")
+                embed.set_footer(text="Submit a bug report or feedback below!")
                 if interaction.response.is_done():
-                    await interaction.followup.send(embed=embed)
-                await interaction.response.send_message(embed=embed)
+                    await interaction.followup.send(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
+                await interaction.response.send_message(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
             else:
                 embed = discord.Embed(
                     title="Traceback Detected!",
@@ -488,7 +493,7 @@ async def on_app_command_error_(
             )
             await channel.send(embed=embed2)
 
-            view = FeedbackButton()
+            view = FeedbackButton(bot=bot, gist_url=gisturl)
             if interaction.response.is_done():
                 await interaction.followup.send(
                     "Want to help even more? Click here to submit feedback!", view=view

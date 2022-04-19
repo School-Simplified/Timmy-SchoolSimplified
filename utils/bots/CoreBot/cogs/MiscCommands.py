@@ -4,7 +4,7 @@ import subprocess
 import sys
 import time
 from datetime import timedelta
-from typing import List
+from typing import List, Literal
 
 import discord
 import psutil
@@ -343,128 +343,56 @@ class MiscCMD(commands.Cog):
         else:
             await ctx.send(masa.mention)
 
-    @commands.command()
-    @commands.has_any_role("Moderator")
-    async def debateban(self, ctx, member: discord.Member, *, reason=None):
-        DebateBan = discord.utils.get(ctx.guild.roles, name="NoDebate")
-
-        if member.id == self.bot.user.id:
-            embed = discord.Embed(
-                title="Unable to Debate Ban this User",
-                description="Why are you trying to ban me?",
-                color=Colors.red,
+    @app_commands.command(description="Ban a user from a specific server feature.")
+    @app_commands.describe(
+        user="The user to service ban",
+        role="What should the user be banned from?",
+        reason="Why is the user being banned?",
+    )
+    @app_commands.guilds(MAIN_ID.g_main)
+    async def miscban(
+        self,
+        interaction: discord.Interaction,
+        user: discord.Member,
+        role: Literal["debate", "count", "ticket"],
+        reason: str
+    ):
+        modRole = discord.utils.get(interaction.user.guild.roles, id=MAIN_ID.r_moderator)
+        if modRole not in interaction.user.roles:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You do not have the required permissions to use this command.",
+                ephemeral=True
             )
-            return await ctx.send(embed=embed)
+        roleName = {
+            "debate": [MAIN_ID.r_debateban, "Debate"],
+            "count": [MAIN_ID.r_countban, "Count"],
+            "ticket": [MAIN_ID.r_ticketban, "Ticket"],
+        }[role]
 
-        if member.id == ctx.author.id:
-            embed = discord.Embed(
-                title="Unable to Debate Ban this User",
-                description="Why are you trying to ban yourself?",
-                color=Colors.red,
+        role = discord.utils.get(interaction.user.guild.roles, id=roleName[0])
+        if role not in user.roles:
+            updateReason = f"{roleName[1]} Ban requested by {interaction.user.name} | Reason: {reason}"
+            await user.add_roles(role, reason=updateReason)
+            await interaction.response.send_message(
+                f"{interaction.user.mention} {user.mention} has been banned from {roleName[1]}."
             )
-            return await ctx.send(embed=embed)
-
-        if DebateBan not in member.roles:
-            try:
-                if reason is None:
-                    await ctx.send("Please specify a reason for this Debate Ban!")
-                    return
-
-                UpdateReason = f"DebateBan requested by {ctx.author.display_name} | Reason: {reason}"
-                await member.add_roles(DebateBan, reason=UpdateReason)
-            except Exception as e:
-                await ctx.send(f"ERROR:\n{e}")
-                print(e)
-            else:
-                embed = discord.Embed(
-                    title="Debate Banned!",
-                    description=f"{Emoji.confirm} {member.display_name} has been debate banned!"
-                    f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=Colors.yellow,
-                )
-                await ctx.send(embed=embed)
-
         else:
-            try:
-                if reason is None:
-                    reason = "No Reason Given"
-
-                UpdateReason = f"Debate UnBan requested by {ctx.author.display_name} | Reason: {reason}"
-                await member.remove_roles(DebateBan, reason=UpdateReason)
-            except Exception as e:
-                await ctx.send(f"ERROR:\n{e}")
-            else:
-                embed = discord.Embed(
-                    title="Debate Unbanned!",
-                    description=f"{Emoji.confirm} {member.display_name} has been debate unbanned!"
-                    f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=Colors.yellow,
-                )
-                await ctx.send(embed=embed)
-
-    @commands.command()
-    @commands.has_any_role("Moderator")
-    async def countban(self, ctx, member: discord.Member, *, reason=None):
-        NoCount = discord.utils.get(ctx.guild.roles, name="NoCounting")
-
-        if member.id == self.bot.user.id:
-            embed = discord.Embed(
-                title="Unable to CountBan this User",
-                description="Why are you trying to CountBan me?",
-                color=Colors.red,
+            updateReason = f"{roleName[1]} Unban requested by {interaction.user.name} | Reason: {reason}"
+            await user.remove_roles(role, reason=updateReason)
+            await interaction.response.send_message(
+                f"{interaction.user.mention} {user.mention} has been unbanned from {roleName[1]}."
             )
-            return await ctx.send(embed=embed)
-
-        if member.id == ctx.author.id:
-            embed = discord.Embed(
-                title="Unable to CountBan this User",
-                description="Why are you trying to CountBan yourself?",
-                color=Colors.red,
-            )
-            return await ctx.send(embed=embed)
-
-        if NoCount not in member.roles:
-            try:
-                if reason is None:
-                    await ctx.send("Please specify a reason for this Count Ban!")
-                    return
-
-                UpdateReason = f"CountBan requested by {ctx.author.display_name} | Reason: {reason}"
-                await member.add_roles(NoCount, reason=UpdateReason)
-            except Exception as e:
-                await ctx.send(f"ERROR:\n{e}")
-                print(e)
-            else:
-                embed = discord.Embed(
-                    title="Count Banned!",
-                    description=f"{Emoji.confirm} {member.display_name} has been count banned!"
-                    f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=Colors.yellow,
-                )
-                await ctx.send(embed=embed)
-
-        else:
-            try:
-                if reason is None:
-                    reason = "No Reason Given"
-
-                UpdateReason = f"Count UnBan requested by {ctx.author.display_name} | Reason: {reason}"
-                await member.remove_roles(NoCount, reason=UpdateReason)
-            except Exception as e:
-                await ctx.send(f"ERROR:\n{e}")
-            else:
-                embed = discord.Embed(
-                    title="Count Unbanned!",
-                    description=f"{Emoji.confirm} {member.display_name} has been count unbanned!"
-                    f"\n{Emoji.barrow} **Reason:** {reason}",
-                    color=Colors.yellow,
-                )
-                await ctx.send(embed=embed)
 
     @commands.command()
     async def join(self, ctx, *, vc: discord.VoiceChannel):
         await vc.connect()
         await ctx.send("ok i did join")
+
+    @commands.command()
+    @is_botAdmin
+    async def error_test(self, ctx):
+        """This command is used to test error handling"""
+        raise discord.DiscordException
 
     @commands.command()
     async def ping(self, ctx):

@@ -20,6 +20,7 @@ import configcatclient
 import discord
 import requests
 import sentry_sdk
+from github import Github
 from botocore.exceptions import ClientError
 from discord import (
     Button,
@@ -41,9 +42,11 @@ load_dotenv()
 
 # module variables
 coroutineType = Callable[[Any, Any], Awaitable[Any]]
+g = Github(os.getenv("GH_TOKEN"))
 
 
 class ConfigcatClient:
+    PS_ID_CC = configcatclient.create_client(os.getenv("PS_ID_CC"))
     SET_ID_CC = configcatclient.create_client(os.getenv("SET_ID_CC"))
     MAIN_ID_CC = configcatclient.create_client(os.getenv("MAINID_CC"))
     STAFF_ID_CC = configcatclient.create_client(os.getenv("STAFFID_CC"))
@@ -401,6 +404,18 @@ class MAIN_ID:
     )
     r_essayReviser = int(
         ConfigcatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369)
+    )
+    r_moderator = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("r_moderator", 951302697263452240)
+    )
+    r_debateban = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("r_debateban", 951302659657334784)
+    )
+    r_ticketban = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("r_ticketban", 951302690011492452)
+    )
+    r_countban = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("r_countban", 951302821079318539)
     )
 
     # *** Messages ***
@@ -908,6 +923,24 @@ class HR_ID:
 
     # *** Roles ***
     r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+
+class PS_ID:
+    """
+    IDs of the Programming Simplified server.
+    NOTE: If you want to add IDs, please use the format as below.
+    Format:
+        g: discord.Guild
+        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
+        cat: discord.CategoryChannel
+        r: discord.Role
+        msg: discord.Message
+    """
+
+    # *** Guilds ***
+    g_ps = int(ConfigcatClient.PS_ID_CC.get_value("g_ps", 952287046750310440))
+
+    # *** Roles ***
+    r_pstut = int(ConfigcatClient.PS_ID_CC.get_value("r_pstut", 952287047056511076))
 
 
 class LEADER_ID:
@@ -1702,75 +1735,6 @@ class TicketTempConfirm(discord.ui.View):
         self.value = False
         self.stop()
 
-
-class FeedbackModel(discord.ui.Modal, title="Submit Feedback"):
-    def __init__(self) -> None:
-        super().__init__()
-        self.add_item(
-            discord.ui.TextInput(
-                label="What did you try to do?",
-                style=discord.TextStyle.long,
-            )
-        )
-        self.add_item(
-            discord.ui.TextInput(
-                label="Describe the steps to reproduce the issue",
-                style=discord.TextStyle.short,
-            )
-        )
-        self.add_item(
-            discord.ui.TextInput(
-                label="What happened?",
-                style=discord.TextStyle.long,
-            )
-        )
-        self.add_item(
-            discord.ui.TextInput(
-                label="What was supposed to happen?",
-                style=discord.TextStyle.long,
-            )
-        )
-        self.add_item(
-            discord.ui.TextInput(
-                label="Anything else?",
-                style=discord.TextStyle.long,
-                required=False,
-            )
-        )
-
-    async def on_submit(self, interaction: discord.Interaction):
-        response = f"User Action: {self.children[0]}\nSteps to reproduce the issue: {self.children[1]}\nWhat happened: {self.children[2]}\nExpected Result: {self.children[3]}\nAnything else: {self.children[4]}"
-        url = f"https://sentry.io/api/0/projects/schoolsimplified/timmy/user-feedback/"
-        headers = {"Authorization": f'Bearer {os.getenv("FDB_SENTRY")}'}
-
-        data = {
-            "event_id": sentry_sdk.last_event_id(),
-            "name": interaction.user.name,
-            "id": interaction.user.id,
-            "comments": response,
-        }
-
-        response = requests.post(url, headers=headers, data=str(data))
-
-
-class FeedbackButton(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=500.0)
-        self.value = None
-
-    @discord.ui.button(
-        label="Submit Feedback",
-        style=discord.ButtonStyle.blurple,
-        custom_id="persistent_view:feedback_button",
-        emoji="📝",
-    )
-    async def feedback_button(
-        self,
-        interaction: discord.Interaction,
-        button: discord.ui.Button,
-    ):
-        modal = FeedbackModel()
-        return await interaction.response.send_modal(modal)
 
 
 # class LeaderboardPages(menus.ListPageSource):

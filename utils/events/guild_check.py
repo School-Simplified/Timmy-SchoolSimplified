@@ -24,7 +24,7 @@ class GuildCheck(commands.Cog):
             )
             embed.set_thumbnail(url=Others.timmyDog_png)
             embed.set_footer(text="Please contact an IT administrator for help.")
-            for channel in guild.channels:
+            for channel in guild.text_channels:
                 if channel.permissions_for(guild.me).send_messages:
                     await channel.send(embed=embed)
                     break

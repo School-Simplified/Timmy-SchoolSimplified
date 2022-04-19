@@ -10,6 +10,8 @@ from discord import app_commands
 import discord
 from discord.app_commands import command, describe, guilds
 from discord.ext import commands, menus
+from discord.utils import maybe_coroutine
+
 from core.common import Others
 
 if TYPE_CHECKING:
@@ -561,9 +563,10 @@ class Help(commands.Cog):
     def __init__(self, bot: Timmy):
         self.bot = bot
 
-    @staticmethod
     async def _filter_commands(
+        self,
         _commands: CommandsListType,
+        interaction: discord.Interaction,
         *,
         sort=False,
         key=None,
@@ -596,27 +599,6 @@ class Help(commands.Cog):
             )
         #
         iterator = _commands
-        # iterator = commands if show_hidden else filter(lambda c: not c.hidden, commands)
-        #
-        # async def predicate(
-        #         cmd: Union[app_commands.Command[Any], commands.Command[Any, Any, Any]]
-        # ) -> bool:
-        #     try:
-        #         return await cmd.can_run()
-        #     except commands.CommandError:
-        #         return False
-        #
-        # ret = []
-        # for cmd in iterator:
-        #     valid = await predicate(cmd)
-        #     if valid:
-        #         ret.append(cmd)
-        #
-        # if sort:
-        #     ret.sort(key=key)
-        # return ret
-        # TODO IMPLEMENT CHECKS
-
         return sorted(iterator, key=key) if sort else list(iterator)
 
     @staticmethod
@@ -657,7 +639,8 @@ class Help(commands.Cog):
         entries: Union[
             Set[Any], List[Union[commands.Command, app_commands.Command]]
         ] = await self._filter_commands(
-            set(itertools.chain.from_iterable(_tuple_of_iter)),
+            _commands=set(itertools.chain.from_iterable(_tuple_of_iter)),
+            interaction=interaction,
             sort=True,
             key=key,
         )
@@ -682,7 +665,7 @@ class Help(commands.Cog):
     async def _send_cog_help(self, interaction: discord.Interaction, cog: commands.Cog):
         __commands_iter = (cog.get_commands(), cog.__cog_app_commands__)
         __commands = set(itertools.chain.from_iterable(__commands_iter))
-        entries = await self._filter_commands(__commands, sort=True)
+        entries = await self._filter_commands(__commands, interaction=interaction, sort=True)
         menu = HelpMenu(
             GroupHelpPageSource(cog, entries, prefix="/"),
             interaction=interaction,
@@ -710,7 +693,7 @@ class Help(commands.Cog):
         if isinstance(_command, commands.Command):
             self.reg_common_command_formatting(embed, _command)
 
-        if isinstance(_command, app_commands.Command):
+        elif isinstance(_command, app_commands.Command):
             self._common_command_formatting(embed, _command)
 
         await interaction.response.send_message(embed=embed)
@@ -724,7 +707,7 @@ class Help(commands.Cog):
             subcommands = group.commands
             if len(subcommands) == 0:
                 return await self._send_command_help(interaction, group)
-            entries = await self._filter_commands(subcommands, sort=True)
+            entries = await self._filter_commands(subcommands, interaction=interaction, sort=True)
             if len(entries) == 0:
                 return await self._send_command_help(interaction, group)
 
@@ -733,7 +716,7 @@ class Help(commands.Cog):
             if len(subcommands) == 0:
                 return await self._send_command_help(interaction, group)
 
-            entries = await self._filter_commands(subcommands, sort=True)
+            entries = await self._filter_commands(subcommands, interaction=interaction,sort=True)
             if len(entries) == 0:
                 return await self._send_command_help(interaction, group)
 
@@ -778,10 +761,9 @@ class Help(commands.Cog):
             self.bot.tree.get_command(
                 _command,
                 guild=interaction.guild,
-                type=discord.AppCommandType.chat_input,
             ),
             self.bot.tree.get_command(
-                _command, guild=None, type=discord.AppCommandType.chat_input
+                _command, guild=None
             ),
         )[0]
 
