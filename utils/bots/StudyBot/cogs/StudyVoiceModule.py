@@ -212,7 +212,6 @@ class StudyVCUpdate(commands.Cog):
     @tasks.loop(seconds=60)  # TODO: change to 60s due of rate limits
     async def StudyVCChecker(self):
         """Loop through each session and check if a user's study session is about to end"""
-        print("loop StudyVCChecker")
 
         StudyVCGuildObj = self.bot.get_guild(self.StudyVCGuild)
         StudyVCConsoleObj = StudyVCGuildObj.get_channel(self.StudyVCConsole)
