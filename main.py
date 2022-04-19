@@ -24,10 +24,14 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
 from core.common import get_extensions
-from core.special_methods import (before_invoke_, initializeDB,
-                                  main_mode_check_, on_app_command_error_,
-                                  on_command_error_, on_ready_)
-
+from core.special_methods import (
+    before_invoke_,
+    initializeDB,
+    main_mode_check_,
+    on_app_command_error_,
+    on_command_error_,
+    on_ready_
+)
 
 load_dotenv()
 faulthandler.enable()
@@ -65,13 +69,16 @@ class Timmy(commands.Bot):
     """
 
     def __init__(self):
-        super().__init__(command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
-                         intents=discord.Intents.all(),
-                         case_insensitive=True,
-                         tree_cls=TimmyCommandTree,
-                         activity=discord.Activity(
-                             type=discord.ActivityType.watching,
-                             name="/help | ssimpl.org/timmy"))
+        super().__init__(
+            command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
+            intents=discord.Intents.all(),
+            case_insensitive=True,
+            tree_cls=TimmyCommandTree,
+            activity=discord.Activity(
+                type=discord.ActivityType.watching,
+                name="/help | ssimpl.org/timmy"
+            )
+        )
         self.help_command = None
 
     async def on_ready(self):
@@ -120,8 +127,8 @@ class Timmy(commands.Bot):
 bot = Timmy()
 
 if os.getenv("DSN_SENTRY") is not None:
-    sentry_logging = LoggingIntegration(level=logging.INFO,         # Capture info and above as breadcrumbs
-                                        event_level=logging.ERROR   # Send errors as events
+    sentry_logging = LoggingIntegration(level=logging.INFO,  # Capture info and above as breadcrumbs
+                                        event_level=logging.ERROR  # Send errors as events
                                         )
 
     # Traceback tracking, DO NOT MODIFY THIS

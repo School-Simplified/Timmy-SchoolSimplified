@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 from typing import Literal, TYPE_CHECKING, Optional
 
-
 from core.checks import slash_is_bot_admin_4
 import discord
 from github import Github
@@ -19,9 +18,9 @@ IssueFeatureLiteral = Literal["Command", "Slash Command", "Dropdown or Button", 
 
 class GithubIssues(Group):
     def __init__(
-        self,
-        bot: Timmy,
-        github_client: Github,
+            self,
+            bot: Timmy,
+            github_client: Github,
     ):
         super().__init__(
             name="issue", description="Open an issue for a bug related to the bot"
@@ -35,10 +34,10 @@ class GithubIssues(Group):
 
     @command(name="open")
     async def __open(
-        self,
-        interaction: discord.Interaction,
-        feature: IssueFeatureLiteral,
-        screenshot: discord.Attachment,
+            self,
+            interaction: discord.Interaction,
+            feature: IssueFeatureLiteral,
+            screenshot: discord.Attachment,
     ):
         await interaction.response.send_modal(
             GithubControlModal(
@@ -53,7 +52,7 @@ class GithubIssues(Group):
     @command(name="close")
     @slash_is_bot_admin_4()
     async def __close(
-        self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None
+            self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None
     ):
         await interaction.response.defer(thinking=True)
         r = self._github_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
