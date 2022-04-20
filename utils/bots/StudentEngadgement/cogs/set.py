@@ -48,6 +48,10 @@ class SetSuggestBlacklist(Group):
         super().__init__(name="set_blacklist", guild_ids=[MAIN_ID.g_main, SET_ID.g_set])
         self.bot = bot
 
+    @property
+    def cog(self) -> commands.Cog:
+        return self.bot.get_cog("Student Engagement")
+
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         return interaction.user.id in [752984497259151370, 747126643587416174]
 
