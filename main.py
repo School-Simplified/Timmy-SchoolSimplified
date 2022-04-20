@@ -13,8 +13,8 @@ import logging
 import os
 from typing import Union
 
-from alive_progress import alive_bar
 import discord
+from alive_progress import alive_bar
 from discord import app_commands
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
@@ -59,9 +59,10 @@ class TimmyCommandTree(app_commands.CommandTree):
     async def on_error(
             self,
             interaction: discord.Interaction,
+            command: Union[app_commands.Command, app_commands.ContextMenu],
             error: app_commands.AppCommandError
     ):
-        await on_app_command_error_(self.bot, interaction, error)
+        await on_app_command_error_(self.bot, interaction, command, error)
 
 
 class Timmy(commands.Bot):
@@ -95,10 +96,12 @@ class Timmy(commands.Bot):
         await main_mode_check_(ctx)
 
     async def setup_hook(self) -> None:
-        with alive_bar(len(get_extensions()),
-                       ctrl_c=False,
-                       bar="bubbles",
-                       title="Initializing Cogs:") as bar:
+        with alive_bar(
+                len(get_extensions()),
+                ctrl_c=False,
+                bar="bubbles",
+                title="Initializing Cogs:") as bar:
+
             for ext in get_extensions():
                 try:
                     await bot.load_extension(ext)
@@ -128,15 +131,18 @@ class Timmy(commands.Bot):
 bot = Timmy()
 
 if os.getenv("DSN_SENTRY") is not None:
-    sentry_logging = LoggingIntegration(level=logging.INFO,  # Capture info and above as breadcrumbs
-                                        event_level=logging.ERROR  # Send errors as events
-                                        )
+    sentry_logging = LoggingIntegration(
+        level=logging.INFO,         # Capture info and above as breadcrumbs
+        event_level=logging.ERROR   # Send errors as events
+    )
 
     # Traceback tracking, DO NOT MODIFY THIS
-    use_sentry(bot,
-               dsn=os.getenv("DSN_SENTRY"),
-               traces_sample_rate=1.0,
-               integrations=[FlaskIntegration(), sentry_logging])
+    use_sentry(
+        bot,
+        dsn=os.getenv("DSN_SENTRY"),
+        traces_sample_rate=1.0,
+        integrations=[FlaskIntegration(), sentry_logging]
+    )
 
 initializeDB(bot)
 bot.run(os.getenv("TOKEN"))
