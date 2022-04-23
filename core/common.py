@@ -1,5 +1,3 @@
-# TODO: Testing Feedback Modal, Testing TicketLockButton
-
 import asyncio
 import io
 import json
@@ -9,7 +7,6 @@ import re
 import string
 import subprocess
 import sys
-import typing
 from pathlib import Path
 from typing import Any, Awaitable, Callable, List, Tuple, Union, Optional
 from threading import Thread
@@ -20,32 +17,34 @@ import configcatclient
 import discord
 import requests
 import sentry_sdk
-from github import Github
 from botocore.exceptions import ClientError
 from discord import (
     Button,
     ButtonStyle,
     DiscordException,
     SelectOption,
-    ui,
+    ui
 )
 from discord.ext import commands, menus
 from dotenv import load_dotenv
+from github import Github
 from google.cloud import secretmanager
 from google_auth_oauthlib.flow import Flow
 from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
 from oauth2client.service_account import ServiceAccountCredentials
+
 from core import database
+
 
 load_dotenv()
 
-# module variables
+# Module Variables
 coroutineType = Callable[[Any, Any], Awaitable[Any]]
 g = Github(os.getenv("GH_TOKEN"))
 
 
-class ConfigcatClient:
+class ConfigCatClient:
     PS_ID_CC = configcatclient.create_client(os.getenv("PS_ID_CC"))
     SET_ID_CC = configcatclient.create_client(os.getenv("SET_ID_CC"))
     MAIN_ID_CC = configcatclient.create_client(os.getenv("MAINID_CC"))
@@ -59,11 +58,12 @@ class ConfigcatClient:
     LEADER_ID_CC = configcatclient.create_client(os.getenv("LEADERID_CC"))
     CHECK_DB_CC = configcatclient.create_client(os.getenv("CHECKDB_CC"))
     SANDBOX_CONFIG_CC = configcatclient.create_client_with_auto_poll(
-        os.getenv("SANDBOX_CONFIG_CC"), poll_interval_seconds=10
+        os.getenv("SANDBOX_CONFIG_CC"),
+        poll_interval_seconds=10
     )
 
 
-async def rawExport(channel, response, user: discord.User):
+async def raw_export(channel, response, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
 
     if transcript is None:
@@ -72,26 +72,24 @@ async def rawExport(channel, response, user: discord.User):
     embed = discord.Embed(
         title="Channel Transcript",
         description=f"**Channel:** {channel.name}"
-        f"\n**User Invoked:** {user.name}*"
-        f"\nTranscript Attached Below*",
-        color=discord.Colour.green(),
+                    f"\n**User Invoked:** {user.name}*"
+                    f"\nTranscript Attached Below*",
+        color=discord.Colour.green()
     )
-    transcript_file = discord.File(
-        io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html"
-    )
+    transcript_file = discord.File(io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html")
 
     msg: discord.Message = await response.send(embed=embed, file=transcript_file)
     return msg
 
 
 async def paginate_embed(
-    bot: discord.Client,
-    ctx,
-    embed: discord.Embed,
-    population_func,
-    end: int,
-    begin: int = 1,
-    page=1,
+        bot: discord.Client,
+        ctx: commands.Context,
+        embed: discord.Embed,
+        population_func,
+        end: int,
+        begin: int = 1,
+        page=1
 ):
     emotes = ["◀️", "▶️"]
 
@@ -104,13 +102,13 @@ async def paginate_embed(
     else:
         await ctx.send(str(type(embed)))
         return
+
     await message.add_reaction(emotes[0])
     await message.add_reaction(emotes[1])
+
     while True:
         try:
-            reaction, user = await bot.wait_for(
-                "reaction_add", timeout=60, check=check_reaction
-            )
+            reaction, user = await bot.wait_for("reaction_add", timeout=60, check=check_reaction)
             if user == bot.user:
                 continue
             if str(reaction.emoji) == emotes[1] and page < end:
@@ -145,36 +143,25 @@ def get_extensions():
 def load_config(name) -> Tuple[dict, Path]:
     config_file = Path(f"utils/bots/RoleSync/{name}.json")
     config_file.touch(exist_ok=True)
+
     if config_file.read_text() == "":
         config_file.write_text("{}")
+
     with config_file.open("r") as f:
         config = json.load(f)
+
     return config, config_file
 
 
-def prompt_config(msg, key):
-    config, config_file = load_config()
-    if key not in config:
-        config[key] = input(msg)
-        with config_file.open("w+") as f:
-            json.dump(config, f, indent=4)
-
-
-def prompt_config2(msg, key):
-    config, config_file = load_config()
-    config[key] = msg
-    with config_file.open("w+") as f:
-        json.dump(config, f, indent=4)
-
-
 def access_secret(
-    secret_id,
-    google_auth_load_mode=False,
-    type_auth=None,
-    scopes=None,
-    redirect_uri=None,
+        secret_id,
+        google_auth_load_mode=False,
+        type_auth=None,
+        scopes=None,
+        redirect_uri=None
 ):
-    """Access credentials and secrets from Google.
+    """
+    Access credentials and secrets from Google.
 
     Args:
         secret_id (str): The secret ID to access. (Options: doc_t, doc_c, tts_c, tsa_c, svc_c, adm_t)
@@ -191,6 +178,7 @@ def access_secret(
     Returns:
         Credential Object: Returns a credential object that allows you to authenticate with APIs.
     """
+
     if os.path.exists("gsheetsadmin/sstimmy.json"):
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gsheetsadmin/sstimmy.json"
         client = secretmanager.SecretManagerServiceClient()
@@ -213,14 +201,10 @@ def access_secret(
             creds = Credentials.from_authorized_user_file("cred_file.json", scopes)
             os.remove("cred_file.json")
         elif type_auth == 1:
-            creds = Flow.from_client_secrets_file(
-                "cred_file.json", scopes=scopes, redirect_uri=redirect_uri
-            )
+            creds = Flow.from_client_secrets_file("cred_file.json", scopes=scopes, redirect_uri=redirect_uri)
             os.remove("cred_file.json")
         elif type_auth == 2:
-            creds = service_account.Credentials.from_service_account_file(
-                "cred_file.json"
-            )
+            creds = service_account.Credentials.from_service_account_file("cred_file.json")
             os.remove("cred_file.json")
         elif type_auth == 3:
             payload: dict = json.loads(payload)
@@ -233,14 +217,20 @@ def access_secret(
         return creds
 
 
-def S3_upload_file(file_name, bucket, object_name=None):
-    """Upload a file to an S3 bucket
+def S3_upload_file(
+        file_name,
+        bucket,
+        object_name=None
+):
+    """
+    Upload a file to an S3 bucket
 
     :param file_name: File to upload
     :param bucket: Bucket to upload to
     :param object_name: S3 object name. If not specified then file_name is used
     :return: True if file was uploaded, else False
     """
+
     # If S3 object_name was not specified, use file_name
     if object_name is None:
         object_name = os.path.basename(file_name)
@@ -258,6 +248,7 @@ def S3_upload_file(file_name, bucket, object_name=None):
             object_name,
             ExtraArgs={"ContentType": "text/html", "ACL": "public-read"},
         )
+
         # s3_object = s3_client.Object('ch-transcriptlogs', file_name)
         # s3_object.metadata.update({'x-amz-meta-content-type':'text/html'})
         # s3_object.copy_from(CopySource={'Bucket':'ch-transcriptlogs', 'x-amz-meta-content-type':'binary/octet-stream'}, Metadata=s3_object.metadata, MetadataDirective='REPLACE')
@@ -266,10 +257,11 @@ def S3_upload_file(file_name, bucket, object_name=None):
         print(e)
 
 
-class MAIN_ID:
+class MainID:
     """
     IDs of the SS Main server.
     NOTE: If you want to add IDs, please use the format as below.
+
     Format:
         g: discord.Guild
         ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
@@ -279,7 +271,7 @@ class MAIN_ID:
     """
 
     # *** Guilds ***
-    g_main = int(ConfigcatClient.MAIN_ID_CC.get_value("g_main", 763119924385939498))
+    g_main = int(ConfigCatClient.MAIN_ID_CC.get_value("g_main", 763119924385939498))
 
     ch_commands = int(
         ConfigcatClient.MAIN_ID_CC.get_value("ch_commands", 763409002913595412)
@@ -325,126 +317,54 @@ class MAIN_ID:
     )
 
     # *** Categories ***
-    cat_casual = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_casual", 763121170324783146)
-    )
-    cat_community = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_community", 800163651805773824)
-    )
-    cat_lounge = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_lounge", 774847738239385650)
-    )
-    cat_events = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_events", 805299289604620328)
-    )
-    cat_voice = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_voice", 763857608964046899)
-    )
-    cat_scienceTicket = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_scienceticket", 800479815471333406)
-    )
-    cat_fineArtsTicket = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_fineartsticket", 833210452758364210)
-    )
-    cat_mathTicket = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_mathticket", 800472371973980181)
-    )
-    cat_socialStudiesTicket = int(
-        ConfigcatClient.MAIN_ID_CC.get_value(
-            "cat_socialstudiesticket", 800481237608824882
-        )
-    )
-    cat_englishTicket = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_englishticket", 800475854353596469)
-    )
-    cat_essayTicket = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_essayticket", 854945037875806220)
-    )
-    cat_languageTicket = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_languageticket", 800477414361792562)
-    )
-    cat_otherTicket = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_otherticket", 825917349558747166)
-    )
-    cat_privateVC = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("cat_privatevc", 776988961087422515)
-    )
+    cat_casual = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_casual", 763121170324783146))
+    cat_community = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_community", 800163651805773824))
+    cat_lounge = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_lounge", 774847738239385650))
+    cat_events = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_events", 805299289604620328))
+    cat_voice = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_voice", 763857608964046899))
+    cat_science_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_scienceticket", 800479815471333406))
+    cat_fine_arts_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_fineartsticket", 833210452758364210))
+    cat_math_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_mathticket", 800472371973980181))
+    cat_social_studies_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_socialstudiesticket", 800481237608824882))
+    cat_english_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_englishticket", 800475854353596469))
+    cat_essay_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_essayticket", 854945037875806220))
+    cat_language_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_languageticket", 800477414361792562))
+    cat_other_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_otherticket", 825917349558747166))
+    cat_private_vc = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_privatevc", 776988961087422515))
 
     # *** Roles ***
-    r_codingClub = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_codingclub", 883169286665936996)
-    )
-    r_debateClub = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_debateclub", 883170141771272294)
-    )
-    r_musicClub = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_musicclub", 883170072355561483)
-    )
-    r_cookingClub = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_cookingclub", 883162279904960562)
-    )
-    r_chessClub = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_chessclub", 883564455219306526)
-    )
-    r_bookClub = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_bookclub", 883162511560560720)
-    )
-    r_advocacyClub = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_advocacyclub", 883169000866070539)
-    )
-    r_speechClub = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_speechclub", 883170166161149983)
-    )
-    r_clubPresident = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_clubpresident", 883160826180173895)
-    )
-
-    r_chatHelper = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_chathelper", 811416051144458250)
-    )
-    r_leadHelper = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_leadhelper", 810684359765393419)
-    )
-    r_essayReviser = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369)
-    )
-    r_moderator = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_moderator", 951302697263452240)
-    )
-    r_debateban = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_debateban", 951302659657334784)
-    )
-    r_ticketban = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_ticketban", 951302690011492452)
-    )
-    r_countban = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("r_countban", 951302821079318539)
-    )
+    r_coding_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_codingclub", 883169286665936996))
+    r_debate_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_debateclub", 883170141771272294))
+    r_music_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_musicclub", 883170072355561483))
+    r_cooking_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_cookingclub", 883162279904960562))
+    r_chess_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_chessclub", 883564455219306526))
+    r_book_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_bookclub", 883162511560560720))
+    r_advocacy_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_advocacyclub", 883169000866070539))
+    r_speech_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_speechclub", 883170166161149983))
+    r_club_president = int(ConfigCatClient.MAIN_ID_CC.get_value("r_clubpresident", 883160826180173895))
+    r_chat_helper = int(ConfigCatClient.MAIN_ID_CC.get_value("r_chathelper", 811416051144458250))
+    r_lead_helper = int(ConfigCatClient.MAIN_ID_CC.get_value("r_leadhelper", 810684359765393419))
+    r_essay_reviser = int(ConfigCatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369))
+    r_moderator = int(ConfigCatClient.MAIN_ID_CC.get_value("r_moderator", 951302697263452240))
+    r_debate_ban = int(ConfigCatClient.MAIN_ID_CC.get_value("r_debateban", 951302659657334784))
+    r_ticket_ban = int(ConfigCatClient.MAIN_ID_CC.get_value("r_ticketban", 951302690011492452))
+    r_count_ban = int(ConfigCatClient.MAIN_ID_CC.get_value("r_countban", 951302821079318539))
 
     # *** Messages ***
-    msg_math = int(ConfigcatClient.MAIN_ID_CC.get_value("msg_math", 866904767568543744))
-    msg_science = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("msg_science", 866904901174427678)
-    )
-    msg_english = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("msg_english", 866905061182930944)
-    )
-    msg_language = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("msg_language", 866905971519389787)
-    )
-    msg_art = int(ConfigcatClient.MAIN_ID_CC.get_value("msg_art", 866906016602652743))
-    msg_socialStudies = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("msg_socialstudies", 866905205094481951)
-    )
-    msg_computerScience = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("msg_computerscience", 867550791635566623)
-    )
+    msg_math = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_math", 866904767568543744))
+    msg_science = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_science", 866904901174427678))
+    msg_english = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_english", 866905061182930944))
+    msg_language = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_language", 866905971519389787))
+    msg_art = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_art", 866906016602652743))
+    msg_social_studies = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_socialstudies", 866905205094481951))
+    msg_computer_science = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_computerscience", 867550791635566623))
 
 
-class STAFF_ID:
+class StaffID:
     """
     IDs of the SS Staff Community server.
     NOTE: If you want to add IDs, please use the format as below.
+
     Format:
         g: discord.Guild
         ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
@@ -454,159 +374,47 @@ class STAFF_ID:
     """
 
     # *** Guilds ***
-    g_staff = int(ConfigcatClient.STAFF_ID_CC.get_value("g_staff", 891521033700540457))
+    g_staff = int(ConfigCatClient.STAFF_ID_CC.get_value("g_staff", 891521033700540457))
 
     # *** Channels ***
-    ch_verificationLogs = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("ch_verificationlogs", 894241199433580614)
-    )
-    ch_verification = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("ch_verification", 894240578651443232)
-    )
-    ch_console = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("ch_console", 895041227123228703)
-    )
-    ch_startPrivateVC = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("ch_startprivatevc", 895041070956675082)
-    )
-    ch_announcements = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("ch_announcements", 891920066550059028)
-    )
-    ch_leadershipAnnouncements = int(
-        ConfigcatClient.STAFF_ID_CC.get_value(
-            "ch_leadershipannouncements", 910357129972551710
-        )
-    )
+    ch_verification_logs = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_verificationlogs", 894241199433580614))
+    ch_verification = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_verification", 894240578651443232))
+    ch_console = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_console", 895041227123228703))
+    ch_start_private_vc = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_startprivatevc", 895041070956675082))
+    ch_announcements = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_announcements", 891920066550059028))
+    ch_leadership_announcements = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_leadershipannouncements",
+                                                                            910357129972551710))
 
     # *** Categories ***
-    cat_privateVC = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("cat_privatevc", 895041016057446411)
-    )
+    cat_private_vc = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_privatevc", 895041016057446411))
 
     # *** Roles ***
-    r_director = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_director", 891521034333880416)
-    )
-    r_SSDigitalCommittee = int(
-        ConfigcatClient.STAFF_ID_CC.get_value(
-            "r_ssdigitalcommittee", 898772246808637541
-        )
-    )
-    r_chairpersonSSDCommittee = int(
-        ConfigcatClient.STAFF_ID_CC.get_value(
-            "r_chairpersonssdcommittee", 934971902781431869
-        )
-    )
-    r_executiveAssistant = int(
-        ConfigcatClient.STAFF_ID_CC.get_value(
-            "r_executiveassistant", 892535575574372372
-        )
-    )
-    r_chapterPresident = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_chapterpresident", 892532950019735602)
-    )
-    r_organizationPresident = int(
-        ConfigcatClient.STAFF_ID_CC.get_value(
-            "r_organizationpresident", 892532907078475816
-        )
-    )
-    r_vicePresident = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_vicepresident", 891521034371608671)
-    )
-    r_president = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_president", 932861531224428555)
-    )
-    r_editorInChief = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_editorinchief", 910269854592950352)
-    )
-    r_corporateOfficer = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_corporateofficer", 932861485917540402)
-    )
-    r_CHRO = int(ConfigcatClient.STAFF_ID_CC.get_value("r_chro", 892530791005978624))
-    r_CIO = int(ConfigcatClient.STAFF_ID_CC.get_value("r_cio", 892530239996059728))
-    r_CFO = int(ConfigcatClient.STAFF_ID_CC.get_value("r_cfo", 892530080029503608))
-    r_CMO = int(ConfigcatClient.STAFF_ID_CC.get_value("r_cmo", 892529974303686726))
-    r_CAO = int(ConfigcatClient.STAFF_ID_CC.get_value("r_cao", 892530033430790165))
-    r_COO = int(ConfigcatClient.STAFF_ID_CC.get_value("r_coo", 892530902528307271))
-    r_CEOandPresident = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_ceoandpresident", 892529865247580160)
-    )
-    r_boardMember = int(
-        ConfigcatClient.STAFF_ID_CC.get_value("r_boardmember", 891521034371608675)
-    )
-    r_administrativeExecutive = int(
-        ConfigcatClient.STAFF_ID_CC.get_value(
-            "r_administrativeexecutive", 946873101956841473
-        )
-    )
-    r_informationTechnology = int(
-        ConfigcatClient.STAFF_ID_CC.get_value(
-            "r_informationtechnology", 891521034333880410
-        )
-    )
+    r_director = int(ConfigCatClient.STAFF_ID_CC.get_value("r_director", 891521034333880416))
+    r_SS_digital_committee = int(ConfigCatClient.STAFF_ID_CC.get_value("r_ssdigitalcommittee", 898772246808637541))
+    r_chairperson_SSD_committee = int(ConfigCatClient.STAFF_ID_CC.get_value("r_chairpersonssdcommittee",
+                                                                            934971902781431869))
+    r_executive_assistant = int(ConfigCatClient.STAFF_ID_CC.get_value("r_executiveassistant", 892535575574372372))
+    r_chapter_president = int(ConfigCatClient.STAFF_ID_CC.get_value("r_chapterpresident", 892532950019735602))
+    r_organization_president = int(ConfigCatClient.STAFF_ID_CC.get_value("r_organizationpresident",
+                                                                         892532907078475816))
+    r_vice_president = int(ConfigCatClient.STAFF_ID_CC.get_value("r_vicepresident", 891521034371608671))
+    r_president = int(ConfigCatClient.STAFF_ID_CC.get_value("r_president", 932861531224428555))
+    r_editor_in_chief = int(ConfigCatClient.STAFF_ID_CC.get_value("r_editorinchief", 910269854592950352))
+    r_corporate_officer = int(ConfigCatClient.STAFF_ID_CC.get_value("r_corporateofficer", 932861485917540402))
+    r_CHRO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_chro", 892530791005978624))
+    r_CIO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cio", 892530239996059728))
+    r_CFO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cfo", 892530080029503608))
+    r_CMO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cmo", 892529974303686726))
+    r_CAO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cao", 892530033430790165))
+    r_COO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_coo", 892530902528307271))
+    r_CEO_and_president = int(ConfigCatClient.STAFF_ID_CC.get_value("r_ceoandpresident", 892529865247580160))
+    r_board_member = int(ConfigCatClient.STAFF_ID_CC.get_value("r_boardmember", 891521034371608675))
+    r_administrative_executive = int(ConfigCatClient.STAFF_ID_CC.get_value("r_administrativeexecutive",
+                                                                           946873101956841473))
+    r_information_technology = int(ConfigCatClient.STAFF_ID_CC.get_value("r_informationtechnology", 891521034333880410))
 
 
-class DIGITAL_ID:
-    """
-    IDs of the SS Staff Community server.
-    NOTE: If you want to add IDs, please use the format as below.
-    Format:
-        g: discord.Guild
-        ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
-        cat: discord.CategoryChannel
-        r: discord.Role
-        msg: discord.Message
-    """
-
-    # *** Guilds ***
-    g_digital = int(
-        ConfigcatClient.DIGITAL_ID_CC.get_value("g_digital", 778406166735880202)
-    )
-
-    # *** Channels ***
-    ch_verification = int(
-        ConfigcatClient.DIGITAL_ID_CC.get_value("ch_verification", 878681438462050356)
-    )
-    ch_waitingRoom = int(
-        ConfigcatClient.DIGITAL_ID_CC.get_value("ch_waitingroom", 878679747255750696)
-    )
-
-    ch_announcements = int(
-        ConfigcatClient.DIGITAL_ID_CC.get_value("ch_announcements", 898798323828396052)
-    )
-    ch_notesAnnouncements = int(
-        ConfigcatClient.DIGITAL_ID_CC.get_value(
-            "ch_notesannouncements", 934951188149981234
-        )
-    )
-    ch_acadAnnouncements = int(
-        ConfigcatClient.DIGITAL_ID_CC.get_value(
-            "ch_acadannouncements", 863615526440534036
-        )
-    )
-    ch_coAnnouncements = int(
-        ConfigcatClient.DIGITAL_ID_CC.get_value(
-            "ch_coannouncements", 884256534756991017
-        )
-    )
-    ch_clubAnnouncements = int(
-        ConfigcatClient.DIGITAL_ID_CC.get_value(
-            "ch_clubannouncements", 887776723654045696
-        )
-    )
-    ch_mktAnnouncements = int(
-        ConfigcatClient.DIGITAL_ID_CC.get_value(
-            "ch_mktannouncements", 863613857116454912
-        )
-    )
-    ch_techAnnouncements = int(
-        ConfigcatClient.DIGITAL_ID_CC.get_value(
-            "ch_techannouncements", 863615693597835274
-        )
-    )
-
-
-class TECH_ID:
+class TechID:
     """
     IDs of the 'The Department of Information & Technology' server.
     NOTE: If you want to add IDs, please use the format as below.
@@ -619,60 +427,31 @@ class TECH_ID:
     """
 
     # *** Guilds ***
-    g_tech = int(ConfigcatClient.TECH_ID_CC.get_value("g_tech", 805593783684562965))
+    g_tech = int(ConfigCatClient.TECH_ID_CC.get_value("g_tech", 805593783684562965))
 
     # *** Channels ***
-    ch_tracebacks = int(
-        ConfigcatClient.TECH_ID_CC.get_value("ch_tracebacks", 851949397533392936)
-    )
-    ch_commissionLogs = int(
-        ConfigcatClient.TECH_ID_CC.get_value("ch_commissionlogs", 849722616880300061)
-    )
-    ch_ticketLog = int(
-        ConfigcatClient.TECH_ID_CC.get_value("ch_ticketlog", 872915565600182282)
-    )
-    ch_botreq = int(
-        ConfigcatClient.TECH_ID_CC.get_value("ch_botreq", 933181562885914724)
-    )
-    ch_announcements = int(
-        ConfigcatClient.TECH_ID_CC.get_value("ch_announcements", 934109939373314068)
-    )
-    ch_itAnnouncements = int(
-        ConfigcatClient.TECH_ID_CC.get_value("ch_itannouncements", 932066545587327000)
-    )
-    ch_webAnnouncements = int(
-        ConfigcatClient.TECH_ID_CC.get_value("ch_webannouncements", 932487991958577152)
-    )
-    ch_botAnnouncements = int(
-        ConfigcatClient.TECH_ID_CC.get_value("ch_botannouncements", 932725755115368478)
-    )
-    ch_snakePit = int(
-        ConfigcatClient.TECH_ID_CC.get_value("ch_snakepit", 942076483290161203)
-    )
-
-    # *** Categories ***
-    cat_developerComms = int(
-        ConfigcatClient.TECH_ID_CC.get_value("cat_developercomms", 873261268495106119)
-    )
+    ch_tracebacks = int(ConfigCatClient.TECH_ID_CC.get_value("ch_tracebacks", 851949397533392936))
+    ch_commission_logs = int(ConfigCatClient.TECH_ID_CC.get_value("ch_commissionlogs", 849722616880300061))
+    ch_ticket_log = int(ConfigCatClient.TECH_ID_CC.get_value("ch_ticketlog", 872915565600182282))
+    ch_bot_requests = int(ConfigCatClient.TECH_ID_CC.get_value("ch_botreq", 933181562885914724))
+    ch_announcements = int(ConfigCatClient.TECH_ID_CC.get_value("ch_announcements", 934109939373314068))
+    ch_IT_announcements = int(ConfigCatClient.TECH_ID_CC.get_value("ch_itannouncements", 932066545587327000))
+    ch_web_announcements = int(ConfigCatClient.TECH_ID_CC.get_value("ch_webannouncements", 932487991958577152))
+    ch_bot_announcements = int(ConfigCatClient.TECH_ID_CC.get_value("ch_botannouncements", 932725755115368478))
+    ch_snake_pit = int(ConfigCatClient.TECH_ID_CC.get_value("ch_snakepit", 942076483290161203))
 
     # *** Roles ***
-    r_developerManager = int(
-        ConfigcatClient.TECH_ID_CC.get_value("r_developermanager", 805596419066822686)
-    )
-    r_assistantBotDevManager = int(
-        ConfigcatClient.TECH_ID_CC.get_value(
-            "r_assistantbotdevmanager", 816498160880844802
-        )
-    )
-    r_botDeveloper = int(
-        ConfigcatClient.TECH_ID_CC.get_value("r_botdeveloper", 805610985594814475)
-    )
+    r_developer_manager = int(ConfigCatClient.TECH_ID_CC.get_value("r_developermanager", 805596419066822686))
+    r_assistant_bot_dev_manager = int(ConfigCatClient.TECH_ID_CC.get_value("r_assistantbotdevmanager",
+                                                                           816498160880844802))
+    r_bot_developer = int(ConfigCatClient.TECH_ID_CC.get_value("r_botdeveloper", 805610985594814475))
 
 
 class SandboxConfig:
     """
     IDs for the Sandbox Configuration.
     NOTE: If you want to add IDs, please use the format as below.
+
     Format:
         g: discord.Guild
         ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
@@ -681,67 +460,30 @@ class SandboxConfig:
         msg: discord.Message
     """
 
-    mode = str(ConfigcatClient.SANDBOX_CONFIG_CC.get_value("mode", "404"))
+    mode = str(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("mode", "404"))
 
-    cat_sandbox = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("cat_sandbox", 945459539967348787)
-    )
+    # *** Channels ***
+    ch_TV_console = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_console", 404))
+    ch_TV_start_vc = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_startvc", 404))
 
-    # *** TutorVC ***
-    ch_TV_console = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_console", 404)
-    )
-    ch_TV_startVC = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_startvc", 404)
-    )
-
-    # *** Category ***
-    cat_scienceTicket = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_scienceticket", 800479815471333406
-        )
-    )
-    cat_fineArtsTicket = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_fineartsticket", 833210452758364210
-        )
-    )
-    cat_mathTicket = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_mathticket", 800472371973980181
-        )
-    )
-    cat_socialStudiesTicket = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_socialstudiesticket", 800481237608824882
-        )
-    )
-    cat_englishTicket = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_englishticket", 800475854353596469
-        )
-    )
-    cat_essayTicket = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_essayticket", 854945037875806220
-        )
-    )
-    cat_languageTicket = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_languageticket", 800477414361792562
-        )
-    )
-    cat_otherTicket = int(
-        ConfigcatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_otherticket", 825917349558747166
-        )
-    )
+    # *** Categories ***
+    cat_sandbox = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_sandbox", 945459539967348787))
+    cat_science_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_scienceticket", 800479815471333406))
+    cat_fine_arts_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_fineartsticket", 833210452758364210))
+    cat_math_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_mathticket", 800472371973980181))
+    cat_social_studies_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_socialstudiesticket",
+                                                                                800481237608824882))
+    cat_english_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_englishticket", 800475854353596469))
+    cat_essay_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_essayticket", 854945037875806220))
+    cat_language_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_languageticket", 800477414361792562))
+    cat_other_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_otherticket", 825917349558747166))
 
 
-class CH_ID:
+class ChID:
     """
     IDs of the Chat Helper server.
     NOTE: If you want to add IDs, please use the format as below.
+
     Format:
         g: discord.Guild
         ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
@@ -751,17 +493,16 @@ class CH_ID:
     """
 
     # *** Guilds ***
-    g_ch = int(ConfigcatClient.CH_ID_CC.get_value("g_ch", 801974357395636254))
-    cat_essay = int(ConfigcatClient.CH_ID_CC.get_value("cat_essay", 854945037875806220))
-    cat_english = int(
-        ConfigcatClient.CH_ID_CC.get_value("cat_english", 800475854353596469)
-    )
+    g_ch = int(ConfigCatClient.CH_ID_CC.get_value("g_ch", 801974357395636254))
+    cat_essay = int(ConfigCatClient.CH_ID_CC.get_value("cat_essay", 854945037875806220))
+    cat_english = int(ConfigCatClient.CH_ID_CC.get_value("cat_english", 800475854353596469))
 
 
-class MKT_ID:
+class MktID:
     """
     IDs of the SS Marketing Department server.
     NOTE: If you want to add IDs, please use the format as below.
+
     Format:
         g: discord.Guild
         ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
@@ -771,75 +512,36 @@ class MKT_ID:
     """
 
     # *** Guilds ***
-    g_mkt = int(ConfigcatClient.MKT_ID_CC.get_value("g_mkt", 799855854182596618))
+    g_mkt = int(ConfigCatClient.MKT_ID_CC.get_value("g_mkt", 799855854182596618))
 
     # *** Channels ***
-    ch_commands = int(
-        ConfigcatClient.MKT_ID_CC.get_value("ch_commands", 799855856295608345)
-    )
-    ch_commissionTranscripts = int(
-        ConfigcatClient.MKT_ID_CC.get_value(
-            "ch_commissiontranscripts", 820843692385632287
-        )
-    )
-    ch_announcements = int(
-        ConfigcatClient.MKT_ID_CC.get_value("ch_announcements", 799855854244855847)
-    )
-    ch_designAnnouncements = int(
-        ConfigcatClient.MKT_ID_CC.get_value(
-            "ch_designannouncements", 891926914258829323
-        )
-    )
-    ch_mediaAnnouncements = int(
-        ConfigcatClient.MKT_ID_CC.get_value("ch_mediaannouncements", 864050588023259196)
-    )
-    ch_bpAnnouncements = int(
-        ConfigcatClient.MKT_ID_CC.get_value("ch_bpannouncements", 852371717744885760)
-    )
-    ch_eventsAnnouncements = int(
-        ConfigcatClient.MKT_ID_CC.get_value(
-            "ch_eventsannouncements", 820508373791277067
-        )
-    )
-    ch_modAnnouncements = int(
-        ConfigcatClient.MKT_ID_CC.get_value("ch_modannouncements", 820532007620575282)
-    )
+    ch_commands = int(ConfigCatClient.MKT_ID_CC.get_value("ch_commands", 799855856295608345))
+    ch_commission_transcripts = int(ConfigCatClient.MKT_ID_CC.get_value("ch_commissiontranscripts", 820843692385632287))
+    ch_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_announcements", 799855854244855847))
+    ch_design_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_designannouncements", 891926914258829323))
+    ch_media_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_mediaannouncements", 864050588023259196))
+    ch_bp_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_bpannouncements", 852371717744885760))
+    ch_events_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_eventsannouncements", 820508373791277067))
+    ch_mod_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_modannouncements", 820532007620575282))
 
     # *** Categories ***
-    cat_design = int(
-        ConfigcatClient.MKT_ID_CC.get_value("cat_design", 820873176208375838)
-    )
-    cat_media = int(
-        ConfigcatClient.MKT_ID_CC.get_value("cat_media", 882031123541143632)
-    )
-    cat_discord = int(
-        ConfigcatClient.MKT_ID_CC.get_value("cat_discord", 888668259220615198)
-    )
+    cat_design = int(ConfigCatClient.MKT_ID_CC.get_value("cat_design", 820873176208375838))
+    cat_media = int(ConfigCatClient.MKT_ID_CC.get_value("cat_media", 882031123541143632))
+    cat_discord = int(ConfigCatClient.MKT_ID_CC.get_value("cat_discord", 888668259220615198))
 
     # *** Roles ***
-    r_discordManager = int(
-        ConfigcatClient.MKT_ID_CC.get_value("r_discordmanager", 890778255655841833)
-    )
-    r_discordTeam = int(
-        ConfigcatClient.MKT_ID_CC.get_value("r_discordteam", 805276710404489227)
-    )
-    r_designManager = int(
-        ConfigcatClient.MKT_ID_CC.get_value("r_designmanager", 882755765910261760)
-    )
-    r_designTeam = int(
-        ConfigcatClient.MKT_ID_CC.get_value("r_designteam", 864161064526020628)
-    )
-    r_contentCreatorManager = int(
-        ConfigcatClient.MKT_ID_CC.get_value(
-            "r_contentcreatormanager", 864165192148189224
-        )
-    )
+    r_discord_manager = int(ConfigCatClient.MKT_ID_CC.get_value("r_discordmanager", 890778255655841833))
+    r_discord_team = int(ConfigCatClient.MKT_ID_CC.get_value("r_discordteam", 805276710404489227))
+    r_design_manager = int(ConfigCatClient.MKT_ID_CC.get_value("r_designmanager", 882755765910261760))
+    r_design_team = int(ConfigCatClient.MKT_ID_CC.get_value("r_designteam", 864161064526020628))
+    r_content_creator_manager = int(ConfigCatClient.MKT_ID_CC.get_value("r_contentcreatormanager", 864165192148189224))
 
 
-class TUT_ID:
+class TutID:
     """
     IDs of the SS Tutoring Division server.
     NOTE: If you want to add IDs, please use the format as below.
+
     Format:
         g: discord.Guild
         ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
@@ -849,51 +551,27 @@ class TUT_ID:
     """
 
     # *** Guilds ***
-    g_tut = int(ConfigcatClient.TUT_ID_CC.get_value("g_tut", 860897711334621194))
+    g_tut = int(ConfigCatClient.TUT_ID_CC.get_value("g_tut", 860897711334621194))
 
     # *** Channels ***
-    ch_botCommands = int(
-        ConfigcatClient.TUT_ID_CC.get_value("ch_botcommands", 862480236965003275)
-    )
-    ch_hourLogs = int(
-        ConfigcatClient.TUT_ID_CC.get_value("ch_hourlogs", 873326994220265482)
-    )
-    ch_announcements = int(
-        ConfigcatClient.TUT_ID_CC.get_value("ch_announcements", 861711851330994247)
-    )
-    ch_leadershipAnnouncements = int(
-        ConfigcatClient.TUT_ID_CC.get_value(
-            "ch_leadershipannouncements", 861712109757530112
-        )
-    )
-    ch_mathAnnouncements = int(
-        ConfigcatClient.TUT_ID_CC.get_value("ch_mathannouncements", 860929479961739274)
-    )
-    ch_scienceAnnouncements = int(
-        ConfigcatClient.TUT_ID_CC.get_value(
-            "ch_scienceannouncements", 860929498782629948
-        )
-    )
-    ch_englishAnnouncements = int(
-        ConfigcatClient.TUT_ID_CC.get_value(
-            "ch_englishannouncements", 860929517102039050
-        )
-    )
-    ch_ssAnnouncements = int(
-        ConfigcatClient.TUT_ID_CC.get_value("ch_ssannouncements", 860929548639797258)
-    )
-    ch_csAnnouncements = int(
-        ConfigcatClient.TUT_ID_CC.get_value("ch_csannouncements", 860929585355948042)
-    )
-    ch_miscAnnouncements = int(
-        ConfigcatClient.TUT_ID_CC.get_value("ch_miscannouncements", 860929567132221481)
-    )
+    ch_bot_commands = int(ConfigCatClient.TUT_ID_CC.get_value("ch_botcommands", 862480236965003275))
+    ch_hour_logs = int(ConfigCatClient.TUT_ID_CC.get_value("ch_hourlogs", 873326994220265482))
+    ch_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_announcements", 861711851330994247))
+    ch_leadership_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_leadershipannouncements",
+                                                                          861712109757530112))
+    ch_math_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_mathannouncements", 860929479961739274))
+    ch_science_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_scienceannouncements", 860929498782629948))
+    ch_english_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_englishannouncements", 860929517102039050))
+    ch_SS_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_ssannouncements", 860929548639797258))
+    ch_cs_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_csannouncements", 860929585355948042))
+    ch_misc_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_miscannouncements", 860929567132221481))
 
 
-class HR_ID:
+class HRID:
     """
     IDs of the SS HR Department server.
     NOTE: If you want to add IDs, please use the format as below.
+
     Format:
         g: discord.Guild
         ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
@@ -903,34 +581,25 @@ class HR_ID:
     """
 
     # *** Guilds ***
-    g_hr = int(ConfigcatClient.HR_ID_CC.get_value("g_hr", 815753072742891532))
+    g_hr = int(ConfigCatClient.HR_ID_CC.get_value("g_hr", 815753072742891532))
 
     # *** Channels ***
-    ch_announcements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362)
-    )
-    ch_mktAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_mktannouncements", 816733579660754944)
-    )
-    ch_acadAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557)
-    )
-    ch_techAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421)
-    )
-    ch_leadershipAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value(
-            "ch_leadershipannouncements", 819009569979629569
-        )
-    )
+    ch_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362))
+    ch_mkt_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_mktannouncements", 816733579660754944))
+    ch_acad_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557))
+    ch_tech_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
+    ch_leadership_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_leadershipannouncements",
+                                                                         819009569979629569))
 
     # *** Roles ***
-    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+    r_hr_staff = int(ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
 
-class PS_ID:
+
+class PSID:
     """
     IDs of the Programming Simplified server.
     NOTE: If you want to add IDs, please use the format as below.
+
     Format:
         g: discord.Guild
         ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
@@ -940,16 +609,17 @@ class PS_ID:
     """
 
     # *** Guilds ***
-    g_ps = int(ConfigcatClient.PS_ID_CC.get_value("g_ps", 952287046750310440))
+    g_ps = int(ConfigCatClient.PS_ID_CC.get_value("g_ps", 952287046750310440))
 
     # *** Roles ***
-    r_pstut = int(ConfigcatClient.PS_ID_CC.get_value("r_pstut", 952287047056511076))
+    r_ps_tut = int(ConfigCatClient.PS_ID_CC.get_value("r_pstut", 952287047056511076))
 
 
-class LEADER_ID:
+class LeaderID:
     """
     IDs of the Leadership Lounge server.
     NOTE: If you want to add IDs, please use the format as below.
+
     Format:
         g: discord.Guild
         ch: discord.TextChannel, discord.VoiceChannel, discord.StageChannel
@@ -959,100 +629,44 @@ class LEADER_ID:
     """
 
     # *** Guilds ***
-    g_leader = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154)
-    )
+    g_leader = int(ConfigCatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154))
 
     # *** Channels ***
-    ch_staffAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_staffannouncements", 936134263777148949
-        )
-    )
-    ch_envAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_envannouncements", 942572395640782909
-        )
-    )
-    ch_rebrandAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_rebrandannouncements", 946180039630782474
-        )
-    )
-    ch_workonlyAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_workonlyannouncements", 890993285940789299
-        )
-    )
-    ch_financeAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_financeannouncements", 919341240280023060
-        )
-    )
-    ch_mktAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_mktannouncements", 942792208841588837
-        )
-    )
-    ch_ssdAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_ssdannouncements", 947656507162525698
-        )
-    )
-    ch_mainAnnouncements = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "ch_mainannouncements", 936464173687259226
-        )
-    )
-    ch_announcements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362)
-    )
-    ch_acadAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557)
-    )
-    ch_techAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421)
-    )
-    ch_leadershipAnnouncements = int(
-        ConfigcatClient.HR_ID_CC.get_value(
-            "ch_leadershipannouncements", 819009569979629569
-        )
-    )
+    ch_staff_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_staffannouncements", 936134263777148949))
+    ch_env_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_envannouncements", 942572395640782909))
+    ch_rebrand_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_rebrandannouncements",
+                                                                          946180039630782474))
+    ch_workonly_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_workonlyannouncements",
+                                                                           890993285940789299))
+    ch_finance_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_financeannouncements",
+                                                                          919341240280023060))
+    ch_mkt_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_mktannouncements", 942792208841588837))
+    ch_ssd_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_ssdannouncements", 947656507162525698))
+    ch_main_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_mainannouncements", 936464173687259226))
+    ch_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362))
+    ch_acad_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557))
+    ch_tech_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
+    ch_leadership_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_leadershipannouncements",
+                                                                         819009569979629569))
 
     # *** Roles ***
-    r_corporateOfficer = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444)
-    )
-    r_president = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_president", 900940957783056444)
-    )
-    r_vicePresident = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_vicepresident", 888929996175978508)
-    )
-    r_boardMember = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_boardmember", 888929996188549189)
-    )
-    r_director = int(
-        ConfigcatClient.LEADER_ID_CC.get_value("r_director", 892531463482900480)
-    )
-    r_ssDigitalCommittee = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "r_ssdigitalcommittee", 912472488594771968
-        )
-    )
-    r_informationTechnologyManager = int(
-        ConfigcatClient.LEADER_ID_CC.get_value(
-            "r_informationtechnologymanager", 943942441357172758
-        )
-    )
+    r_corporate_officer = int(ConfigCatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444))
+    r_president = int(ConfigCatClient.LEADER_ID_CC.get_value("r_president", 900940957783056444))
+    r_vice_president = int(ConfigCatClient.LEADER_ID_CC.get_value("r_vicepresident", 888929996175978508))
+    r_board_member = int(ConfigCatClient.LEADER_ID_CC.get_value("r_boardmember", 888929996188549189))
+    r_director = int(ConfigCatClient.LEADER_ID_CC.get_value("r_director", 892531463482900480))
+    r_SS_digital_committee = int(ConfigCatClient.LEADER_ID_CC.get_value("r_ssdigitalcommittee", 912472488594771968))
+    r_information_technology_manager = int(ConfigCatClient.LEADER_ID_CC.get_value("r_informationtechnologymanager",
+                                                                                  943942441357172758))
 
     # *** Roles **
-    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+    r_hr_staff = int(ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
 
 
-class SET_ID:
+class SETID:
     """
     IDs of the SSD SET SERVER
+
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
@@ -1063,7 +677,7 @@ class SET_ID:
     """
 
     # *** Guilds ***
-    g_set = int(ConfigcatClient.SET_ID_CC.get_value("g_set", 950799439625355294))
+    g_set = int(ConfigCatClient.SET_ID_CC.get_value("g_set", 950799439625355294))
 
     # *** Channels ***
     ch_suggestions = int(
@@ -1075,11 +689,6 @@ class SET_ID:
     ch_college_acceptance = int(
         ConfigcatClient.SET_ID_CC.get_value("ch_college_acceptance", 955960683785236540)
     )
-    ch_puzzle_guessv2 = int(
-        ConfigcatClient.SET_ID_CC.get_value("ch_puzzle_guessv2", 966857151417028608)
-    )
-
-    # *** Roles ***
     r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
 
 
@@ -1089,47 +698,19 @@ class CheckDB_CC:
     Checks and Safeguards for the Bot.
     """
 
-    MasterMaintenance = int(
-        ConfigcatClient.CHECK_DB_CC.get_value("mastermaintenance", False)
-    )
-    guildNone = int(ConfigcatClient.CHECK_DB_CC.get_value("guildnone", False))
-    externalGuild = int(ConfigcatClient.CHECK_DB_CC.get_value("externalguild", True))
-    ModRoleBypass = int(ConfigcatClient.CHECK_DB_CC.get_value("modrolebypass", True))
-    ruleBypass = int(ConfigcatClient.CHECK_DB_CC.get_value("rulebypass", True))
-    publicCategories = int(
-        ConfigcatClient.CHECK_DB_CC.get_value("publiccategories", False)
-    )
-    elseSituation = int(ConfigcatClient.CHECK_DB_CC.get_value("elsesituation", True))
-    PersistantChange = int(
-        ConfigcatClient.CHECK_DB_CC.get_value("persistantchange", True)
-    )
-
-
-def get_value(
-    class_type: Union[
-        MAIN_ID, STAFF_ID, DIGITAL_ID, TECH_ID, MKT_ID, TUT_ID, HR_ID, LEADER_ID
-    ],
-    value: str,
-) -> int:
-    """
-    Get a value of a ID class within ConfigCat.
-
-    Parameters:
-        class_type: The class of the ID which should be returned
-        value: The variable name (name of the ID)
-    """
-
-    if ConfigcatClient.get_value(value, None) is None:
-        raise ValueError(f"Cannot find {value} within ConfigCat!")
-
-    if value in class_type.ID_DICT:
-        return int(ConfigcatClient.get_value(value, class_type.ID_DICT[value]))
-    else:
-        return int(ConfigcatClient.get_value(value, None))
+    MasterMaintenance = int(ConfigCatClient.CHECK_DB_CC.get_value("mastermaintenance", False))
+    guild_None = int(ConfigCatClient.CHECK_DB_CC.get_value("guildnone", False))
+    external_guild = int(ConfigCatClient.CHECK_DB_CC.get_value("externalguild", True))
+    mod_role_bypass = int(ConfigCatClient.CHECK_DB_CC.get_value("modrolebypass", True))
+    rule_bypass = int(ConfigCatClient.CHECK_DB_CC.get_value("rulebypass", True))
+    public_categories = int(ConfigCatClient.CHECK_DB_CC.get_value("publiccategories", False))
+    else_situation = int(ConfigCatClient.CHECK_DB_CC.get_value("elsesituation", True))
+    persistent_change = int(ConfigCatClient.CHECK_DB_CC.get_value("persistantchange", True))
 
 
 def config_patch(key, value):
-    """Makes a PATCH request to ConfigCat to change a Sandbox Configuration.
+    """
+    Makes a PATCH request to ConfigCat to change a Sandbox Configuration.
     **NOTE:** This only supports changing the Sandbox category, anything else will not work.
 
     Args:
@@ -1142,13 +723,13 @@ def config_patch(key, value):
     url = f"https://api.configcat.com/v1/settings/{key}/value?settingKeyOrId={key}"
     user = os.getenv("CONFIG_CC_USER")
     password = os.getenv("CONFIG_CC_PASSWORD")
-    jsonPayload = [{"op": "replace", "path": "/value", "value": str(value)}]
+    json_payload = [{"op": "replace", "path": "/value", "value": str(value)}]
 
     r = requests.patch(
         url,
         auth=(user, password),
         headers={"X-CONFIGCAT-SDKKEY": os.getenv("SANDBOX_CONFIG_CC")},
-        json=jsonPayload,
+        json=json_payload,
     )
     print(r.status_code)
     return r
@@ -1167,13 +748,13 @@ class Emoji:
     lock = "<:lock:860926195087835137>"
     unlock = "<:unlock:860926246937427989>"
     time = "<:time:860926238737825793>"
-    redissue = "<:issue:860587949263290368>"
+    red_issue = "<:issue:860587949263290368>"
     archive = "<:file:861794167578689547>"
     cycle = "<:cycle:861794132585611324>"
     calender = "<:calendar:861794038739238943>"
-    addgear = "<:add5x:862875088311025675>"
-    minusgear = "<:minusgear:862875088217702421>"
-    invalidchannel = "<:invalidchannel:862875088361619477>"
+    add_gear = "<:add5x:862875088311025675>"
+    minus_gear = "<:minusgear:862875088217702421>"
+    invalid_channel = "<:invalidchannel:862875088361619477>"
     barrow = "<:SS:865715703545069568>"
     person = "<:person:883771751127990333>"
     activity = "<:note:883771751190908989>"
@@ -1190,17 +771,17 @@ class Emoji:
     discordLoad = "<a:Discord:866408537503694869>"
     pythonLogo = "<:python:945410067887435846>"
     javascriptLogo = "<:javascript:945410211752054816>"
-    blobamused = "<:blobamused:895125015719194655>"
-    modshield = "<:modshield:957316876168474644>"
+    blob_amused = "<:blobamused:895125015719194655>"
+    mod_shield = "<:modshield:957316876168474644>"
     loadingGIF = "<a:Loading:904192577094426626>"
     loadingGIF2 = "<a:Loading:905563298089541673>"
-    gsuitelogo = "<:gsuitelogo:932034284724834384>"
-    turtlesmirk = "<:TurtleSmirk:879119619737124914>"
+    gsuite_logo = "<:gsuitelogo:932034284724834384>"
+    turtle_smirk = "<:TurtleSmirk:879119619737124914>"
 
     # SS Emojis
     schoolsimplified = "<:SchoolSimplified:830689765329993807>"
-    ssarrow = "<:SS:865715703545069568>"
-    humanresources = "<:SS_HumanResources:907766589972181043>"
+    ss_arrow = "<:SS:865715703545069568>"
+    human_resources = "<:SS_HumanResources:907766589972181043>"
     timmyBook = "<:timmy_book:933043045493010453>"
     timmyTutoring = "<:tutoring:933043045950164992>"
 
@@ -1230,22 +811,22 @@ class Others:
     Other things to use for the bot. (Images, characters, etc.)
     """
 
-    ssLogo_png = "https://media.discordapp.net/attachments/864060582294585354/878682781352362054/ss_current.png"
+    ss_logo_png = "https://media.discordapp.net/attachments/864060582294585354/878682781352362054/ss_current.png"
     error_png = "https://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-error-icon.png"
     nitro_png = "https://i.imgur.com/w9aiD6F.png"
 
     # *** Timmy Images ***
-    timmyDog_png = "https://cdn.discordapp.com/attachments/875233489727922177/876610305852051456/unknown.png"
-    timmyLaptop_png = "https://i.gyazo.com/5cffb6cd45e5e1ee9b1d015bccbdf9e6.png"
-    timmyHappy_png = "https://i.gyazo.com/a0b221679db0f980504e64535885a5fd.png"
-    timmyBook_png = "https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533"
-    timmyTeacher_png = "https://media.discordapp.net/attachments/875233489727922177/877378910214586368/tutoring.png?width=411&height=532"
-    timmyDonation_png = "timmydonation.png"
-    timmyDonation_path = "./utils/bots/CoreBot/LogFiles/timmydonation.png"
+    timmy_dog_png = "https://cdn.discordapp.com/attachments/875233489727922177/876610305852051456/unknown.png"
+    timmy_laptop_png = "https://i.gyazo.com/5cffb6cd45e5e1ee9b1d015bccbdf9e6.png"
+    timmy_happy_png = "https://i.gyazo.com/a0b221679db0f980504e64535885a5fd.png"
+    timmy_book_png = "https://media.discordapp.net/attachments/875233489727922177/876603875329732618/timmy_book.png?width=411&height=533"
+    timmy_teacher_png = "https://media.discordapp.net/attachments/875233489727922177/877378910214586368/tutoring.png?width=411&height=532"
+    timmy_donation_png = "timmydonation.png"
+    timmy_donation_path = "./utils/bots/CoreBot/LogFiles/timmydonation.png"
 
     space_character = "　"
-    TICKET_INACTIVE_TIME = 1440
-    CHID_DEFAULT = 905217698865225728
+    ticket_inactive_time = 1440
+    CHID_default = 905217698865225728
 
 
 # Game IDs (constants)
@@ -1264,7 +845,6 @@ GameDict = {
     "Youtube Together": 755600276941176913,
     "Word Snacks": 879863976006127627,
 }
-
 
 CHHelperRoles = {
     "Essay": 951302786337890334,
@@ -1330,19 +910,6 @@ deprecatedFiles = [
     "admincred.json",
 ]
 
-
-class bcolors:
-    HEADER = "\033[95m"
-    OKBLUE = "\033[94m"
-    OKCYAN = "\033[96m"
-    OKGREEN = "\033[92m"
-    WARNING = "\033[93m"
-    FAIL = "\033[91m"
-    ENDC = "\033[0m"
-    BOLD = "\033[1m"
-    UNDERLINE = "\033[4m"
-
-
 class EmbeddedActivity:
     awkword = 879863881349087252
     betrayal = 773336526917861400
@@ -1376,7 +943,6 @@ class EmbeddedActivity:
     word_snacks_dev = 879864010126786570
     youtube_together = 755600276941176913
 
-
 class SelectMenuHandler(ui.Select):
     """Adds a SelectMenu to a specific message and returns it's value when option selected.
 
@@ -1388,15 +954,15 @@ class SelectMenuHandler(ui.Select):
 
     def __init__(
         self,
-        options: typing.List[SelectOption],
-        custom_id: typing.Union[str, None] = None,
-        place_holder: typing.Union[str, None] = None,
+        options: List[SelectOption],
+        custom_id: Union[str, None] = None,
+        place_holder: Union[str, None] = None,
         max_values: int = 1,
         min_values: int = 1,
         disabled: bool = False,
-        select_user: typing.Union[discord.Member, discord.User, None] = None,
+        select_user: Union[discord.Member, discord.User, None] = None,
         roles: List[discord.Role] = None,
-        interaction_message: typing.Union[str, None] = None,
+        interaction_message: Union[str, None] = None,
         ephemeral: bool = True,
         coroutine: coroutineType = None,
         view_response=None,
@@ -1426,7 +992,7 @@ class SelectMenuHandler(ui.Select):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
-        self.view_response = None
+        self.view_response = view_response
 
         if self.custom_id_:
             super().__init__(
@@ -1447,9 +1013,9 @@ class SelectMenuHandler(ui.Select):
             )
 
     async def callback(self, interaction: discord.Interaction):
-        if self.select_user in [None, interaction.user] or any(
-            role in interaction.user.roles for role in self.roles
-        ):
+        if self.select_user in [None, interaction.user] or \
+                any(role in interaction.user.roles for role in self.roles):
+
             self.view.value = self.values[0]
             self.view_response = self.values[0]
 
@@ -1482,15 +1048,16 @@ class ButtonHandler(ui.Button):
         self,
         style: ButtonStyle,
         label: str,
-        custom_id: typing.Union[str, None] = None,
-        emoji: typing.Union[str, None] = None,
-        url: typing.Union[str, None] = None,
+        custom_id: Union[str, None] = None,
+        emoji: Union[str, None] = None,
+        url: Union[str, None] = None,
         disabled: bool = False,
-        button_user: typing.Union[discord.Member, discord.User, None] = None,
+        button_user: Union[discord.Member, discord.User, None] = None,
         roles: List[discord.Role] = None,
-        interaction_message: typing.Union[str, None] = None,
+        interaction_message: Union[str, None] = None,
         ephemeral: bool = True,
         coroutine: coroutineType = None,
+        view_response=None
     ):
         """
         Parameters:
@@ -1517,7 +1084,7 @@ class ButtonHandler(ui.Button):
         self.interaction_message_ = interaction_message
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
-        self.view_response = None
+        self.view_response = view_response
 
         if self.custom_id_:
             super().__init__(
@@ -1563,14 +1130,14 @@ class ButtonHandler(ui.Button):
             )
 
 
-def getGuildList(bot: commands.Bot, exemptServer: List[int] = None) -> list:
-    guildList = []
+def get_guild_list(bot: commands.Bot, exempt_server: List[int] = None) -> list:
+    guild_list = []
     for guild in bot.guilds:
-        if guild.id in exemptServer:
+        if guild.id in exempt_server:
             continue
-        guildList.append(guild.id)
+        guild_list.append(guild.id)
 
-    return guildList
+    return guild_list
 
 
 class TechnicalCommissionConfirm(discord.ui.View):
@@ -1590,18 +1157,16 @@ class TechnicalCommissionConfirm(discord.ui.View):
         interaction: discord.Interaction,
         button: discord.ui.Button,
     ):
-        TranscriptLOG = self.bot.get_channel(TECH_ID.ch_ticketLog)
+        transcript_log = self.bot.get_channel(TechID.ch_ticket_log)
         ch = self.bot.get_channel(interaction.channel_id)
 
-        await rawExport(ch, TranscriptLOG, interaction.user)
+        await raw_export(ch, transcript_log, interaction.user)
         await ch.delete()
 
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.message.delete()
-        await interaction.response.send_message(
-            "ok, not removing this channel.", ephemeral=True
-        )
+        await interaction.response.send_message( "ok, not removing this channel.", ephemeral=True)
         self.value = False
         self.stop()
 
@@ -1612,20 +1177,13 @@ class LockButton(discord.ui.View):
         self.value = None
         self.bot = bot
 
-    @discord.ui.button(
-        label="Lock",
-        style=discord.ButtonStyle.green,
-        custom_id="persistent_view:lock",
-        emoji="🔒",
-    )
+    @discord.ui.button(label="Lock", style=discord.ButtonStyle.green, custom_id="persistent_view:lock", emoji="🔒")
     async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
         ch = self.bot.get_channel(interaction.channel_id)
-        TempConfirmInstance = TechnicalCommissionConfirm(self.bot)
+        temp_confirm_instance = TechnicalCommissionConfirm(self.bot)
 
-        msg = await ch.send(
-            "Are you sure you want to close this ticket?", view=TempConfirmInstance
-        )
+        await ch.send("Are you sure you want to close this ticket?", view=temp_confirm_instance)
 
 
 class GSuiteVerify(discord.ui.View):
@@ -1637,13 +1195,9 @@ class GSuiteVerify(discord.ui.View):
         label="Verify with GSuite",
         style=discord.ButtonStyle.blurple,
         custom_id="persistent_view:gsuiteverify",
-        emoji=Emoji.gsuitelogo,
+        emoji=Emoji.gsuite_logo
     )
-    async def lock(
-        self,
-        interaction: discord.Interaction,
-        button: discord.ui.Button,
-    ):
+    async def lock(self,interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
 
 
@@ -1658,11 +1212,7 @@ class TempConfirm(discord.ui.View):
         emoji="✅",
         custom_id="persistent_view:tempconfirm",
     )
-    async def confirm(
-        self,
-        interaction: discord.Interaction,
-        button: discord.ui.Button,
-    ):
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button,):
         self.value = True
         self.stop()
 
@@ -1686,12 +1236,16 @@ class NitroConfirmFake(discord.ui.View):
     async def claim(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
             await interaction.response.send_message(
-                "https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4",
+                "https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/"
+                "%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/"
+                "https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4",
                 ephemeral=True,
             )
         except discord.errors.InteractionResponded:
             await interaction.followup.send(
-                "https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4",
+                "https://images-ext-2.discordapp.net/external/YTk-6Mfxbbr8KwIc-3Pyy5Z_06tfpcO65MflxYgbjA8/%3Fcid%3D73"
+                "b8f7b119cc9225923f70c7e25a1f8e8932c7ae8ef48fe7%26rid%3Dgiphy.mp4%26ct%3Dg"
+                "/https/media2.giphy.com/media/Ju7l5y9osyymQ/giphy.mp4",
                 ephemeral=True,
             )
         self.value = True
@@ -1714,9 +1268,7 @@ class TicketLockButton(discord.ui.View):
         ch = self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TicketTempConfirm()
 
-        msg = await ch.send(
-            "Are you sure you want to close this ticket?", view=TempConfirmInstance
-        )
+        await ch.send("Are you sure you want to close this ticket?", view=TempConfirmInstance)
 
 
 class TicketTempConfirm(discord.ui.View):
@@ -1730,11 +1282,7 @@ class TicketTempConfirm(discord.ui.View):
         emoji="✅",
         custom_id="persistent_view:tempconfirm",
     )
-    async def confirm(
-        self,
-        interaction: discord.Interaction,
-        button: discord.ui.Button,
-    ):
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button,):
         self.value = True
         self.stop()
 
@@ -1743,7 +1291,6 @@ class TicketTempConfirm(discord.ui.View):
         await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
-
 
 
 # class LeaderboardPages(menus.ListPageSource):
@@ -1786,9 +1333,7 @@ class TicketTempConfirm(discord.ui.View):
 async def id_generator(size=3, chars=string.ascii_uppercase):
     while True:
         ID = "".join(random.choice(chars) for _ in range(size))
-        query = database.TutorBot_Sessions.select().where(
-            database.TutorBot_Sessions.SessionID == ID
-        )
+        query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == ID)
 
         if query.exists():
             continue
@@ -1797,22 +1342,17 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
 
 
 async def force_restart(ctx, main_or_beta):
-    p = subprocess.run(
-        "git status -uno", shell=True, text=True, capture_output=True, check=True
-    )
+    p = subprocess.run("git status -uno", shell=True, text=True, capture_output=True, check=True)
 
     embed = discord.Embed(
         title="Restarting...",
         description="Doing GIT Operation (1/3)",
         color=discord.Color.green(),
     )
-    embed.add_field(
-        name="Checking GIT (1/3)", value=f"**Git Output:**\n```shell\n{p.stdout}\n```"
-    )
+    embed.add_field(name="Checking GIT (1/3)", value=f"**Git Output:**\n```shell\n{p.stdout}\n```")
 
     msg = await ctx.send(embed=embed)
     try:
-
         result = subprocess.run(
             f"cd && cd {main_or_beta}",
             shell=True,
@@ -1820,10 +1360,10 @@ async def force_restart(ctx, main_or_beta):
             capture_output=True,
             check=True,
         )
-        theproc = subprocess.Popen([sys.executable, "main.py"])
+        process = subprocess.Popen([sys.executable, "main.py"])
 
-        runThread = Thread(target=theproc.communicate)
-        runThread.start()
+        run_thread = Thread(target=process.communicate)
+        run_thread.start()
 
         embed.add_field(
             name="Started Environment and Additional Process (2/3)",
@@ -1833,9 +1373,7 @@ async def force_restart(ctx, main_or_beta):
         await msg.edit(embed=embed)
 
     except Exception as e:
-        embed = discord.Embed(
-            title="Operation Failed", description=e, color=discord.Color.red()
-        )
+        embed = discord.Embed(title="Operation Failed", description=e, color=Colors.red)
         embed.set_footer(text="Main bot process will be terminated.")
 
         await ctx.send(embed=embed)
@@ -1850,7 +1388,7 @@ async def force_restart(ctx, main_or_beta):
         sys.exit(0)
 
 
-def getHostDir():
+def get_host_dir():
     """
     Get the directory of the current host.
 
@@ -1858,21 +1396,19 @@ def getHostDir():
     -> which 'HOST' is either 'timmya` or 'timmy-beta'
 
     NOTE: THIS ONLY WORKS ON THE VPS.
-
     """
 
-    runPath = os.path.realpath(__file__)
-    runDir = re.search("/home/[^/]*", runPath)
-    print(runPath)
-    if runDir is not None:
-        runDir = runDir.group(0)
+    run_path = os.path.realpath(__file__)
+    run_dir = re.search("/home/[^/]*", run_path)
+    if run_dir is not None:
+        run_dir = run_dir.group(0)
     else:
-        runDir = None
-    print(runDir)
-    return runDir
+        run_dir = None
+
+    return run_dir
 
 
-def stringTimeConvert(string: str):
+def string_time_convert(string: str):
     """
     Filters out the different time units from a string (e.g. from '2d 4h 6m 7s') and returns a ``dict``.
     NOTE: The sequence of the time units doesn't matter. Could also be '6m 2d 7s 4h'.
@@ -1883,7 +1419,7 @@ def stringTimeConvert(string: str):
     Returns: A ``dict`` which the keys are 'days', 'hours', 'minutes', 'seconds' and the value is either a ``int`` or ``None``.
     """
 
-    timeDict: dict = {}
+    time_dict: dict = {}
 
     days = re.search("\d+d", string)
     hours = re.search("\d+h", string)
@@ -1891,29 +1427,29 @@ def stringTimeConvert(string: str):
     seconds = re.search("\d+s", string)
 
     if days is not None:
-        timeDict["days"] = int(days.group(0).strip("d"))
+        time_dict["days"] = int(days.group(0).strip("d"))
     else:
-        timeDict["days"] = None
+        time_dict["days"] = None
 
     if hours is not None:
-        timeDict["hours"] = int(hours.group(0).strip("h"))
+        time_dict["hours"] = int(hours.group(0).strip("h"))
     else:
-        timeDict["hours"] = None
+        time_dict["hours"] = None
 
     if minutes is not None:
-        timeDict["minutes"] = int(minutes.group(0).strip("m"))
+        time_dict["minutes"] = int(minutes.group(0).strip("m"))
     else:
-        timeDict["minutes"] = None
+        time_dict["minutes"] = None
 
     if seconds is not None:
-        timeDict["seconds"] = int(seconds.group(0).strip("s"))
+        time_dict["seconds"] = int(seconds.group(0).strip("s"))
     else:
-        timeDict["seconds"] = None
+        time_dict["seconds"] = None
 
-    return timeDict
+    return time_dict
 
 
-def searchCustomEmoji(string: str):
+def search_custom_emoji(string: str):
     """
     Searches for a custom emoji in a specific ``str`` and returns it or None if nothing found.
     The custom emoji can either be animated or not.
@@ -1924,18 +1460,19 @@ def searchCustomEmoji(string: str):
     Returns: The custom emoji (``str``) or None if nothing found.
     """
 
-    customEmoji = re.search("<[^:]*:[^:]*:(\d)+>", string)
+    custom_emoji = re.search("<[^:]*:[^:]*:(\d)+>", string)
 
-    if customEmoji is not None:
-        customEmoji = customEmoji.group(0)
+    if custom_emoji is not None:
+        custom_emoji = custom_emoji.group(0)
     else:
-        customEmoji = None
+        custom_emoji = None
 
-    return customEmoji
+    return custom_emoji
 
 
 async def get_active_or_archived_thread(
-    guild: discord.Guild, thread_id: int
+        guild: discord.Guild,
+        thread_id: int
 ) -> Optional[discord.Thread]:
 
     active_thread = guild.get_thread(thread_id)

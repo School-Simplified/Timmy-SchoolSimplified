@@ -13,8 +13,8 @@ import logging
 import os
 from typing import Union
 
-from alive_progress import alive_bar
 import discord
+from alive_progress import alive_bar
 from discord import app_commands
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
@@ -24,10 +24,14 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
 from core.common import get_extensions
-from core.special_methods import (before_invoke_, initializeDB,
-                                  main_mode_check_, on_app_command_error_,
-                                  on_command_error_, on_ready_)
-
+from core.special_methods import (
+    before_invoke_,
+    initializeDB,
+    main_mode_check_,
+    on_app_command_error_,
+    on_command_error_,
+    on_ready_
+)
 
 load_dotenv()
 faulthandler.enable()
@@ -52,11 +56,13 @@ class TimmyCommandTree(app_commands.CommandTree):
             return False
         return True
 
-    async def on_error(self,
-                       interaction: discord.Interaction,
-                       command: Union[app_commands.Command, app_commands.ContextMenu],
-                       error: app_commands.AppCommandError):
-        await on_app_command_error_(self.bot, interaction, command, error)
+    async def on_error(
+            self,
+            interaction: discord.Interaction,
+            command: Union[app_commands.Command, app_commands.ContextMenu],
+            error: app_commands.AppCommandError
+    ):
+        await on_app_command_error_(self.bot, interaction, error)
 
 
 class Timmy(commands.Bot):
@@ -65,13 +71,16 @@ class Timmy(commands.Bot):
     """
 
     def __init__(self):
-        super().__init__(command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
-                         intents=discord.Intents.all(),
-                         case_insensitive=True,
-                         tree_cls=TimmyCommandTree,
-                         activity=discord.Activity(
-                             type=discord.ActivityType.watching,
-                             name="/help | ssimpl.org/timmy"))
+        super().__init__(
+            command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
+            intents=discord.Intents.all(),
+            case_insensitive=True,
+            tree_cls=TimmyCommandTree,
+            activity=discord.Activity(
+                type=discord.ActivityType.watching,
+                name="/help | ssimpl.org/timmy"
+            )
+        )
         self.help_command = None
 
     async def on_ready(self):
@@ -87,10 +96,12 @@ class Timmy(commands.Bot):
         await main_mode_check_(ctx)
 
     async def setup_hook(self) -> None:
-        with alive_bar(len(get_extensions()),
-                       ctrl_c=False,
-                       bar="bubbles",
-                       title="Initializing Cogs:") as bar:
+        with alive_bar(
+                len(get_extensions()),
+                ctrl_c=False,
+                bar="bubbles",
+                title="Initializing Cogs:") as bar:
+
             for ext in get_extensions():
                 try:
                     await bot.load_extension(ext)
@@ -120,15 +131,18 @@ class Timmy(commands.Bot):
 bot = Timmy()
 
 if os.getenv("DSN_SENTRY") is not None:
-    sentry_logging = LoggingIntegration(level=logging.INFO,         # Capture info and above as breadcrumbs
-                                        event_level=logging.ERROR   # Send errors as events
-                                        )
+    sentry_logging = LoggingIntegration(
+        level=logging.INFO,         # Capture info and above as breadcrumbs
+        event_level=logging.ERROR   # Send errors as events
+    )
 
     # Traceback tracking, DO NOT MODIFY THIS
-    use_sentry(bot,
-               dsn=os.getenv("DSN_SENTRY"),
-               traces_sample_rate=1.0,
-               integrations=[FlaskIntegration(), sentry_logging])
+    use_sentry(
+        bot,
+        dsn=os.getenv("DSN_SENTRY"),
+        traces_sample_rate=1.0,
+        integrations=[FlaskIntegration(), sentry_logging]
+    )
 
 initializeDB(bot)
 bot.run(os.getenv("TOKEN"))
