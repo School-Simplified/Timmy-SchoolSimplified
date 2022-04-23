@@ -320,6 +320,9 @@ class MAIN_ID:
     ch_modAnnouncements = int(
         ConfigcatClient.MAIN_ID_CC.get_value("ch_modannouncements", 887780215789617202)
     )
+    ch_eventAnnouncements = int(
+        ConfigcatClient.MAIN_ID_CC.get_value("ch_eventannouncements", 951302954965692436)
+    )
 
     # *** Categories ***
     cat_casual = int(
@@ -1072,7 +1075,13 @@ class SET_ID:
     ch_college_acceptance = int(
         ConfigcatClient.SET_ID_CC.get_value("ch_college_acceptance", 955960683785236540)
     )
+    ch_puzzle_guessv2 = int(
+        ConfigcatClient.SET_ID_CC.get_value("ch_puzzle_guessv2", 966857151417028608)
+    )
+
+    # *** Roles ***
     r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+
 
 
 class CheckDB_CC:
