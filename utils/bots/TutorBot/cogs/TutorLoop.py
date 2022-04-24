@@ -2,9 +2,10 @@ from datetime import datetime, timedelta
 
 import discord
 import pytz
+from discord.ext import commands, tasks
+
 from core import database
 from core.common import TutID
-from discord.ext import commands, tasks
 
 
 class TutorBotLoop(commands.Cog):

@@ -1,9 +1,5 @@
-from aiohttp import web
+from discord.ext import commands
 from flask import Flask
-from discord.ext import commands, tasks
-import discord
-import os
-import aiohttp
 
 app = Flask(__name__)
 

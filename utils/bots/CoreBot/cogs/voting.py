@@ -1,18 +1,19 @@
+import ast
 import asyncio
-import datetime, pytz
+import datetime
+import json
+import os
+import pytz
 import random
 import string
-import os
-import json
-import ast
 
 import discord
 from discord.ext import commands
+
 from core import database
 from core.checks import is_host_timmy_beta
 from core.common import (
     MainID,
-    StaffID,
     TechID,
     MktID,
     TutID,

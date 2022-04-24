@@ -8,34 +8,30 @@ import string
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Awaitable, Callable, List, Tuple, Union, Optional
 from threading import Thread
+from typing import Any, Awaitable, Callable, List, Tuple, Union, Optional
 
 import boto3
 import chat_exporter
 import configcatclient
 import discord
 import requests
-import sentry_sdk
 from botocore.exceptions import ClientError
 from discord import (
-    Button,
     ButtonStyle,
-    DiscordException,
     SelectOption,
     ui
 )
-from discord.ext import commands, menus
+from discord.ext import commands
 from dotenv import load_dotenv
 from github import Github
 from google.cloud import secretmanager
-from google_auth_oauthlib.flow import Flow
-from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import Flow
 from oauth2client.service_account import ServiceAccountCredentials
 
 from core import database
-
 
 load_dotenv()
 

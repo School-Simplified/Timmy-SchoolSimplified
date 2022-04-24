@@ -1,8 +1,9 @@
 import discord
-from core import database
-from core.common import rulesDict
 from discord.ext import commands
+
+from core import database
 from core.common import MainID
+from core.common import rulesDict
 
 MESSAGEC = "Go chit chat somewhere else, this is for commands only."
 MESSAGEMASA = "Hey you ||~~short~~|| *I mean* tall mf, go chit chat somewhere you twat."

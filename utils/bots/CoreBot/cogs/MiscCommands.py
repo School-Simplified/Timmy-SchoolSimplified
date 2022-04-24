@@ -1,6 +1,4 @@
 import asyncio
-import random
-import subprocess
 import sys
 import time
 from datetime import timedelta
@@ -8,14 +6,16 @@ from typing import List, Literal
 
 import discord
 import psutil
+from discord import app_commands
+from discord.ext import commands
+from dotenv import load_dotenv
+from google.cloud import texttospeech
+from sentry_sdk import Hub
+
 from core import database
 from core.checks import is_botAdmin, is_botAdmin2
 from core.common import (
-    ButtonHandler,
-    MainID,
     TechID,
-    Colors,
-    Others,
     Emoji,
     NitroConfirmFake,
     SelectMenuHandler,
@@ -23,11 +23,6 @@ from core.common import (
     Others,
     MainID,
 )
-from discord.ext import commands
-from dotenv import load_dotenv
-from sentry_sdk import Hub
-from discord import app_commands
-from google.cloud import texttospeech
 from core.common import access_secret
 
 

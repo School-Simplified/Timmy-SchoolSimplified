@@ -1,10 +1,11 @@
-from typing import List
-from datetime import datetime
 import pprint
 import typing
-from dotenv import load_dotenv
-import requests
+from datetime import datetime
+from typing import List
 from urllib.parse import urlparse
+
+import requests
+from dotenv import load_dotenv
 
 """[summary]
 

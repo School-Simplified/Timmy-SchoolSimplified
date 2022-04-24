@@ -5,8 +5,11 @@ from threading import Thread
 from typing import Literal
 
 import discord
+from discord.app_commands import command
+from discord.ext import commands
+from dotenv import load_dotenv
+
 from core import database
-from core.common import CheckDB_CC, TechID
 from core.checks import (
     is_botAdmin,
     is_botAdmin2,
@@ -14,10 +17,8 @@ from core.checks import (
     is_botAdmin4,
     slash_is_bot_admin_2,
 )
+from core.common import CheckDB_CC
 from core.common import Emoji, Colors
-from discord.app_commands import command, guilds
-from discord.ext import commands
-from dotenv import load_dotenv
 from core.common import get_host_dir, force_restart
 
 load_dotenv()

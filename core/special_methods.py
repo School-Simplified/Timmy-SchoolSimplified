@@ -8,13 +8,15 @@ import time
 import traceback
 from datetime import datetime
 from difflib import get_close_matches
-from typing import TYPE_CHECKING, Union
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import discord
+import requests
+import sentry_sdk
 from discord import app_commands
 from discord.ext import commands
-import sentry_sdk
-import requests
+
 from core import database
 from core.common import (
     bcolors,
@@ -28,9 +30,8 @@ from core.common import (
     Emoji,
 )
 from core.gh_modals import FeedbackButton
-from utils.events.TicketDropdown import TicketButton
 from utils.bots.CoreBot.cogs.techCommissions import CommissionTechButton
-from pathlib import Path
+from utils.events.TicketDropdown import TicketButton
 
 if TYPE_CHECKING:
     from main import Timmy

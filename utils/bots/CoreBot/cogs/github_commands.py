@@ -3,11 +3,12 @@ from __future__ import annotations
 import os
 from typing import Literal, TYPE_CHECKING, Optional
 
-from core.checks import slash_is_bot_admin_4
 import discord
-from github import Github
-from discord.ext import commands
 from discord.app_commands import command, Group
+from discord.ext import commands
+from github import Github
+
+from core.checks import slash_is_bot_admin_4
 from core.gh_modals import GithubControlModal
 
 if TYPE_CHECKING:

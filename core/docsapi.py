@@ -1,7 +1,5 @@
 from __future__ import print_function
 
-import os.path
-
 from google.cloud import speech_v1p1beta1 as speech
 from google.cloud import storage
 from googleapiclient.discovery import build

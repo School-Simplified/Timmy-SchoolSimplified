@@ -3,9 +3,10 @@ from typing import Literal
 import discord
 from discord import ui, app_commands
 from discord.ext import commands, tasks
-from core.common import TechID, Emoji, get_active_or_archived_thread
-from core.checks import is_botAdmin
+
 from core import database
+from core.checks import is_botAdmin
+from core.common import TechID, Emoji
 
 
 class BotRequestModal(ui.Modal, title="Bot Development Request"):

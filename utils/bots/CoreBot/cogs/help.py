@@ -6,11 +6,11 @@ import asyncio
 import inspect
 import itertools
 from typing import Any, Coroutine, Dict, List, Optional, Set, TYPE_CHECKING, Union
-from discord import app_commands
+
 import discord
-from discord.app_commands import command, describe, guilds
+from discord import app_commands
+from discord.app_commands import command, describe
 from discord.ext import commands, menus
-from discord.utils import maybe_coroutine
 
 from core.common import Others
 

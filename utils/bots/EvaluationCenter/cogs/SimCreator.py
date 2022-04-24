@@ -1,7 +1,8 @@
 import discord
-from core import database
-from core.common import TechID, SandboxConfig, get_extensions
 from discord.ext import commands
+
+from core import database
+from core.common import SandboxConfig, get_extensions
 
 
 class SimulatorProfile:

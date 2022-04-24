@@ -3,7 +3,6 @@ from typing import Union, Literal
 import discord
 from discord import ui, ButtonStyle
 from discord.ext import commands
-from discord import app_commands
 
 from core.checks import is_botAdmin4
 from core.common import Colors, ButtonHandler

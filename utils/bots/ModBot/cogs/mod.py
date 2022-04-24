@@ -1,10 +1,11 @@
 import math
 
-import peewee
 import discord
+import peewee
+from discord.ext import commands
+
 from core import common, database
 from core.common import Colors, Emoji
-from discord.ext import commands
 
 
 class PunishmentTag(commands.Cog):
