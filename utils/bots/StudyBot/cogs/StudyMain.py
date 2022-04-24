@@ -3,8 +3,7 @@ from datetime import datetime, timedelta
 import discord
 import pytz
 from core import database
-from core.common import Colors, Emoji
-from core.common import TECH_ID
+from core.common import Colors, Emoji, TechID
 from discord.app_commands import command, Group
 from discord.ext import commands
 
@@ -343,7 +342,7 @@ class StudyToDo(commands.Cog, Group):
         super().__init__(name="studytodo", description="Study ToDo Commands")
         self.bot = bot
         self.__cog_name__ = "Study ToDo"
-        self.StudyVCGuildID = TECH_ID.g_tech
+        self.StudyVCGuildID = TechID.g_tech
 
     @property
     def display_emoji(self) -> str:

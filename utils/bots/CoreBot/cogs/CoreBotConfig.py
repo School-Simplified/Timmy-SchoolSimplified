@@ -6,7 +6,7 @@ from typing import Literal
 
 import discord
 from core import database
-from core.common import CheckDB_CC, TECH_ID
+from core.common import CheckDB_CC, TechID
 from core.checks import (
     is_botAdmin,
     is_botAdmin2,
@@ -18,7 +18,7 @@ from core.common import Emoji, Colors
 from discord.app_commands import command, guilds
 from discord.ext import commands
 from dotenv import load_dotenv
-from core.common import getHostDir, force_restart
+from core.common import get_host_dir, force_restart
 
 load_dotenv()
 
@@ -106,12 +106,12 @@ class CoreBotConfig(commands.Cog):
         embed.add_field(
             name="Checks",
             value=f"1) `Maintenance Mode`\n{Emoji.barrow} {CheckDB_CC.MasterMaintenance}"
-            f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB_CC.guildNone}"
-            f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB_CC.externalGuild}"
-            f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB_CC.ModRoleBypass}"
-            f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB_CC.ruleBypass}"
-            f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB_CC.publicCategories}"
-            f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB_CC.elseSituation}",
+            f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB_CC.guild_None}"
+            f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB_CC.external_guild}"
+            f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB_CC.mod_role_bypass}"
+            f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB_CC.rule_bypass}"
+            f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB_CC.public_categories}"
+            f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB_CC.else_situation}",
         )
         await ctx.send(embed=embed)
 
@@ -255,7 +255,7 @@ class CoreBotConfig(commands.Cog):
     @is_botAdmin2
     async def _gitpull(self, ctx, mode="-a", branch=None):
         output = ""
-        hostDir = getHostDir()
+        hostDir = get_host_dir()
 
         if branch is not None:
             if hostDir == "/home/timmya":
@@ -327,7 +327,7 @@ class CoreBotConfig(commands.Cog):
     ) -> None:
         output = ""
 
-        hostDir = getHostDir()
+        hostDir = get_host_dir()
         if hostDir == "/home/timmya":
             branch = "origin/main"
             directory = "TimmyMain-SS"

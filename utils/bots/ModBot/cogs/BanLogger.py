@@ -8,7 +8,7 @@ import discord
 import gspread
 from discord.ext import commands
 from oauth2client.service_account import ServiceAccountCredentials
-from core.common import MAIN_ID
+from core.common import MainID
 
 scope = [
     "https://spreadsheets.google.com/feeds",
@@ -34,7 +34,7 @@ def next_available_row(worksheet):
 class BanUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.ModLogID = MAIN_ID.ch_actionLogs
+        self.ModLogID = MainID.ch_actionLogs
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild: discord.Guild, user):
@@ -44,7 +44,7 @@ class BanUpdate(commands.Cog):
 
         now = datetime.now()
 
-        if guild.id != MAIN_ID.g_main:
+        if guild.id != MainID.g_main:
             return
 
         await asyncio.sleep(15)

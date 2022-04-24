@@ -9,68 +9,68 @@ import ast
 import discord
 from discord.ext import commands
 from core import database
-from core.checks import is_hostTimmyBeta
-from core.common import Colors
-from core.common import Emoji
+from core.checks import is_host_timmy_beta
 from core.common import (
-    MAIN_ID,
-    DIGITAL_ID,
-    TECH_ID,
-    MKT_ID,
-    TUT_ID,
-    HR_ID,
-    LEADER_ID,
-    STAFF_ID,
+    MainID,
+    StaffID,
+    TechID,
+    MktID,
+    TutID,
+    HRID,
+    LeaderID,
+    StaffID,
+    Emoji,
+    Colors
 )
-from core.common import stringTimeConvert, ButtonHandler, searchCustomEmoji
+from core.common import string_time_convert, ButtonHandler, search_custom_emoji
 
 
 class VotingBot(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.acceptedAnnouncementCHs = [
-            MAIN_ID.ch_announcements,
-            MAIN_ID.ch_modAnnouncements,
-            DIGITAL_ID.ch_announcements,
-            DIGITAL_ID.ch_acadAnnouncements,
-            DIGITAL_ID.ch_clubAnnouncements,
-            DIGITAL_ID.ch_coAnnouncements,
-            DIGITAL_ID.ch_mktAnnouncements,
-            DIGITAL_ID.ch_notesAnnouncements,
-            DIGITAL_ID.ch_techAnnouncements,
-            TECH_ID.ch_announcements,
-            TECH_ID.ch_botAnnouncements,
-            TECH_ID.ch_itAnnouncements,
-            TECH_ID.ch_webAnnouncements,
-            MKT_ID.ch_announcements,
-            MKT_ID.ch_modAnnouncements,
-            MKT_ID.ch_bpAnnouncements,
-            MKT_ID.ch_mediaAnnouncements,
-            MKT_ID.ch_designAnnouncements,
-            MKT_ID.ch_eventsAnnouncements,
-            TUT_ID.ch_announcements,
-            TUT_ID.ch_csAnnouncements,
-            TUT_ID.ch_mathAnnouncements,
-            TUT_ID.ch_miscAnnouncements,
-            TUT_ID.ch_englishAnnouncements,
-            TUT_ID.ch_leadershipAnnouncements,
-            TUT_ID.ch_scienceAnnouncements,
-            TUT_ID.ch_ssAnnouncements,
-            HR_ID.ch_announcements,
-            HR_ID.ch_leadershipAnnouncements,
-            HR_ID.ch_techAnnouncements,
-            HR_ID.ch_mktAnnouncements,
-            HR_ID.ch_acadAnnouncements,
-            LEADER_ID.ch_mktAnnouncements,
-            LEADER_ID.ch_mainAnnouncements,
-            LEADER_ID.ch_envAnnouncements,
-            LEADER_ID.ch_ssdAnnouncements,
-            LEADER_ID.ch_workonlyAnnouncements,
-            LEADER_ID.ch_financeAnnouncements,
-            LEADER_ID.ch_rebrandAnnouncements,
-            LEADER_ID.ch_staffAnnouncements,
-            STAFF_ID.ch_announcements,
-            STAFF_ID.ch_leadershipAnnouncements,
+            MainID.ch_announcements,
+            MainID.ch_modAnnouncements,
+            StaffID.ch_announcements,
+            StaffID.ch_acadAnnouncements,
+            StaffID.ch_clubAnnouncements,
+            StaffID.ch_coAnnouncements,
+            StaffID.ch_mktAnnouncements,
+            StaffID.ch_notesAnnouncements,
+            StaffID.ch_techAnnouncements,
+            TechID.ch_announcements,
+            TechID.ch_bot_announcements,
+            TechID.ch_IT_announcements,
+            TechID.ch_web_announcements,
+            MktID.ch_announcements,
+            MktID.ch_mod_announcements,
+            MktID.ch_bp_announcements,
+            MktID.ch_media_announcements,
+            MktID.ch_design_announcements,
+            MktID.ch_events_announcements,
+            TutID.ch_announcements,
+            TutID.ch_cs_announcements,
+            TutID.ch_math_announcements,
+            TutID.ch_misc_announcements,
+            TutID.ch_english_announcements,
+            TutID.ch_leadership_announcements,
+            TutID.ch_science_announcements,
+            TutID.ch_SS_announcements,
+            HRID.ch_announcements,
+            HRID.ch_leadership_announcements,
+            HRID.ch_tech_announcements,
+            HRID.ch_mkt_announcements,
+            HRID.ch_acad_announcements,
+            LeaderID.ch_mkt_announcements,
+            LeaderID.ch_main_announcements,
+            LeaderID.ch_env_announcements,
+            LeaderID.ch_ssd_announcements,
+            LeaderID.ch_workonly_announcements,
+            LeaderID.ch_finance_announcements,
+            LeaderID.ch_rebrand_announcements,
+            LeaderID.ch_staff_announcements,
+            StaffID.ch_announcements,
+            StaffID.ch_leadership_announcements,
         ]
         self.est = pytz.timezone("US/Eastern")
 
@@ -144,13 +144,13 @@ class VotingBot(commands.Cog):
 
     @commands.group(invoke_without_command=True)
     @commands.has_any_role(
-        LEADER_ID.r_corporateOfficer,
-        LEADER_ID.r_director,
-        LEADER_ID.r_president,
-        LEADER_ID.r_vicePresident,
-        LEADER_ID.r_boardMember,
-        LEADER_ID.r_informationTechnologyManager,
-        LEADER_ID.r_ssDigitalCommittee,
+        LeaderID.r_corporate_officer,
+        LeaderID.r_director,
+        LeaderID.r_president,
+        LeaderID.r_vice_president,
+        LeaderID.r_board_member,
+        LeaderID.r_information_technology_manager,
+        LeaderID.r_SS_digital_committee,
     )
     async def vote(self, ctx):
         # TODO: error, default message
@@ -158,7 +158,7 @@ class VotingBot(commands.Cog):
         pass
 
     @vote.command()
-    @is_hostTimmyBeta
+    @is_host_timmy_beta
     async def create(self, ctx: commands.Context):
 
         acceptedChannelsStr = ""
@@ -184,7 +184,7 @@ class VotingBot(commands.Cog):
 
         os.remove(tempVoteCHsPath)
 
-        ch_snakePit = self.bot.get_channel(TECH_ID.ch_snakePit)
+        ch_snakePit = self.bot.get_channel(TechID.ch_snake_pit)
         msgVoteCHsFile = await ch_snakePit.send(file=tempVoteCHsFile)
         voteCHsFileURL = msgVoteCHsFile.attachments[0].url
         await msgVoteCHsFile.delete()
@@ -354,7 +354,7 @@ class VotingBot(commands.Cog):
                         "\nHey everyone,"
                         "\nWhich programming language is better? Please vote now!"
                         f"\n{Emoji.pythonLogo} Python | {Emoji.javascriptLogo} JavaScript"
-                        f"\n\n(In the example above you would choose Python of course {Emoji.blobamused})",
+                        f"\n\n(In the example above you would choose Python of course {Emoji.blob_amused})",
                     )
                     embedText.set_author(
                         name=f"{ctx.author}", icon_url=ctx.author.avatar.url
@@ -443,7 +443,7 @@ class VotingBot(commands.Cog):
                     except:
                         pass
 
-                    timeDict: dict = stringTimeConvert(msgContent)
+                    timeDict: dict = string_time_convert(msgContent)
                     days = timeDict["days"]
                     hours = timeDict["hours"]
                     minutes = timeDict["minutes"]
@@ -542,7 +542,7 @@ class VotingBot(commands.Cog):
 
                     for option in options:
 
-                        customEmoji = searchCustomEmoji(option)
+                        customEmoji = search_custom_emoji(option)
                         if customEmoji is not None:
                             option = option.replace(f"{customEmoji}", "")
 
@@ -642,7 +642,7 @@ class VotingBot(commands.Cog):
                     viewVoting = discord.ui.View()
                     for option in options:
 
-                        customEmoji = searchCustomEmoji(option)
+                        customEmoji = search_custom_emoji(option)
                         if customEmoji is not None:
                             option = option.replace(f"{customEmoji}", "")
 

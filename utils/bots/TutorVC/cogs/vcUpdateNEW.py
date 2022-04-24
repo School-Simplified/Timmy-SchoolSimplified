@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 import discord
 from core import database
-from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID, TECH_ID, SandboxConfig
+from core.common import Emoji, MainID, StaffID, TutID, TechID, SandboxConfig
 from discord.ext import commands
 import pytz
 
@@ -61,25 +61,25 @@ class TutorVCUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channel_id = {
-            MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
-            STAFF_ID.g_staff: STAFF_ID.ch_console,
-            TECH_ID.g_tech: getConsoleCH(0),
+            MainID.g_main: MainID.ch_controlPanel,
+            StaffID.g_staff: StaffID.ch_console,
+            TechID.g_tech: getConsoleCH(0),
         }
         self.staticChannels = [
-            MAIN_ID.ch_startPrivateVC,
-            STAFF_ID.ch_startPrivateVC,
+            MainID.ch_startPrivateVC,
+            StaffID.ch_start_private_vc,
             getConsoleCH(0),
         ]
         self.presetChannels = [
-            MAIN_ID.ch_controlPanel,
-            MAIN_ID.ch_startPrivateVC,
-            STAFF_ID.ch_console,
-            STAFF_ID.ch_startPrivateVC,
+            MainID.ch_controlPanel,
+            MainID.ch_startPrivateVC,
+            StaffID.ch_console,
+            StaffID.ch_start_private_vc,
             getConsoleCH(0),
             getConsoleCH(1),
         ]
 
-        self.TutorLogID = TUT_ID.ch_hourLogs
+        self.TutorLogID = TutID.ch_hour_logs
 
         self.AT = "Academics Team"
         self.SB = "Simplified Booster"
@@ -96,19 +96,19 @@ class TutorVCUpdate(commands.Cog):
 
         self.TutorRole = "Tutor"
         self.categoryIDs = [
-            MAIN_ID.cat_privateVC,
-            STAFF_ID.cat_privateVC,
+            MainID.cat_private_vc,
+            StaffID.cat_private_vc,
             SandboxConfig.cat_sandbox,
         ]
         self.CcategoryIDs = {
-            MAIN_ID.g_main: MAIN_ID.cat_privateVC,
-            STAFF_ID.g_staff: STAFF_ID.cat_privateVC,
-            TECH_ID.g_tech: SandboxConfig.cat_sandbox,
+            MainID.g_main: MainID.cat_private_vc,
+            StaffID.g_staff: StaffID.cat_private_vc,
+            TechID.g_tech: SandboxConfig.cat_sandbox,
         }
         self.LobbyStartIDs = {
-            MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
-            STAFF_ID.g_staff: STAFF_ID.ch_console,
-            TECH_ID.g_tech: getConsoleCH(0),
+            MainID.g_main: MainID.ch_controlPanel,
+            StaffID.g_staff: StaffID.ch_console,
+            TechID.g_tech: getConsoleCH(0),
         }
         # self.PRIVVC_DELETION_QUEUE.start()
 
@@ -312,7 +312,7 @@ class TutorVCUpdate(commands.Cog):
                                         title="Logged Hours",
                                         description="Hey! It looks like you've finished your tutor session, "
                                         "I've already went ahead and sent your session legnth "
-                                        f"in <#{TUT_ID.ch_hourLogs}>."
+                                        f"in <#{TutID.ch_hour_logs}>."
                                         "\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.",
                                         color=discord.Color.green(),
                                     )
@@ -652,7 +652,7 @@ class TutorVCUpdate(commands.Cog):
                                     title="Logged Hours",
                                     description="Hey! It looks like you've finished your tutor session, "
                                     "I've already went ahead and sent your session legnth "
-                                    f"in <#{TUT_ID.ch_hourLogs}>."
+                                    f"in <#{TutID.ch_hourLogs}>."
                                     "\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.",
                                     color=discord.Color.green(),
                                 )

@@ -4,7 +4,7 @@ import discord
 import pytz
 
 from core import database
-from core.common import MAIN_ID, TUT_ID, Others, Emoji, PS_ID, SET_ID
+from core.common import MainID, TutID, Others, Emoji, PSID, SETID
 from discord import app_commands, ui
 from discord.ext import commands, tasks
 
@@ -24,7 +24,7 @@ class GuessModal(ui.Modal, title="May Day Event Submission"):
         await interaction.response.send_message(
             f"{interaction.user.mention}, I have submitted your guess!", ephemeral=True
         )
-        ch: discord.TextChannel = self.bot.get_channel(SET_ID.ch_puzzle_guessv2)
+        ch: discord.TextChannel = self.bot.get_channel(SETID.ch_may_day_guess)
         embed = discord.Embed(
             color=0xC387FF,
             title="May Day Event Guess",
@@ -71,7 +71,7 @@ class GuessSubmit(commands.Cog):
     async def mayEventPost(self):
         now = datetime.now(self.est)
         TutorSession = pytz.timezone("America/New_York").localize(now)
-        channel = self.bot.get_channel(MAIN_ID.ch_eventAnnouncements)
+        channel = self.bot.get_channel(MainID.ch_eventAnnouncements)
         q = database.BaseQueue.select().where(database.BaseQueue.queueID == 2).get()
         if TutorSession.hour >= 7 and not q.queueID > 15:
             await channel.send(self.questions[q.queueID])

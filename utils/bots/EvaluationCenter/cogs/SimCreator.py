@@ -1,13 +1,13 @@
 import discord
 from core import database
-from core.common import TECH_ID, SandboxConfig, get_extensions
+from core.common import TechID, SandboxConfig, get_extensions
 from discord.ext import commands
 
 
 class SimulatorProfile:
     @staticmethod
     async def create_TicketSys(ctx: commands.Context):
-        # category = discord.utils.get(ctx.guild.categories, id=TECH_ID.cat_sandbox)
+        # category = discord.utils.get(ctx.guild.categories, id=TechID.cat_sandbox)
         query: database.SandboxConfig = (
             database.SandboxConfig.select().where(database.SandboxConfig.id == 1).get()
         )

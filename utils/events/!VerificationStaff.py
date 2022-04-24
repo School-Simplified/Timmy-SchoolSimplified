@@ -1,12 +1,12 @@
 import discord
 from core.common import (
-    CH_ID,
+    ChID,
     DIGITAL_ID,
-    HR_ID,
-    MKT_ID,
-    STAFF_ID,
-    TECH_ID,
-    TUT_ID,
+    HRID,
+    MktID,
+    StaffID,
+    TechID,
+    TutID,
     Others,
     load_config,
 )
@@ -34,15 +34,15 @@ async def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Mem
 class VerificationStaff(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.staffServer = {STAFF_ID.g_staff: STAFF_ID.ch_verificationLogs}
-        self.StaffServerIDs = [STAFF_ID.g_staff]
-        self.VerificationIDs = [DIGITAL_ID.ch_verification, STAFF_ID.ch_verification]
+        self.staffServer = {StaffID.g_staff: StaffID.ch_verification_logs}
+        self.StaffServerIDs = [StaffID.g_staff]
+        self.VerificationIDs = [DIGITAL_ID.ch_verification, StaffID.ch_verification]
         self.ServerIDs = [
-            TECH_ID.g_tech,
-            CH_ID.g_ch,
-            TUT_ID.g_tut,
-            MKT_ID.g_mkt,
-            HR_ID.g_hr,
+            TechID.g_tech,
+            ChID.g_ch,
+            TutID.g_tut,
+            MktID.g_mkt,
+            HRID.g_hr,
         ]
 
     @commands.Cog.listener("on_interaction")
@@ -235,7 +235,7 @@ class VerificationStaff(commands.Cog):
             color=discord.Colour.blurple(),
         )
         embed.set_footer(
-            text="School Simplified • 08/26/2021", icon_url=Others.ssLogo_png
+            text="School Simplified • 08/26/2021", icon_url=Others.ss_logo_png
         )
         await ctx.send(embed=embed)
 

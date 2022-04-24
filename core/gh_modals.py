@@ -5,7 +5,7 @@ from typing import Dict, Literal, TYPE_CHECKING, Union, List, Optional
 import discord
 from github import Github
 
-from core.common import Colors, TECH_ID
+from core.common import Colors, TechID
 
 QuestionListType = List[Dict[str, Union[bool, str, None]]]
 GithubActionLiteral = Literal[
@@ -163,7 +163,7 @@ class GithubControlModal(discord.ui.Modal):
         )
         await interaction.followup.send(embed=user_embed)
 
-        dev_channel = self.bot.get_channel(TECH_ID.ch_tracebacks)
+        dev_channel = self.bot.get_channel(TechID.ch_tracebacks)
         embed = discord.Embed(
             title="New Issue",
             description=f"{interaction.user.mention} has submitted a new issue! `#{issue.number}` "

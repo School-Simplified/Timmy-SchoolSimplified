@@ -2,7 +2,7 @@ import discord
 from core import database
 from core.common import rulesDict
 from discord.ext import commands
-from core.common import MAIN_ID
+from core.common import MainID
 
 MESSAGEC = "Go chit chat somewhere else, this is for commands only."
 MESSAGEMASA = "Hey you ||~~short~~|| *I mean* tall mf, go chit chat somewhere you twat."
@@ -16,7 +16,7 @@ class CommandsOnly(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.channel.id == MAIN_ID.ch_modCommands and not message.author.bot:
+        if message.channel.id == MainID.ch_modCommands and not message.author.bot:
             prefix = []
             for p in database.WhitelistedPrefix:
                 prefix.append(p.prefix)

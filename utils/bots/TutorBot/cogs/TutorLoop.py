@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import discord
 import pytz
 from core import database
-from core.common import TUT_ID
+from core.common import TutID
 from discord.ext import commands, tasks
 
 
@@ -35,7 +35,7 @@ class TutorBotLoop(commands.Cog):
                     student = self.bot.get_user(entry.StudentID)
 
                 print(tutor, student)
-                botch = self.bot.get_channel(TUT_ID.ch_botCommands)
+                botch = self.bot.get_channel(TutID.ch_botCommands)
                 embed = discord.Embed(
                     title="ALERT: You have a Tutor Session Soon!",
                     description="Please make sure you both communicate and set up a private voice channel!",

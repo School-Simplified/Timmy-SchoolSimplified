@@ -22,8 +22,8 @@ from core.common import (
     Colors,
     LockButton,
     Others,
-    MAIN_ID,
-    TECH_ID,
+    MainID,
+    TechID,
     CheckDB_CC,
     Emoji,
 )
@@ -507,14 +507,14 @@ async def on_app_command_error_(
 
 class Me:
     publicCH = [
-        MAIN_ID.cat_casual,
-        MAIN_ID.cat_community,
-        MAIN_ID.cat_lounge,
-        MAIN_ID.cat_events,
-        MAIN_ID.cat_voice,
+        MainID.cat_casual,
+        MainID.cat_community,
+        MainID.cat_lounge,
+        MainID.cat_events,
+        MainID.cat_voice,
     ]
-    TechGuild = TECH_ID.g_tech
-    TracebackChannel = TECH_ID.ch_tracebacks
+    TechGuild = TechID.g_tech
+    TracebackChannel = TechID.ch_tracebacks
 
 
 async def main_mode_check_(ctx: commands.Context):
@@ -562,7 +562,7 @@ async def main_mode_check_(ctx: commands.Context):
         return CheckDB_CC.guildNone
 
     # External Server Check
-    elif ctx.guild.id != MAIN_ID.g_main:
+    elif ctx.guild.id != MainID.g_main:
         return CheckDB_CC.externalGuild
 
     # Rule Command Check

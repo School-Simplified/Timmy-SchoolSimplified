@@ -3,7 +3,7 @@ from typing import Literal
 import discord
 from discord import ui, app_commands
 from discord.ext import commands, tasks
-from core.common import TECH_ID, Emoji, get_active_or_archived_thread
+from core.common import TechID, Emoji, get_active_or_archived_thread
 from core.checks import is_botAdmin
 from core import database
 
@@ -66,12 +66,12 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
         )
         embed.set_footer(text="Bot Developer Commission")
 
-        c_ch: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
+        c_ch: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
         msg: discord.Message = await c_ch.send(interaction.user.mention, embed=embed)
         thread = await msg.create_thread(name=self.titleTI.value)
 
         await thread.send(
-            f"{interaction.user.mention} has requested a bot development project.\n<@&{TECH_ID.r_botDeveloper}>"
+            f"{interaction.user.mention} has requested a bot development project.\n<@&{TechID.r_bot_developer}>"
         )
 
 
@@ -132,12 +132,12 @@ class TechProjectCMD(commands.Cog):
         await ctx.send(embed=embed, view=view)
 
     @app_commands.command()
-    @app_commands.guilds(TECH_ID.g_tech)
+    @app_commands.guilds(TechID.g_tech)
     @app_commands.checks.cooldown(1, 300, key=lambda i: (i.guild_id, i.channel.id))
     async def commission(
         self, interaction: discord.Interaction, action: Literal["close"]
     ):
-        channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
+        channel: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
         thread = interaction.channel
 
         if not isinstance(thread, discord.Thread):
@@ -166,7 +166,7 @@ class TechProjectCMD(commands.Cog):
 
     @commands.Cog.listener("on_message")
     async def auto_open_commission(self, message: discord.Message):
-        channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
+        channel: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
 
         if (
             isinstance(message.channel, discord.Thread)
@@ -189,7 +189,7 @@ class TechProjectCMD(commands.Cog):
         Creates a task loop to make sure threads don't automatically archive due to inactivity.
         """
 
-        channel: discord.TextChannel = self.bot.get_channel(TECH_ID.ch_botreq)
+        channel: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
         query = database.TechCommissionArchiveLog.select()
         closed_threads = [entry.ThreadID for entry in query]
 

@@ -6,7 +6,7 @@ from discord.ext import commands
 from discord.app_commands import command, describe, Group, guilds, check
 import discord
 from core import database
-from core.common import MAIN_ID, SET_ID, Emoji
+from core.common import MainID, SETID, Emoji
 
 if TYPE_CHECKING:
     from main import Timmy
@@ -45,7 +45,7 @@ def reload_blacklist():
 
 class SetSuggestBlacklist(Group):
     def __init__(self, bot: Timmy):
-        super().__init__(name="set_blacklist", guild_ids=[MAIN_ID.g_main, SET_ID.g_set])
+        super().__init__(name="set_blacklist", guild_ids=[MainID.g_main, SETID.g_set])
         self.bot = bot
 
     @property
@@ -112,7 +112,7 @@ class Suggest(Group):
         super().__init__(
             name="suggest",
             description="Suggest something for community engagement!",
-            guild_ids=[MAIN_ID.g_main],
+            guild_ids=[MainID.g_main],
         )
         self.bot = bot
 
@@ -186,7 +186,7 @@ class Suggest(Group):
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
         embed.set_image(url=art.url)
-        channel = self.bot.get_channel(SET_ID.ch_suggestions)
+        channel = self.bot.get_channel(SETID.ch_suggestions)
         await channel.send(embed=embed)
 
 
@@ -378,7 +378,7 @@ class SuggestModal(discord.ui.Modal):
             )
 
         channel: discord.abc.MessageableChannel = self.bot.get_channel(
-            SET_ID.ch_suggestions
+            SETID.ch_suggestions
         )
         await channel.send(embed=embed)
 
@@ -396,7 +396,7 @@ class Engagement(commands.Cog):
 
     @property
     def display_emoji(self) -> str:
-        return Emoji.turtlesmirk
+        return Emoji.turtle_smirk
 
     async def cog_load(self) -> None:
         for item in database.ResponseSpamBlacklist:
@@ -404,7 +404,7 @@ class Engagement(commands.Cog):
 
     @command(name="acceptance-letter")
     @spammer_check()
-    @guilds(MAIN_ID.g_main)
+    @guilds(MainID.g_main)
     async def _college_accept(
         self, interaction: discord.Interaction, file: discord.Attachment
     ):
@@ -416,12 +416,12 @@ class Engagement(commands.Cog):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
         embed.set_image(url=file.url)
         await interaction.response.send_message("Submitted! Congrats!!")
-        channel = self.bot.get_channel(SET_ID.ch_college_acceptance)
+        channel = self.bot.get_channel(SETID.ch_college_acceptance)
         await channel.send(embed=embed)
 
     @command(name="puzzle-guess")
     @spammer_check()
-    @guilds(MAIN_ID.g_main)
+    @guilds(MainID.g_main)
     async def _guess(self, interaction: discord.Interaction, guess: str):
         """
         Make a guess for the weekly puzzle
@@ -436,7 +436,7 @@ class Engagement(commands.Cog):
         await interaction.response.send_message(
             "Your guess has been submitted!", ephemeral=True
         )
-        guess_channel = self.bot.get_channel(SET_ID.ch_puzzle)
+        guess_channel = self.bot.get_channel(SETID.ch_puzzle)
         await guess_channel.send(embed=embed)
 
 

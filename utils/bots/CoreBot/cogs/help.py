@@ -523,7 +523,7 @@ class FrontPageSource(menus.PageSource):
         """
         )
         embed.set_footer(text=f"Contact IT Dept. for any questions or concerns!")
-        embed.set_thumbnail(url=Others.timmyBook_png)
+        embed.set_thumbnail(url=Others.timmy_book_png)
 
         if self.index == 0:
             embed.add_field(

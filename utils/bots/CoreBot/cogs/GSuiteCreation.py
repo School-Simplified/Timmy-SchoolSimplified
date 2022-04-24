@@ -10,7 +10,7 @@ from discord import app_commands
 
 from googleapiclient.discovery import build
 
-from core.common import HR_ID, access_secret, Emoji
+from core.common import HRID, access_secret, Emoji
 
 
 def get_random_string(length=13):
@@ -49,13 +49,13 @@ class AdminAPI(commands.Cog):
 
     @property
     def display_emoji(self) -> str:
-        return Emoji.humanresources
+        return Emoji.human_resources
 
     @app_commands.command(
         name="gsuite-create",
         description="Create a GSuite Account",
     )
-    @app_commands.guilds(HR_ID.g_hr)
+    @app_commands.guilds(HRID.g_hr)
     @app_commands.describe(
         organizationunit="Select the organization unit this user will be in."
     )
@@ -66,7 +66,7 @@ class AdminAPI(commands.Cog):
         lastname: str,
         organizationunit: Literal["Personal Account", "Team Account"],
     ):
-        HR_Role = discord.utils.get(interaction.user.guild.roles, id=HR_ID.r_hrStaff)
+        HR_Role = discord.utils.get(interaction.user.guild.roles, id=HRID.r_hr_staff)
         if HR_Role not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the required permissions to use this command."
@@ -101,9 +101,9 @@ class AdminAPI(commands.Cog):
         name="gsuite-delete",
         description="Suspend/Delete a GSuite Account",
     )
-    @app_commands.guilds(HR_ID.g_hr)
+    @app_commands.guilds(HRID.g_hr)
     async def delete_gsuite(self, interaction: discord.Interaction, email: str):
-        HR_Role = discord.utils.get(interaction.guild.roles, id=HR_ID.r_hrStaff)
+        HR_Role = discord.utils.get(interaction.guild.roles, id=HRID.r_hr_staff)
         if HR_Role not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the required permissions to use this command."
@@ -122,12 +122,12 @@ class AdminAPI(commands.Cog):
         name="gsuite-suspend",
         description="Suspend a GSuite Account",
     )
-    @app_commands.guilds(HR_ID.g_hr)
+    @app_commands.guilds(HRID.g_hr)
     @app_commands.describe(
         suspend="Select whether to suspend or restore the account. This field is required."
     )
     async def suspend_gsuite(self, interaction: discord.Interaction, email: str, suspend: bool):
-        HR_Role = discord.utils.get(interaction.guild.roles, id=HR_ID.r_hrStaff)
+        HR_Role = discord.utils.get(interaction.guild.roles, id=HRID.r_hr_staff)
         if HR_Role not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the required permissions to use this command."

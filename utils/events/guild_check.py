@@ -22,7 +22,7 @@ class GuildCheck(commands.Cog):
                 description="This guild is not authorized to use Timmy!",
                 color=discord.Color.brand_red(),
             )
-            embed.set_thumbnail(url=Others.timmyDog_png)
+            embed.set_thumbnail(url=Others.timmy_dog_png)
             embed.set_footer(text="Please contact an IT administrator for help.")
             for channel in guild.text_channels:
                 if channel.permissions_for(guild.me).send_messages:

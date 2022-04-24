@@ -274,46 +274,46 @@ class MainID:
     g_main = int(ConfigCatClient.MAIN_ID_CC.get_value("g_main", 763119924385939498))
 
     ch_commands = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_commands", 763409002913595412)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_commands", 763409002913595412)
     )
     ch_seniorMods = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_seniormods", 878792926266810418)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_seniormods", 878792926266810418)
     )
     ch_moderators = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_moderators", 786068971048140820)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_moderators", 786068971048140820)
     )
     ch_mutedChat = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_mutedchat", 808919081469739008)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_mutedchat", 808919081469739008)
     )
     ch_modLogs = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_modlogs", 863177000372666398)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_modlogs", 863177000372666398)
     )
     ch_tutoring = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_tutoring", 865716647083507733)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_tutoring", 865716647083507733)
     )
     ch_transcriptLogs = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_transcriptlogs", 767434763337728030)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_transcriptlogs", 767434763337728030)
     )
     ch_actionLogs = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_actionlogs", 767206398060396574)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_actionlogs", 767206398060396574)
     )
     ch_modCommands = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_modcommands", 786057630383865858)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_modcommands", 786057630383865858)
     )
     ch_controlPanel = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_controlpanel", 843637802293788692)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_controlpanel", 843637802293788692)
     )
     ch_startPrivateVC = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_startprivatevc", 784556875487248394)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_startprivatevc", 784556875487248394)
     )
     ch_announcements = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_announcements", 763121175764926464)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_announcements", 763121175764926464)
     )
     ch_modAnnouncements = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_modannouncements", 887780215789617202)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_modannouncements", 887780215789617202)
     )
     ch_eventAnnouncements = int(
-        ConfigcatClient.MAIN_ID_CC.get_value("ch_eventannouncements", 951302954965692436)
+        ConfigCatClient.MAIN_ID_CC.get_value("ch_eventannouncements", 951302954965692436)
     )
 
     # *** Categories ***
@@ -681,15 +681,21 @@ class SETID:
 
     # *** Channels ***
     ch_suggestions = int(
-        ConfigcatClient.SET_ID_CC.get_value("ch_suggestions", 954190487026274344)
+        ConfigCatClient.SET_ID_CC.get_value("ch_suggestions", 954190487026274344)
     )
     ch_puzzle = int(
-        ConfigcatClient.SET_ID_CC.get_value("ch_puzzle", 952402735167320084)
+        ConfigCatClient.SET_ID_CC.get_value("ch_puzzle", 952402735167320084)
     )
     ch_college_acceptance = int(
-        ConfigcatClient.SET_ID_CC.get_value("ch_college_acceptance", 955960683785236540)
+        ConfigCatClient.SET_ID_CC.get_value("ch_college_acceptance", 955960683785236540)
     )
-    r_hrStaff = int(ConfigcatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+    ch_may_day_guess = int(
+        ConfigCatClient.SET_ID_CC.get_value("ch_puzzle_guessv2", 966857151417028608)
+    )
+
+    # *** Roles ***
+    r_hrStaff = int(ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+
 
 
 

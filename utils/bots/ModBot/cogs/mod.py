@@ -16,7 +16,7 @@ class PunishmentTag(commands.Cog):
 
     @property
     def display_emoji(self) -> str:
-        return Emoji.modshield
+        return Emoji.mod_shield
 
     @staticmethod
     def get_by_index(index):

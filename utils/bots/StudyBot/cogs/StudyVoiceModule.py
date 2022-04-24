@@ -8,12 +8,6 @@ from discord.ext import commands, tasks
 
 from core import database
 from core.common import (
-    Emoji,
-    MAIN_ID,
-    STAFF_ID,
-    TUT_ID,
-    TECH_ID,
-    SandboxConfig,
     SelectMenuHandler,
 )
 from utils.bots.StudyBot.cogs.StudyMain import addLeaderboardProgress

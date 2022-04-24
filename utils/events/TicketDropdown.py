@@ -13,12 +13,12 @@ import discord
 import pytz
 from core import database
 from core.common import (
-    CH_ID,
-    TUT_ID,
-    HR_ID,
-    MAIN_ID,
-    MKT_ID,
-    TECH_ID,
+    ChID,
+    TutID,
+    HRID,
+    MainID,
+    MktID,
+    TechID,
     ButtonHandler,
     Emoji,
     Others,
@@ -46,9 +46,9 @@ gspread_client = gspread.authorize(creds)
 
 
 """
-if not (RoleOBJ.id == MAIN_ID.r_chatHelper or RoleOBJ.id == MAIN_ID.r_leadHelper) and not channel.category.id == MAIN_ID.cat_essayTicket:
-                    if RoleOBJ.id == MAIN_ID.r_essayReviser:
-                        if channel.category.id == MAIN_ID.cat_essayTicket or channel.category.id == MAIN_ID.cat_englishTicket:
+if not (RoleOBJ.id == MainID.r_chatHelper or RoleOBJ.id == MainID.r_leadHelper) and not channel.category.id == MainID.cat_essayTicket:
+                    if RoleOBJ.id == MainID.r_essayReviser:
+                        if channel.category.id == MainID.cat_essayTicket or channel.category.id == MainID.cat_englishTicket:
 """
 MasterSubjectOptions = [
     discord.SelectOption(
@@ -256,13 +256,13 @@ def decodeDict(self, value: str, sandbox: bool = False) -> typing.Union[str, int
         }
     else:
         decodeID = {
-            "['Math Helpers']": MAIN_ID.cat_mathTicket,
-            "['Science Helpers']": MAIN_ID.cat_scienceTicket,
-            "['Social Studies Helpers']": MAIN_ID.cat_socialStudiesTicket,
-            "['English Helpers']": MAIN_ID.cat_englishTicket,
-            "['Essay Helpers']": MAIN_ID.cat_essayTicket,
-            "['Language Helpers']": MAIN_ID.cat_otherTicket,
-            "['Other Helpers']": MAIN_ID.cat_otherTicket,
+            "['Math Helpers']": MainID.cat_math_ticket,
+            "['Science Helpers']": MainID.cat_science_ticket,
+            "['Social Studies Helpers']": MainID.cat_social_studies_ticket,
+            "['English Helpers']": MainID.cat_english_ticket,
+            "['Essay Helpers']": MainID.cat_essay_ticket,
+            "['Language Helpers']": MainID.cat_other_ticket,
+            "['Other Helpers']": MainID.cat_other_ticket,
         }
 
     name = decodeName[value]
@@ -306,17 +306,17 @@ class TicketBT(discord.ui.Button):
         A button for one role. `custom_id` is needed for persistent views.
         """
         self.bot = bot
-        self.mainserver = MAIN_ID.g_main
+        self.mainserver = MainID.g_main
         self.ServerIDs = [
-            TECH_ID.g_tech,
-            CH_ID.g_ch,
-            TUT_ID.g_tut,
-            MKT_ID.g_mkt,
-            HR_ID.g_hr,
+            TechID.g_tech,
+            ChID.g_ch,
+            TutID.g_tut,
+            MktID.g_mkt,
+            HRID.g_hr,
         ]
-        self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
-        self.CHID_DEFAULT = Others.CHID_DEFAULT
-        self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
+        self.TICKET_INACTIVE_TIME = Others.ticket_inactive_time
+        self.CHID_DEFAULT = Others.CHID_default
+        self.EssayCategory = [ChID.cat_essay, ChID.cat_essay]
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
 
         super().__init__(
@@ -328,7 +328,7 @@ class TicketBT(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         Sandbox = False
-        if interaction.message.guild.id == TECH_ID.g_tech:
+        if interaction.message.guild.id == TechID.g_tech:
             Sandbox = True
 
         bucket = self.view.cd_mapping.get_bucket(interaction.message)
@@ -578,15 +578,15 @@ class TicketBT(discord.ui.Button):
                         RoleOBJ = discord.utils.get(guild.roles, name=role)
                         if (
                             not (
-                                RoleOBJ.id == MAIN_ID.r_chatHelper
-                                or RoleOBJ.id == MAIN_ID.r_leadHelper
+                                RoleOBJ.id == MainID.r_chat_helper
+                                or RoleOBJ.id == MainID.r_lead_helper
                             )
-                            and not channel.category.id == MAIN_ID.cat_essayTicket
+                            and not channel.category.id == MainID.cat_essay_ticket
                         ):
-                            if RoleOBJ.id == MAIN_ID.r_essayReviser:
+                            if RoleOBJ.id == MainID.r_essay_reviser:
                                 if (
-                                    channel.category.id == MAIN_ID.cat_essayTicket
-                                    or channel.category.id == MAIN_ID.cat_englishTicket
+                                    channel.category.id == MainID.cat_essay_ticket
+                                    or channel.category.id == MainID.cat_english_ticket
                                 ):
                                     await channel.set_permissions(
                                         RoleOBJ,
@@ -741,17 +741,17 @@ class TicketButton(discord.ui.View):
 class DropdownTickets(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.mainserver = MAIN_ID.g_main
+        self.mainserver = MainID.g_main
         self.ServerIDs = [
-            TECH_ID.g_tech,
-            CH_ID.g_ch,
-            TUT_ID.g_tut,
-            MKT_ID.g_mkt,
-            HR_ID.g_hr,
+            TechID.g_tech,
+            ChID.g_ch,
+            TutID.g_tut,
+            MktID.g_mkt,
+            HRID.g_hr,
         ]
-        self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
-        self.CHID_DEFAULT = Others.CHID_DEFAULT
-        self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
+        self.TICKET_INACTIVE_TIME = Others.ticket_inactive_time
+        self.CHID_DEFAULT = Others.CHID_default
+        self.EssayCategory = [ChID.cat_essay, ChID.cat_essay]
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
         self.TicketInactive.start()
 
@@ -957,13 +957,13 @@ class DropdownTickets(commands.Cog):
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":
             channel: discord.TextChannel = interaction.channel
-            if interaction.guild.id == MAIN_ID.g_main:
+            if interaction.guild.id == MainID.g_main:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
-                    MAIN_ID.ch_transcriptLogs
+                    MainID.ch_transcriptLogs
                 )
             else:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
-                    TECH_ID.ch_ticketLog
+                    TechID.ch_ticket_log
                 )
             author = interaction.user
             msg = await interaction.channel.send(
@@ -974,7 +974,7 @@ class DropdownTickets(commands.Cog):
                     self, channel, ResponseLogChannel, author, None, True
                 )
 
-                if channel.category_id == MAIN_ID.cat_essayTicket:
+                if channel.category_id == MainID.cat_essay_ticket:
                     raw_url = S3_URL.split("](")[1].strip(")")
                     values = self.sheet.col_values(1)
 
@@ -1025,13 +1025,13 @@ class DropdownTickets(commands.Cog):
         elif InteractionResponse["custom_id"] == "ch_lock_C&D":
             channel = self.bot.get_channel(interaction.channel_id)
             author = interaction.user
-            if interaction.guild.id == MAIN_ID.g_main:
+            if interaction.guild.id == MainID.g_main:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
-                    MAIN_ID.ch_transcriptLogs
+                    MainID.ch_transcriptLogs
                 )
             else:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
-                    TECH_ID.ch_ticketLog
+                    TechID.ch_ticket_log
                 )
             query = (
                 database.TicketInfo.select()
@@ -1058,7 +1058,7 @@ class DropdownTickets(commands.Cog):
                 # S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
                 # print(transcript_file.filename)
 
-                if channel.category_id == MAIN_ID.cat_essayTicket:
+                if channel.category_id == MainID.cat_essay_ticket:
                     raw_url = url.split("](")[1].strip(")")
                     values = self.sheet.col_values(1)
 
@@ -1149,7 +1149,7 @@ class DropdownTickets(commands.Cog):
     @tasks.loop(minutes=1.0)
     async def TicketInactive(self):
         TicketInfoTB = database.TicketInfo
-        guild = self.bot.get_guild(MAIN_ID.g_main)
+        guild = self.bot.get_guild(MainID.g_main)
         for entry in TicketInfoTB:
             channel: discord.TextChannel = self.bot.get_channel(entry.ChannelID)
             if channel is None:
@@ -1158,7 +1158,7 @@ class DropdownTickets(commands.Cog):
             fetchMessage = [message async for message in channel.history(limit=1)]
             TicketOwner = guild.get_member(entry.authorID)
             messages = [message async for message in channel.history(limit=None)]
-            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)
+            LogCH = self.bot.get_channel(MainID.ch_transcriptLogs)
             authorList = []
             if len(messages) == 0:
                 continue
@@ -1262,10 +1262,10 @@ class DropdownTickets(commands.Cog):
         await ctx.send(
             f"""**Note:** *Make sure to allow direct messages from server members!*\n
         {Emoji.schoolsimplified} **__How to Get School Help:__**
-            > {Emoji.ssarrow} Click on the button to start the process.
-            > {Emoji.ssarrow} In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
-            > {Emoji.ssarrow}Send the question in your direct messages as per the bot instructions.
-            > {Emoji.ssarrow} Send a picture of your assignment title in your direct messages as per the bot instructions.""",
+            > {Emoji.ss_arrow} Click on the button to start the process.
+            > {Emoji.ss_arrow} In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
+            > {Emoji.ss_arrow}Send the question in your direct messages as per the bot instructions.
+            > {Emoji.ss_arrow} Send a picture of your assignment title in your direct messages as per the bot instructions.""",
             view=TicketButton(self.bot),
         )
 

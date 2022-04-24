@@ -3,16 +3,16 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
-from core.common import MAIN_ID
+from core.common import MainID
 
 
 class MessageLogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channels = [
-            MAIN_ID.ch_seniorMods,
-            MAIN_ID.ch_moderators,
-            MAIN_ID.ch_mutedChat,
+            MainID.ch_seniorMods,
+            MainID.ch_moderators,
+            MainID.ch_mutedChat,
         ]
 
     @commands.Cog.listener()
@@ -38,7 +38,7 @@ class MessageLogs(commands.Cog):
                 text=f"Author: {message.author.id} | Message ID: {message.id} • Today at {val}"
             )
 
-            channel = self.bot.get_channel(MAIN_ID.ch_modLogs)
+            channel = self.bot.get_channel(MainID.ch_modLogs)
             await channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -65,7 +65,7 @@ class MessageLogs(commands.Cog):
                 text=f"Author: {before.author.id} | Message ID: {before.id} • Today at {val}"
             )
 
-            channel = self.bot.get_channel(MAIN_ID.ch_modLogs)
+            channel = self.bot.get_channel(MainID.ch_modLogs)
             await channel.send(embed=embed)
 
 
