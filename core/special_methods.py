@@ -19,7 +19,7 @@ from discord.ext import commands
 
 from core import database
 from core.common import (
-    bcolors,
+    ConsoleColors,
     GSuiteVerify,
     Colors,
     LockButton,
@@ -108,12 +108,12 @@ async def on_ready_(bot: Timmy):
     if not os.getenv("USEREAL"):
         IP = os.getenv("IP")
         databaseField = (
-            f"{bcolors.OKGREEN}Selected Database: External ({IP}){bcolors.ENDC}"
+            f"{ConsoleColors.OKGREEN}Selected Database: External ({IP}){ConsoleColors.ENDC}"
         )
     else:
         databaseField = (
-            f"{bcolors.FAIL}Selected Database: localhost{bcolors.ENDC}\n{bcolors.WARNING}WARNING: Not "
-            f"recommended to use SQLite.{bcolors.ENDC} "
+            f"{ConsoleColors.FAIL}Selected Database: localhost{ConsoleColors.ENDC}\n{ConsoleColors.WARNING}WARNING: Not "
+            f"recommended to use SQLite.{ConsoleColors.ENDC} "
         )
 
     try:
@@ -139,14 +139,14 @@ async def on_ready_(bot: Timmy):
             ╱╱╱╱╱╱╱╱╱╱╰━╯
 
             Bot Account: {bot.user.name} | {bot.user.id}
-            {bcolors.OKCYAN}Discord API Wrapper Version: {discord.__version__}{bcolors.ENDC}
-            {bcolors.WARNING}TimmyOS Version: {output}{bcolors.ENDC}
+            {ConsoleColors.OKCYAN}Discord API Wrapper Version: {discord.__version__}{ConsoleColors.ENDC}
+            {ConsoleColors.WARNING}TimmyOS Version: {output}{ConsoleColors.ENDC}
             {databaseField}
 
-            {bcolors.OKCYAN}Current Time: {now}{bcolors.ENDC}
-            {bcolors.OKGREEN}Cogs, libraries, and views have successfully been initalized.{bcolors.ENDC}
+            {ConsoleColors.OKCYAN}Current Time: {now}{ConsoleColors.ENDC}
+            {ConsoleColors.OKGREEN}Cogs, libraries, and views have successfully been initalized.{ConsoleColors.ENDC}
             ==================================================
-            {bcolors.WARNING}Statistics{bcolors.ENDC}
+            {ConsoleColors.WARNING}Statistics{ConsoleColors.ENDC}
 
             Guilds: {len(bot.guilds)}
             Members: {len(bot.users)}
