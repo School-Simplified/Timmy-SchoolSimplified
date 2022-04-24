@@ -42,14 +42,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 64369
+      "length": 64309
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-3103661124257469287"
+  "hash": "2438348299813039980"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -68,14 +68,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 3843
+      "length": 3827
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-133697772578322487"
+  "hash": "-1390855427050078292"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -94,14 +94,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 17671
+      "length": 17652
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "8182046627151379371"
+  "hash": "-4446330503476988800"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -120,14 +120,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 8847
+      "length": 8848
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-3168811278121940490"
+  "hash": "7826460370891293071"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -146,14 +146,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 6247
+      "length": 6248
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "6388965778207965215"
+  "hash": "8289665153031893161"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -172,14 +172,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 22595
+      "length": 22589
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "2013049121105502397"
+  "hash": "2273251566483109700"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -198,14 +198,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 8352
+      "length": 8353
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "1916686990339048569"
+  "hash": "2567130447844245323"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -224,14 +224,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 4017
+      "length": 4018
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-9043192816931776730"
+  "hash": "-8754439305239239043"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -250,12 +250,12 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 1595,
+      "length": 1596,
       "code": {
         "startLine": 1,
-        "length": 1595,
+        "length": 1596,
         "offset": 0,
-        "surroundingCode": "import discord\nfrom core import database\nfrom core.common import rulesDict\nfrom discord.ext import commands\nfrom core.common import MainID\n\nMESSAGEC = \"Go chit chat somewhere else, this is for commands only.\"\nMESSAGEMASA = \"Hey you ||~~short~~|| *I mean* tall mf, go chit chat somewhere you twat.\"\n\n\nclass CommandsOnly(commands.Cog):\n    def __init__(self, bot):\n        self.bot = bot\n        self.masa_id = 736765405728735232\n        self.rules = rulesDict\n\n    @commands.Cog.listener()\n    async def on_message(self, message: discord.Message):\n        if message.channel.id == MainID.ch_mod_commands and not message.author.bot:\n            prefix = []\n            for p in database.WhitelistedPrefix:\n                prefix.append(p.prefix)\n\n            res = list(filter(message.content.startswith, prefix)) != []\n\n            if not res:\n                await message.delete()\n                if message.author.id == self.masa_id:\n                    embed = discord.Embed(\n                        title=\"Commands ONLY\",\n                        description=MESSAGEMASA,\n                        color=discord.Colour.brand_red(),\n                    )\n                else:\n                    embed = discord.Embed(\n                        title=\"Commands ONLY\",\n                        description=MESSAGEC,\n                        color=discord.Colour.brand_red(),\n                    )\n\n                await message.channel.send(\n                    message.author.mention, embed=embed, delete_after=5.0\n                )\n\n\nasync def setup(bot):\n    await bot.add_cog(CommandsOnly(bot))"
+        "surroundingCode": "import discord\nfrom discord.ext import commands\n\nfrom core import database\nfrom core.common import MainID\nfrom core.common import rulesDict\n\nMESSAGEC = \"Go chit chat somewhere else, this is for commands only.\"\nMESSAGEMASA = \"Hey you ||~~short~~|| *I mean* tall mf, go chit chat somewhere you twat.\"\n\n\nclass CommandsOnly(commands.Cog):\n    def __init__(self, bot):\n        self.bot = bot\n        self.masa_id = 736765405728735232\n        self.rules = rulesDict\n\n    @commands.Cog.listener()\n    async def on_message(self, message: discord.Message):\n        if message.channel.id == MainID.ch_mod_commands and not message.author.bot:\n            prefix = []\n            for p in database.WhitelistedPrefix:\n                prefix.append(p.prefix)\n\n            res = list(filter(message.content.startswith, prefix)) != []\n\n            if not res:\n                await message.delete()\n                if message.author.id == self.masa_id:\n                    embed = discord.Embed(\n                        title=\"Commands ONLY\",\n                        description=MESSAGEMASA,\n                        color=discord.Colour.brand_red(),\n                    )\n                else:\n                    embed = discord.Embed(\n                        title=\"Commands ONLY\",\n                        description=MESSAGEC,\n                        color=discord.Colour.brand_red(),\n                    )\n\n                await message.channel.send(\n                    message.author.mention, embed=embed, delete_after=5.0\n                )\n\n\nasync def setup(bot):\n    await bot.add_cog(CommandsOnly(bot))"
       }
     }
   ],
@@ -263,7 +263,7 @@
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-7606188393555721898"
+  "hash": "-5149090002967348049"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -282,14 +282,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 29696
+      "length": 29647
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-662652427250557395"
+  "hash": "1058681297847279242"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -308,14 +308,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 28762
+      "length": 28756
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-960587821064634766"
+  "hash": "8871519768016215010"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -334,14 +334,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 3046
+      "length": 3047
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-3825091668836773577"
+  "hash": "-5707570057612809072"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -360,14 +360,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 25521
+      "length": 25435
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-1615685067478897239"
+  "hash": "5936922668605501058"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -412,14 +412,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 18558
+      "length": 18543
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "342882729007767194"
+  "hash": "4089001694349889663"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -438,14 +438,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 5697
+      "length": 5696
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "2948722181229445822"
+  "hash": "651151194757913522"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -464,14 +464,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 1908
+      "length": 1895
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "6176325263353300982"
+  "hash": "-2022938694878769255"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -490,14 +490,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 2419
+      "length": 2420
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-4360471040967890214"
+  "hash": "387709661457686874"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -516,14 +516,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 7291
+      "length": 7261
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "3451248696921024509"
+  "hash": "-7514166062713338492"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -542,14 +542,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 3485
+      "length": 3452
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-8815980753288560066"
+  "hash": "4406470178947378942"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -594,14 +594,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 30120
+      "length": 30121
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "4896023817028782028"
+  "hash": "-2201772420723021316"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -620,12 +620,12 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 1504,
+      "length": 1490,
       "code": {
         "startLine": 1,
-        "length": 1504,
+        "length": 1490,
         "offset": 0,
-        "surroundingCode": "import pytz\nimport datetime\nfrom dateutil import parser\nimport discord\nfrom discord.ext import tasks, commands\n\nfrom core.database import StudyVCLeaderboard\n\n\nclass StudyLoop(commands.Cog):\n    def __init__(self, bot: commands.Bot):\n        self.bot = bot\n        self.est = pytz.timezone(\"US/Eastern\")\n        self.lastReset = parser.parse(\n            \"14.03.2022 00:00:00 EST\", tzinfos={\"EST\": -4 * 3600}\n        )  # 14.03.2022 as default value\n        self.midnight = datetime.datetime.strptime(\"00:00:00\", \"%H:%M:%S\").time()\n\n        self.TTSWeekCheck.start()\n\n    async def cog_unload(self):\n        self.TTSWeekCheck.stop()\n\n    @tasks.loop(seconds=10)\n    async def TTSWeekCheck(self):\n        now = datetime.datetime.now(self.est)\n        weekdayNow = now.isoweekday()\n        timeNow = now.time()\n\n        queryLeaderboard = StudyVCLeaderboard.select()\n        entries = [entry.id for entry in queryLeaderboard]\n\n        if (\n            weekdayNow == 1\n            and (now - self.lastReset >= datetime.timedelta(days=7))\n            and timeNow >= self.midnight\n        ):\n            lastReset = now\n            for entry in entries:\n                queryLeaderboard = queryLeaderboard.select().where(\n                    StudyVCLeaderboard.id == entry\n                )\n                queryLeaderboard = queryLeaderboard.get()\n                queryLeaderboard.TTSWeek = 0\n                queryLeaderboard.save()\n\n\nasync def setup(bot: commands.Bot):\n    await bot.add_cog(StudyLoop(bot))"
+        "surroundingCode": "import datetime\n\nimport pytz\nfrom dateutil import parser\nfrom discord.ext import tasks, commands\n\nfrom core.database import StudyVCLeaderboard\n\n\nclass StudyLoop(commands.Cog):\n    def __init__(self, bot: commands.Bot):\n        self.bot = bot\n        self.est = pytz.timezone(\"US/Eastern\")\n        self.lastReset = parser.parse(\n            \"14.03.2022 00:00:00 EST\", tzinfos={\"EST\": -4 * 3600}\n        )  # 14.03.2022 as default value\n        self.midnight = datetime.datetime.strptime(\"00:00:00\", \"%H:%M:%S\").time()\n\n        self.TTSWeekCheck.start()\n\n    async def cog_unload(self):\n        self.TTSWeekCheck.stop()\n\n    @tasks.loop(seconds=10)\n    async def TTSWeekCheck(self):\n        now = datetime.datetime.now(self.est)\n        weekdayNow = now.isoweekday()\n        timeNow = now.time()\n\n        queryLeaderboard = StudyVCLeaderboard.select()\n        entries = [entry.id for entry in queryLeaderboard]\n\n        if (\n            weekdayNow == 1\n            and (now - self.lastReset >= datetime.timedelta(days=7))\n            and timeNow >= self.midnight\n        ):\n            lastReset = now\n            for entry in entries:\n                queryLeaderboard = queryLeaderboard.select().where(\n                    StudyVCLeaderboard.id == entry\n                )\n                queryLeaderboard = queryLeaderboard.get()\n                queryLeaderboard.TTSWeek = 0\n                queryLeaderboard.save()\n\n\nasync def setup(bot: commands.Bot):\n    await bot.add_cog(StudyLoop(bot))"
       }
     }
   ],
@@ -633,5 +633,5 @@
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-9068057608101693188"
+  "hash": "-3569592224546900651"
 }]}
