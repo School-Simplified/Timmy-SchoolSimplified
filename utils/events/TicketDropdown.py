@@ -959,7 +959,7 @@ class DropdownTickets(commands.Cog):
             channel: discord.TextChannel = interaction.channel
             if interaction.guild.id == MainID.g_main:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
-                    MainID.ch_transcriptLogs
+                    MainID.ch_transcript_logs
                 )
             else:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
@@ -1027,7 +1027,7 @@ class DropdownTickets(commands.Cog):
             author = interaction.user
             if interaction.guild.id == MainID.g_main:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
-                    MainID.ch_transcriptLogs
+                    MainID.ch_transcript_logs
                 )
             else:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
@@ -1158,7 +1158,7 @@ class DropdownTickets(commands.Cog):
             fetchMessage = [message async for message in channel.history(limit=1)]
             TicketOwner = guild.get_member(entry.authorID)
             messages = [message async for message in channel.history(limit=None)]
-            LogCH = self.bot.get_channel(MainID.ch_transcriptLogs)
+            LogCH = self.bot.get_channel(MainID.ch_transcript_logs)
             authorList = []
             if len(messages) == 0:
                 continue

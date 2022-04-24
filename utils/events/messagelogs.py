@@ -10,9 +10,9 @@ class MessageLogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channels = [
-            MainID.ch_seniorMods,
+            MainID.ch_senior_mods,
             MainID.ch_moderators,
-            MainID.ch_mutedChat,
+            MainID.ch_muted_chat,
         ]
 
     @commands.Cog.listener()
@@ -38,7 +38,7 @@ class MessageLogs(commands.Cog):
                 text=f"Author: {message.author.id} | Message ID: {message.id} • Today at {val}"
             )
 
-            channel = self.bot.get_channel(MainID.ch_modLogs)
+            channel = self.bot.get_channel(MainID.ch_mod_logs)
             await channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -65,7 +65,7 @@ class MessageLogs(commands.Cog):
                 text=f"Author: {before.author.id} | Message ID: {before.id} • Today at {val}"
             )
 
-            channel = self.bot.get_channel(MainID.ch_modLogs)
+            channel = self.bot.get_channel(MainID.ch_mod_logs)
             await channel.send(embed=embed)
 
 

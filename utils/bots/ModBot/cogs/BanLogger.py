@@ -34,7 +34,7 @@ def next_available_row(worksheet):
 class BanUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.ModLogID = MainID.ch_actionLogs
+        self.ModLogID = MainID.ch_action_logs
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild: discord.Guild, user):

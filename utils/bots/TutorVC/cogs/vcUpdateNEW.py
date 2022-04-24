@@ -61,18 +61,18 @@ class TutorVCUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channel_id = {
-            MainID.g_main: MainID.ch_controlPanel,
+            MainID.g_main: MainID.ch_control_panel,
             StaffID.g_staff: StaffID.ch_console,
             TechID.g_tech: getConsoleCH(0),
         }
         self.staticChannels = [
-            MainID.ch_startPrivateVC,
+            MainID.ch_start_private_vc,
             StaffID.ch_start_private_vc,
             getConsoleCH(0),
         ]
         self.presetChannels = [
-            MainID.ch_controlPanel,
-            MainID.ch_startPrivateVC,
+            MainID.ch_control_panel,
+            MainID.ch_start_private_vc,
             StaffID.ch_console,
             StaffID.ch_start_private_vc,
             getConsoleCH(0),
@@ -106,7 +106,7 @@ class TutorVCUpdate(commands.Cog):
             TechID.g_tech: SandboxConfig.cat_sandbox,
         }
         self.LobbyStartIDs = {
-            MainID.g_main: MainID.ch_controlPanel,
+            MainID.g_main: MainID.ch_control_panel,
             StaffID.g_staff: StaffID.ch_console,
             TechID.g_tech: getConsoleCH(0),
         }

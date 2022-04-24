@@ -16,7 +16,7 @@ class CommandsOnly(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.channel.id == MainID.ch_modCommands and not message.author.bot:
+        if message.channel.id == MainID.ch_mod_commands and not message.author.bot:
             prefix = []
             for p in database.WhitelistedPrefix:
                 prefix.append(p.prefix)

@@ -88,16 +88,16 @@ class TutorVCCMD(commands.Cog):
             q = database.SandboxConfig.create(mode="None")
             q.save()
 
-        self.channel_id = MainID.ch_controlPanel
+        self.channel_id = MainID.ch_control_panel
         self.categoryID = [
             MainID.cat_private_vc,
             StaffID.cat_private_vc,
             SandboxConfig.cat_sandbox,
         ]
-        self.staticChannels = [MainID.ch_startPrivateVC, q.ch_tv_startvc]
+        self.staticChannels = [MainID.ch_start_private_vc, q.ch_tv_startvc]
         self.presetChannels = [
-            MainID.ch_controlPanel,
-            MainID.ch_startPrivateVC,
+            MainID.ch_control_panel,
+            MainID.ch_start_private_vc,
             q.ch_tv_startvc,
             q.ch_tv_console,
         ]
@@ -170,12 +170,12 @@ class TutorVCCMD(commands.Cog):
         self.TutorRole = "Tutor"
         self.TutorLogID = TutID.ch_hour_logs
         self.LobbyStartIDs = {
-            MainID.g_main: MainID.ch_controlPanel,
+            MainID.g_main: MainID.ch_control_panel,
             StaffID.g_staff: StaffID.ch_console,
             TechID.g_tech: q.ch_tv_console,
         }
         self.StartVCIDs = {
-            MainID.g_main: MainID.ch_startPrivateVC,
+            MainID.g_main: MainID.ch_start_private_vc,
             StaffID.g_staff: StaffID.ch_start_private_vc,
             TechID.g_tech: q.ch_tv_startvc,
         }

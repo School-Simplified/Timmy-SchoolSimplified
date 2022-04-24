@@ -30,7 +30,7 @@ class VotingBot(commands.Cog):
         self.bot = bot
         self.acceptedAnnouncementCHs = [
             MainID.ch_announcements,
-            MainID.ch_modAnnouncements,
+            MainID.ch_mod_announcements,
             StaffID.ch_announcements,
             #StaffID.ch_acadAnnouncements,
             #StaffID.ch_clubAnnouncements,
