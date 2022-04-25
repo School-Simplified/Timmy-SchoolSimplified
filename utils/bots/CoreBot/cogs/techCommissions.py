@@ -6,13 +6,15 @@ from discord.ext import commands, tasks
 
 from core import database
 from core.checks import is_botAdmin
-from core.common import TechID, Emoji
+from core.common import TechID, Emoji, StaffID
 
 
 class BotRequestModal(ui.Modal, title="Bot Development Request"):
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: commands.Bot, extguild: bool = False, responseid: int = None) -> None:
         super().__init__(timeout=None)
         self.bot = bot
+        self.extguild = extguild
+        self.responseid = responseid
 
     titleTI = ui.TextInput(
         label="What is a descriptive title for your project?",
@@ -74,6 +76,29 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
         await thread.send(
             f"{interaction.user.mention} has requested a bot development project.\n<@&{TechID.r_bot_developer}>"
         )
+        if self.extguild:
+            resp_channel = self.bot.get_channel(self.responseid)
+            await resp_channel.send(
+                f"{interaction.user.mention} your commission has been opened!\nYou can view it here: <#{thread.id}>",
+                delete_after=10.0
+            )
+
+
+class CommissionConfirm(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green)
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.value = True
+        self.stop()
+
+    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message('Cancelling', ephemeral=True)
+        self.value = False
+        self.stop()
 
 
 class CommissionTechButton(discord.ui.View):
@@ -93,7 +118,18 @@ class CommissionTechButton(discord.ui.View):
         interaction: discord.Interaction,
         button: discord.ui.Button,
     ):
-        modal = BotRequestModal(self.bot)
+        extguild = False
+        if interaction.guild.id == StaffID.g_staff_resources:
+            guild = self.bot.get_guild(TechID.g_tech)
+            if guild.get_member(interaction.user.id) is not None:
+                extguild = True
+            else:
+                return await interaction.followup.send(
+                    f"{interaction.user.mention} you aren't in the IT server, please join the server and try again.",
+                    ephemeral=True
+                )
+
+        modal = BotRequestModal(self.bot, extguild, interaction.channel.id)
         return await interaction.response.send_modal(modal)
 
 
@@ -183,6 +219,22 @@ class TechProjectCMD(commands.Cog):
                 result.delete_instance()
 
                 await message.reply(content="Commission re-opened!")
+
+    @commands.command()
+    async def leadershipPost(self, ctx: commands.Context):
+        """
+        Post the Bot Development Commission Process in the leadership server.
+        """
+        await ctx.send("https://cdn.discordapp.com/attachments/956619270899499028/956625228371492885/4.png\n\n")
+        await ctx.send(
+            "** **\n\n**Bot Development Commission Process**\n"
+            "Information Technology is able to help automate and improve School Simplified through technology. If you "
+            "have an idea that could improve your team's or School Simplified's operation, feel free to make a "
+            "commission!\n\n"
+            "*Join the IT server (https://discord.gg/WugSf4a74a) and click the button to create a Developer"
+            "Commission (bot creation, bot changes).*",
+            view=CommissionTechButton(self.bot)
+        )
 
     @tasks.loop(seconds=60.0)
     async def autoUnarchiveThread(self):
