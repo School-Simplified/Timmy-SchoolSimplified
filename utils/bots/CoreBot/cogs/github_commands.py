@@ -65,7 +65,7 @@ class GithubIssueSelect(discord.ui.Select):
                 description=label.description or None,
                 value=label.name
             )
-        super().__init__(max_values=len(self.options))
+        super().__init__(max_values=5)
 
     async def callback(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=True)
