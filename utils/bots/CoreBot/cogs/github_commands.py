@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import itertools
 import os
-from typing import Any, Dict, List, Literal, TYPE_CHECKING, TypeVar, Union, Optional
+from typing import Dict, List, Literal, TYPE_CHECKING, Union, Optional
 
 from core.checks import slash_is_bot_admin_4
 
@@ -13,9 +12,8 @@ from github.Repository import Repository
 
 import discord
 from discord.ext import commands
-from discord.app_commands import command, describe, Group, guilds
+from discord.app_commands import command, describe, Group
 
-from core.common import TECH_ID
 
 if TYPE_CHECKING:
     from main import Timmy
