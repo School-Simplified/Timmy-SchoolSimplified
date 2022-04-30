@@ -55,7 +55,6 @@ class GithubIssueSelect(discord.ui.Select):
             issue: Issue,
             labels: List[Label]
     ):
-        super().__init__(max_values=len(self.options))
         self.bot = bot
         self._issue = issue
         self._labels = labels
@@ -66,6 +65,7 @@ class GithubIssueSelect(discord.ui.Select):
                 description=label.description or None,
                 value=label.name
             )
+        super().__init__(max_values=len(self.options))
 
     async def callback(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=True)
