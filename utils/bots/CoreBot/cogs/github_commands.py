@@ -58,13 +58,20 @@ class GithubIssueSelect(discord.ui.Select):
         self.bot = bot
         self._issue = issue
         self._labels = labels
-
-        for label in labels:
-            self.add_option(
+        self.options = [
+            discord.SelectOption(
                 label=label.name,
                 description=label.description or None,
                 value=label.name
             )
+            for label in self._labels
+        ]
+        # for label in labels:
+        #     self.add_option(
+        #         label=label.name,
+        #         description=label.description or None,
+        #         value=label.name
+        #     )
         super().__init__(max_values=5)
 
     async def callback(self, interaction: discord.Interaction) -> None:
