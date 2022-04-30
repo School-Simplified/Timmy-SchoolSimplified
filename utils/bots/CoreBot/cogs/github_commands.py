@@ -2,15 +2,18 @@ from __future__ import annotations
 
 import itertools
 import os
-from typing import Any, Dict, List, Literal, TYPE_CHECKING, Union, Optional
-
-from discord import app_commands
+from typing import Any, Dict, List, Literal, TYPE_CHECKING, TypeVar, Union, Optional
 
 from core.checks import slash_is_bot_admin_4
-import discord
+
 from github import Github
+from github.Issue import Issue
+from github.Label import Label
+from github.Repository import Repository
+
+import discord
 from discord.ext import commands
-from discord.app_commands import command, Group, guilds
+from discord.app_commands import command, describe, Group, guilds
 
 from core.common import TECH_ID
 
@@ -24,15 +27,67 @@ GithubActionLiteral = Literal[
 IssueFeatureLiteral = Literal["Command", "Slash Command", "Dropdown or Button", "Other"]
 
 
+class GithubIssueLabels(discord.ui.View):
+    def __init__(
+            self,
+            bot: Timmy,
+            issue: Issue,
+            repository: Repository,
+    ):
+        super().__init__(timeout=500)
+        self.bot = bot
+        self._issue = issue
+        self.add_item(
+            GithubIssueSelect(
+                bot,
+                issue,
+                list(repository.get_labels())
+            )
+        )
+
+    async def on_timeout(self) -> None:
+        for item in self.children:
+            item.disabled = True
+
+
+class GithubIssueSelect(discord.ui.Select):
+    def __init__(
+            self,
+            bot: Timmy,
+            issue: Issue,
+            labels: List[Label]
+    ):
+        super().__init__(max_values=len(self.options))
+        self.bot = bot
+        self._issue = issue
+        self._labels = labels
+
+        for label in labels:
+            self.add_option(
+                label=label.name,
+                description=label.description or None,
+                value=label.name
+            )
+
+    async def callback(self, interaction: discord.Interaction) -> None:
+        await interaction.response.defer(thinking=True)
+        for val in self.values:
+            self._issue.add_to_labels(val)
+
+        await interaction.followup.send(
+            f"Added labels [{' '.join(f'`{val}`' for val in self.values)}] to Issue #{self._issue.number}"
+        )
+
+
 class GithubControlModal(discord.ui.Modal):
     def __init__(
-        self,
-        bot: Timmy,
-        type_: GithubActionLiteral,
-        feature: IssueFeatureLiteral,
-        github_client: Github,
-        attachment: Optional[discord.Attachment] = None,
-        gist_url: Optional[str] = None,
+            self,
+            bot: Timmy,
+            type_: GithubActionLiteral,
+            feature: IssueFeatureLiteral,
+            github_client: Github,
+            attachment: Optional[discord.Attachment] = None,
+            gist_url: Optional[str] = None,
     ):
         super().__init__(timeout=None, title="Create Issue")
 
@@ -91,8 +146,8 @@ class GithubControlModal(discord.ui.Modal):
         issue = repo.create_issue(
             title=str(self.children[0]),
             body=f"**Issue Feature**\n{self._feature_type}\n\n"
-            + issue_body
-            + self._attachment,
+                 + issue_body
+                 + self._attachment,
         )
         issue.add_to_labels(repo.get_label(name="Discord"))
         url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue.number}"
@@ -102,9 +157,9 @@ class GithubControlModal(discord.ui.Modal):
 
 class GithubIssues(Group):
     def __init__(
-        self,
-        bot: Timmy,
-        github_client: Github,
+            self,
+            bot: Timmy,
+            github_client: Github,
     ):
         super().__init__(
             name="issue", description="Open an issue for a bug related to the bot"
@@ -118,10 +173,10 @@ class GithubIssues(Group):
 
     @command(name="open")
     async def __open(
-        self,
-        interaction: discord.Interaction,
-        feature: IssueFeatureLiteral,
-        screenshot: discord.Attachment,
+            self,
+            interaction: discord.Interaction,
+            feature: IssueFeatureLiteral,
+            screenshot: discord.Attachment,
     ):
         await interaction.response.send_modal(
             GithubControlModal(
@@ -136,19 +191,33 @@ class GithubIssues(Group):
     @command(name="close")
     @slash_is_bot_admin_4()
     async def __close(
-        self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None
+            self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None
     ):
         await interaction.response.defer(thinking=True)
         r = self._github_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
         try:
             issue_ = r.get_issue(issue)
-        except:
+        except Exception as _:
             return await interaction.followup.send("Couldn't find issue")
         issue_.edit(state="closed")
         url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue}"
         await interaction.followup.send(f"Closed issue {url}")
         if reason:
             issue_.create_comment(reason)
+
+    @command(name="add-label")
+    @describe(issue="Issue number")
+    async def add_label(self, interaction: discord.Interaction, issue: str):
+        repo = self._github_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
+        issue = repo.get_issue(int(issue))
+        await interaction.response.send_message(
+            "Add labels to this issue",
+            view=GithubIssueLabels(
+                bot=self.bot,
+                issue=issue,
+                repository=repo
+            )
+        )
 
 
 class GithubCommands(commands.Cog):
