@@ -337,7 +337,7 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
                     description="Seems like I've ran into an unexpected error!",
                     color=Colors.red,
                 )
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 await ctx.send(embed=embed)
 
@@ -352,7 +352,7 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
                     color=Colors.red,
                 )
                 embed.add_field(name="GIST URL", value=gisturl)
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 await ctx.send(embed=embed)
 
@@ -458,7 +458,7 @@ async def on_app_command_error_(
                           "check the command you've sent for any issues.\n "
                           "Consult the help command for more information."
                 )
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text="Submit a bug report or feedback below!")
                 if interaction.response.is_done():
                     await interaction.followup.send(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
