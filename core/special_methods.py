@@ -337,7 +337,7 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
                     description="Seems like I've ran into an unexpected error!",
                     color=Colors.red,
                 )
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 await ctx.send(embed=embed)
 
@@ -352,7 +352,7 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
                     color=Colors.red,
                 )
                 embed.add_field(name="GIST URL", value=gisturl)
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 await ctx.send(embed=embed)
 
@@ -458,7 +458,7 @@ async def on_app_command_error_(
                           "check the command you've sent for any issues.\n "
                           "Consult the help command for more information."
                 )
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text="Submit a bug report or feedback below!")
                 if interaction.response.is_done():
                     await interaction.followup.send(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
@@ -470,7 +470,7 @@ async def on_app_command_error_(
                     color=Colors.red,
                 )
                 embed.add_field(name="GIST URL", value=gisturl)
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 if interaction.response.is_done():
                     await interaction.followup.send(embed=embed)
@@ -560,23 +560,23 @@ async def main_mode_check_(ctx: commands.Context):
 
     # DM Check
     elif ctx.guild is None:
-        return CheckDB_CC.guildNone
+        return CheckDB_CC.guild_None
 
     # External Server Check
     elif ctx.guild.id != MainID.g_main:
-        return CheckDB_CC.externalGuild
+        return CheckDB_CC.external_guild
 
     # Rule Command Check
     elif ctx.command.name == "rule":
-        return CheckDB_CC.ruleBypass
+        return CheckDB_CC.rule_bypass
 
     # Public Category Check
     elif ctx.channel.category_id in Me.publicCH:
-        return CheckDB_CC.publicCategories
+        return CheckDB_CC.public_categories
 
     # Else...
     else:
-        return CheckDB_CC.elseSituation
+        return CheckDB_CC.else_situation
 
 
 def initializeDB(bot):

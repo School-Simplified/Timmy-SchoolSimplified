@@ -80,8 +80,9 @@ class GithubIssueSelect(discord.ui.Select):
             self._issue.add_to_labels(val)
 
         await interaction.followup.send(
-            f"Added labels [{' '.join(f'`{val}`' for val in self.values)}] to Issue #{self._issue.number}"
+            f"Added labels {' '.join(f'[`{val}`]' for val in self.values)} to Issue #{self._issue.number}"
         )
+        self.disabled = True
 
 
 class GithubControlModal(discord.ui.Modal):
@@ -211,6 +212,7 @@ class GithubIssues(Group):
             issue_.create_comment(reason)
 
     @command(name="add-label")
+    @slash_is_bot_admin_4()
     @describe(issue="Issue number")
     async def add_label(self, interaction: discord.Interaction, issue: str):
         repo = self._github_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
