@@ -5,7 +5,7 @@ import string
 from typing import Literal
 
 import discord
-from discord import app_commands
+from discord import app_commands, ui
 from discord.ext import commands
 from googleapiclient.discovery import build
 
@@ -35,6 +35,71 @@ orgUnit = {
 
 creds = access_secret("adm_t", True, 0, SCOPES)
 service = build("admin", "directory_v1", credentials=creds)
+
+
+class GSuiteForm(ui.Modal, title="GSuite Account/Email Request"):
+    def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    firstName = ui.TextInput(
+        label="What is your first name?",
+        style=discord.TextStyle.short,
+        max_length=100,
+    )
+
+    lastName = ui.TextInput(
+        label="What is your last name?",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    descriptionTI = ui.TextInput(
+        label="Personal Email Address",
+        style=discord.TextStyle.short,
+        placeholder="This is not required but if given, you will get a copy of sign in details in your email.",
+        max_length=1024,
+        required=False,
+    )
+
+    dept = ui.TextInput(
+        label="Primary Department",
+        style=discord.TextStyle.short,
+        placeholder="What is the current department you are in?",
+        max_length=1024,
+    )
+
+    anythingElseTI = ui.TextInput(
+        label="Anything else?",
+        style=discord.TextStyle.long,
+        required=False,
+        max_length=1024,
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        respChannel = self.bot.get_channel(968345000100384788)
+        await respChannel.send("")
+
+
+class GSuiteButton(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.value = None
+        self.bot = bot
+
+    @discord.ui.button(
+        label="Get GSuite Account",
+        style=discord.ButtonStyle.blurple,
+        custom_id="persistent_view:gsuite_form",
+        emoji="📝",
+    )
+    async def verify(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
+    ):
+        await interaction.followup.send_modal(GSuiteForm(self.bot))
+
 
 
 class AdminAPI(commands.Cog):
@@ -90,7 +155,7 @@ class AdminAPI(commands.Cog):
             f"**Organization Unit:** {orgUnit[organizationunit]}",
             ephemeral=False,
         )
-        await interaction.response.send_message(
+        await interaction.followup.send(
             f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary "
             f"Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",
             ephemeral=True,

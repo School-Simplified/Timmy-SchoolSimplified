@@ -470,7 +470,7 @@ async def on_app_command_error_(
                     color=Colors.red,
                 )
                 embed.add_field(name="GIST URL", value=gisturl)
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 if interaction.response.is_done():
                     await interaction.followup.send(embed=embed)

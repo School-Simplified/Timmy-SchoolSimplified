@@ -895,10 +895,10 @@ class DropdownTickets(commands.Cog):
             author = interaction.user
             try:
                 await interaction.response.send_message(
-                    f"{author.mention} Alright, canceling request.", delete_after=5.0
+                    f"{author.mention} Alright, canceling request.", ephemeral=True
                 )
             except Exception:
-                await interaction.followup.send(f"{author.mention} Alright, canceling request.", delete_after=5.0)
+                await interaction.followup.send(f"{author.mention} Alright, canceling request.", ephemeral=True)
             await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_C":
