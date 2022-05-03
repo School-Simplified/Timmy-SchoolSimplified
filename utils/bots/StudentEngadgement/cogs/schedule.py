@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 from typing import List, Dict, Literal, TYPE_CHECKING, Union
 
