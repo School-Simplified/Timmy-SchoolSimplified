@@ -84,7 +84,8 @@ class SetScheduleCog(commands.Cog):
     async def _on_ready(self) -> None:
         self._reminder_loop.start()
 
-    @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=9)])
+    # @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=9)])
+    @tasks.loop(hours=1)
     async def _reminder_loop(self):
         """
         Handles daily reminders
