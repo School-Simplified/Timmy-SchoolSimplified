@@ -159,6 +159,7 @@ class SetScheduleCog(commands.Cog):
         server = self.bot.get_guild(SETID.g_set)
         member = server.get_member(user_id)
         await member.send(embed=embed, view=ScheduleView(self.bot, task=_type))
+        print(f"Sent {member.display_name} dm")
 
 
 async def setup(bot: Timmy):
