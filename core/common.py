@@ -166,6 +166,7 @@ class CompletedButton(discord.ui.Button):
         await channel.send(f"{self._task} has been completed for today!")
         for item in self.view.children:
             item.disabled = True
+        self.view.stop()
 
 
 class CannotComplete(discord.ui.Button):
@@ -204,6 +205,7 @@ class CannotComplete(discord.ui.Button):
         await channel.send(embed=embed)
         for item in self.view.children:
             item.disabled = True
+        self.view.stop()
 
 
 class ScheduleView(discord.ui.View):

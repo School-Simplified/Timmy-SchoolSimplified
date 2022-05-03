@@ -725,18 +725,9 @@ class AuthorizedGuilds(BaseModel):
     guildID = BigIntegerField()
 
 
-class SetSchedule(BaseModel):
+class SetPuzzleSchedule(BaseModel):
     id = AutoField()
-    _type: Literal[
-        "Motivation",
-        "Weekly Puzzle",
-        "Opportunities",
-        "Daily Question",
-        "Media Recommendations",
-        "Art Appreciation",
-        "Daily Laugh",
-    ] = TextField()
-    occurs = DateTimeField()
+
 
 
 app = Flask(__name__)
