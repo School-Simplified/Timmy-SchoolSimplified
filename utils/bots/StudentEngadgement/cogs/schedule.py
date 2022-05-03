@@ -32,7 +32,7 @@ class SetScheduleCog(commands.Cog):
                 "_type": "DAILY",
                 "_schedule": [
                     806289946624393216,
-                    869561723101786162,
+                    747126643587416174,
                     "ignore",
                     806289946624393216,
                     "ignore",
@@ -50,7 +50,7 @@ class SetScheduleCog(commands.Cog):
                 "_type": "DAILY",
                 "_schedule": [
                     869561723101786162,
-                    337250887858782209,
+                    747126643587416174,
                     869561723101786162,
                     747126643587416174,
                     "ignore",
@@ -68,7 +68,7 @@ class SetScheduleCog(commands.Cog):
                 "_type": "DAILY",
                 "_schedule": [
                     "ignore",
-                    599302211272441876,
+                    747126643587416174,
                     806289946624393216,
                     "ignore",
                     806289946624393216,
@@ -80,10 +80,6 @@ class SetScheduleCog(commands.Cog):
         }
         self.bot = bot
 
-    @commands.Cog.listener('on_ready')
-    async def _on_ready(self) -> None:
-        self._reminder_loop.start()
-
     # @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=9)])
     @tasks.loop(hours=1)
     async def _reminder_loop(self):
@@ -94,6 +90,10 @@ class SetScheduleCog(commands.Cog):
         await self._handle_motivation(day, self._schedule["Motivation"])
         await self._handle_question(day, self._schedule["Daily Question"])
         await self._handle_laugh(day, self._schedule["Daily Laugh"])
+
+    @_reminder_loop.before_loop
+    async def _before_loop(self):
+        await self.bot.wait_until_ready()
 
     @tasks.loop(hours=1)
     async def _weekly_reminders_loop(self):
