@@ -9,7 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 from threading import Thread
-from typing import Any, Awaitable, Callable, List, Tuple, Union, Optional
+from typing import Any, Awaitable, Callable, List, Literal, Tuple, Union, Optional, TYPE_CHECKING
 
 import boto3
 import chat_exporter
@@ -33,10 +33,14 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 from core import database
 
+if TYPE_CHECKING:
+    from main import Timmy
+
+
 load_dotenv()
 
 # Module Variables
-coroutineType = Callable[[Any, Any], Awaitable[Any]]
+CoroutineType = Callable[[Any, Any], Awaitable[Any]]
 g = Github(os.getenv("GH_TOKEN"))
 
 
@@ -130,6 +134,97 @@ async def paginate_embed(
         except asyncio.TimeoutError:
             await message.clear_reactions()
             break
+
+
+class CompletedButton(discord.ui.Button):
+    def __init__(
+            self,
+            bot: Timmy,
+            task: Literal[
+                "Motivation",
+                "Weekly Puzzle",
+                "Opportunities",
+                "Daily Question",
+                "Media Recommendations",
+                "Art Appreciation",
+                "Daily Laugh",
+            ]
+    ):
+        super().__init__(
+            style=discord.ButtonStyle.green,
+            label="Completed",
+            custom_id="task::completed"
+        )
+        self.bot = bot
+        self.value: Optional[Literal["complete", "incomplete", "busy"]] = "incomplete"
+        self._task = task
+
+    async def callback(self, interaction: discord.Interaction) -> None:
+        self.value = "complete"
+        await interaction.response.send_message("Great!")
+        channel = self.bot.get_channel(SETID.ch_general)
+        await channel.send(f"{self._task} has been completed for today!")
+        for item in self.view.children:
+            item.disabled = True
+
+
+class CannotComplete(discord.ui.Button):
+    def __init__(
+            self,
+            bot: Timmy,
+            task: Literal[
+                "Motivation",
+                "Weekly Puzzle",
+                "Opportunities",
+                "Daily Question",
+                "Media Recommendations",
+                "Art Appreciation",
+                "Daily Laugh",
+            ]
+    ):
+        super().__init__(
+            style=discord.ButtonStyle.red,
+            label="Can't Complete",
+            custom_id="task::cannotcomplete"
+        )
+        self.bot = bot
+        self.value: Optional[Literal["complete", "incomplete", "busy"]] = "incomplete"
+        self._task = task
+
+    async def callback(self, interaction: discord.Interaction) -> Any:
+        self.value = "busy"
+        await interaction.response.send_message("Notified the team!")
+        channel = self.bot.get_channel(SETID.ch_general)
+        embed = discord.Embed(
+            title=f"{self._task} needs to be filled!",
+            description=f"{self._task} for today cannot be completed.",
+            colour=Colors.red,
+            timestamp=discord.utils.utcnow()
+        )
+        await channel.send(embed=embed)
+        for item in self.view.children:
+            item.disabled = True
+
+
+class ScheduleView(discord.ui.View):
+    def __init__(
+            self,
+            bot: Timmy,
+            task: Literal[
+                "Motivation",
+                "Weekly Puzzle",
+                "Opportunities",
+                "Daily Question",
+                "Media Recommendations",
+                "Art Appreciation",
+                "Daily Laugh",
+            ]
+    ):
+        super().__init__(timeout=None)
+        self.bot = bot
+        self.__task = task
+        self.add_item(CompletedButton(bot, task))
+        self.add_item(CannotComplete(bot, task))
 
 
 def get_extensions():
@@ -699,6 +794,9 @@ class SETID:
     ch_may_day_guess = int(
         ConfigCatClient.SET_ID_CC.get_value("ch_puzzle_guessv2", 966857151417028608)
     )
+    ch_general = int(
+        950799440766177297  #  will replace later
+    )
 
     # *** Roles ***
     r_hrStaff = int(ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
@@ -977,7 +1075,7 @@ class SelectMenuHandler(ui.Select):
         roles: List[discord.Role] = None,
         interaction_message: Union[str, None] = None,
         ephemeral: bool = True,
-        coroutine: coroutineType = None,
+        coroutine: CoroutineType = None,
         view_response=None,
     ):
         """
@@ -1069,7 +1167,7 @@ class ButtonHandler(ui.Button):
         roles: List[discord.Role] = None,
         interaction_message: Union[str, None] = None,
         ephemeral: bool = True,
-        coroutine: coroutineType = None,
+        coroutine: CoroutineType = None,
         view_response=None
     ):
         """

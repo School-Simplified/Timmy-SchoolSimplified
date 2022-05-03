@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from distutils.util import strtobool
+from typing import Literal
 
 from dotenv import load_dotenv
 from flask import Flask
@@ -14,7 +15,7 @@ from peewee import (
     Model,
     MySQLDatabase,
     SqliteDatabase,
-    TextField,
+    TextField
 )
 
 load_dotenv()
@@ -708,6 +709,7 @@ class StudyVCLeaderboard(BaseModel):
     xp = BigIntegerField(default=0)
     totalXP = BigIntegerField(default=0)
 
+
 class AuthorizedGuilds(BaseModel):
     """
     #AuthorizedGuilds
@@ -721,6 +723,21 @@ class AuthorizedGuilds(BaseModel):
 
     id = AutoField()
     guildID = BigIntegerField()
+
+
+class SetSchedule(BaseModel):
+    id = AutoField()
+    _type: Literal[
+        "Motivation",
+        "Weekly Puzzle",
+        "Opportunities",
+        "Daily Question",
+        "Media Recommendations",
+        "Art Appreciation",
+        "Daily Laugh",
+    ] = TextField()
+    occurs = DateTimeField()
+
 
 app = Flask(__name__)
 
