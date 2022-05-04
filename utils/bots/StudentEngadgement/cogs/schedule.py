@@ -81,8 +81,9 @@ class SetScheduleCog(commands.Cog):
         self.bot = bot
 
     # @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=9)])
-    @tasks.loop(hours=1)
+    @tasks.loop(minutes=1)
     async def _reminder_loop(self):
+        print("starting task")
         """
         Handles daily reminders
         """
