@@ -68,7 +68,7 @@ class SetScheduleCog(commands.Cog):
                 "_type": "DAILY",
                 "_schedule": [
                     "ignore",
-                    747126643587416174,
+                    752984497259151370,
                     806289946624393216,
                     "ignore",
                     806289946624393216,
