@@ -2344,19 +2344,19 @@
                 ]
               },
               {
-                "id": "PyArgumentEqualDefaultInspection",
+                "id": "CythonUsageBeforeDeclarationInspection",
                 "shortDescription": {
-                  "text": "The function argument is equal to the default parameter value"
+                  "text": "Cython variable is used before its declaration"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
-                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
+                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
+                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2378,19 +2378,19 @@
                 ]
               },
               {
-                "id": "CythonUsageBeforeDeclarationInspection",
+                "id": "PyArgumentEqualDefaultInspection",
                 "shortDescription": {
-                  "text": "Cython variable is used before its declaration"
+                  "text": "The function argument is equal to the default parameter value"
                 },
                 "fullDescription": {
-                  "text": "Reports Cython variables being referenced before declaration. Example: cdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0",
-                  "markdown": "Reports Cython variables being referenced before declaration.\n\n**Example:**\n\n```\ncdef int c_x\n\nprint(c_x, c_y)  # Variable 'c_y' is used before its declaration\n\ncdef int c_y = 0\n```"
+                  "text": "Reports a problem when an argument passed to the function is equal to the default parameter value. This inspection is disabled by default to avoid performance degradation. Example: def my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)",
+                  "markdown": "Reports a problem when an argument\npassed to the function is equal to the default parameter value.\n\nThis inspection is disabled by default to avoid performance degradation.\n\n**Example:**\n\n```\ndef my_function(a: int = 2):\n    print(a)\n\n\nmy_function(2)\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2888,19 +2888,19 @@
                 ]
               },
               {
-                "id": "PyRedundantParenthesesInspection",
+                "id": "PyTrailingSemicolonInspection",
                 "shortDescription": {
-                  "text": "Redundant parentheses"
+                  "text": "Prohibited trailing semicolon in a statement"
                 },
                 "fullDescription": {
-                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
-                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
+                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
+                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
-                  "level": "note",
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -2922,19 +2922,19 @@
                 ]
               },
               {
-                "id": "PyTrailingSemicolonInspection",
+                "id": "PyRedundantParenthesesInspection",
                 "shortDescription": {
-                  "text": "Prohibited trailing semicolon in a statement"
+                  "text": "Redundant parentheses"
                 },
                 "fullDescription": {
-                  "text": "Reports trailing semicolons in statements. Example: def my_func(a):\n    c = a ** 2;\n    return c\n IDE provides a quick-fix that removes a trailing semicolon. When you apply it, the code changes to: def my_func(a):\n    c = a ** 2\n    return c",
-                  "markdown": "Reports trailing semicolons in statements.\n\n**Example:**\n\n```\ndef my_func(a):\n    c = a ** 2;\n    return c\n```\n\nIDE provides a quick-fix that removes a trailing semicolon. When you\napply it, the code changes to:\n\n```\ndef my_func(a):\n    c = a ** 2\n    return c\n```"
+                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
+                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
-                  "level": "warning",
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3602,6 +3602,40 @@
                 ]
               },
               {
+                "id": "DjangoCloseTagInspection",
+                "shortDescription": {
+                  "text": "Mismatched opening and closing tags"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
+                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Django",
+                      "index": 7,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
                 "id": "PyStubPackagesCompatibilityInspection",
                 "shortDescription": {
                   "text": "Incompatible stub packages"
@@ -3659,40 +3693,6 @@
                     "target": {
                       "id": "Python",
                       "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
-                "id": "DjangoCloseTagInspection",
-                "shortDescription": {
-                  "text": "Mismatched opening and closing tags"
-                },
-                "fullDescription": {
-                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
-                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Django",
-                      "index": 7,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5586,40 +5586,6 @@
                 ]
               },
               {
-                "id": "XmlDeprecatedElement",
-                "shortDescription": {
-                  "text": "Deprecated symbol"
-                },
-                "fullDescription": {
-                  "text": "Reports a deprecated XML element or attribute. Symbols can be marked by XML comment or documentation tag with text 'deprecated'.",
-                  "markdown": "Reports a deprecated XML element or attribute.\n\nSymbols can be marked by XML comment or documentation tag with text 'deprecated'."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "XML",
-                      "index": 3,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpRedundantNestedCharacterClass",
                 "shortDescription": {
                   "text": "Redundant nested character class"
@@ -5643,6 +5609,40 @@
                     "target": {
                       "id": "RegExp",
                       "index": 5,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "XmlDeprecatedElement",
+                "shortDescription": {
+                  "text": "Deprecated symbol"
+                },
+                "fullDescription": {
+                  "text": "Reports a deprecated XML element or attribute. Symbols can be marked by XML comment or documentation tag with text 'deprecated'.",
+                  "markdown": "Reports a deprecated XML element or attribute.\n\nSymbols can be marked by XML comment or documentation tag with text 'deprecated'."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "XML",
+                      "index": 3,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5756,40 +5756,6 @@
                 ]
               },
               {
-                "id": "HtmlUnknownAnchorTarget",
-                "shortDescription": {
-                  "text": "Unresolved fragment in a link"
-                },
-                "fullDescription": {
-                  "text": "Reports an unresolved last part of an URL after the '#' sign.",
-                  "markdown": "Reports an unresolved last part of an URL after the `#` sign."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "UnusedDefine",
                 "shortDescription": {
                   "text": "Unused define"
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "RELAX NG",
                       "index": 11,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "HtmlUnknownAnchorTarget",
+                "shortDescription": {
+                  "text": "Unresolved fragment in a link"
+                },
+                "fullDescription": {
+                  "text": "Reports an unresolved last part of an URL after the '#' sign.",
+                  "markdown": "Reports an unresolved last part of an URL after the `#` sign."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,7 +6737,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "76d944670682d5e2c4126290a9070b752181639f",
+          "revisionId": "7ed5429100a6ca932594f80729fc4725bf3055b2",
           "branch": "beta",
           "properties": {
             "lastAuthorName": "pandabear189",
@@ -8411,9 +8411,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 16,
+                  "startLine": 17,
                   "startColumn": 5,
-                  "charOffset": 314,
+                  "charOffset": 344,
                   "charLength": 149,
                   "snippet": {
                     "text": "\"Motivation\", \"Weekly Puzzle\", \"Opportunities\", \"Daily Question\", \"Media Recommendat..."
@@ -8421,9 +8421,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 14,
+                  "startLine": 15,
                   "startColumn": 1,
-                  "charOffset": 286,
+                  "charOffset": 316,
                   "charLength": 83,
                   "snippet": {
                     "text": "\nTaskLiteral = Literal[\n    \"Motivation\",\n    \"Weekly Puzzle\",\n    \"Opportunities\","
@@ -8439,7 +8439,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "d88e44449e738cf1fc6858d0c3433d5efca9e796661b3bb714a35619d5c6ae0e"
+            "equalIndicator/v1": "78bfe53c2fc9389ff70464d6f71c4476554b325e258a90add77cef43deea5827"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -8464,9 +8464,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 29,
+                  "startLine": 30,
                   "startColumn": 39,
-                  "charOffset": 608,
+                  "charOffset": 638,
                   "charLength": 20,
                   "snippet": {
                     "text": "\"_type\", \"_schedule\""
@@ -8474,9 +8474,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 27,
+                  "startLine": 28,
                   "startColumn": 1,
-                  "charOffset": 504,
+                  "charOffset": 534,
                   "charLength": 227,
                   "snippet": {
                     "text": "    def __init__(self, bot: Timmy):\n        self._schedule: Dict[\n            TaskLiteral, Dict[Literal[\"_type\", \"_schedule\"], Union[str, List[Union[Literal[\"rachel\", \"ignore\"], int]]]]\n        ] = {\n            \"Motivation\": {"
@@ -8492,7 +8492,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "61df23e9959959166faadcbafd5a5f1e6a4d182816d0daf6e2c39298f5c0ec11"
+            "equalIndicator/v1": "aa42eba7b7133f2ce795f8200a57e5f87ad20b336ee46be67daea8cb21c5569f"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -8517,9 +8517,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 29,
+                  "startLine": 30,
                   "startColumn": 92,
-                  "charOffset": 661,
+                  "charOffset": 691,
                   "charLength": 18,
                   "snippet": {
                     "text": "\"rachel\", \"ignore\""
@@ -8527,9 +8527,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 27,
+                  "startLine": 28,
                   "startColumn": 1,
-                  "charOffset": 504,
+                  "charOffset": 534,
                   "charLength": 227,
                   "snippet": {
                     "text": "    def __init__(self, bot: Timmy):\n        self._schedule: Dict[\n            TaskLiteral, Dict[Literal[\"_type\", \"_schedule\"], Union[str, List[Union[Literal[\"rachel\", \"ignore\"], int]]]]\n        ] = {\n            \"Motivation\": {"
@@ -8545,113 +8545,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "276734d2c9b0121ba64053b290b687f9a6e812fc80c7b597dfc106bd5992435b"
-          },
-          "properties": {
-            "ideaSeverity": "WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyTypeHintsInspection",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "'Literal' may be parameterized with literal ints, byte and unicode strings, bools, Enum values, None, other literal types, or type aliases to other literal types",
-            "markdown": "'Literal' may be parameterized with literal ints, byte and unicode strings, bools, Enum values, None, other literal types, or type aliases to other literal types"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/bots/StudentEngadgement/cogs/schedule.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 152,
-                  "startColumn": 33,
-                  "charOffset": 5253,
-                  "charLength": 20,
-                  "snippet": {
-                    "text": "\"_type\", \"_schedule\""
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 150,
-                  "startColumn": 1,
-                  "charOffset": 5181,
-                  "charLength": 246,
-                  "snippet": {
-                    "text": "            self,\n            day: int,\n            dict_: Dict[Literal[\"_type\", \"_schedule\"], Union[str, List[Union[Literal[\"rachel\", \"ignore\"], int]]]]\n    ) -> Union[int, Literal[\"rachel\", \"ignore\"]]:\n        schedule_list = dict_[\"_schedule\"]"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "d9f2489c000e165392fcf3a4f5119e799fc424774f058d3676b09cfdeb8d8721"
-          },
-          "properties": {
-            "ideaSeverity": "WARNING",
-            "tags": [
-              "ideaSeverity"
-            ]
-          }
-        },
-        {
-          "ruleId": "PyTypeHintsInspection",
-          "kind": "fail",
-          "level": "warning",
-          "message": {
-            "text": "'Literal' may be parameterized with literal ints, byte and unicode strings, bools, Enum values, None, other literal types, or type aliases to other literal types",
-            "markdown": "'Literal' may be parameterized with literal ints, byte and unicode strings, bools, Enum values, None, other literal types, or type aliases to other literal types"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "utils/bots/StudentEngadgement/cogs/schedule.py",
-                  "uriBaseId": "SRCROOT"
-                },
-                "region": {
-                  "startLine": 152,
-                  "startColumn": 86,
-                  "charOffset": 5306,
-                  "charLength": 18,
-                  "snippet": {
-                    "text": "\"rachel\", \"ignore\""
-                  },
-                  "sourceLanguage": "Python"
-                },
-                "contextRegion": {
-                  "startLine": 150,
-                  "startColumn": 1,
-                  "charOffset": 5181,
-                  "charLength": 246,
-                  "snippet": {
-                    "text": "            self,\n            day: int,\n            dict_: Dict[Literal[\"_type\", \"_schedule\"], Union[str, List[Union[Literal[\"rachel\", \"ignore\"], int]]]]\n    ) -> Union[int, Literal[\"rachel\", \"ignore\"]]:\n        schedule_list = dict_[\"_schedule\"]"
-                  }
-                }
-              },
-              "logicalLocations": [
-                {
-                  "fullyQualifiedName": "project",
-                  "kind": "module"
-                }
-              ]
-            }
-          ],
-          "partialFingerprints": {
-            "equalIndicator/v1": "0873e4daded6f72b02284a50400c9f8d0e678f5d0f4bad95029e96cc33bd916b"
+            "equalIndicator/v1": "2db6c1441a26a140d016afc25577e1f09ed2b1c340a2de55d43f62808820ee28"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -8677,8 +8571,61 @@
                 },
                 "region": {
                   "startLine": 153,
-                  "startColumn": 29,
-                  "charOffset": 5363,
+                  "startColumn": 33,
+                  "charOffset": 5284,
+                  "charLength": 20,
+                  "snippet": {
+                    "text": "\"_type\", \"_schedule\""
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 151,
+                  "startColumn": 1,
+                  "charOffset": 5212,
+                  "charLength": 246,
+                  "snippet": {
+                    "text": "            self,\n            day: int,\n            dict_: Dict[Literal[\"_type\", \"_schedule\"], Union[str, List[Union[Literal[\"rachel\", \"ignore\"], int]]]]\n    ) -> Union[int, Literal[\"rachel\", \"ignore\"]]:\n        schedule_list = dict_[\"_schedule\"]"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "797f28b720de2b4b2ce27966d44a2c90ae6670efda960b4b8b94f6ed9ed7dd53"
+          },
+          "properties": {
+            "ideaSeverity": "WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyTypeHintsInspection",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "'Literal' may be parameterized with literal ints, byte and unicode strings, bools, Enum values, None, other literal types, or type aliases to other literal types",
+            "markdown": "'Literal' may be parameterized with literal ints, byte and unicode strings, bools, Enum values, None, other literal types, or type aliases to other literal types"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/bots/StudentEngadgement/cogs/schedule.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 153,
+                  "startColumn": 86,
+                  "charOffset": 5337,
                   "charLength": 18,
                   "snippet": {
                     "text": "\"rachel\", \"ignore\""
@@ -8688,7 +8635,60 @@
                 "contextRegion": {
                   "startLine": 151,
                   "startColumn": 1,
-                  "charOffset": 5199,
+                  "charOffset": 5212,
+                  "charLength": 246,
+                  "snippet": {
+                    "text": "            self,\n            day: int,\n            dict_: Dict[Literal[\"_type\", \"_schedule\"], Union[str, List[Union[Literal[\"rachel\", \"ignore\"], int]]]]\n    ) -> Union[int, Literal[\"rachel\", \"ignore\"]]:\n        schedule_list = dict_[\"_schedule\"]"
+                  }
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "project",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v1": "69dbd15694d53351cb606f5b0dc69da532321e8091cd50ad897273b1433d2867"
+          },
+          "properties": {
+            "ideaSeverity": "WARNING",
+            "tags": [
+              "ideaSeverity"
+            ]
+          }
+        },
+        {
+          "ruleId": "PyTypeHintsInspection",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "'Literal' may be parameterized with literal ints, byte and unicode strings, bools, Enum values, None, other literal types, or type aliases to other literal types",
+            "markdown": "'Literal' may be parameterized with literal ints, byte and unicode strings, bools, Enum values, None, other literal types, or type aliases to other literal types"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/bots/StudentEngadgement/cogs/schedule.py",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 154,
+                  "startColumn": 29,
+                  "charOffset": 5394,
+                  "charLength": 18,
+                  "snippet": {
+                    "text": "\"rachel\", \"ignore\""
+                  },
+                  "sourceLanguage": "Python"
+                },
+                "contextRegion": {
+                  "startLine": 152,
+                  "startColumn": 1,
+                  "charOffset": 5230,
                   "charLength": 266,
                   "snippet": {
                     "text": "            day: int,\n            dict_: Dict[Literal[\"_type\", \"_schedule\"], Union[str, List[Union[Literal[\"rachel\", \"ignore\"], int]]]]\n    ) -> Union[int, Literal[\"rachel\", \"ignore\"]]:\n        schedule_list = dict_[\"_schedule\"]\n        return schedule_list[day - 1]"
@@ -8704,7 +8704,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "bc67799b861d48a20f84c0329cfbec8a13acf6420d46f1dc54d8f431ddc4ed5d"
+            "equalIndicator/v1": "869d1f1ccc081dcceabefc22a78baa8d8a391e64e22411f3442af96aa578006b"
           },
           "properties": {
             "ideaSeverity": "WARNING",
@@ -9683,9 +9683,9 @@
                   "uriBaseId": "SRCROOT"
                 },
                 "region": {
-                  "startLine": 149,
+                  "startLine": 150,
                   "startColumn": 9,
-                  "charOffset": 5167,
+                  "charOffset": 5198,
                   "charLength": 12,
                   "snippet": {
                     "text": "_get_user_id"
@@ -9693,9 +9693,9 @@
                   "sourceLanguage": "Python"
                 },
                 "contextRegion": {
-                  "startLine": 147,
+                  "startLine": 148,
                   "startColumn": 1,
-                  "charOffset": 5045,
+                  "charOffset": 5076,
                   "charLength": 175,
                   "snippet": {
                     "text": "        await self._dm_member(embed=embed, user_id=self._get_user_id(day=day, dict_=dict_), _type=\"Daily Laugh\")\n\n    def _get_user_id(\n            self,\n            day: int,"
@@ -9711,7 +9711,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "7c6192182a31ea6bac172096eac9544ec1dd082cb5655f2cc30843ccd4eb20b9"
+            "equalIndicator/v1": "344e0b1b5cc486a0f84d497228e5b6e449cab08fdd2ab4ddaa66bfc2527eb241"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -44650,7 +44650,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-05-04",
-        "guid": "df8eab76-bf60-4133-b64f-52727b1f8b0c"
+        "guid": "de678183-db93-4547-964f-94b191c8269d"
       },
       "newlineSequences": [
         "\r\n",
