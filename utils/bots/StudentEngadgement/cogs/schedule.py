@@ -33,11 +33,11 @@ class SetScheduleCog(commands.Cog):
                 "_type": "DAILY",
                 "_schedule": [
                     806289946624393216,
-                    747126643587416174,
-                    "ignore",
+                    869561723101786162,
+                    869561723101786162,
                     806289946624393216,
-                    "ignore",
-                    "rachel",
+                    869561723101786162,
+                    806289946624393216,
                     869561723101786162,
                 ]  # first index is monday
             },
@@ -51,10 +51,10 @@ class SetScheduleCog(commands.Cog):
                 "_type": "DAILY",
                 "_schedule": [
                     869561723101786162,
-                    747126643587416174,
+                    337250887858782209,
                     869561723101786162,
                     747126643587416174,
-                    "ignore",
+                    747126643587416174,
                     337250887858782209,
                     132848537435242496
                 ]
@@ -68,13 +68,13 @@ class SetScheduleCog(commands.Cog):
             "Daily Laugh": {
                 "_type": "DAILY",
                 "_schedule": [
-                    "ignore",
-                    752984497259151370,
-                    806289946624393216,
-                    "ignore",
                     806289946624393216,
                     599302211272441876,
-                    "ignore"
+                    806289946624393216,
+                    599302211272441876,
+                    806289946624393216,
+                    599302211272441876,
+                    599302211272441876
 
                 ]
             },
@@ -82,8 +82,7 @@ class SetScheduleCog(commands.Cog):
         self.bot = bot
         self._reminder_loop.start()
 
-    # @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=9)])
-    @tasks.loop(minutes=10)
+    @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=9)])
     async def _reminder_loop(self):
         print("starting task")
         """
