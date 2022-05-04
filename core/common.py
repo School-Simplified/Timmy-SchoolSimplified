@@ -166,8 +166,7 @@ class CompletedButton(discord.ui.Button):
         await interaction.response.send_message("Great!")
         channel = self.bot.get_channel(SETID.ch_general)
         await channel.send(f"{self._task} has been completed for today!")
-        for item in self.view.children:
-            item.disabled = True
+        await interaction.edit_original_message(view=None)
         self.view.stop()
 
 
@@ -205,8 +204,7 @@ class CannotComplete(discord.ui.Button):
             timestamp=discord.utils.utcnow()
         )
         await channel.send(embed=embed)
-        for item in self.view.children:
-            item.disabled = True
+        await interaction.edit_original_message(view=None)
         self.view.stop()
 
 
