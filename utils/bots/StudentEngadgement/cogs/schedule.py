@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import List, Dict, Literal, TYPE_CHECKING, Union
+from typing import List, Dict, Literal, TYPE_CHECKING, TypeVar, Union
 
 import discord.utils
 import pytz
@@ -11,6 +11,7 @@ from core.common import Colors, ScheduleView, SETID
 
 if TYPE_CHECKING:
     from main import Timmy
+    T = TypeVar("T")
 
 TaskLiteral = Literal[
     "Motivation",
@@ -82,7 +83,7 @@ class SetScheduleCog(commands.Cog):
         # self._reminder_loop.start()
 
     # @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=9)])
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=10)
     async def _reminder_loop(self):
         print("starting task")
         """
@@ -157,7 +158,7 @@ class SetScheduleCog(commands.Cog):
     async def _dm_member(
             self, embed: discord.Embed, user_id: Union[int, str], _type: TaskLiteral
     ) -> None:
-        if user_id in ["rachel", "ignore"]:
+        if user_id in ["rachel", "ignore"] or isinstance(user_id, str):
             return
         server = self.bot.get_guild(SETID.g_set)
         member = server.get_member(user_id)
