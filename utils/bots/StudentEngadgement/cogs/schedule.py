@@ -79,6 +79,7 @@ class SetScheduleCog(commands.Cog):
             },
         }
         self.bot = bot
+        self._reminder_loop.start()
 
     # @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=9)])
     @tasks.loop(minutes=1)
