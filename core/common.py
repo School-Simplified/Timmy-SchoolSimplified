@@ -164,8 +164,8 @@ class CompletedButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction) -> None:
         self.value = "complete"
         await interaction.response.send_message("Great!")
-        channel = self.bot.get_channel(SETID.ch_general)
-        await channel.send(f"{self._task} has been completed for today!")
+        channel = self.bot.get_channel(SETID.ch_reminders)
+        await channel.send(f"✅ {self._task} has been completed for today!")
         await interaction.edit_original_message(view=None)
         self.view.stop()
 
@@ -196,7 +196,7 @@ class CannotComplete(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction) -> Any:
         self.value = "busy"
         await interaction.response.send_message("Notified the team!")
-        channel = self.bot.get_channel(SETID.ch_general)
+        channel = self.bot.get_channel(SETID.ch_reminders)
         embed = discord.Embed(
             title=f"{self._task} needs to be filled!",
             description=f"{self._task} for today cannot be completed.",
@@ -798,6 +798,9 @@ class SETID:
     )
     ch_general = int(
         950799440766177297  #  will replace later
+    )
+    ch_reminders = int(
+        971215505828511744
     )
 
     # *** Roles ***

@@ -119,7 +119,7 @@ class SetScheduleCog(commands.Cog):
             title="Reminder!",
             description="Reminder to complete the motivational quote for today! "
                         "Once you have completed your quote please press the completed button below. "
-                        "If you cannot complete it please select the appropriate button below. "
+                        "If you cannot complete it please select the red button below. "
         )
         await self._dm_member(embed=embed, user_id=self._get_user_id(day=day, dict_=dict_), _type="Motivation")
 
@@ -131,7 +131,7 @@ class SetScheduleCog(commands.Cog):
             title="Reminder!",
             description="Reminder to complete the daily question for today! "
                         "Once you have completed your question please press the completed button below. "
-                        "If you cannot complete it please select the appropriate button below. "
+                        "If you cannot complete it please select the red button below. "
         )
         await self._dm_member(embed=embed, user_id=self._get_user_id(day=day, dict_=dict_), _type="Daily Question")
 
@@ -143,7 +143,7 @@ class SetScheduleCog(commands.Cog):
             title="Reminder!",
             description="Reminder to complete the daily laugh for today! "
                         "Once you have completed your meme/pickup line please press the completed button below. "
-                        "If you cannot complete it please select the appropriate button below. "
+                        "If you cannot complete it please select the red button below. "
         )
         await self._dm_member(embed=embed, user_id=self._get_user_id(day=day, dict_=dict_), _type="Daily Laugh")
 
@@ -163,7 +163,7 @@ class SetScheduleCog(commands.Cog):
         server = self.bot.get_guild(SETID.g_set)
         member = server.get_member(user_id)
         await member.send(embed=embed, view=ScheduleView(self.bot, task=_type))
-        print(f"Sent {member.display_name} dm")
+        print(f"Sent {member} reminder dm")
 
 
 async def setup(bot: Timmy):
