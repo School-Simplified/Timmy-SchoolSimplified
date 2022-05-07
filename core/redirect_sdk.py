@@ -112,7 +112,7 @@ class RedirectClient:
                         r.json()["data"][num]["created_at"],
                     )
                 )
-            return list_of_data
+        return list_of_data
 
     def fetch_redirect(self, r_id: str) -> typing.Union[RedirectPizza, None]:
         """Fetches a redirect.
