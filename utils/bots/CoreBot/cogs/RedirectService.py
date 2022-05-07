@@ -18,6 +18,7 @@ async def redirect_autocomplete(
         interaction: discord.Interaction,
         current: str,
 ) -> List[app_commands.Choice[str]]:
+    # Inactive due to 75 choice limit
     rp_client = redirect_sdk.RedirectClient(
         os.getenv("RP_TK"), domain="https://ssimpl.org"
     )
@@ -65,7 +66,6 @@ class RedirectURL(commands.Cog):
 
     @app_commands.command(name="redirect-remove", description="Remove a redirect.")
     @app_commands.describe(redirect_id="Specify an ID or URL PATH to remove a redirect.")
-    @app_commands.autocomplete(redirect_id=redirect_autocomplete)
     @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
     async def rr(self, interaction: discord.Interaction, redirect_id: str):
         self.raOBJ.del_redirect(redirect_id)
@@ -90,7 +90,6 @@ class RedirectURL(commands.Cog):
 
     @app_commands.command(name="redirect-info", description="Get information about a specific redirect.")
     @app_commands.describe(redirect_id="Specify an ID or URL PATH to get info about a redirect.")
-    @app_commands.autocomplete(redirect_id=redirect_autocomplete)
     @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
     async def ri(self, interaction: discord.Interaction, redirect_id: str):
         obj = self.raOBJ.fetch_redirect(redirect_id)
