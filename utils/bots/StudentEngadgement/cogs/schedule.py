@@ -25,7 +25,7 @@ TaskLiteral = Literal[
 
 
 class SetScheduleCog(commands.Cog):
-    def __init__(self, bot: Timmy):
+    def __init__(self, bot: 'Timmy'):
         self._schedule: Dict[
             TaskLiteral, Dict[Literal["_type", "_schedule"], Union[str, List[Union[Literal["rachel", "ignore"], int]]]]
         ] = {
