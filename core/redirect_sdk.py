@@ -74,7 +74,7 @@ class RedirectClient:
         self.domain = domain
         self.bot = bot
 
-    def get_redirects(self) -> List[RedirectPizza]:
+    async def get_redirects(self) -> List[RedirectPizza]:
         """Returns a list of redirects
 
         Raises:
@@ -90,6 +90,8 @@ class RedirectClient:
         if r.status_code == 422:
             raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
         data = r.json()
+        pprint.pprint(data)
+        #for data in range(len(data["data"])):
         data = data["data"]
         ListData = []
         for object in range(len(data) - 1):
@@ -110,7 +112,7 @@ class RedirectClient:
             )
         return ListData
 
-    def fetch_redirect(self, r_id: str) -> RedirectPizza:
+    async def fetch_redirect(self, r_id: str) -> RedirectPizza:
         """Fetches a redirect.
 
         Args:
@@ -152,7 +154,7 @@ class RedirectClient:
             r.json()["data"]["created_at"],
         )
 
-    def add_redirect(
+    async def add_redirect(
         self, redirect_url: str, destination: str, domain: str = None
     ) -> RedirectPizza:
         """Adds a redirect.
@@ -202,7 +204,7 @@ class RedirectClient:
             r.json()["data"]["created_at"],
         )
 
-    def del_redirect(self, r_id: str) -> typing.Union[dict, int]:
+    async def del_redirect(self, r_id: str) -> typing.Union[dict, int]:
         """Deletes a redirect.
 
         Args:
