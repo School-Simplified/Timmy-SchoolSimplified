@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict, List, Optional, overload, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, overload, Tuple, TYPE_CHECKING
 
 import discord
 from discord.ext import commands, menus
@@ -501,17 +501,17 @@ class Pages(discord.ui.View):
 class RedirectPageSource(menus.ListPageSource):
     """A page source that requires Dict[field_name, field_value] items"""
 
-    def __init__(self, entries: List[Dict[str, str]], *, per_page=12, embed: discord.Embed = None):
+    def __init__(self, entries: List[Tuple[str, str]], *, per_page=12, embed: discord.Embed = None):
         ...
         super().__init__(entries, per_page=per_page)
         self.embed = embed or discord.Embed(colour=discord.Colour.blurple())
 
-    async def format_page(self, menu, entries: List[Dict]):
+    async def format_page(self, menu, entries: List[Tuple]):
         self.embed.clear_fields()
 
         for entry in entries:
-            for key, value in entry.items():
-                self.embed.add_field(name=key, value=value, inline=False)
+            for name, value in entry:
+                self.embed.add_field(name=name, value=value, inline=False)
 
         maximum = self.get_max_pages()
         if maximum > 1:

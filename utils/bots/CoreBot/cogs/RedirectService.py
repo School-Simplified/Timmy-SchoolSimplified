@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Tuple
 
 import discord
 from discord import app_commands
@@ -74,13 +74,12 @@ class RedirectURL(commands.Cog):
     @app_commands.command(name="redirect-list", description="List all redirects.")
     @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
     async def rl(self, interaction: discord.Interaction):
-        objlist = self.raOBJ.get_redirects()
-        entries = []
-        for obj in objlist:
-            entries.append(
-                dict(
-                    name=f"**ID:** {obj.id}",
-                    value=f"**URL:** `https://{obj.domain}/{obj.source}` -> `{obj.destination}`"
+        obj_list = self.raOBJ.get_redirects()
+        entries: List[Tuple] = []
+        for obj in obj_list:
+            entries.append((
+                    f"**ID:** {obj.id}",
+                    f"**URL:** `https://{obj.domain}/{obj.source}` -> `{obj.destination}`"
                 )
             )
         embed = discord.Embed(
