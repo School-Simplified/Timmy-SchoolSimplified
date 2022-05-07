@@ -13,6 +13,7 @@ import logging
 import os
 from typing import Union
 
+import aiohttp
 import discord
 from alive_progress import alive_bar
 from discord import app_commands
@@ -127,12 +128,21 @@ class Timmy(commands.Bot):
     def version(self):
         return __version__
 
+    async def start(self, token: str, *, reconnect: bool = True) -> None:
+        self.session = aiohttp.ClientSession()
+        await super().start(token, reconnect=reconnect)
+
+    async def close(self) -> None:
+        await self.session.close()
+        await super().close()
+
+
 bot = Timmy()
 
 if os.getenv("DSN_SENTRY") is not None:
     sentry_logging = LoggingIntegration(
-        level=logging.INFO,         # Capture info and above as breadcrumbs
-        event_level=logging.ERROR   # Send errors as events
+        level=logging.INFO,  # Capture info and above as breadcrumbs
+        event_level=logging.ERROR  # Send errors as events
     )
 
     # Traceback tracking, DO NOT MODIFY THIS
