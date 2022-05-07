@@ -499,9 +499,9 @@ class Pages(discord.ui.View):
 
 
 class RedirectPageSource(menus.ListPageSource):
-    """A page source that requires (field_name, field_value) tuple items."""
+    """A page source that requires Dict[field_name, field_value] items"""
 
-    def __init__(self, entries, *, per_page=12, embed: discord.Embed = None):
+    def __init__(self, entries: List[Dict[str, str]], *, per_page=12, embed: discord.Embed = None):
         ...
         super().__init__(entries, per_page=per_page)
         self.embed = embed or discord.Embed(colour=discord.Colour.blurple())
