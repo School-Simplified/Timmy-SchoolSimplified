@@ -127,7 +127,6 @@ class Timmy(commands.Bot):
     def version(self):
         return __version__
 
-
 bot = Timmy()
 
 if os.getenv("DSN_SENTRY") is not None:

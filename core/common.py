@@ -141,7 +141,7 @@ async def paginate_embed(
 class CompletedButton(discord.ui.Button):
     def __init__(
             self,
-            bot: Timmy,
+            bot: 'Timmy',
             task: Literal[
                 "Motivation",
                 "Weekly Puzzle",
@@ -173,7 +173,7 @@ class CompletedButton(discord.ui.Button):
 class CannotComplete(discord.ui.Button):
     def __init__(
             self,
-            bot: Timmy,
+            bot: 'Timmy',
             task: Literal[
                 "Motivation",
                 "Weekly Puzzle",
@@ -211,7 +211,7 @@ class CannotComplete(discord.ui.Button):
 class ScheduleView(discord.ui.View):
     def __init__(
             self,
-            bot: Timmy,
+            bot: 'Timmy',
             task: Literal[
                 "Motivation",
                 "Weekly Puzzle",
@@ -255,6 +255,21 @@ def load_config(name) -> Tuple[dict, Path]:
 
     return config, config_file
 
+class CommissionConfirm(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green)
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.value = True
+        self.stop()
+
+    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message('Cancelling', ephemeral=True)
+        self.value = False
+        self.stop()
 
 def access_secret(
         secret_id,
@@ -694,6 +709,7 @@ class HRID:
     ch_tech_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
     ch_leadership_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_leadershipannouncements",
                                                                          819009569979629569))
+    ch_email_requests = int(ConfigCatClient.HR_ID_CC.get_value("ch_emailrequests", 968345000100384788))
 
     # *** Roles ***
     r_hr_staff = int(ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))

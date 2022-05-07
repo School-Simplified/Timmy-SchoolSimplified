@@ -84,23 +84,6 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
             )
 
 
-class CommissionConfirm(discord.ui.View):
-    def __init__(self):
-        super().__init__()
-        self.value = None
-
-    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green)
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.value = True
-        self.stop()
-
-    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red)
-    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message('Cancelling', ephemeral=True)
-        self.value = False
-        self.stop()
-
-
 class CommissionTechButton(discord.ui.View):
     def __init__(self, bot):
         super().__init__(timeout=None)
