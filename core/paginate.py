@@ -510,7 +510,7 @@ class RedirectPageSource(menus.ListPageSource):
         self.embed.clear_fields()
 
         for entry in entries:
-            for name, value, _ in entry:
+            for name, value, *_ in entry:
                 self.embed.add_field(name=name, value=value, inline=False)
 
         maximum = self.get_max_pages()
