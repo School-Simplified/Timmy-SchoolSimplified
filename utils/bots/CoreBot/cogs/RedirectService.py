@@ -44,13 +44,16 @@ class RedirectURL(commands.Cog):
         newlist = []
         for obj in objlist:
             newlist.append(
-                f"**ID:** {obj.id} | **URL:** `https://{obj.domain}/{obj.source}` -> `{obj.destination}`"
+                dict(name=f"**ID:** {obj.id}", value="**URL:** `https://{obj.domain}/{obj.source}` -> `{"
+                                                     "obj.destination}`")
             )
-        newlist = "\n".join(newlist)
         embed = discord.Embed(
             title=f"Redirects for {self.raOBJ.domain}", color=discord.Color.blue()
         )
-        embed.add_field(name="Redirects", value=newlist)
+        for field in newlist:
+            for name, value in field.items():
+                embed.add_field(name=name, value=value)
+
         await ctx.send(embed=embed)
 
 
