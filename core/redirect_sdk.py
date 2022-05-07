@@ -47,10 +47,10 @@ class RedirectPizza:
         self.created_at = created_at
 
 
-class InvalidAuth(Exception):
+class UnprocessableEntity(Exception):
     def __init__(self, status_code: int):
         self.status_code = status_code
-        self.pre = "Failed to authenticate with the provided credentials!"
+        self.pre = "Unprocessable Entity"
         self.message = f"{self.pre}: Response Code: {self.status_code}."
         super().__init__(self.message)
 
@@ -79,22 +79,22 @@ class RedirectClient:
             "https://redirect.pizza/api/v1/redirects", auth=("bearer", self.token)
         )
         if r.status_code == 422:
-            raise InvalidAuth(r.status_code)
+            raise UnprocessableEntity(r.status_code)
         data = r.json()
         data = data["data"]
         ListData = []
         for object in range(len(data) - 1):
-            # object = object
-            FullURL = data[object]["sources"][object]["url"]
-            ParsedDomain = urlparse(FullURL)
-            Domain = ParsedDomain.netloc
-            Path = ParsedDomain.path
+            """Iterates through the data and creates a list of redirects."""
+            full_url = data[object]["sources"][0]["url"]
+            parsed_link = urlparse(full_url)
+            domain = parsed_link.netloc
+            url_path = parsed_link.path
 
             ListData.append(
                 RedirectPizza(
                     r.json()["data"][object]["id"],
-                    Domain,
-                    Path,
+                    domain,
+                    url_path,
                     r.json()["data"][object]["destination"],
                     r.json()["data"][object]["created_at"],
                 )
@@ -120,7 +120,7 @@ class RedirectClient:
             auth=("bearer", self.token),
         )
         if r.status_code == 422:
-            raise InvalidAuth(r.status_code)
+            raise UnprocessableEntity(r.status_code)
         object = range(len(r.json()))
 
         FullURL = r.json()["data"]["sources"][0]["url"]
@@ -170,7 +170,7 @@ class RedirectClient:
             },
         )
         if r.status_code == 422:
-            raise InvalidAuth(r.status_code)
+            raise UnprocessableEntity(r.status_code)
         object = range(len(r.json()["data"]))
         pprint.pprint(r.json())
 
@@ -207,5 +207,5 @@ class RedirectClient:
         )
         print(r.status_code)
         if r.status_code == 422:
-            raise InvalidAuth(r.status_code)
+            raise UnprocessableEntity(r.status_code)
         return r.status_code

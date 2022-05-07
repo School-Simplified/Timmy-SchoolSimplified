@@ -8,6 +8,7 @@ import discord
 from discord import app_commands, ui
 from discord.ext import commands
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 from core.common import HRID, access_secret, Emoji
 
@@ -148,18 +149,31 @@ class AdminAPI(commands.Cog):
             "changePasswordAtNextLogin": True,
             "orgUnitPath": orgUnit[organizationunit],
         }
-        service.users().insert(body=user).execute()
-        await interaction.response.send_message(
-            f"{interaction.user.mention} Successfully created **{firstname} {lastname}'s** account.\n"
-            f"**Username:** {firstname}.{lastname}@schoolsimplified.org\n"
-            f"**Organization Unit:** {orgUnit[organizationunit]}",
-            ephemeral=False,
-        )
-        await interaction.followup.send(
-            f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary "
-            f"Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",
-            ephemeral=True,
-        )
+        try:
+            service.users().insert(body=user).execute()
+        except HttpError as e:
+            """If the error code is 409, send a message to the user saying that the email is already taken."""
+            if e.status_code == 409:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} The email {user['primaryEmail']} is already taken."
+                )
+            else:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} An error occurred. Please try again later.\nError: {e}"
+                )
+
+        else:
+            await interaction.response.send_message(
+                f"{interaction.user.mention} Successfully created **{firstname} {lastname}'s** account.\n"
+                f"**Username:** {firstname}.{lastname}@schoolsimplified.org\n"
+                f"**Organization Unit:** {orgUnit[organizationunit]}",
+                ephemeral=False,
+            )
+            await interaction.followup.send(
+                f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary "
+                f"Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",
+                ephemeral=True,
+            )
 
     @app_commands.command(
         name="gsuite-delete",
