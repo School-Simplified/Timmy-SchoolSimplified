@@ -5,6 +5,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 from core import redirect_sdk
+from core.paginate import Pages, RedirectPageSource
 from core.checks import is_botAdmin
 
 load_dotenv()
@@ -39,22 +40,21 @@ class RedirectURL(commands.Cog):
 
     @commands.command(alliases=["redirectlist", "listredirect"])
     @is_botAdmin
-    async def rl(self, ctx):
+    async def rl(self, ctx: commands.Context):
         objlist = self.raOBJ.get_redirects()
-        newlist = []
+        entries = []
         for obj in objlist:
-            newlist.append(
-                dict(name=f"**ID:** {obj.id}", value="**URL:** `https://{obj.domain}/{obj.source}` -> `{"
-                                                     "obj.destination}`")
+            entries.append(
+                dict(
+                    name=f"**ID:** {obj.id}",
+                    value=f"**URL:** `https://{obj.domain}/{obj.source}` -> `{obj.destination}`"
+                )
             )
         embed = discord.Embed(
             title=f"Redirects for {self.raOBJ.domain}", color=discord.Color.blue()
         )
-        for field in newlist:
-            for name, value in field.items():
-                embed.add_field(name=name, value=value)
-
-        await ctx.send(embed=embed)
+        source = RedirectPageSource(entries, per_page=6, embed=embed)
+        await Pages(source, bot=self.bot, ctx=ctx, compact=True).start()
 
 
 async def setup(bot):
