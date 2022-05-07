@@ -729,6 +729,32 @@ class SetPuzzleSchedule(BaseModel):
     id = AutoField()
 
 
+class GSuiteID(BaseModel):
+    """
+    #GSuiteID
+
+    `id`: AutoField()
+    Database Entry ID
+
+    `given_gsuite_id`: TextField()
+    The given GSuite ID.
+
+    `gsuite_id`: TextField()
+    Native GSuite ID of the user.
+
+    `discord_user_id`: BigIntegerField()
+    Discord ID of the user.
+
+    `gsuite_email`: TextField()
+    GSuite Email of the user.
+    """
+
+    id = AutoField()
+    given_gsuite_id = TextField()
+    native_gsuite_id = TextField()
+    discord_user_id = BigIntegerField()
+    gsuite_email = TextField()
+
 
 app = Flask(__name__)
 

@@ -12,6 +12,7 @@ from core.common import (
     Others,
     load_config,
 )
+from core.special_methods import VerifyButton
 
 config, _ = load_config("equelRoles")
 

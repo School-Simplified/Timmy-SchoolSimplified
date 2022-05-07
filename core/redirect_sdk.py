@@ -48,10 +48,12 @@ class RedirectPizza:
 
 
 class UnprocessableEntity(Exception):
-    def __init__(self, status_code: int):
+    def __init__(self, status_code: int, message: str, errors: list[str]) -> None:
         self.status_code = status_code
+        self.message = message
+        self.errors = errors
         self.pre = "Unprocessable Entity"
-        self.message = f"{self.pre}: Response Code: {self.status_code}."
+        self.message = f"{self.pre}: {self.message}\n  -> Response Code: {self.status_code}."
         super().__init__(self.message)
 
 
@@ -79,7 +81,7 @@ class RedirectClient:
             "https://redirect.pizza/api/v1/redirects", auth=("bearer", self.token)
         )
         if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code)
+            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
         data = r.json()
         data = data["data"]
         ListData = []
@@ -105,8 +107,7 @@ class RedirectClient:
         """Fetches a redirect.
 
         Args:
-            url_code (str): The URL code to fetch.
-            domain (str, optional): The domain to use. Defaults to None.
+            r_id (str): The URL code to fetch.
 
         Raises:
             InvalidAuth: Invalid authorization key passed in.
@@ -119,19 +120,24 @@ class RedirectClient:
             f"https://redirect.pizza/api/v1/redirects/{r_id}",
             auth=("bearer", self.token),
         )
+        print(r.json(), r.status_code)
         if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code)
-        object = range(len(r.json()))
+            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
+        elif r.status_code == 404:
+            redirects = self.get_redirects()
+            for redirect in redirects:
+                if redirect.source == r_id:
+                    return redirect
 
-        FullURL = r.json()["data"]["sources"][0]["url"]
-        ParsedDomain = urlparse(FullURL)
-        Domain = ParsedDomain.netloc
-        Path = ParsedDomain.path
+        full_url = r.json()["data"]["sources"]["url"]
+        parsed_domain = urlparse(full_url)
+        domain = parsed_domain.netloc
+        path = parsed_domain.path
 
         return RedirectPizza(
             r.json()["data"]["id"],
-            Domain,
-            Path,
+            domain,
+            path,
             r.json()["data"]["destination"],
             r.json()["data"]["created_at"],
         )
@@ -170,8 +176,7 @@ class RedirectClient:
             },
         )
         if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code)
-        object = range(len(r.json()["data"]))
+            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
         pprint.pprint(r.json())
 
         FullURL = r.json()["data"]["sources"][0]["url"]
@@ -207,5 +212,5 @@ class RedirectClient:
         )
         print(r.status_code)
         if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code)
+            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
         return r.status_code

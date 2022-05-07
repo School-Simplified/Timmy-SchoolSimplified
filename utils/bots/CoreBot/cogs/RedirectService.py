@@ -1,10 +1,12 @@
 import os
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
 
 from core import redirect_sdk
+from core.common import Others, TechID
 from core.paginate import Pages, RedirectPageSource
 from core.checks import is_botAdmin
 
@@ -24,23 +26,37 @@ class RedirectURL(commands.Cog):
     def display_emoji(self) -> str:
         return "🖇️"
 
-    @commands.command(alliases=["redirectadd", "addredirect"])
-    @is_botAdmin
-    async def ra(self, ctx, redirect_code, destination_url: str):
-        val = self.raOBJ.add_redirect(redirect_code, destination_url)
-        await ctx.send(
-            f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!\n\nAccess it at https://ssimpl.org/{redirect_code}"
-        )
+    @app_commands.command(name="redirect-add", description="Add a redirect URL")
+    @app_commands.describe(
+        redirect_code="The URL path you want to use.",
+        destination_url="The destination URL to redirect to.",
+    )
+    @app_commands.guilds(TechID.g_tech)
+    async def ra(self, interaction: discord.Interaction, redirect_code: str, destination_url: str):
+        try:
+            val = self.raOBJ.add_redirect(redirect_code, destination_url)
+        except redirect_sdk.UnprocessableEntity as e:
+            errors = "\n".join(e.errors[0])
+            embed = discord.Embed(title="Unprocessable Entity", color=discord.Color.brand_red())
+            embed.add_field(name="Unable to Add Redirect", value=errors)
+            embed.set_thumbnail(url=Others.timmy_dog_png)
+            return await interaction.response.send(embed=embed, ephemeral=True)
+        else:
+            await interaction.response.send(
+                f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!\n\nAccess it at https://ssimpl.org/{redirect_code}",
+                ephemeral=True,
+            )
 
-    @commands.command(alliases=["redirectremove", "removeredirect"])
-    @is_botAdmin
-    async def rr(self, ctx, ID):
-        self.raOBJ.del_redirect(ID)
-        await ctx.send(f"Redirect removed for {ID}")
+    @app_commands.command(name="redirect-remove", description="Remove a redirect.")
+    @app_commands.describe(redirect_id="Specify an ID or URL PATH to remove a redirect.")
+    @app_commands.guilds(TechID.g_tech)
+    async def rr(self, interaction: discord.Interaction, redirect_id: str):
+        self.raOBJ.del_redirect(redirect_id)
+        await interaction.response.send(f"Redirect removed for {redirect_id}")
 
-    @commands.command(alliases=["redirectlist", "listredirect"])
-    @is_botAdmin
-    async def rl(self, ctx: commands.Context):
+    @app_commands.command(name="redirect-list", description="List all redirects.")
+    @app_commands.guilds(TechID.g_tech)
+    async def rl(self, interaction: discord.Interaction):
         objlist = self.raOBJ.get_redirects()
         entries = []
         for obj in objlist:
@@ -55,6 +71,24 @@ class RedirectURL(commands.Cog):
         )
         source = RedirectPageSource(entries, per_page=6, embed=embed)
         await Pages(source, bot=self.bot, ctx=ctx, compact=True).start()
+
+        await interaction.response.send(embed=embed)
+
+    @app_commands.command(name="redirect-info", description="Get info about a redirect.")
+    @app_commands.describe(redirect_id="Specify an ID or URL PATH to get info about a redirect.")
+    @app_commands.guilds(TechID.g_tech)
+    async def ri(self, interaction: discord.Interaction, redirect_id: str):
+        obj = self.raOBJ.fetch_redirect(redirect_id)
+        embed = discord.Embed(
+            title=f"Redirect Info for {obj.source}", color=discord.Color.blue()
+        )
+        embed.add_field(name="ID", value=obj.id)
+        embed.add_field(name="Source", value=obj.source)
+        embed.add_field(name="Destination", value=obj.destination)
+        embed.add_field(name="Domain", value=obj.domain)
+        embed.add_field(name="Created At", value=obj.created_at)
+        await interaction.response.send(embed=embed)
+
 
 
 async def setup(bot):

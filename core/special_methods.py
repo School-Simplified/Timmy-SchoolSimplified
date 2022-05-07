@@ -30,7 +30,7 @@ from core.common import (
     Emoji,
 )
 from core.gh_modals import FeedbackButton
-from utils.bots.CoreBot.cogs.techCommissions import CommissionTechButton
+from utils.bots.CommissionSys.cogs.techCommissions import CommissionTechButton
 from utils.events.TicketDropdown import TicketButton
 
 if TYPE_CHECKING:
