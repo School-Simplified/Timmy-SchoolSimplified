@@ -2888,40 +2888,6 @@
                 ]
               },
               {
-                "id": "PyRedundantParenthesesInspection",
-                "shortDescription": {
-                  "text": "Redundant parentheses"
-                },
-                "fullDescription": {
-                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
-                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "PyTrailingSemicolonInspection",
                 "shortDescription": {
                   "text": "Prohibited trailing semicolon in a statement"
@@ -2956,13 +2922,13 @@
                 ]
               },
               {
-                "id": "PyAbstractClassInspection",
+                "id": "PyRedundantParenthesesInspection",
                 "shortDescription": {
-                  "text": "Class must implement all abstract methods"
+                  "text": "Redundant parentheses"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when not all abstract properties or methods are defined in a subclass. Example: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n When the quick-fix is applied, the IDE implements an abstract method for the 'Triangle' class: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass",
-                  "markdown": "Reports cases when not all abstract properties or methods are defined in\na subclass.\n\n**Example:**\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n```\n\nWhen the quick-fix is applied, the IDE implements an abstract method for the `Triangle` class:\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass\n```"
+                  "text": "Reports about redundant parentheses in expressions. The IDE provides the quick-fix action to remove the redundant parentheses.",
+                  "markdown": "Reports about redundant parentheses in expressions.\n\nThe IDE provides the quick-fix action to remove the redundant parentheses."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -3003,6 +2969,40 @@
                   "level": "warning",
                   "parameters": {
                     "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyAbstractClassInspection",
+                "shortDescription": {
+                  "text": "Class must implement all abstract methods"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when not all abstract properties or methods are defined in a subclass. Example: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n When the quick-fix is applied, the IDE implements an abstract method for the 'Triangle' class: from abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass",
+                  "markdown": "Reports cases when not all abstract properties or methods are defined in\na subclass.\n\n**Example:**\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_triangle(self):\n        pass\n```\n\nWhen the quick-fix is applied, the IDE implements an abstract method for the `Triangle` class:\n\n```\nfrom abc import abstractmethod, ABC\n\n\nclass Figure(ABC):\n\n    @abstractmethod\n    def do_figure(self):\n        pass\n\n\nclass Triangle(Figure):\n    def do_figure(self):\n        pass\n\n    def do_triangle(self):\n        pass\n```"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -3602,40 +3602,6 @@
                 ]
               },
               {
-                "id": "PyProtectedMemberInspection",
-                "shortDescription": {
-                  "text": "Accessing a protected member of a class or a module"
-                },
-                "fullDescription": {
-                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
-                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Python",
-                      "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "PyStubPackagesCompatibilityInspection",
                 "shortDescription": {
                   "text": "Incompatible stub packages"
@@ -3693,6 +3659,40 @@
                     "target": {
                       "id": "Django",
                       "index": 7,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "PyProtectedMemberInspection",
+                "shortDescription": {
+                  "text": "Accessing a protected member of a class or a module"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when a protected member is accessed outside the class, a descendant of the class where it is defined, or a module. class Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method",
+                  "markdown": "Reports cases when a protected member is accessed outside the class,\na descendant of the class where it is defined, or a module.\n\n```\nclass Foo:\n    def _protected_method(self):\n        pass\n\n\nclass Bar(Foo):\n    def public_method(self):\n        self._protected_method()\n\n\nfoo = Foo()\nfoo._protected_method() # Access to a protected method\n```"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Python",
+                      "index": 2,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -4702,40 +4702,6 @@
                 ]
               },
               {
-                "id": "DuplicatedCode",
-                "shortDescription": {
-                  "text": "Duplicated code fragment"
-                },
-                "fullDescription": {
-                  "text": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in File | Settings | Editor | Duplicates.",
-                  "markdown": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in [File \\| Settings \\| Editor \\| Duplicates](settings://duplicates.index)."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "General",
-                      "index": 9,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RequiredAttributes",
                 "shortDescription": {
                   "text": "Missing required attribute"
@@ -4759,6 +4725,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DuplicatedCode",
+                "shortDescription": {
+                  "text": "Duplicated code fragment"
+                },
+                "fullDescription": {
+                  "text": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in File | Settings | Editor | Duplicates.",
+                  "markdown": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in [File \\| Settings \\| Editor \\| Duplicates](settings://duplicates.index)."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "General",
+                      "index": 9,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5688,40 +5688,6 @@
                 ]
               },
               {
-                "id": "HtmlExtraClosingTag",
-                "shortDescription": {
-                  "text": "Redundant closing tag"
-                },
-                "fullDescription": {
-                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
-                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "ideaSeverity": "ERROR",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpOctalEscape",
                 "shortDescription": {
                   "text": "Octal escape"
@@ -5756,19 +5722,19 @@
                 ]
               },
               {
-                "id": "UnusedDefine",
+                "id": "HtmlExtraClosingTag",
                 "shortDescription": {
-                  "text": "Unused define"
+                  "text": "Redundant closing tag"
                 },
                 "fullDescription": {
-                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
-                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
+                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
+                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
                 },
                 "defaultConfiguration": {
                   "enabled": false,
-                  "level": "warning",
+                  "level": "error",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "ERROR",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -5777,8 +5743,8 @@
                 "relationships": [
                   {
                     "target": {
-                      "id": "RELAX NG",
-                      "index": 11,
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5813,6 +5779,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "UnusedDefine",
+                "shortDescription": {
+                  "text": "Unused define"
+                },
+                "fullDescription": {
+                  "text": "Reports an unused named pattern ('define') in a RELAX-NG file (XML or Compact Syntax). 'define' elements that are used through an include in another file are ignored.",
+                  "markdown": "Reports an unused named pattern (`define`) in a RELAX-NG file (XML or Compact Syntax). `define` elements that are used through an include in another file are ignored."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RELAX NG",
+                      "index": 11,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6130,40 +6130,6 @@
                 ]
               },
               {
-                "id": "RegExpEscapedMetaCharacter",
-                "shortDescription": {
-                  "text": "Escaped meta character"
-                },
-                "fullDescription": {
-                  "text": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character '[', ']' and '^', because those would need additional escaping inside a character class. Example: '\\d+\\.\\d+' After the quick-fix is applied: '\\d+[.]\\d+' New in 2017.1",
-                  "markdown": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character `[`, `]` and `^`, because those would need additional escaping inside a character class.\n\n**Example:**\n\n\n      \\d+\\.\\d+\n\nAfter the quick-fix is applied:\n\n\n      \\d+[.]\\d+\n\nNew in 2017.1"
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "INFORMATION",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "RegExp",
-                      "index": 5,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "LossyEncoding",
                 "shortDescription": {
                   "text": "Lossy encoding"
@@ -6187,6 +6153,40 @@
                     "target": {
                       "id": "Internationalization",
                       "index": 14,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "RegExpEscapedMetaCharacter",
+                "shortDescription": {
+                  "text": "Escaped meta character"
+                },
+                "fullDescription": {
+                  "text": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character '[', ']' and '^', because those would need additional escaping inside a character class. Example: '\\d+\\.\\d+' After the quick-fix is applied: '\\d+[.]\\d+' New in 2017.1",
+                  "markdown": "Reports escaped meta characters. Some RegExp coding styles specify that meta characters should be placed inside a character class, to make the regular expression easier to understand. This inspection does not warn about the meta character `[`, `]` and `^`, because those would need additional escaping inside a character class.\n\n**Example:**\n\n\n      \\d+\\.\\d+\n\nAfter the quick-fix is applied:\n\n\n      \\d+[.]\\d+\n\nNew in 2017.1"
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "INFORMATION",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "RegExp",
+                      "index": 5,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6737,12 +6737,12 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
-          "revisionId": "050d9c7a4399f85d5d95ec3435786bc137cb65a2",
+          "revisionId": "1ed702fe04a8d4f1dd67c4dfbbf2f2530d15ac7e",
           "branch": "beta",
           "properties": {
-            "lastAuthorName": "SpaceT0",
+            "lastAuthorName": "pandabear189",
             "vcsType": "Git",
-            "lastAuthorEmail": "space@spaceturtle.tech",
+            "lastAuthorEmail": "88685021+pandabear189@users.noreply.github.com",
             "tags": [
               "lastAuthorEmail",
               "lastAuthorName",
@@ -10851,7 +10851,7 @@
                 "region": {
                   "startLine": 166,
                   "startColumn": 13,
-                  "charOffset": 6496,
+                  "charOffset": 6503,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10861,7 +10861,7 @@
                 "contextRegion": {
                   "startLine": 164,
                   "startColumn": 1,
-                  "charOffset": 6420,
+                  "charOffset": 6427,
                   "charLength": 144,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"go to the first page\"\"\""
@@ -10877,7 +10877,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "28ec766ca3ec76e2384cdf52079152b84814aab51f6e9662a26e907722d7ec83"
+            "equalIndicator/v1": "9a7a905d3b33d536bf72e62d8767d058bc55faea78ccf3bbb3602454fa094794"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10904,7 +10904,7 @@
                 "region": {
                   "startLine": 173,
                   "startColumn": 53,
-                  "charOffset": 6770,
+                  "charOffset": 6777,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10914,7 +10914,7 @@
                 "contextRegion": {
                   "startLine": 171,
                   "startColumn": 1,
-                  "charOffset": 6611,
+                  "charOffset": 6618,
                   "charLength": 229,
                   "snippet": {
                     "text": "    @discord.ui.button(label=\"Back\", style=discord.ButtonStyle.blurple)\n    async def go_to_previous_page(\n            self, interaction: discord.Interaction, button: discord.ui.Button\n    ):\n        \"\"\"go to the previous page\"\"\""
@@ -10930,7 +10930,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8b262d3bc0de6992991467c29617ad656b56f25ed23912d62e7ffabfde1e9095"
+            "equalIndicator/v1": "03f99ac96fe5f21fa352feea2815f9b812791d650c59b1b6cf5ca6f3baf038a3"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10957,7 +10957,7 @@
                 "region": {
                   "startLine": 188,
                   "startColumn": 13,
-                  "charOffset": 7314,
+                  "charOffset": 7321,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10967,7 +10967,7 @@
                 "contextRegion": {
                   "startLine": 186,
                   "startColumn": 1,
-                  "charOffset": 7238,
+                  "charOffset": 7245,
                   "charLength": 143,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"go to the next page\"\"\""
@@ -10983,7 +10983,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "a3b7cabd3b2b1494e2d091cef98f54e5378da9a6c1629ec006a8017cee54878a"
+            "equalIndicator/v1": "b1d70a355e06b2d205ba77cbecca4ebc78b257f080be126d2eae507449b89189"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11010,7 +11010,7 @@
                 "region": {
                   "startLine": 197,
                   "startColumn": 13,
-                  "charOffset": 7629,
+                  "charOffset": 7636,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11020,7 +11020,7 @@
                 "contextRegion": {
                   "startLine": 195,
                   "startColumn": 1,
-                  "charOffset": 7553,
+                  "charOffset": 7560,
                   "charLength": 143,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"go to the last page\"\"\""
@@ -11036,7 +11036,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "633a074f16501ce9f0d81cc7cd742da853e777b5de8c3ae9118e62f8a058ff59"
+            "equalIndicator/v1": "29cbac5c3f3432cb79045789c3abfc13d5006a7ef882585f0124b5ed7e42714a"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11063,7 +11063,7 @@
                 "region": {
                   "startLine": 207,
                   "startColumn": 13,
-                  "charOffset": 8022,
+                  "charOffset": 8029,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11073,7 +11073,7 @@
                 "contextRegion": {
                   "startLine": 205,
                   "startColumn": 1,
-                  "charOffset": 7946,
+                  "charOffset": 7953,
                   "charLength": 160,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"lets you type a page number to go to\"\"\""
@@ -11089,7 +11089,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "b180d17a8185d2c611018bf84a62765d94ba0843915d3d5987061f571e64e765"
+            "equalIndicator/v1": "0009a88cabe81bba1f24c9117265c7bc7102831f470b87858cdce808dadee319"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11116,7 +11116,7 @@
                 "region": {
                   "startLine": 249,
                   "startColumn": 13,
-                  "charOffset": 9498,
+                  "charOffset": 9505,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11126,7 +11126,7 @@
                 "contextRegion": {
                   "startLine": 247,
                   "startColumn": 1,
-                  "charOffset": 9422,
+                  "charOffset": 9429,
                   "charLength": 153,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"stops the pagination session.\"\"\""
@@ -11142,7 +11142,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "f3301a33385c1e65e0fa4e63d8bb47321af055b628af634c01f26f0ef5c80fc0"
+            "equalIndicator/v1": "4702e88cdadaf32d5a11523f9c6664d527fbfe2a475702f01da62ce653455f8e"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11169,7 +11169,7 @@
                 "region": {
                   "startLine": 410,
                   "startColumn": 13,
-                  "charOffset": 15864,
+                  "charOffset": 15871,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11179,7 +11179,7 @@
                 "contextRegion": {
                   "startLine": 408,
                   "startColumn": 1,
-                  "charOffset": 15788,
+                  "charOffset": 15795,
                   "charLength": 144,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"go to the first page\"\"\""
@@ -11195,7 +11195,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "a0baab1adc63be9a76c38cbf2da090ec49bb931814e4c6e2e6050d0523ef27f6"
+            "equalIndicator/v1": "89909e070e077fe5bf07b1d86a2915df93bd84f86754c98e0f6cd343523fe8b0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11222,7 +11222,7 @@
                 "region": {
                   "startLine": 417,
                   "startColumn": 53,
-                  "charOffset": 16138,
+                  "charOffset": 16145,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11232,7 +11232,7 @@
                 "contextRegion": {
                   "startLine": 415,
                   "startColumn": 1,
-                  "charOffset": 15979,
+                  "charOffset": 15986,
                   "charLength": 229,
                   "snippet": {
                     "text": "    @discord.ui.button(label=\"Back\", style=discord.ButtonStyle.blurple)\n    async def go_to_previous_page(\n            self, interaction: discord.Interaction, button: discord.ui.Button\n    ):\n        \"\"\"go to the previous page\"\"\""
@@ -11248,7 +11248,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "d4ba7e34428b89058b823bccfbdd7094ed22f98ed1d6f4d865e52ae173be4690"
+            "equalIndicator/v1": "3ae26e220a9f0a7eae586e6899dd72a0113919063e23ab3027f2d98cc6691c0d"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11275,7 +11275,7 @@
                 "region": {
                   "startLine": 432,
                   "startColumn": 13,
-                  "charOffset": 16682,
+                  "charOffset": 16689,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11285,7 +11285,7 @@
                 "contextRegion": {
                   "startLine": 430,
                   "startColumn": 1,
-                  "charOffset": 16606,
+                  "charOffset": 16613,
                   "charLength": 143,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"go to the next page\"\"\""
@@ -11301,7 +11301,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "87019e6724174abc37e4ea798c0518369cf5ca2978429424f508730cc46a89f4"
+            "equalIndicator/v1": "14212aa34cac272e756028dc7dd2ffb6588b13837c4ecb05492be2f92db249db"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11328,7 +11328,7 @@
                 "region": {
                   "startLine": 441,
                   "startColumn": 13,
-                  "charOffset": 16997,
+                  "charOffset": 17004,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11338,7 +11338,7 @@
                 "contextRegion": {
                   "startLine": 439,
                   "startColumn": 1,
-                  "charOffset": 16921,
+                  "charOffset": 16928,
                   "charLength": 143,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"go to the last page\"\"\""
@@ -11354,7 +11354,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "61fbec231e80610a3319c99b94c888248a316e4634a22da3c5108b06aaf272c5"
+            "equalIndicator/v1": "87c9f899781a64f4fa588aff01a41e51522e4fe4d4fb76b495d9bdf0b7646185"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11381,7 +11381,7 @@
                 "region": {
                   "startLine": 451,
                   "startColumn": 13,
-                  "charOffset": 17390,
+                  "charOffset": 17397,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11391,7 +11391,7 @@
                 "contextRegion": {
                   "startLine": 449,
                   "startColumn": 1,
-                  "charOffset": 17314,
+                  "charOffset": 17321,
                   "charLength": 160,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"lets you type a page number to go to\"\"\""
@@ -11407,7 +11407,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "e749e373c7a65f07c11794b6fefd274ae3bf531015de96492c648aabdccc1d21"
+            "equalIndicator/v1": "8b8843f508a346a5e1457113991b58ac77c7747d0e3e62ccddaf52e1498859d0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -11434,7 +11434,7 @@
                 "region": {
                   "startLine": 493,
                   "startColumn": 13,
-                  "charOffset": 18866,
+                  "charOffset": 18873,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -11444,7 +11444,7 @@
                 "contextRegion": {
                   "startLine": 491,
                   "startColumn": 1,
-                  "charOffset": 18790,
+                  "charOffset": 18797,
                   "charLength": 153,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        \"\"\"stops the pagination session.\"\"\""
@@ -11460,7 +11460,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "8a8f08d5e943f23f5c33bedf030f280b612853a9eb4a14acc3f9867002caf9fc"
+            "equalIndicator/v1": "34063b55cbc163c0d6f8794d92fa35f9290cf493bcd4ce18f8fddc57350eadf1"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -12335,7 +12335,7 @@
                 "region": {
                   "startLine": 18,
                   "startColumn": 9,
-                  "charOffset": 383,
+                  "charOffset": 390,
                   "charLength": 32,
                   "snippet": {
                     "text": "interaction: discord.Interaction"
@@ -12345,7 +12345,7 @@
                 "contextRegion": {
                   "startLine": 16,
                   "startColumn": 1,
-                  "charOffset": 341,
+                  "charOffset": 348,
                   "charLength": 134,
                   "snippet": {
                     "text": "\nasync def redirect_autocomplete(\n        interaction: discord.Interaction,\n        current: str,\n) -> List[app_commands.Choice[str]]:"
@@ -12361,7 +12361,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "7fc90326936612f2632c31afad6553344d79c4d0484068a556815e6ac913233e"
+            "equalIndicator/v1": "af9b74aaec21078f83a7aa28c7ab1914060157c7699d80dd4d7a005db39fcafe"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -43287,7 +43287,7 @@
                 "region": {
                   "startLine": 156,
                   "startColumn": 15,
-                  "charOffset": 6072,
+                  "charOffset": 6079,
                   "charLength": 25,
                   "snippet": {
                     "text": "self.source._prepare_once"
@@ -43297,7 +43297,7 @@
                 "contextRegion": {
                   "startLine": 154,
                   "startColumn": 1,
-                  "charOffset": 6038,
+                  "charOffset": 6045,
                   "charLength": 162,
                   "snippet": {
                     "text": "            return\n\n        await self.source._prepare_once()\n        page = await self.source.get_page(0)\n        kwargs = await self._get_kwargs_from_page(page)"
@@ -43313,7 +43313,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "e01745b245dd128d24a6d685e9155447849b1be7ef87246199ebb4da262924e4"
+            "equalIndicator/v1": "27d03aa5369f0cdc8293cc32d26ca86fa678ccb48d24452d6af18f6d2aac427d"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -43340,7 +43340,7 @@
                 "region": {
                   "startLine": 400,
                   "startColumn": 15,
-                  "charOffset": 15465,
+                  "charOffset": 15472,
                   "charLength": 25,
                   "snippet": {
                     "text": "self.source._prepare_once"
@@ -43350,7 +43350,7 @@
                 "contextRegion": {
                   "startLine": 398,
                   "startColumn": 1,
-                  "charOffset": 15431,
+                  "charOffset": 15438,
                   "charLength": 162,
                   "snippet": {
                     "text": "            return\n\n        await self.source._prepare_once()\n        page = await self.source.get_page(0)\n        kwargs = await self._get_kwargs_from_page(page)"
@@ -43366,7 +43366,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "4d60fcc2c498617d53f5242ec8c820760822ebe35ab15708c5a640bc7f24993f"
+            "equalIndicator/v1": "4fa11fca7196f4e487b0419e84376669c748cd66f3ccc6cc31ac2c127e4cb60d"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -44173,7 +44173,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-05-07",
-        "guid": "3cb29ae4-92b3-4bc5-a4cd-b479d5297064"
+        "guid": "35f58427-6350-4bf3-b3ae-a67859628b76"
       },
       "newlineSequences": [
         "\r\n",
@@ -44400,7 +44400,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 19930,
+                    "charLength": 19933,
                     "snippet": {
                       "text": "from __future__ import annotations import asyncio from typing import Any, Dict, List, Optional, ove..."
                     },
@@ -44425,7 +44425,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "7c67892d7c9c114b8ec62ec966542593dd8ac2dd75a5ca5302db571c4c724a37"
+              "equalIndicator/v1": "e24c6a5036489b8844e02996aae64896299f7aeab393fed8887db53f5219b83d"
             },
             "properties": {
               "ideaSeverity": "ERROR"
@@ -45100,9 +45100,9 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 4735,
+                    "charLength": 4725,
                     "snippet": {
-                      "text": "import os from typing import List import discord from discord import app_commands from discord.ext ..."
+                      "text": "import os from typing import List, Tuple import discord from discord import app_commands from disco..."
                     },
                     "sourceLanguage": "Python"
                   },
@@ -45110,9 +45110,9 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 34,
+                    "charLength": 41,
                     "snippet": {
-                      "text": "import os\nfrom typing import List\n"
+                      "text": "import os\nfrom typing import List, Tuple\n"
                     }
                   }
                 },
@@ -45125,7 +45125,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "ce575c5bcdde3223d3caad19cf6236c684ca9c7e65a093ac7c23ce377814ea0b"
+              "equalIndicator/v1": "5a94aff2478c19e91a18237eaf77498fac897b730b68c164fc566c0abea47d7a"
             },
             "properties": {
               "ideaSeverity": "ERROR"
