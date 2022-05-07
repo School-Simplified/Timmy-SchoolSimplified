@@ -40,9 +40,9 @@ class RedirectURL(commands.Cog):
             embed = discord.Embed(title="Unprocessable Entity", color=discord.Color.brand_red())
             embed.add_field(name="Unable to Add Redirect", value=errors)
             embed.set_thumbnail(url=Others.timmy_dog_png)
-            return await interaction.response.send(embed=embed, ephemeral=True)
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
         else:
-            await interaction.response.send(
+            await interaction.response.send_message(
                 f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!\n\nAccess it at https://ssimpl.org/{redirect_code}",
                 ephemeral=True,
             )
@@ -52,7 +52,7 @@ class RedirectURL(commands.Cog):
     @app_commands.guilds(TechID.g_tech)
     async def rr(self, interaction: discord.Interaction, redirect_id: str):
         self.raOBJ.del_redirect(redirect_id)
-        await interaction.response.send(f"Redirect removed for {redirect_id}")
+        await interaction.response.send_message(f"Redirect removed for {redirect_id}")
 
     @app_commands.command(name="redirect-list", description="List all redirects.")
     @app_commands.guilds(TechID.g_tech)
@@ -85,7 +85,7 @@ class RedirectURL(commands.Cog):
         embed.add_field(name="Destination", value=obj.destination)
         embed.add_field(name="Domain", value=obj.domain)
         embed.add_field(name="Created At", value=obj.created_at)
-        await interaction.response.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
 
