@@ -82,7 +82,7 @@ class SetScheduleCog(commands.Cog):
         self.bot = bot
         self._reminder_loop.start()
 
-    @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=20, minute=30)])
+    @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=9)])
     async def _reminder_loop(self):
         print("starting task")
         """
