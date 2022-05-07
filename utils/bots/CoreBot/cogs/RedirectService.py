@@ -75,9 +75,10 @@ class RedirectURL(commands.Cog):
     @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
     async def rl(self, interaction: discord.Interaction):
         obj_list = self.raOBJ.get_redirects()
-        entries: List[Tuple] = []
+        entries: List[Tuple[str, str]] = []
         for obj in obj_list:
-            entries.append((
+            entries.append(
+                (
                     f"**ID:** {obj.id}",
                     f"**URL:** `https://{obj.domain}/{obj.source}` -> `{obj.destination}`"
                 )

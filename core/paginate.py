@@ -508,7 +508,7 @@ class RedirectPageSource(menus.ListPageSource):
 
     async def format_page(self, menu, entries: List[Tuple]):
         self.embed.clear_fields()
-
+        
         for entry in entries:
             for name, value in entry:
                 self.embed.add_field(name=name, value=value, inline=False)
