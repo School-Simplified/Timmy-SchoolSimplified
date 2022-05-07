@@ -90,6 +90,8 @@ class RedirectClient:
         if r.status_code == 422:
             raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
         data = r.json()
+        pprint.pprint(data)
+        #for data in range(len(data["data"])):
         data = data["data"]
         ListData = []
         for object in range(len(data) - 1):

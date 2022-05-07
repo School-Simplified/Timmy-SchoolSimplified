@@ -83,7 +83,6 @@ class RedirectURL(commands.Cog):
         embed.add_field(name="ID", value=obj.id)
         embed.add_field(name="Source", value=obj.source)
         embed.add_field(name="Destination", value=obj.destination)
-        embed.add_field(name="Domain", value=obj.domain)
         embed.add_field(name="Created At", value=obj.created_at)
         await interaction.response.send_message(embed=embed)
 
