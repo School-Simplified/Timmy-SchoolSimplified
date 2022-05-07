@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 if TYPE_CHECKING:
     from main import Timmy
 
-
 """[summary]
 
     Raises:
@@ -43,7 +42,7 @@ def cleanup_url(url: str) -> str:
 
 class RedirectPizza:
     def __init__(
-        self, id: int, domain: str, source: str, destination: str, created_at: datetime
+            self, id: int, domain: str, source: str, destination: str, created_at: datetime
     ) -> None:
         self.id = id
         self.domain = domain
@@ -83,15 +82,14 @@ class RedirectClient:
         Returns:
             list: List of redirects.
         """
-        async with self.bot.session as session:
-            r = session.get(
+        async with self.bot.session.get(
                 "https://redirect.pizza/api/v1/redirects", auth=("bearer", self.token)
-            )
-        if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
-        data = r.json()
+        ) as r:
+            if r.status_code == 422:
+                raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
+            data = r.json()
         pprint.pprint(data)
-        #for data in range(len(data["data"])):
+        # for data in range(len(data["data"])):
         data = data["data"]
         ListData = []
         for object in range(len(data) - 1):
@@ -124,22 +122,21 @@ class RedirectClient:
         Returns:
             typing.Union[dict, int]: Returns a dict of the redirect or an int of the status code.
         """
-        async with self.bot.session as session:
-            r = session.get(
+        async with self.bot.session.get(
                 f"https://redirect.pizza/api/v1/redirects/{r_id}",
                 auth=("bearer", self.token),
-            )
-        print(r.json(), r.status_code)
-        if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
-        elif r.status_code == 404:
-            if "ssimpl.org" not in r_id:
-                r_id = f"ssimpl.org/{r_id}"
-            redirects = self.get_redirects()
-            for redirect in redirects:
-                print(redirect.source)
-                if redirect.source == r_id:
-                    return redirect
+        ) as r:
+            print(r.json(), r.status_code)
+            if r.status_code == 422:
+                raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
+            elif r.status_code == 404:
+                if "ssimpl.org" not in r_id:
+                    r_id = f"ssimpl.org/{r_id}"
+                redirects = self.get_redirects()
+                for redirect in redirects:
+                    print(redirect.source)
+                    if redirect.source == r_id:
+                        return redirect
 
         full_url = r.json()["data"]["sources"]["url"]
         parsed_domain = urlparse(full_url)
@@ -155,7 +152,7 @@ class RedirectClient:
         )
 
     async def add_redirect(
-        self, redirect_url: str, destination: str, domain: str = None
+            self, redirect_url: str, destination: str, domain: str = None
     ) -> RedirectPizza:
         """Adds a redirect.
 
@@ -174,8 +171,7 @@ class RedirectClient:
             raise TypeError("Domain is not set!")
         if domain is None and self.domain is not None:
             domain = self.domain
-        async with self.bot.session as session:
-            r = session.post(
+        async with self.bot.session.post(
                 "https://redirect.pizza/api/v1/redirects",
                 auth=("bearer", self.token),
                 json={
@@ -185,11 +181,11 @@ class RedirectClient:
                     "uri_forwarding": False,
                     "keep_query_string": False,
                     "tracking": True,
-                },
-            )
-        if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
-        pprint.pprint(r.json())
+                }
+        ) as r:
+            if r.status_code == 422:
+                raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
+            pprint.pprint(r.json())
 
         FullURL = r.json()["data"]["sources"][0]["url"]
         ParsedDomain = urlparse(FullURL)
@@ -217,12 +213,11 @@ class RedirectClient:
         Returns:
             typing.Union[dict, int]: Returns a dict of the redirect or an int of the status code.
         """
-        async with self.bot.session as session:
-            r = session.delete(
+        async with self.bot.session.delete(
                 f"https://redirect.pizza/api/v1/redirects/{r_id}",
                 auth=("bearer", self.token),
-            )
-        print(r.status_code)
-        if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
-        return r.status_code
+        ) as r:
+            print(r.status_code)
+            if r.status_code == 422:
+                raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
+            return r.status_code
