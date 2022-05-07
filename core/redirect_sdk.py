@@ -124,8 +124,11 @@ class RedirectClient:
         if r.status_code == 422:
             raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
         elif r.status_code == 404:
+            if "ssimpl.org" not in r_id:
+                r_id = f"ssimpl.org/{r_id}"
             redirects = self.get_redirects()
             for redirect in redirects:
+                print(redirect.source)
                 if redirect.source == r_id:
                     return redirect
 
