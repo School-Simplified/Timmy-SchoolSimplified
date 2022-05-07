@@ -18,7 +18,7 @@ class RedirectURL(commands.Cog):
         self.bot = bot
         self.domain = "https://ssimpl.org"
         self.raOBJ = redirect_sdk.RedirectClient(
-            os.getenv("RP_TK"), domain="https://ssimpl.org"
+            os.getenv("RP_TK"), bot=self.bot, domain="https://ssimpl.org"
         )
         self.__cog_name__ = "Redirect URL"
 
@@ -86,7 +86,6 @@ class RedirectURL(commands.Cog):
         embed.add_field(name="Domain", value=obj.domain)
         embed.add_field(name="Created At", value=obj.created_at)
         await interaction.response.send_message(embed=embed)
-
 
 
 async def setup(bot):

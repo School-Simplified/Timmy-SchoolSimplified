@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import pprint
 import typing
 from datetime import datetime
-from typing import List
+from typing import List, TYPE_CHECKING
 from urllib.parse import urlparse
 
-import requests
 from dotenv import load_dotenv
+
+if TYPE_CHECKING:
+    from main import Timmy
+
 
 """[summary]
 
@@ -58,7 +63,7 @@ class UnprocessableEntity(Exception):
 
 
 class RedirectClient:
-    def __init__(self, token: str, domain: str = None):
+    def __init__(self, token: str, bot: Timmy, domain: str = None):
         """Initializes the RedirectObject class.
 
         Args:
@@ -67,6 +72,7 @@ class RedirectClient:
         """
         self.token = token
         self.domain = domain
+        self.bot = bot
 
     def get_redirects(self) -> List[RedirectPizza]:
         """Returns a list of redirects
@@ -77,9 +83,10 @@ class RedirectClient:
         Returns:
             list: List of redirects.
         """
-        r = requests.get(
-            "https://redirect.pizza/api/v1/redirects", auth=("bearer", self.token)
-        )
+        async with self.bot.session as session:
+            r = session.get(
+                "https://redirect.pizza/api/v1/redirects", auth=("bearer", self.token)
+            )
         if r.status_code == 422:
             raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
         data = r.json()
@@ -115,11 +122,11 @@ class RedirectClient:
         Returns:
             typing.Union[dict, int]: Returns a dict of the redirect or an int of the status code.
         """
-
-        r = requests.get(
-            f"https://redirect.pizza/api/v1/redirects/{r_id}",
-            auth=("bearer", self.token),
-        )
+        async with self.bot.session as session:
+            r = session.get(
+                f"https://redirect.pizza/api/v1/redirects/{r_id}",
+                auth=("bearer", self.token),
+            )
         print(r.json(), r.status_code)
         if r.status_code == 422:
             raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
@@ -165,19 +172,19 @@ class RedirectClient:
             raise TypeError("Domain is not set!")
         if domain is None and self.domain is not None:
             domain = self.domain
-
-        r = requests.post(
-            "https://redirect.pizza/api/v1/redirects",
-            auth=("bearer", self.token),
-            json={
-                "sources": f"{domain}/{redirect_url}",
-                "destination": destination,
-                "redirect_type": "permanent",
-                "uri_forwarding": False,
-                "keep_query_string": False,
-                "tracking": True,
-            },
-        )
+        async with self.bot.session as session:
+            r = session.post(
+                "https://redirect.pizza/api/v1/redirects",
+                auth=("bearer", self.token),
+                json={
+                    "sources": f"{domain}/{redirect_url}",
+                    "destination": destination,
+                    "redirect_type": "permanent",
+                    "uri_forwarding": False,
+                    "keep_query_string": False,
+                    "tracking": True,
+                },
+            )
         if r.status_code == 422:
             raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
         pprint.pprint(r.json())
@@ -208,11 +215,11 @@ class RedirectClient:
         Returns:
             typing.Union[dict, int]: Returns a dict of the redirect or an int of the status code.
         """
-
-        r = requests.delete(
-            f"https://redirect.pizza/api/v1/redirects/{r_id}",
-            auth=("bearer", self.token),
-        )
+        async with self.bot.session as session:
+            r = session.delete(
+                f"https://redirect.pizza/api/v1/redirects/{r_id}",
+                auth=("bearer", self.token),
+            )
         print(r.status_code)
         if r.status_code == 422:
             raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
