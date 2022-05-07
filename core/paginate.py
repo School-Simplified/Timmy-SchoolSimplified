@@ -506,11 +506,11 @@ class RedirectPageSource(menus.ListPageSource):
         super().__init__(entries, per_page=per_page)
         self.embed = embed or discord.Embed(colour=discord.Colour.blurple())
 
-    async def format_page(self, menu, entries: List[Tuple]):
+    async def format_page(self, menu, entries: List[Tuple[str, str]]):
         self.embed.clear_fields()
-        
+
         for entry in entries:
-            for name, value in entry:
+            for name, value, _ in entry:
                 self.embed.add_field(name=name, value=value, inline=False)
 
         maximum = self.get_max_pages()
