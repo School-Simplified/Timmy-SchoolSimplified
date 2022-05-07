@@ -42,14 +42,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 67798
+      "length": 68522
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "7924067053326126036"
+  "hash": "7408210681261656079"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -94,14 +94,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 17740
+      "length": 18263
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "3001103058958386238"
+  "hash": "2601157917017946583"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -172,14 +172,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 6304
+      "length": 6669
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-1894058839232175765"
+  "hash": "2818510138561970426"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -198,14 +198,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 22700
+      "length": 22706
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-6376568943438225499"
+  "hash": "2322588914850132784"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -490,14 +490,14 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 2055
+      "length": 3993
     }
   ],
   "attributes": {
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "-4058140684434572884"
+  "hash": "2897432212737103174"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -524,32 +524,6 @@
     "inspectionName": "PyInterpreterInspection"
   },
   "hash": "-2568992065916284461"
-},{
-  "tool": "Code Inspection",
-  "category": "Python",
-  "type": "An invalid interpreter",
-  "tags": [
-    "Python",
-    "Sanity"
-  ],
-  "severity": "Critical",
-  "comment": "No Python interpreter configured for the project",
-  "detailsInfo": "Reports problems if there is no Python interpreter configured for the project or if the interpreter is invalid. Without a properly\nconfigured interpreter, you cannot execute your Python scripts and benefit from some Python code insight features.\n\nThe IDE provides quick access to the interpreter settings.",
-  "sources": [
-    {
-      "type": "file",
-      "path": "utils/bots/CoreBot/cogs/techCommissions.py",
-      "language": "Python",
-      "line": 1,
-      "offset": 0,
-      "length": 9690
-    }
-  ],
-  "attributes": {
-    "module": "project",
-    "inspectionName": "PyInterpreterInspection"
-  },
-  "hash": "-6883644775244551517"
 },{
   "tool": "Code Inspection",
   "category": "Python",
@@ -628,4 +602,36 @@
     "inspectionName": "PyInterpreterInspection"
   },
   "hash": "-2201772420723021316"
+},{
+  "tool": "Code Inspection",
+  "category": "Python",
+  "type": "An invalid interpreter",
+  "tags": [
+    "Python",
+    "Sanity"
+  ],
+  "severity": "Critical",
+  "comment": "No Python interpreter configured for the project",
+  "detailsInfo": "Reports problems if there is no Python interpreter configured for the project or if the interpreter is invalid. Without a properly\nconfigured interpreter, you cannot execute your Python scripts and benefit from some Python code insight features.\n\nThe IDE provides quick access to the interpreter settings.",
+  "sources": [
+    {
+      "type": "file",
+      "path": "utils/bots/StudyBot/cogs/StudyLoop.py",
+      "language": "Python",
+      "line": 1,
+      "offset": 0,
+      "length": 1490,
+      "code": {
+        "startLine": 1,
+        "length": 1490,
+        "offset": 0,
+        "surroundingCode": "import datetime\n\nimport pytz\nfrom dateutil import parser\nfrom discord.ext import tasks, commands\n\nfrom core.database import StudyVCLeaderboard\n\n\nclass StudyLoop(commands.Cog):\n    def __init__(self, bot: commands.Bot):\n        self.bot = bot\n        self.est = pytz.timezone(\"US/Eastern\")\n        self.lastReset = parser.parse(\n            \"14.03.2022 00:00:00 EST\", tzinfos={\"EST\": -4 * 3600}\n        )  # 14.03.2022 as default value\n        self.midnight = datetime.datetime.strptime(\"00:00:00\", \"%H:%M:%S\").time()\n\n        self.TTSWeekCheck.start()\n\n    async def cog_unload(self):\n        self.TTSWeekCheck.stop()\n\n    @tasks.loop(seconds=10)\n    async def TTSWeekCheck(self):\n        now = datetime.datetime.now(self.est)\n        weekdayNow = now.isoweekday()\n        timeNow = now.time()\n\n        queryLeaderboard = StudyVCLeaderboard.select()\n        entries = [entry.id for entry in queryLeaderboard]\n\n        if (\n            weekdayNow == 1\n            and (now - self.lastReset >= datetime.timedelta(days=7))\n            and timeNow >= self.midnight\n        ):\n            lastReset = now\n            for entry in entries:\n                queryLeaderboard = queryLeaderboard.select().where(\n                    StudyVCLeaderboard.id == entry\n                )\n                queryLeaderboard = queryLeaderboard.get()\n                queryLeaderboard.TTSWeek = 0\n                queryLeaderboard.save()\n\n\nasync def setup(bot: commands.Bot):\n    await bot.add_cog(StudyLoop(bot))"
+      }
+    }
+  ],
+  "attributes": {
+    "module": "project",
+    "inspectionName": "PyInterpreterInspection"
+  },
+  "hash": "-3569592224546900651"
 }]}
