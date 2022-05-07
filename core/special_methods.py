@@ -474,7 +474,8 @@ async def on_app_command_error_(
                 embed.set_footer(text=f"Error: {str(error)}")
                 if interaction.response.is_done():
                     await interaction.followup.send(embed=embed)
-                await interaction.response.send_message(embed=embed)
+                else:
+                    await interaction.response.send_message(embed=embed)
 
             guild = bot.get_guild(Me.TechGuild)
             channel = guild.get_channel(Me.TracebackChannel)
@@ -498,10 +499,13 @@ async def on_app_command_error_(
                 await interaction.followup.send(
                     "Want to help even more? Click here to submit feedback!", view=view
                 )
-            await interaction.response.send_message(
-                "Want to help even more? Click here to submit feedback!", view=view
-            )
-            error_file.unlink()
+            try:
+                await interaction.response.send_message(
+                    "Want to help even more? Click here to submit feedback!", view=view
+                )
+                error_file.unlink()
+            except discord.errors.InteractionResponded:
+                pass
 
     raise error
 
