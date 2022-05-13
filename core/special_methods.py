@@ -57,13 +57,11 @@ class VerifyButton(discord.ui.View):
 
 
 async def before_invoke_(ctx: commands.Context):
-    print(ctx.command.name)
-    print("hi")
     q = database.CommandAnalytics.create(
         command=ctx.command.name,
         user=ctx.author.id,
         date=datetime.now(),
-        command_type="normal",
+        command_type="regular",
         guild_id=ctx.guild.id
     ).save()
 
@@ -532,7 +530,7 @@ class Me:
     TracebackChannel = TechID.ch_tracebacks
 
 
-async def main_mode_check_(ctx: commands.Context):
+async def main_mode_check_(ctx: commands.Context) -> bool:
     """MT = discord.utils.get(ctx.guild.roles, name="Moderator")
     VP = discord.utils.get(ctx.guild.roles, name="VP")
     CO = discord.utils.get(ctx.guild.roles, name="CO")
