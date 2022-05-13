@@ -57,6 +57,16 @@ class VerifyButton(discord.ui.View):
 
 
 async def before_invoke_(ctx: commands.Context):
+    print(ctx.command.name)
+    print("hi")
+    q = database.CommandAnalytics.create(
+        command=ctx.command.name,
+        user=ctx.author.id,
+        date=datetime.now(),
+        command_type="normal",
+        guild_id=ctx.guild.id
+    ).save()
+
     sentry_sdk.set_user(None)
     sentry_sdk.set_user({"id": ctx.author.id, "username": ctx.author.name})
     sentry_sdk.set_tag("username", f"{ctx.author.name}#{ctx.author.discriminator}")
