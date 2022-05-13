@@ -16,11 +16,15 @@ if TYPE_CHECKING:
 load_dotenv()
 
 
-class BlacklistCMD(commands.Cog, Group):
+class Blacklist(commands.Cog):
+    def __init__(self, bot: Timmy):
+        self.__cog_app_commands__.append(BlacklistCMD(bot))
+
+
+class BlacklistCMD(Group):
     def __init__(self, bot: Timmy):
         super().__init__(name="blacklist", description="Manage the bot's blacklist")
         self.bot = bot
-        self.__cog_name__ = "Blacklist"
 
     @property
     def display_emoji(self) -> str:
@@ -96,5 +100,5 @@ class BlacklistCMD(commands.Cog, Group):
         await interaction.followup.send(embed=embed)
 
 
-async def setup(bot):
-    await bot.add_cog(BlacklistCMD(bot))
+async def setup(bot: Timmy) -> None:
+    await bot.add_cog(Blacklist(bot))

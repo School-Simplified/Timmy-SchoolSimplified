@@ -1,3 +1,4 @@
+import collections
 import os
 from datetime import datetime
 from distutils.util import strtobool
