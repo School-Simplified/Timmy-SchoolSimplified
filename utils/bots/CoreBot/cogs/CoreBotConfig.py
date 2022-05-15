@@ -338,7 +338,8 @@ class CoreBotConfig(commands.Cog):
             directory = "TimmyBeta-SS"
 
         else:
-            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
+            return await interaction.response.send_message("Host directory is neither 'timmya' nor "
+                                                           "'timmy-beta'.\nSomeone else is currently hosting the bot.")
 
         try:
             p = subprocess.run(

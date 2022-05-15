@@ -730,31 +730,35 @@ class SetPuzzleSchedule(BaseModel):
     id = AutoField()
 
 
-class GSuiteID(BaseModel):
+class CommandAnalytics(BaseModel):
     """
-    #GSuiteID
+    #CommandAnalytics
 
     `id`: AutoField()
     Database Entry ID
 
-    `given_gsuite_id`: TextField()
-    The given GSuite ID.
+    `command`: TextField()
+    The command that was used.
 
-    `gsuite_id`: TextField()
-    Native GSuite ID of the user.
+    `user`: IntegerField()
+    The user that used the command.
 
-    `discord_user_id`: BigIntegerField()
-    Discord ID of the user.
+    `date`: DateTimeField()
+    The date when the command was used.
 
-    `gsuite_email`: TextField()
-    GSuite Email of the user.
+    `command_type`: TextField()
+    The type of command that was used.
+
+    `guild_id`: BigIntegerField()
+    The guild ID of the guild that the command was used in.
     """
 
     id = AutoField()
-    given_gsuite_id = TextField()
-    native_gsuite_id = TextField()
-    discord_user_id = BigIntegerField()
-    gsuite_email = TextField()
+    command = TextField()
+    date = DateTimeField()
+    command_type = TextField()
+    guild_id = BigIntegerField()
+    user = BigIntegerField()
 
 
 app = Flask(__name__)
@@ -804,7 +808,9 @@ tables = {
     "StudyVCDB": StudyVCDB,
     "StudyVCLeaderboard": StudyVCLeaderboard,
     "ResponseSpamBlacklist": ResponseSpamBlacklist,
-    "AuthorizedGuilds": AuthorizedGuilds
+    "AuthorizedGuilds": AuthorizedGuilds,
+    # "SetPuzzleSchedule": SetPuzzleSchedule,
+    "CommandAnalytics": CommandAnalytics
 }
 
 iter_table(tables)

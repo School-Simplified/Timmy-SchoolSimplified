@@ -57,6 +57,14 @@ class VerifyButton(discord.ui.View):
 
 
 async def before_invoke_(ctx: commands.Context):
+    q = database.CommandAnalytics.create(
+        command=ctx.command.name,
+        user=ctx.author.id,
+        date=datetime.now(),
+        command_type="regular",
+        guild_id=ctx.guild.id
+    ).save()
+
     sentry_sdk.set_user(None)
     sentry_sdk.set_user({"id": ctx.author.id, "username": ctx.author.name})
     sentry_sdk.set_tag("username", f"{ctx.author.name}#{ctx.author.discriminator}")
@@ -522,7 +530,7 @@ class Me:
     TracebackChannel = TechID.ch_tracebacks
 
 
-async def main_mode_check_(ctx: commands.Context):
+async def main_mode_check_(ctx: commands.Context) -> bool:
     """MT = discord.utils.get(ctx.guild.roles, name="Moderator")
     VP = discord.utils.get(ctx.guild.roles, name="VP")
     CO = discord.utils.get(ctx.guild.roles, name="CO")

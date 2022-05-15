@@ -196,7 +196,7 @@ class TutorVCCMD(commands.Cog):
         voice_state = ctx.author.voice
         if voice_state is None:
             return await ctx.send("You are not in a voice channel.")
-        code = await self._create_invite(voice_state, 880218394199220334)
+        code = await self._create_invite(voice_state, app_id=880218394199220334)
         await ctx.send(f"**Click the link to get started!**\nhttps://discord.gg/{code}")
 
     @commands.command()

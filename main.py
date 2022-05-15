@@ -11,6 +11,7 @@ __author_email__ = "timmy@schoolsimplified.org"
 import faulthandler
 import logging
 import os
+from datetime import datetime
 from typing import Union
 
 import aiohttp
@@ -60,6 +61,7 @@ class TimmyCommandTree(app_commands.CommandTree):
     async def on_error(
             self,
             interaction: discord.Interaction,
+            command: app_commands.Command,
             error: app_commands.AppCommandError
     ):
         await on_app_command_error_(self.bot, interaction, error)
@@ -82,6 +84,8 @@ class Timmy(commands.Bot):
             )
         )
         self.help_command = None
+        self.before_invoke(self.analytics_before_invoke)
+        self.add_check(self.check)
 
     async def on_ready(self):
         await on_ready_(self)
@@ -89,11 +93,11 @@ class Timmy(commands.Bot):
     async def on_command_error(self, ctx: commands.Context, error: Exception):
         await on_command_error_(self, ctx, error)
 
-    async def before_invoke(self, ctx: commands.Context):
+    async def analytics_before_invoke(self, ctx: commands.Context):
         await before_invoke_(ctx)
 
     async def check(self, ctx: commands.Context):
-        await main_mode_check_(ctx)
+        return await main_mode_check_(ctx)
 
     async def setup_hook(self) -> None:
         with alive_bar(
@@ -127,16 +131,20 @@ class Timmy(commands.Bot):
     def version(self):
         return __version__
 
-    async def start(self, token: str, *, reconnect: bool = True) -> None:
-        self.session = aiohttp.ClientSession()
-        await super().start(token, reconnect=reconnect)
-
-    async def close(self) -> None:
-        await self.session.close()
-        await super().close()
-
 
 bot = Timmy()
+
+
+@bot.event
+async def on_interaction(interaction: discord.Interaction):
+    if interaction.type == discord.InteractionType.application_command:
+        database.CommandAnalytics.create(
+            command=interaction.command.name,
+            guild_id=interaction.guild.id,
+            user=interaction.user.id,
+            date=datetime.now(),
+            command_type="slash"
+        ).save()
 
 if os.getenv("DSN_SENTRY") is not None:
     sentry_logging = LoggingIntegration(
