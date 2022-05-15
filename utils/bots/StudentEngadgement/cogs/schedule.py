@@ -32,12 +32,12 @@ class SetScheduleCog(commands.Cog):
             "Motivation": {
                 "_type": "DAILY",
                 "_schedule": [
-                    806289946624393216,
+                    "ignore",
                     869561723101786162,
                     869561723101786162,
-                    806289946624393216,
+                    "ignore",
                     869561723101786162,
-                    806289946624393216,
+                    "ignore",
                     869561723101786162,
                 ]  # first index is monday
             },
@@ -68,11 +68,11 @@ class SetScheduleCog(commands.Cog):
             "Daily Laugh": {
                 "_type": "DAILY",
                 "_schedule": [
-                    806289946624393216,
+                    "ignore",
                     599302211272441876,
-                    806289946624393216,
+                    "ignore",
                     599302211272441876,
-                    806289946624393216,
+                    "ignore",
                     599302211272441876,
                     599302211272441876
 
@@ -93,10 +93,6 @@ class SetScheduleCog(commands.Cog):
         await self._handle_question(day, self._schedule["Daily Question"])
         await self._handle_laugh(day, self._schedule["Daily Laugh"])
 
-    @_reminder_loop.before_loop
-    async def _before_loop(self):
-        await self.bot.wait_until_ready()
-
     @tasks.loop(hours=1)
     async def _weekly_reminders_loop(self):
         """
@@ -113,6 +109,8 @@ class SetScheduleCog(commands.Cog):
     async def _handle_motivation(
             self, day: int, dict_: Dict
     ) -> None:
+        if self._get_user_id(day=day, dict_=dict_) == "ignore":
+            return
         embed = discord.Embed(
             color=Colors.blurple,
             title="Reminder!",
@@ -125,6 +123,8 @@ class SetScheduleCog(commands.Cog):
     async def _handle_question(
             self, day: int, dict_: Dict
     ) -> None:
+        if self._get_user_id(day=day, dict_=dict_) == "ignore":
+            return
         embed = discord.Embed(
             color=Colors.blurple,
             title="Reminder!",
@@ -137,6 +137,8 @@ class SetScheduleCog(commands.Cog):
     async def _handle_laugh(
             self, day: int, dict_: Dict
     ) -> None:
+        if self._get_user_id(day=day, dict_=dict_) == "ignore":
+            return
         embed = discord.Embed(
             color=Colors.blurple,
             title="Reminder!",
