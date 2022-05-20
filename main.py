@@ -160,5 +160,7 @@ if os.getenv("DSN_SENTRY") is not None:
         integrations=[FlaskIntegration(), sentry_logging]
     )
 
+
+
 initializeDB(bot)
 bot.run(os.getenv("TOKEN"))
