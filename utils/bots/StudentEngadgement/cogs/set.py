@@ -403,6 +403,16 @@ class Engagement(commands.Cog):
         for item in database.ResponseSpamBlacklist:
             blacklist.append(item.discordID)
 
+    @commands.command(name="annoy-rachel")
+    async def __annoy(self, ctx: commands.Context, on_or_off: bool):
+        if ctx.author.id != 747126643587416174:
+            return
+        if on_or_off:
+            await self.bot.add_cog(AnnoyRachel(self.bot))
+        else:
+            await self.bot.remove_cog("AnnoyRachel")
+        await ctx.send(":thumbsup:")
+
     @command(name="acceptance-letter")
     @spammer_check()
     @guilds(MainID.g_main)
@@ -441,9 +451,15 @@ class Engagement(commands.Cog):
         await guess_channel.send(embed=embed)
 
 
+class AnnoyRachel(commands.Cog):
+    def __init__(self, bot: Timmy):
+        self.bot = bot
 
-
-
+    @commands.Cog.listener('on_message')
+    async def on_message_(self, message: discord.Message):
+        if message.author.id != 752984497259151370:
+            return
+        await message.add_reaction(Emoji.turtle_smirk)
 
 
 async def setup(bot: Timmy):
