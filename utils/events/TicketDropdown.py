@@ -563,6 +563,7 @@ class TicketBT(discord.ui.Button):
                     "Chat Helper",
                     "Bot: TeXit",
                     "Academics Management",
+                    "Helper"
                 ]
                 for role in roles:
                     RoleOBJ = discord.utils.get(
