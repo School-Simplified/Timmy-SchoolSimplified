@@ -1528,13 +1528,13 @@
                 ]
               },
               {
-                "id": "PyMissingConstructorInspection",
+                "id": "PyDefaultArgumentInspection",
                 "shortDescription": {
-                  "text": "Missed call to '__init__' of the super class"
+                  "text": "The default argument is mutable"
                 },
                 "fullDescription": {
-                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
-                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
+                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
+                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1562,13 +1562,13 @@
                 ]
               },
               {
-                "id": "PyDefaultArgumentInspection",
+                "id": "PyMissingConstructorInspection",
                 "shortDescription": {
-                  "text": "The default argument is mutable"
+                  "text": "Missed call to '__init__' of the super class"
                 },
                 "fullDescription": {
-                  "text": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for an argument. Default argument values are evaluated only once at function definition time, which means that modifying the default value of the argument will affect all subsequent calls of that function. Example: def func(s, cache={}):\n    cache[s] = None\n When the quick-fix is applied, the code changes to: def func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None",
-                  "markdown": "Reports a problem when a mutable value as a list or dictionary is detected in a default value for\nan argument.   \n\nDefault argument values are evaluated only once at function definition time,\nwhich means that modifying the\ndefault value of the argument will affect all subsequent calls of that function.\n\n**Example:**\n\n```\ndef func(s, cache={}):\n    cache[s] = None\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\ndef func(s, cache=None):\n    if cache is None:\n        cache = {}\n    cache[s] = None\n```"
+                  "text": "Reports cases when a call to the 'super' constructor in a class is missed. Example: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n The 'Pear' class should have a 'super' call in the '__init__' method. When the quick-fix is applied, the code changes to: class Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()",
+                  "markdown": "Reports cases when a call to the `super` constructor in a class is missed.\n\n**Example:**\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        pass\n```\n\nThe `Pear` class should have a `super` call in the `__init__`\nmethod.\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Fruit:\n    def __init__(self):\n        pass\n\n\nclass Pear(Fruit):\n    def __init__(self):\n        super().__init__()\n```"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1800,19 +1800,19 @@
                 ]
               },
               {
-                "id": "PyComparisonWithNoneInspection",
+                "id": "CommandLineInspection",
                 "shortDescription": {
-                  "text": "Using equality operators to compare with None"
+                  "text": "Incorrect CLI syntax"
                 },
                 "fullDescription": {
-                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
-                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
+                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
+                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
                 },
                 "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "note",
+                  "enabled": false,
+                  "level": "warning",
                   "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
+                    "ideaSeverity": "WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1834,19 +1834,19 @@
                 ]
               },
               {
-                "id": "CommandLineInspection",
+                "id": "PyComparisonWithNoneInspection",
                 "shortDescription": {
-                  "text": "Incorrect CLI syntax"
+                  "text": "Using equality operators to compare with None"
                 },
                 "fullDescription": {
-                  "text": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies that option names and arguments are correct. Do not disable the inspection if you are going to use command-line interfaces like manage.py in Django.",
-                  "markdown": "Reports the problems if the arguments of the command you type in the console are not in the proper order. The inspection also verifies\nthat option names and arguments are correct.\n\nDo not disable the inspection if you are going to use command-line interfaces like [manage.py in Django](https://www.jetbrains.com/help/pycharm/running-manage-py.html)."
+                  "text": "Reports comparisons with 'None'. That type of comparisons should always be done with 'is' or 'is not', never the equality operators. Example: a = 2\n\n\nif a == None:\n    print(\"Success\")\n Once the quick-fix is applied, the code changes to: a = 2\n\n\nif a is None:\n    print(\"Success\")",
+                  "markdown": "Reports comparisons with `None`. That type of comparisons\nshould always be done with `is` or `is not`, never\nthe equality operators.\n\n**Example:**\n\n```\na = 2\n\n\nif a == None:\n    print(\"Success\")\n```\n\nOnce the quick-fix is applied, the code changes to:\n\n```\na = 2\n\n\nif a is None:\n    print(\"Success\")\n```"
                 },
                 "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
+                  "enabled": true,
+                  "level": "note",
                   "parameters": {
-                    "ideaSeverity": "WARNING",
+                    "ideaSeverity": "WEAK WARNING",
                     "tags": [
                       "ideaSeverity"
                     ]
@@ -1936,13 +1936,13 @@
                 ]
               },
               {
-                "id": "PyMethodParametersInspection",
+                "id": "PyChainedComparisonsInspection",
                 "shortDescription": {
-                  "text": "Improper first parameter"
+                  "text": "Too complex chained comparisons"
                 },
                 "fullDescription": {
-                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
-                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
+                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
+                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -1970,13 +1970,13 @@
                 ]
               },
               {
-                "id": "PyChainedComparisonsInspection",
+                "id": "PyMethodParametersInspection",
                 "shortDescription": {
-                  "text": "Too complex chained comparisons"
+                  "text": "Improper first parameter"
                 },
                 "fullDescription": {
-                  "text": "Reports chained comparisons that can be simplified. Example: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if x >= xmin and x <= xmax:\n          pass' The IDE offers to simplify 'if x >= xmin and x <= xmax'. When the quick-fix is applied, the code changes to: 'def do_comparison(x):\n      xmin = 10\n      xmax = 100\n      if xmin <= x <= xmax:\n          pass'",
-                  "markdown": "Reports chained comparisons that can be simplified.\n\n**Example:**\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if x >= xmin and x <= xmax:\n              pass\n\nThe IDE offers to simplify `if x >= xmin and x <= xmax`.\nWhen the quick-fix is applied, the code changes to:\n\n\n      def do_comparison(x):\n          xmin = 10\n          xmax = 100\n          if xmin <= x <= xmax:\n              pass\n"
+                  "text": "Reports methods that lack the first parameter that is usually named 'self'. Example: class Movie:\n\n   def show():\n       pass\n When the quick-fix is applied, the code changes to: class Movie:\n\n   def show(self):\n       pass\n The inspection also reports naming issues in class methods. Example: class Movie:\n    @classmethod\n    def show(abc):\n        pass\n Since the first parameter of a class method should be 'cls', the IDE provides a quick-fix to rename it.",
+                  "markdown": "Reports methods that lack the first parameter that is usually\nnamed `self`.\n\n**Example:**\n\n```\nclass Movie:\n\n   def show():\n       pass\n```\n\nWhen the quick-fix is applied, the code changes to:\n\n```\nclass Movie:\n\n   def show(self):\n       pass\n```\n\nThe inspection also reports naming issues in class methods.\n\n**Example:**\n\n```\nclass Movie:\n    @classmethod\n    def show(abc):\n        pass\n```\n\nSince the first parameter of a class method should be `cls`, the IDE provides a quick-fix\nto rename it."
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -3602,6 +3602,40 @@
                 ]
               },
               {
+                "id": "DjangoCloseTagInspection",
+                "shortDescription": {
+                  "text": "Mismatched opening and closing tags"
+                },
+                "fullDescription": {
+                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
+                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "ideaSeverity": "WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "Django",
+                      "index": 7,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
                 "id": "PyStubPackagesCompatibilityInspection",
                 "shortDescription": {
                   "text": "Incompatible stub packages"
@@ -3659,40 +3693,6 @@
                     "target": {
                       "id": "Python",
                       "index": 2,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
-                "id": "DjangoCloseTagInspection",
-                "shortDescription": {
-                  "text": "Mismatched opening and closing tags"
-                },
-                "fullDescription": {
-                  "text": "Reports cases when opening tags in Django templates are not correctly matched by closing tags. Example: {% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n The IDE reports an error on the 'strong' tag not being closed.",
-                  "markdown": "Reports cases when opening tags in Django templates are not correctly matched by closing tags.\n\n**Example:**\n\n```\n{% if error_message %}<p><strong>{{ error_message }}</p>{% endif %}\n```\n\nThe IDE reports an error on the `strong` tag not being closed."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "ideaSeverity": "WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "Django",
-                      "index": 7,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -4702,40 +4702,6 @@
                 ]
               },
               {
-                "id": "DuplicatedCode",
-                "shortDescription": {
-                  "text": "Duplicated code fragment"
-                },
-                "fullDescription": {
-                  "text": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in File | Settings | Editor | Duplicates.",
-                  "markdown": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in [File \\| Settings \\| Editor \\| Duplicates](settings://duplicates.index)."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "note",
-                  "parameters": {
-                    "ideaSeverity": "WEAK WARNING",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "General",
-                      "index": 9,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RequiredAttributes",
                 "shortDescription": {
                   "text": "Missing required attribute"
@@ -4759,6 +4725,40 @@
                     "target": {
                       "id": "HTML",
                       "index": 8,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "DuplicatedCode",
+                "shortDescription": {
+                  "text": "Duplicated code fragment"
+                },
+                "fullDescription": {
+                  "text": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in File | Settings | Editor | Duplicates.",
+                  "markdown": "Reports duplicated blocks of code from the selected scope: the same file or the entire project. The inspection features quick-fixes that help you to set the size of detected duplicates, navigate to repetitive code fragments, and compare them in a tool window. The inspection options allow you to select the scope of the reported duplicated fragments and set the initial size for the duplicated language constructs. You can also configure the constructs that you want to anonymize in [File \\| Settings \\| Editor \\| Duplicates](settings://duplicates.index)."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "note",
+                  "parameters": {
+                    "ideaSeverity": "WEAK WARNING",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "General",
+                      "index": 9,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -5688,40 +5688,6 @@
                 ]
               },
               {
-                "id": "HtmlExtraClosingTag",
-                "shortDescription": {
-                  "text": "Redundant closing tag"
-                },
-                "fullDescription": {
-                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
-                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "ideaSeverity": "ERROR",
-                    "tags": [
-                      "ideaSeverity"
-                    ]
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "HTML",
-                      "index": 8,
-                      "toolComponent": {
-                        "name": "QDPY"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpOctalEscape",
                 "shortDescription": {
                   "text": "Octal escape"
@@ -5745,6 +5711,40 @@
                     "target": {
                       "id": "RegExp",
                       "index": 5,
+                      "toolComponent": {
+                        "name": "QDPY"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "HtmlExtraClosingTag",
+                "shortDescription": {
+                  "text": "Redundant closing tag"
+                },
+                "fullDescription": {
+                  "text": "Reports a redundant closing tag for an empty element, for example, 'img' or 'br'. Example: '<html>\n    <body>\n      <br></br>\n    </body>\n  </html>' After the quick-fix is applied: '<html>\n    <body>\n      <br>\n    </body>\n  </html>'",
+                  "markdown": "Reports a redundant closing tag for an empty element, for example, `img` or `br`.\n\n**Example:**\n\n\n      <html>\n        <body>\n          <br></br>\n        </body>\n      </html>\n\nAfter the quick-fix is applied:\n\n\n      <html>\n        <body>\n          <br>\n        </body>\n      </html>\n"
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "error",
+                  "parameters": {
+                    "ideaSeverity": "ERROR",
+                    "tags": [
+                      "ideaSeverity"
+                    ]
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "HTML",
+                      "index": 8,
                       "toolComponent": {
                         "name": "QDPY"
                       }
@@ -6198,13 +6198,13 @@
                 ]
               },
               {
-                "id": "RegExpRepeatedSpace",
+                "id": "RegExpDuplicateAlternationBranch",
                 "shortDescription": {
-                  "text": "Consecutive spaces"
+                  "text": "Duplicate branch in alternation"
                 },
                 "fullDescription": {
-                  "text": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier. Example: '(     )' After the quick-fix is applied: '( {5})' New in 2017.1",
-                  "markdown": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier.\n\n**Example:**\n\n\n      (     )\n\nAfter the quick-fix is applied:\n\n\n      ( {5})\n\n\nNew in 2017.1"
+                  "text": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression. Example: '(alpha|bravo|charlie|alpha)' After the quick-fix is applied: '(alpha|bravo|charlie)' New in 2017.1",
+                  "markdown": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression.\n\n**Example:**\n\n\n      (alpha|bravo|charlie|alpha)\n\nAfter the quick-fix is applied:\n\n\n      (alpha|bravo|charlie)\n\nNew in 2017.1"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -6232,13 +6232,13 @@
                 ]
               },
               {
-                "id": "RegExpDuplicateAlternationBranch",
+                "id": "RegExpRepeatedSpace",
                 "shortDescription": {
-                  "text": "Duplicate branch in alternation"
+                  "text": "Consecutive spaces"
                 },
                 "fullDescription": {
-                  "text": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression. Example: '(alpha|bravo|charlie|alpha)' After the quick-fix is applied: '(alpha|bravo|charlie)' New in 2017.1",
-                  "markdown": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression.\n\n**Example:**\n\n\n      (alpha|bravo|charlie|alpha)\n\nAfter the quick-fix is applied:\n\n\n      (alpha|bravo|charlie)\n\nNew in 2017.1"
+                  "text": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier. Example: '(     )' After the quick-fix is applied: '( {5})' New in 2017.1",
+                  "markdown": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier.\n\n**Example:**\n\n\n      (     )\n\nAfter the quick-fix is applied:\n\n\n      ( {5})\n\n\nNew in 2017.1"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
@@ -6734,6 +6734,23 @@
         }
       ],
       "language": "en-US",
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/School-Simplified/Timmy-SchoolSimplified",
+          "revisionId": "e3bde6777f4cd6245dbb1443dfca78578979aaed",
+          "branch": "beta",
+          "properties": {
+            "lastAuthorName": "SpaceT0",
+            "vcsType": "Git",
+            "lastAuthorEmail": "space@spaceturtle.tech",
+            "tags": [
+              "lastAuthorEmail",
+              "lastAuthorName",
+              "vcsType"
+            ]
+          }
+        }
+      ],
       "results": [
         {
           "ruleId": "PyUnboundLocalVariableInspection",
@@ -9933,7 +9950,7 @@
                 "region": {
                   "startLine": 1141,
                   "startColumn": 63,
-                  "charOffset": 51413,
+                  "charOffset": 51466,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -9943,10 +9960,10 @@
                 "contextRegion": {
                   "startLine": 1139,
                   "startColumn": 1,
-                  "charOffset": 51277,
-                  "charLength": 258,
+                  "charOffset": 51289,
+                  "charLength": 299,
                   "snippet": {
-                    "text": "\n    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green)\n    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):\n        embed = interaction.message.embeds[0]\n        embed.title = f\"[CREATED] {embed.title}\""
+                    "text": "\n    @discord.ui.button(label='Confirm', emoji=\"✅\", style=discord.ButtonStyle.green, custom_id=\"temp_mgm_confirm\")\n    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):\n        embed = interaction.message.embeds[0]\n        embed.title = f\"[CREATED] {embed.title}\""
                   }
                 }
               },
@@ -9959,7 +9976,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "6796a3d8e86e8be2d50f5f03224c4de13633cb45af80e65b0f8d45cb078ecfaa"
+            "equalIndicator/v1": "dcbc397504f862f554ee093e76b678057a701e5aef8253f05e96ecf497dd7168"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -9986,7 +10003,7 @@
                 "region": {
                   "startLine": 1241,
                   "startColumn": 62,
-                  "charOffset": 56140,
+                  "charOffset": 56234,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -9996,10 +10013,10 @@
                 "contextRegion": {
                   "startLine": 1239,
                   "startColumn": 1,
-                  "charOffset": 56008,
-                  "charLength": 283,
+                  "charOffset": 56061,
+                  "charLength": 324,
                   "snippet": {
-                    "text": "\n    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red)\n    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):\n        await interaction.response.send_message('Cancelling', ephemeral=True)\n        embed = interaction.message.embeds[0]"
+                    "text": "\n    @discord.ui.button(label='Cancel', emoji=\"❌\", style=discord.ButtonStyle.red, custom_id=\"temp_mgm_confirm\")\n    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):\n        await interaction.response.send_message('Cancelling', ephemeral=True)\n        embed = interaction.message.embeds[0]"
                   }
                 }
               },
@@ -10012,7 +10029,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "dbbfa80005756c6a32814a6c5329033f467da16ca37fef2852952dd98e0d9957"
+            "equalIndicator/v1": "c02d30459135a33e91885968717a94fa8aebc170f6b3a585e9f53dc24da87a14"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10039,7 +10056,7 @@
                 "region": {
                   "startLine": 1555,
                   "startColumn": 13,
-                  "charOffset": 67477,
+                  "charOffset": 67571,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10049,7 +10066,7 @@
                 "contextRegion": {
                   "startLine": 1553,
                   "startColumn": 1,
-                  "charOffset": 67401,
+                  "charOffset": 67495,
                   "charLength": 179,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        # TODO: Comply with Code Guidelines and use ConfigCat for IDs"
@@ -10065,7 +10082,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0dedc0351acf5ad47e5fe4389bf600665270f88e5f17d3f974fa633c84660d55"
+            "equalIndicator/v1": "394c58daafd8236ba0418c5446e550848a19dfe9040379d2fa02496680471733"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10092,7 +10109,7 @@
                 "region": {
                   "startLine": 1581,
                   "startColumn": 13,
-                  "charOffset": 68284,
+                  "charOffset": 68378,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10102,7 +10119,7 @@
                 "contextRegion": {
                   "startLine": 1579,
                   "startColumn": 1,
-                  "charOffset": 68208,
+                  "charOffset": 68302,
                   "charLength": 146,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        modal = IEmailForm(self.bot)"
@@ -10118,7 +10135,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "451395eb966dab39cb2e71a185c05838b8dfd94c4ebac3801bb692d04b994ab4"
+            "equalIndicator/v1": "07c230d0e063643949ce0b17da471cae3981a1320ab67b1612820006988052a2"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10145,7 +10162,7 @@
                 "region": {
                   "startLine": 1595,
                   "startColumn": 13,
-                  "charOffset": 68685,
+                  "charOffset": 68779,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10155,7 +10172,7 @@
                 "contextRegion": {
                   "startLine": 1593,
                   "startColumn": 1,
-                  "charOffset": 68609,
+                  "charOffset": 68703,
                   "charLength": 146,
                   "snippet": {
                     "text": "            self,\n            interaction: discord.Interaction,\n            button: discord.ui.Button,\n    ):\n        modal = TEmailForm(self.bot)"
@@ -10171,7 +10188,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "db03dbf6e95614e8cb2522d62f4310e65aab7ce34e972ba58f3427d92c653286"
+            "equalIndicator/v1": "e5ac2effbe8b49fa459c787bc00bee4648f7042de066888d171bbd54c29be576"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10198,7 +10215,7 @@
                 "region": {
                   "startLine": 1820,
                   "startColumn": 9,
-                  "charOffset": 77383,
+                  "charOffset": 77477,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10208,7 +10225,7 @@
                 "contextRegion": {
                   "startLine": 1818,
                   "startColumn": 1,
-                  "charOffset": 77319,
+                  "charOffset": 77413,
                   "charLength": 165,
                   "snippet": {
                     "text": "        self,\n        interaction: discord.Interaction,\n        button: discord.ui.Button,\n    ):\n        transcript_log = self.bot.get_channel(TechID.ch_ticket_log)"
@@ -10224,7 +10241,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "66d0a5704a1b73d7da4eeb00a94e660afac78f82a0c6273265719be9f703d4b9"
+            "equalIndicator/v1": "8a2ae2f7073281ae16e01a9307fbd32bc8eb24c9509fc02999acf355c20dc094"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10251,7 +10268,7 @@
                 "region": {
                   "startLine": 1829,
                   "startColumn": 62,
-                  "charOffset": 77776,
+                  "charOffset": 77870,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10261,7 +10278,7 @@
                 "contextRegion": {
                   "startLine": 1827,
                   "startColumn": 1,
-                  "charOffset": 77633,
+                  "charOffset": 77727,
                   "charLength": 312,
                   "snippet": {
                     "text": "\n    @discord.ui.button(label=\"Cancel\", style=discord.ButtonStyle.red, emoji=\"❌\")\n    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):\n        await interaction.message.delete()\n        await interaction.response.send_message( \"ok, not removing this channel.\", ephemeral=True)"
@@ -10277,7 +10294,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "3c5e5ae9e19d6ccf29bb5f66a6dc24fd37dbd6fc17848530bf9e81b1368d6763"
+            "equalIndicator/v1": "90170f516e915cbabf274256ae2014a93e8db43a7c82a363eb12625f924602c3"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10304,7 +10321,7 @@
                 "region": {
                   "startLine": 1843,
                   "startColumn": 60,
-                  "charOffset": 78323,
+                  "charOffset": 78417,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10314,7 +10331,7 @@
                 "contextRegion": {
                   "startLine": 1841,
                   "startColumn": 1,
-                  "charOffset": 78147,
+                  "charOffset": 78241,
                   "charLength": 287,
                   "snippet": {
                     "text": "\n    @discord.ui.button(label=\"Lock\", style=discord.ButtonStyle.green, custom_id=\"persistent_view:lock\", emoji=\"🔒\")\n    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):\n        self.value = True\n        ch = self.bot.get_channel(interaction.channel_id)"
@@ -10330,7 +10347,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "ffe46e8e662c824ce9f2ee07789fb23bcf582f9898054627c5de3d994da54f90"
+            "equalIndicator/v1": "872ed9a45e585796985ff8e9eed5ce48606023cadde385121d4b82ce8eee8628"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10357,7 +10374,7 @@
                 "region": {
                   "startLine": 1862,
                   "startColumn": 25,
-                  "charOffset": 78946,
+                  "charOffset": 79040,
                   "charLength": 32,
                   "snippet": {
                     "text": "interaction: discord.Interaction"
@@ -10367,7 +10384,7 @@
                 "contextRegion": {
                   "startLine": 1860,
                   "startColumn": 1,
-                  "charOffset": 78884,
+                  "charOffset": 78978,
                   "charLength": 150,
                   "snippet": {
                     "text": "        emoji=Emoji.gsuite_logo\n    )\n    async def lock(self,interaction: discord.Interaction, button: discord.ui.Button):\n        self.value = True\n"
@@ -10383,7 +10400,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "62b60bc1ad980afb44a96573c57e26f503c3ca60c167fc62b93ceac464221c8a"
+            "equalIndicator/v1": "9884b6dd642888538b334271aeb77a4df5147406257c3c62df28653d88cd9ac7"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10410,7 +10427,7 @@
                 "region": {
                   "startLine": 1862,
                   "startColumn": 59,
-                  "charOffset": 78980,
+                  "charOffset": 79074,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10420,7 +10437,7 @@
                 "contextRegion": {
                   "startLine": 1860,
                   "startColumn": 1,
-                  "charOffset": 78884,
+                  "charOffset": 78978,
                   "charLength": 150,
                   "snippet": {
                     "text": "        emoji=Emoji.gsuite_logo\n    )\n    async def lock(self,interaction: discord.Interaction, button: discord.ui.Button):\n        self.value = True\n"
@@ -10436,7 +10453,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "2891cf5aa9adfdbcedbcb46da82b9dcd08e26fb362b34525cfb8df019c2674ce"
+            "equalIndicator/v1": "6f66c68d91b2905e1ddb3dd0fb6f734808ade8db5be18189ec3ba033547051f0"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10463,7 +10480,7 @@
                 "region": {
                   "startLine": 1877,
                   "startColumn": 29,
-                  "charOffset": 79342,
+                  "charOffset": 79436,
                   "charLength": 32,
                   "snippet": {
                     "text": "interaction: discord.Interaction"
@@ -10473,7 +10490,7 @@
                 "contextRegion": {
                   "startLine": 1875,
                   "startColumn": 1,
-                  "charOffset": 79259,
+                  "charOffset": 79353,
                   "charLength": 191,
                   "snippet": {
                     "text": "        custom_id=\"persistent_view:tempconfirm\",\n    )\n    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button,):\n        self.value = True\n        self.stop()"
@@ -10489,7 +10506,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "4f7befda16110b30fcb576a096d0a042acf2fe458df2e9f59afef27043827229"
+            "equalIndicator/v1": "7dcc09346b0c161eed53e8f0c81416fc64caa3bcfe8e929ed41ed0b0167e9ec9"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10516,7 +10533,7 @@
                 "region": {
                   "startLine": 1877,
                   "startColumn": 63,
-                  "charOffset": 79376,
+                  "charOffset": 79470,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10526,7 +10543,7 @@
                 "contextRegion": {
                   "startLine": 1875,
                   "startColumn": 1,
-                  "charOffset": 79259,
+                  "charOffset": 79353,
                   "charLength": 191,
                   "snippet": {
                     "text": "        custom_id=\"persistent_view:tempconfirm\",\n    )\n    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button,):\n        self.value = True\n        self.stop()"
@@ -10542,7 +10559,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "6c5a3d7f5f55f7c0bb77a1806cfdd516be6c89dabc44e4fae84eb8957189cb1f"
+            "equalIndicator/v1": "b612eb414c8fccf045dc1e57c35b695e7d334f60a7c9a501b71fa921ed97ea37"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10569,7 +10586,7 @@
                 "region": {
                   "startLine": 1882,
                   "startColumn": 62,
-                  "charOffset": 79594,
+                  "charOffset": 79688,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10579,7 +10596,7 @@
                 "contextRegion": {
                   "startLine": 1880,
                   "startColumn": 1,
-                  "charOffset": 79451,
+                  "charOffset": 79545,
                   "charLength": 275,
                   "snippet": {
                     "text": "\n    @discord.ui.button(label=\"Cancel\", style=discord.ButtonStyle.red, emoji=\"❌\")\n    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):\n        await interaction.response.send_message(\"Cancelling\", ephemeral=True)\n        self.value = False"
@@ -10595,7 +10612,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "0df382fdc6c75b56a2ed19abce4b330fa4c0d243faec3534340dc7c1b408879f"
+            "equalIndicator/v1": "67206e0f6d09128b6b7dd9b52e26411bf748d18700de6cd7a6f3d1317a5a1d25"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10622,7 +10639,7 @@
                 "region": {
                   "startLine": 1898,
                   "startColumn": 61,
-                  "charOffset": 80069,
+                  "charOffset": 80163,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10632,7 +10649,7 @@
                 "contextRegion": {
                   "startLine": 1896,
                   "startColumn": 1,
-                  "charOffset": 79956,
+                  "charOffset": 80050,
                   "charLength": 206,
                   "snippet": {
                     "text": "        custom_id=\"persistent_view:nitrofake\",\n    )\n    async def claim(self, interaction: discord.Interaction, button: discord.ui.Button):\n        try:\n            await interaction.response.send_message("
@@ -10648,7 +10665,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "98576a15dcf015d1b7684cbbe4f9fe77d85735abe29e841aac4136ae645b12fa"
+            "equalIndicator/v1": "8455f2068056938bec3b0a65fb8e964c9ac0e32adcab4e537d2357d4ab300b6d"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10675,7 +10692,7 @@
                 "region": {
                   "startLine": 1928,
                   "startColumn": 60,
-                  "charOffset": 81321,
+                  "charOffset": 81415,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10685,7 +10702,7 @@
                 "contextRegion": {
                   "startLine": 1926,
                   "startColumn": 1,
-                  "charOffset": 81236,
+                  "charOffset": 81330,
                   "charLength": 196,
                   "snippet": {
                     "text": "        emoji=\"🔒\",\n    )\n    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):\n        self.value = True\n        ch = self.bot.get_channel(interaction.channel_id)"
@@ -10701,7 +10718,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "97050cd194bb4ed947bba5ef46fca14af6d43b1a1f5821f98886c9be0cb8ee20"
+            "equalIndicator/v1": "6b8164119a3d7a7372a2f909d4f8381f0956e874e460ec70e5436314f692dcc3"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10728,7 +10745,7 @@
                 "region": {
                   "startLine": 1947,
                   "startColumn": 29,
-                  "charOffset": 81893,
+                  "charOffset": 81987,
                   "charLength": 32,
                   "snippet": {
                     "text": "interaction: discord.Interaction"
@@ -10738,7 +10755,7 @@
                 "contextRegion": {
                   "startLine": 1945,
                   "startColumn": 1,
-                  "charOffset": 81810,
+                  "charOffset": 81904,
                   "charLength": 191,
                   "snippet": {
                     "text": "        custom_id=\"persistent_view:tempconfirm\",\n    )\n    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button,):\n        self.value = True\n        self.stop()"
@@ -10754,7 +10771,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "da4aab6ae079d2b9d115b1006cfd407a18b67ac576dab6914ce3fabf775c26a0"
+            "equalIndicator/v1": "782b2cac475ed61fdbcbefbc022ce2fc5cbe62250bb0428d19f4d508af551efc"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10781,7 +10798,7 @@
                 "region": {
                   "startLine": 1947,
                   "startColumn": 63,
-                  "charOffset": 81927,
+                  "charOffset": 82021,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10791,7 +10808,7 @@
                 "contextRegion": {
                   "startLine": 1945,
                   "startColumn": 1,
-                  "charOffset": 81810,
+                  "charOffset": 81904,
                   "charLength": 191,
                   "snippet": {
                     "text": "        custom_id=\"persistent_view:tempconfirm\",\n    )\n    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button,):\n        self.value = True\n        self.stop()"
@@ -10807,7 +10824,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "7e745860a9784d66688e26ce64316293823f17029e084d9f31c3850377aedf4d"
+            "equalIndicator/v1": "9e65feaad1b89d4b9845b7d60d606cb1dfe623ef269f4bae7dbe767d44b3a09e"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10834,7 +10851,7 @@
                 "region": {
                   "startLine": 1952,
                   "startColumn": 62,
-                  "charOffset": 82145,
+                  "charOffset": 82239,
                   "charLength": 25,
                   "snippet": {
                     "text": "button: discord.ui.Button"
@@ -10844,7 +10861,7 @@
                 "contextRegion": {
                   "startLine": 1950,
                   "startColumn": 1,
-                  "charOffset": 82002,
+                  "charOffset": 82096,
                   "charLength": 275,
                   "snippet": {
                     "text": "\n    @discord.ui.button(label=\"Cancel\", style=discord.ButtonStyle.red, emoji=\"❌\")\n    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):\n        await interaction.response.send_message(\"Cancelling\", ephemeral=True)\n        self.value = False"
@@ -10860,7 +10877,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "6b962a8dd49434fee39ca36c0dd0e5665777ed5cd3f140396d8710b0d85a8367"
+            "equalIndicator/v1": "531eb6f9f9b2529b4e427b10218da9d361c49e2f07d5926cb964b0a0a8a57dc3"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -10887,7 +10904,7 @@
                 "region": {
                   "startLine": 2018,
                   "startColumn": 9,
-                  "charOffset": 84624,
+                  "charOffset": 84718,
                   "charLength": 6,
                   "snippet": {
                     "text": "result"
@@ -10897,7 +10914,7 @@
                 "contextRegion": {
                   "startLine": 2016,
                   "startColumn": 1,
-                  "charOffset": 84569,
+                  "charOffset": 84663,
                   "charLength": 143,
                   "snippet": {
                     "text": "    msg = await ctx.send(embed=embed)\n    try:\n        result = subprocess.run(\n            f\"cd && cd {main_or_beta}\",\n            shell=True,"
@@ -10913,7 +10930,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "a5fdd2110a2c57966337fcb8624cdc312c0dd6c2bd050c6e2bd6e98ae48d6e86"
+            "equalIndicator/v1": "349c3f36a743f2fb4268f70ee2077bff4f0d2bd0fcedb74df24693cdb6e9bd5b"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -18095,7 +18112,7 @@
                 "region": {
                   "startLine": 1406,
                   "startColumn": 9,
-                  "charOffset": 62239,
+                  "charOffset": 62333,
                   "charLength": 13,
                   "snippet": {
                     "text": "controlTicket"
@@ -18105,7 +18122,7 @@
                 "contextRegion": {
                   "startLine": 1404,
                   "startColumn": 1,
-                  "charOffset": 62220,
+                  "charOffset": 62314,
                   "charLength": 154,
                   "snippet": {
                     "text": "        )\n\n        controlTicket = discord.Embed(\n            title=\"Control Panel\",\n            description=\"To end this ticket, click the lock button!\","
@@ -18121,7 +18138,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "af720cd190f68a85b78bf895e2e7702de21ffaca81cb8c479c3d9c9a92443072"
+            "equalIndicator/v1": "fd6d8b153173cce6174918fbe78277411754747c93e533afecb2d3ba238c4d98"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -18148,7 +18165,7 @@
                 "region": {
                   "startLine": 1411,
                   "startColumn": 9,
-                  "charOffset": 62434,
+                  "charOffset": 62528,
                   "charLength": 17,
                   "snippet": {
                     "text": "LockControlButton"
@@ -18158,7 +18175,7 @@
                 "contextRegion": {
                   "startLine": 1409,
                   "startColumn": 1,
-                  "charOffset": 62375,
+                  "charOffset": 62469,
                   "charLength": 159,
                   "snippet": {
                     "text": "            color=discord.Colour.gold(),\n        )\n        LockControlButton = discord.ui.View()\n        LockControlButton.add_item(\n            ButtonHandler("
@@ -18174,7 +18191,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "28f37a3f964d9b98db68386330bd7196a9c23435aa7fdb807f10fff53d05dba6"
+            "equalIndicator/v1": "7d0d482be255fc3dadf606d8e12c4cc988db9a68ca75c0ef84c5b2d4a5c7c2b3"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -18201,7 +18218,7 @@
                 "region": {
                   "startLine": 1423,
                   "startColumn": 9,
-                  "charOffset": 62774,
+                  "charOffset": 62868,
                   "charLength": 3,
                   "snippet": {
                     "text": "LCM"
@@ -18211,7 +18228,7 @@
                 "contextRegion": {
                   "startLine": 1421,
                   "startColumn": 1,
-                  "charOffset": 62755,
+                  "charOffset": 62849,
                   "charLength": 136,
                   "snippet": {
                     "text": "        )\n\n        LCM = await channel.send(\n            interaction.user.mention, embed=controlTicket, view=LockControlButton\n        )"
@@ -18227,7 +18244,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "4690cffef791109d86cb2a7fe9842c7e2ee09453c86132bff64e06c97bbf17a6"
+            "equalIndicator/v1": "0955b8e0c09f97d50763302ce7cf531f00fc1b21f90d4724d5cdacfc483272e9"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -18254,7 +18271,7 @@
                 "region": {
                   "startLine": 1499,
                   "startColumn": 9,
-                  "charOffset": 65489,
+                  "charOffset": 65583,
                   "charLength": 13,
                   "snippet": {
                     "text": "controlTicket"
@@ -18264,7 +18281,7 @@
                 "contextRegion": {
                   "startLine": 1497,
                   "startColumn": 1,
-                  "charOffset": 65470,
+                  "charOffset": 65564,
                   "charLength": 154,
                   "snippet": {
                     "text": "        )\n\n        controlTicket = discord.Embed(\n            title=\"Control Panel\",\n            description=\"To end this ticket, click the lock button!\","
@@ -18280,7 +18297,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "cc8269b41480387782e6ebf2ef241ba17e1676bfc0e8e5e96049e81b069293af"
+            "equalIndicator/v1": "01776d7ae0c41fc20712a9ba4d5086d3b3a01deacc6e45fd54aa7c605ff1f1ea"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -18307,7 +18324,7 @@
                 "region": {
                   "startLine": 1504,
                   "startColumn": 9,
-                  "charOffset": 65684,
+                  "charOffset": 65778,
                   "charLength": 17,
                   "snippet": {
                     "text": "LockControlButton"
@@ -18317,7 +18334,7 @@
                 "contextRegion": {
                   "startLine": 1502,
                   "startColumn": 1,
-                  "charOffset": 65625,
+                  "charOffset": 65719,
                   "charLength": 159,
                   "snippet": {
                     "text": "            color=discord.Colour.gold(),\n        )\n        LockControlButton = discord.ui.View()\n        LockControlButton.add_item(\n            ButtonHandler("
@@ -18333,7 +18350,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "3dd141d56531c9e6c9b6e009c96fcee86860e0cfd356a0acbe12633625d9287a"
+            "equalIndicator/v1": "8760c021e955bd2c851b95cec43f25a3809209fad23add62fd3f9a61e39c4407"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -18360,7 +18377,7 @@
                 "region": {
                   "startLine": 1516,
                   "startColumn": 9,
-                  "charOffset": 66024,
+                  "charOffset": 66118,
                   "charLength": 3,
                   "snippet": {
                     "text": "LCM"
@@ -18370,7 +18387,7 @@
                 "contextRegion": {
                   "startLine": 1514,
                   "startColumn": 1,
-                  "charOffset": 66005,
+                  "charOffset": 66099,
                   "charLength": 136,
                   "snippet": {
                     "text": "        )\n\n        LCM = await channel.send(\n            interaction.user.mention, embed=controlTicket, view=LockControlButton\n        )"
@@ -18386,7 +18403,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "82397b0fc7589b3fe8b6b1e9d3a48db8d5ffc8e0b0f3d0cbc490596e84988a65"
+            "equalIndicator/v1": "74a6f9c0283dd42e5920ac54c82b95c9139699a5e8fb2602070ed61e2b492e88"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -18413,7 +18430,7 @@
                 "region": {
                   "startLine": 1931,
                   "startColumn": 9,
-                  "charOffset": 81441,
+                  "charOffset": 81535,
                   "charLength": 19,
                   "snippet": {
                     "text": "TempConfirmInstance"
@@ -18423,7 +18440,7 @@
                 "contextRegion": {
                   "startLine": 1929,
                   "startColumn": 1,
-                  "charOffset": 81349,
+                  "charOffset": 81443,
                   "charLength": 229,
                   "snippet": {
                     "text": "        self.value = True\n        ch = self.bot.get_channel(interaction.channel_id)\n        TempConfirmInstance = TicketTempConfirm()\n\n        await ch.send(\"Are you sure you want to close this ticket?\", view=TempConfirmInstance)"
@@ -18439,7 +18456,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "a4ae757682de3ac871b26a34772229e22440682ae7e64933638f5f7682b9611a"
+            "equalIndicator/v1": "df4eb75c20f61bff6f1a59dccfdf9f6b77bdf8920f30eab9325f761a77b26869"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -18466,7 +18483,7 @@
                 "region": {
                   "startLine": 1997,
                   "startColumn": 9,
-                  "charOffset": 83930,
+                  "charOffset": 84024,
                   "charLength": 2,
                   "snippet": {
                     "text": "ID"
@@ -18476,7 +18493,7 @@
                 "contextRegion": {
                   "startLine": 1995,
                   "startColumn": 1,
-                  "charOffset": 83844,
+                  "charOffset": 83938,
                   "charLength": 244,
                   "snippet": {
                     "text": "async def id_generator(size=3, chars=string.ascii_uppercase):\n    while True:\n        ID = \"\".join(random.choice(chars) for _ in range(size))\n        query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == ID)\n"
@@ -18492,7 +18509,7 @@
             }
           ],
           "partialFingerprints": {
-            "equalIndicator/v1": "ba458ddf3ce61396da18983ee4868febdb25b3cb1725ee9e29e96430267a46b6"
+            "equalIndicator/v1": "03a111178e73f10b5b01215b25128478a9001007a298decc3f6ebd6fdaa8b3e6"
           },
           "properties": {
             "ideaSeverity": "WEAK WARNING",
@@ -45693,7 +45710,7 @@
       ],
       "automationDetails": {
         "id": "project/qodana/2022-05-27",
-        "guid": "eb2f1f4d-16c4-4f3a-9aa3-e6a004980c1d"
+        "guid": "339dc661-0447-4c54-9b22-22806d246e17"
       },
       "newlineSequences": [
         "\r\n",
@@ -45770,7 +45787,7 @@
                     "startLine": 1,
                     "startColumn": 1,
                     "charOffset": 0,
-                    "charLength": 88439,
+                    "charLength": 88533,
                     "snippet": {
                       "text": "from __future__ import annotations import asyncio import io import json import os import random imp..."
                     },
@@ -45795,7 +45812,7 @@
               }
             ],
             "partialFingerprints": {
-              "equalIndicator/v1": "3f38794539b723e2d9fec9ef143ff6715d876343cf9c4e206b330db9cfbcdd84"
+              "equalIndicator/v1": "87f827c96fc8164f21d5cf8fdb198f49921042db6fd7643e7149d01aa42c24d4"
             },
             "properties": {
               "ideaSeverity": "ERROR"
