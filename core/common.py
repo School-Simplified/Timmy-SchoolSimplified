@@ -1144,7 +1144,8 @@ class HREmailConfirm(discord.ui.View):
         embed.colour = discord.Colour.green()
         temppass = get_random_string()
         if embed.fields[0].value == "G":
-            return await interaction.response.send("Error, not supported yet.", ephemeral=True)
+            return await interaction.response.send("Error, not supported yet.\nYou'll need to contact a Super/User "
+                                                   "Administrator to create this manually.", ephemeral=True)
         elif embed.fields[0].value == "T":
             firstname = embed.fields[4].value
             lastname = "Team"
