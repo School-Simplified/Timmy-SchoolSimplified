@@ -1133,11 +1133,11 @@ class HREmailDisabled(discord.ui.View):
 
 class HREmailConfirm(discord.ui.View):
     def __init__(self, bot: commands.Bot) -> None:
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
         self.bot = bot
 
-    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green)
+    @discord.ui.button(label='Confirm', emoji="✅", style=discord.ButtonStyle.green, custom_id="temp_mgm_confirm")
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = interaction.message.embeds[0]
         embed.title = f"[CREATED] {embed.title}"
@@ -1237,7 +1237,7 @@ class HREmailConfirm(discord.ui.View):
         await interaction.message.edit(embed=embed, view=HREmailDisabled())
         self.stop()
 
-    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red)
+    @discord.ui.button(label='Cancel', emoji="❌", style=discord.ButtonStyle.red, custom_id="temp_mgm_confirm")
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message('Cancelling', ephemeral=True)
         embed = interaction.message.embeds[0]
