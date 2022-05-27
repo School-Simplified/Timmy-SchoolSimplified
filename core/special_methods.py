@@ -28,6 +28,7 @@ from core.common import (
     TechID,
     CheckDB_CC,
     Emoji,
+    MGMCommissionButton
 )
 from core.gh_modals import FeedbackButton
 from utils.bots.CommissionSys.cogs.techCommissions import CommissionTechButton
@@ -110,6 +111,7 @@ async def on_ready_(bot: Timmy):
         bot.add_view(GSuiteVerify())
         bot.add_view(CommissionTechButton(bot))
         bot.add_view(TicketButton(bot))
+        bot.add_view(MGMCommissionButton(bot))
         query.PersistantChange = True
         query.save()
 

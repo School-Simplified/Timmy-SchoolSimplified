@@ -99,11 +99,18 @@ async def TicketExport(
     directTranscript: bool = False,
 ):
     transcript = await chat_exporter.export(channel, None)
-    query = (
-        database.TicketInfo.select()
-        .where(database.TicketInfo.ChannelID == channel.id)
-        .get()
-    )
+    if channel.guild.id == MainID.g_main:
+        query = (
+            database.TicketInfo.select()
+            .where(database.TicketInfo.ChannelID == channel.id)
+            .get()
+        )
+    else:
+        query = (
+            database.MGMTickets.select()
+            .where(database.MGMTickets.ChannelID == channel.id)
+            .get()
+        )
     TicketOwner = self.bot.get_user(query.authorID)
     if TicketOwner is None:
         TicketOwner = await self.bot.fetch_user(query.authorID)

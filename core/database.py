@@ -761,6 +761,28 @@ class CommandAnalytics(BaseModel):
     user = BigIntegerField()
 
 
+class MGMTickets(BaseModel):
+    """
+    #MGMTickets
+
+    `id`: AutoField()
+    Database Entry
+
+    `ChannelID`: BigIntegerField()
+    Channel ID of the Ticket.
+
+    `authorID`: BigIntegerField()
+    Author ID of the Ticket Owner.
+
+    `createdAt`: DateTimeField()
+    A datetime object when the ticket opened.
+    """
+
+    id = AutoField()
+    ChannelID = BigIntegerField()
+    authorID = BigIntegerField()
+    createdAt = DateTimeField()
+
 app = Flask(__name__)
 
 
@@ -810,7 +832,8 @@ tables = {
     "ResponseSpamBlacklist": ResponseSpamBlacklist,
     "AuthorizedGuilds": AuthorizedGuilds,
     # "SetPuzzleSchedule": SetPuzzleSchedule,
-    "CommandAnalytics": CommandAnalytics
+    "CommandAnalytics": CommandAnalytics,
+    "MGMTickets": MGMTickets,
 }
 
 iter_table(tables)

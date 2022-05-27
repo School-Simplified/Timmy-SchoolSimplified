@@ -9,6 +9,7 @@ import re
 import string
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 from threading import Thread
 from typing import Any, Awaitable, Callable, List, Literal, Tuple, Union, Optional, TYPE_CHECKING
@@ -17,6 +18,7 @@ import boto3
 import chat_exporter
 import configcatclient
 import discord
+import pytz
 import requests
 from botocore.exceptions import ClientError
 from discord import (
@@ -31,6 +33,7 @@ from google.cloud import secretmanager
 from google.oauth2 import service_account
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
+from googleapiclient.errors import HttpError
 from oauth2client.service_account import ServiceAccountCredentials
 
 from core import database
@@ -38,6 +41,7 @@ from core import database
 if TYPE_CHECKING:
     from main import Timmy
 
+from googleapiclient.discovery import build
 
 load_dotenv()
 
@@ -750,6 +754,7 @@ class LeaderID:
 
     # *** Guilds ***
     g_leader = int(ConfigCatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154))
+    g_staff_resources = int(ConfigCatClient.LEADER_ID_CC.get_value("g_staffresources", 955911166520082452))
 
     # *** Channels ***
     ch_staff_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_staffannouncements", 936134263777148949))
@@ -768,6 +773,7 @@ class LeaderID:
     ch_tech_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
     ch_leadership_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_leadershipannouncements",
                                                                          819009569979629569))
+    ch_com_log = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_com_log", 955991586364334082))
 
     # *** Roles ***
     r_corporate_officer = int(ConfigCatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444))
@@ -1075,6 +1081,522 @@ class EmbeddedActivity:
     word_snacks_dev = 879864010126786570
     youtube_together = 755600276941176913
 
+
+SCOPES = [
+    "https://www.googleapis.com/auth/admin.directory.user",
+    "https://www.googleapis.com/auth/admin.directory.group",
+    "https://www.googleapis.com/auth/admin.directory.orgunit",
+    "https://www.googleapis.com/auth/admin.directory.userschema",
+]
+orgUnit = {
+    "Personal Account": "/School Simplified Personal Acc.",
+    "Team Account": "/School Simplified Team Acc.",
+}
+
+creds = access_secret("adm_t", True, 0, SCOPES)
+service = build("admin", "directory_v1", credentials=creds)
+
+
+def get_random_string(length=13):
+    # choose from all lowercase letter
+    chars = string.ascii_letters + string.digits + "!@#$%^&*()"
+
+    rnd = random.SystemRandom()
+    return "".join(rnd.choice(chars) for i in range(length))
+
+EmailSelectOptions = [
+    discord.SelectOption(
+        label="Individual Email",
+        description="Request an individual email address.",
+        emoji="👤",
+    ),
+    discord.SelectOption(
+        label="Team Email",
+        description="Request a team email address.",
+        emoji="👥",
+    )
+]
+
+class HREmailDisabled(discord.ui.View):
+    def __init__(self) -> None:
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, disabled=True)
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        pass
+
+    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, disabled=True)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        pass
+
+
+class HREmailConfirm(discord.ui.View):
+    def __init__(self, bot: commands.Bot) -> None:
+        super().__init__()
+        self.value = None
+        self.bot = bot
+
+    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green)
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = interaction.message.embeds[0]
+        embed.title = f"[CREATED] {embed.title}"
+        embed.colour = discord.Colour.green()
+        temppass = get_random_string()
+        if embed.fields[0].value == "G":
+            return await interaction.response.send("Error, not supported yet.", ephemeral=True)
+        elif embed.fields[0].value == "T":
+            firstname = embed.fields[4].value
+            lastname = "Team"
+            user = {
+                "name": {
+                    "givenName": firstname,
+                    "fullName": firstname + " Team",
+                    "familyName": "Team",
+                },
+                "password": temppass,
+                "primaryEmail": embed.fields[2].value,
+                "changePasswordAtNextLogin": True,
+                "orgUnitPath": "/School Simplified Team Acc.",
+                "organizations": [
+                    {
+                        "title": "Team Email",
+                        "primary": True,
+                        "department": embed.fields[4].value,
+                        "description": "Team",
+                    }
+                ]
+            }
+        elif embed.fields[0].value == "Personal":
+            firstname = embed.fields[1].value
+            lastname = embed.fields[2].value
+            user = {
+                "name": {
+                    "givenName": embed.fields[1].value,
+                    "fullName": embed.fields[1].value + " " + embed.fields[2].value,
+                    "familyName": embed.fields[2].value,
+                },
+                "password": temppass,
+                "primaryEmail": f"{embed.fields[1].value}.{embed.fields[2].value}@schoolsimplified.org",
+                "changePasswordAtNextLogin": True,
+                "orgUnitPath": "/School Simplified Personal Acc.",
+                "relations": [
+                    {
+                        "value": embed.fields[3].value,
+                        "type": "manager"
+                    }
+                ],
+                "organizations": [
+                    {
+                        "title": embed.fields[5].value,
+                        "primary": True,
+                        "type": "work",
+                        "department": embed.fields[4].value,
+                    }
+                ]
+
+            }
+        else:
+            return
+        try:
+            service.users().insert(body=user).execute()
+        except HttpError as e:
+            """If the error code is 409, send a message to the user saying that the email is already taken."""
+            if e.status_code == 409:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} The email {user['primaryEmail']} is already taken."
+                )
+            else:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} An error occurred. Please try again later; forward this to a Bot "
+                    f"Developer if you continue to have problems!.\nError: {e} "
+                )
+        else:
+            if embed.fields[0].value == "Personal":
+                await interaction.response.send_message(
+                    f"{interaction.user.mention} Successfully created **{firstname} {lastname}'s** account.\n"
+                    f"**Username:** {firstname}.{lastname}@schoolsimplified.org\n"
+                    f"**Organization Unit:** {user['orgUnitPath']}",
+                    ephemeral=False,
+                )
+            else:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention} Successfully created **{user['name']['givenName']}'s** account.\n"
+                    f"**Username:** {user['primaryEmail']}\n"
+                    f"**Organization Unit:** {user['orgUnitPath']}\n",
+                    "**Note:** This email has been flagged as a `TEAM` email.",
+                    ephemeral=False,
+                )
+            await interaction.followup.send(
+                f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary "
+                f"Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",
+                ephemeral=True,
+            )
+        self.value = True
+        await interaction.message.edit(embed=embed, view=HREmailDisabled())
+        self.stop()
+
+    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message('Cancelling', ephemeral=True)
+        embed = interaction.message.embeds[0]
+        embed.title = f'[RESOLVED] {embed.title}'
+        embed.colour = discord.Color.brand_red()
+
+        await interaction.message.edit(embed=embed, view=HREmailDisabled())
+        self.value = False
+        self.stop()
+
+
+class IEmailForm(ui.Modal, title="Auto Email Form"):
+    def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    first_name = ui.TextInput(
+        label="First Name",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    last_name = ui.TextInput(
+        label="Last Name",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    team_name = ui.TextInput(
+        label="Team/Dept. Name",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    team_role = ui.TextInput(
+        label="What is your position in that team?",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    managers_email = ui.TextInput(
+        label="Managers Email",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.send_message("Thank you for your submission, forwarding your request to HR!", ephemeral=True)
+        hr_email: discord.TextChannel = self.bot.get_channel(HRID.ch_email_requests)
+        embed = discord.Embed(
+            title=f"Email Request from {interaction.user.name}#{interaction.user.discriminator}",
+            color=discord.Color.orange(),
+            timestamp=discord.utils.utcnow(),
+        )
+        embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
+        embed.add_field(name="Account Type", value="Personal", inline=False)
+        embed.add_field(name="First Name", value=self.first_name.value)
+        embed.add_field(name="Last Name", value=self.last_name.value)
+        embed.add_field(name="Managers Email", value=self.managers_email.value, inline=False)
+        embed.add_field(name="Team Name", value=self.team_name.value, inline=False)
+        embed.add_field(name="Team Role", value=self.team_role.value)
+        await hr_email.send(embed=embed, view=HREmailConfirm(self.bot))
+
+
+class TEmailForm(ui.Modal, title="Email Address Requests"):
+    def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    email_purpose = ui.TextInput(
+        label="Purpose of Email",
+        style=discord.TextStyle.short,
+        placeholder="What is this email going to be used for?",
+        max_length=1024,
+    )
+
+    requested_address = ui.TextInput(
+        label="Desired Email",
+        style=discord.TextStyle.short,
+        placeholder="Include @schoolsimplified.org",
+        max_length=1024,
+    )
+
+    email_type = ui.TextInput(
+        label="Email Type",
+        style=discord.TextStyle.short,
+        placeholder="G for Group Email, T for Team Email",
+        max_length=1,
+    )
+
+    team_name = ui.TextInput(
+        label="Team Name",
+        style=discord.TextStyle.short,
+        placeholder="What Team is this email for?",
+        max_length=1024,
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.send_message("Thank you for your submission, forwarding your request to HR!", ephemeral=True)
+        hr_email: discord.TextChannel = self.bot.get_channel(HRID.ch_email_requests)
+        embed = discord.Embed(
+            title=f"Email Request from {interaction.user.name}#{interaction.user.discriminator}",
+            color=discord.Color.orange(),
+            timestamp=discord.utils.utcnow(),
+        )
+        account_type = {"G": "Group", "T": "Team"}
+        embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
+        embed.add_field(name="Account Type", value=account_type[self.email_type.value], inline=False)
+        embed.add_field(name="Email Purpose", value=self.email_purpose.value)
+        embed.add_field(name="Desired Email", value=self.requested_address.value)
+        embed.add_field(name="Email Type", value=self.email_type.value)
+        embed.add_field(name="Team Name", value=self.team_name.value, inline=False)
+        await hr_email.send(embed=embed, view=HREmailConfirm(self.bot))
+
+
+class StaffApps(ui.Modal, title="Staff Applications"):
+    def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    team_name = ui.TextInput(
+        label="Team Name",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    target_app = ui.TextInput(
+        label="Application that needs updating",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    approval = ui.TextInput(
+        label="Who approved this?",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.send_message("Thank you for your submission, creating your ticket now!", ephemeral=True)
+        counter_num = (
+            database.BaseTickerInfo.select()
+                .where(database.BaseTickerInfo.guildID == interaction.guild.id)
+                .get()
+        )
+        num = counter_num.counter
+        counter_num.counter = counter_num.counter + 1
+        counter_num.save()
+
+        category = discord.utils.get(interaction.guild.categories, id=979485444364468345)
+        channel = await interaction.guild.create_text_channel(f"staff-apps-{num}", category=category)
+
+        await channel.set_permissions(
+            interaction.user,
+            read_messages=True,
+            send_messages=True,
+            reason="Ticket Perms (User)",
+        )
+        await channel.set_permissions(
+            interaction.guild.default_role,
+            read_messages=False,
+            send_messages=False,
+            reason="Ticket Perms (Default Role)",
+        )
+
+        controlTicket = discord.Embed(
+            title="Control Panel",
+            description="To end this ticket, click the lock button!",
+            color=discord.Colour.gold(),
+        )
+        LockControlButton = discord.ui.View()
+        LockControlButton.add_item(
+            ButtonHandler(
+                style=discord.ButtonStyle.green,
+                url=None,
+                disabled=False,
+                label="Lock",
+                emoji="🔒",
+                custom_id="mgm_ch_lock",
+            )
+        )
+
+        LCM = await channel.send(
+            interaction.user.mention, embed=controlTicket, view=LockControlButton
+        )
+        await LCM.pin()
+
+        tz = pytz.timezone("EST")
+        opened_at = datetime.now(tz)
+        query = database.MGMTickets.create(
+            ChannelID=channel.id, authorID=interaction.message.author.id, createdAt=opened_at
+        )
+        query.save()
+
+
+        embed = discord.Embed(
+            title=f"Staff Application from {interaction.user.name}#{interaction.user.discriminator}",
+            color=discord.Color.orange(),
+            timestamp=discord.utils.utcnow(),
+        )
+        embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
+        embed.add_field(name="Team Name", value=self.team_name.value, inline=False)
+        embed.add_field(name="Application", value=self.target_app.value, inline=False)
+        embed.add_field(name="Approved By", value=self.approval.value, inline=False)
+        await channel.send(embed=embed)
+
+
+class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
+    def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    app_title = ui.TextInput(
+        label="Announcement Title",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    team_name = ui.TextInput(
+        label="Team Name",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    approval = ui.TextInput(
+        label="Who approved this?",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.send_message("Thank you for your submission, creating your ticket now!",
+                                                ephemeral=True)
+        counter_num = (
+            database.BaseTickerInfo.select()
+                .where(database.BaseTickerInfo.guildID == interaction.guild.id)
+                .get()
+        )
+        num = counter_num.counter
+        counter_num.counter = counter_num.counter + 1
+        counter_num.save()
+
+        category = discord.utils.get(interaction.guild.categories, id=979485569337946192)
+        channel = await interaction.guild.create_text_channel(f"staff-announce-{num}", category=category)
+
+        await channel.set_permissions(
+            interaction.user,
+            read_messages=True,
+            send_messages=True,
+            reason="Ticket Perms (User)",
+        )
+        await channel.set_permissions(
+            interaction.guild.default_role,
+            read_messages=False,
+            send_messages=False,
+            reason="Ticket Perms (Default Role)",
+        )
+
+        controlTicket = discord.Embed(
+            title="Control Panel",
+            description="To end this ticket, click the lock button!",
+            color=discord.Colour.gold(),
+        )
+        LockControlButton = discord.ui.View()
+        LockControlButton.add_item(
+            ButtonHandler(
+                style=discord.ButtonStyle.green,
+                url=None,
+                disabled=False,
+                label="Lock",
+                emoji="🔒",
+                custom_id="mgm_ch_lock",
+            )
+        )
+
+        LCM = await channel.send(
+            interaction.user.mention, embed=controlTicket, view=LockControlButton
+        )
+        await LCM.pin()
+
+        tz = pytz.timezone("EST")
+        opened_at = datetime.now(tz)
+        query = database.MGMTickets.create(
+            ChannelID=channel.id, authorID=interaction.message.author.id, createdAt=opened_at
+        )
+        query.save()
+
+        embed = discord.Embed(
+            title=f"Staff Announcements from {interaction.user.name}#{interaction.user.discriminator}",
+            color=discord.Color.orange(),
+            timestamp=discord.utils.utcnow(),
+        )
+        embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
+        embed.add_field(name="Team Name", value=self.app_title.value, inline=False)
+        embed.add_field(name="Application", value=self.team_name.value, inline=False)
+        embed.add_field(name="Approved By", value=self.approval.value, inline=False)
+        await channel.send(embed=embed)
+
+
+class MGMCommissionButton(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.value = None
+        self.bot = bot
+
+    @discord.ui.button(
+        label="Start Commission",
+        style=discord.ButtonStyle.green,
+        custom_id="persistent_view:start_commission_mgm",
+        emoji="📝",
+    )
+    async def start_commission(
+            self,
+            interaction: discord.Interaction,
+            button: discord.ui.Button,
+    ):
+        # TODO: Comply with Code Guidelines and use ConfigCat for IDs
+        channel_to_modal_map = {
+            956619079853179031: StaffApps(self.bot),
+            956619132525244516: StaffAnnouncements(self.bot),
+        }
+        modal = channel_to_modal_map[interaction.channel.id]
+        await interaction.response.send_modal(modal)
+
+
+class EmailDropdown(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.value = None
+        self.bot = bot
+
+    @discord.ui.button(
+        label="Individual Email",
+        style=discord.ButtonStyle.green,
+        custom_id="persistent_view:i_email_mgm",
+        emoji="👤",
+    )
+    async def i_email(
+            self,
+            interaction: discord.Interaction,
+            button: discord.ui.Button,
+    ):
+        modal = IEmailForm(self.bot)
+        return await interaction.response.send_modal(modal)
+
+    @discord.ui.button(
+        label="Team Email",
+        style=discord.ButtonStyle.blurple,
+        custom_id="persistent_view:t_email_mgm",
+        emoji="👥",
+    )
+    async def t_email(
+            self,
+            interaction: discord.Interaction,
+            button: discord.ui.Button,
+    ):
+        modal = TEmailForm(self.bot)
+        return await interaction.response.send_modal(modal)
+
+
 class SelectMenuHandler(ui.Select):
     """Adds a SelectMenu to a specific message and returns it's value when option selected.
 
@@ -1098,6 +1620,7 @@ class SelectMenuHandler(ui.Select):
         ephemeral: bool = True,
         coroutine: CoroutineType = None,
         view_response=None,
+        modal_response=None,
     ):
         """
         Parameters:
@@ -1111,6 +1634,8 @@ class SelectMenuHandler(ui.Select):
             interaction_message: The response message when pressing on a selection. Default to None.
             ephemeral: Whenever the response message should only be visible for the select_user or not. Default to True.
             coroutine: A coroutine that gets invoked after the button is pressed. If None is passed, the view is stopped after the button is pressed. Default to None.
+            view_response: The response of the view. Default to None.
+            modal_response: The response of the modal. Default to None.
         """
 
         self.options_ = options
@@ -1125,6 +1650,7 @@ class SelectMenuHandler(ui.Select):
         self.ephemeral_ = ephemeral
         self.coroutine = coroutine
         self.view_response = view_response
+        self.modal_response = modal_response
 
         if self.custom_id_:
             super().__init__(
@@ -1151,7 +1677,10 @@ class SelectMenuHandler(ui.Select):
             self.view.value = self.values[0]
             self.view_response = self.values[0]
 
-            if self.interaction_message_:
+            if self.modal_response:
+                await interaction.response.send_modal(self.modal_response)
+
+            elif self.interaction_message_:
                 await interaction.response.send_message(
                     content=self.interaction_message_, ephemeral=self.ephemeral_
                 )
