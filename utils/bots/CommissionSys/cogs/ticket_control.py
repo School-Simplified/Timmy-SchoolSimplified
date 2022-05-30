@@ -264,16 +264,16 @@ class MGMDropdownTickets(commands.Cog):
 
             try:
                 await msgO.edit(
-                    f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                    content=f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                 )
             except Exception:
                 try:
                     await msgO.edit(
-                        f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                        content=f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                     )
                 except Exception:
                     await msgO.edit(
-                        f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                        content=f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                     )
             await asyncio.sleep(5)
             await channel.send(f"{author.mention} Alright, closing ticket.")
