@@ -719,7 +719,7 @@ class TicketBT(discord.ui.Button):
                 )
             await channel.send(f"Attachment URL: {str(attachmentlist)}")
 
-            await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
+            await LDC.edit(content=f"Ticket Created!\nYou can view it here: {channel.mention}")
 
 
 class TicketButton(discord.ui.View):
@@ -1104,16 +1104,16 @@ class DropdownTickets(commands.Cog):
 
             try:
                 await msgO.edit(
-                    f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                    content=f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                 )
             except Exception:
                 try:
                     await msgO.edit(
-                        f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                        content=f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                     )
                 except Exception:
                     await msgO.edit(
-                        f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                        content=f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                     )
             await asyncio.sleep(5)
             await channel.send(f"{author.mention} Alright, closing ticket.")
