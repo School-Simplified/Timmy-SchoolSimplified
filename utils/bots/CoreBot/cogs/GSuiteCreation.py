@@ -9,8 +9,10 @@ from discord import app_commands, ui
 from discord.ext import commands
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-
-from core.common import HRID, access_secret, Emoji
+from datetime import datetime
+import core.common
+from core import database
+from core.common import HRID, access_secret, Emoji, ButtonHandler
 
 
 def get_random_string(length=13):
@@ -100,7 +102,6 @@ class GSuiteButton(discord.ui.View):
         button: discord.ui.Button,
     ):
         await interaction.followup.send_modal(GSuiteForm(self.bot))
-
 
 
 class AdminAPI(commands.Cog):
@@ -229,6 +230,338 @@ class AdminAPI(commands.Cog):
                 await interaction.response.send_message("Successfully suspended the account.")
             else:
                 await interaction.response.send_message("Successfully restored the account.")
+
+
+
+    @app_commands.command(
+        name="promote",
+        description="Create a promotion request to HR.",
+    )
+    @app_commands.guilds(discord.Object(815753072742891532))
+    @app_commands.describe(
+        user="Select the user you want to promote.",
+        reason="Enter the reason for the promotion.",
+    )
+    async def promote(
+            self,
+            interaction: discord.Interaction,
+            user: discord.User,
+            reason: str
+    ):
+        if user.bot:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You cannot promote a bot."
+            )
+
+        if user == interaction.user:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You cannot promote yourself."
+            )
+
+        if not reason:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You must enter a reason for the promotion."
+            )
+
+        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
+        ticket_category = discord.utils.get(mgm_server.categories, id=956297567346495568)
+        member = interaction.guild.get_member(interaction.user.id)
+
+        ticket_channel = await ticket_category.create_text_channel(
+            f"{user.name}-promotion",
+            topic=f"{user.name} | {user.id} promotion",
+            reason=f"Requested by {interaction.user.name} promotion",
+        )
+        query = database.MGMTickets.create(
+            ChannelID=ticket_channel.id,
+            authorID=interaction.user.id,
+            createdAt=datetime.now(),
+        )
+        query.save()
+
+        await ticket_channel.set_permissions(
+            discord.utils.get(mgm_server.roles, name="Human Resources"),
+            read_messages=True,
+            send_messages=True,
+            manage_messages=True,
+        )
+        await ticket_channel.set_permissions(
+            member,
+            read_messages=True,
+            send_messages=True,
+            manage_messages=True,
+        )
+        control_embed = discord.Embed(
+            title="Control Panel",
+            description="To end this ticket, click the lock button!",
+            color=discord.Colour.gold(),
+        )
+
+        LCB = discord.ui.View()
+        LCB.add_item(
+            ButtonHandler(
+                style=discord.ButtonStyle.green,
+                url=None,
+                disabled=False,
+                label="Lock",
+                emoji="🔒",
+                custom_id="mgm_ch_lock",
+            )
+        )
+        LCM = await ticket_channel.send(
+            interaction.user.mention, embed=control_embed, view=LCB
+        )
+        await LCM.pin()
+        embed_information = discord.Embed(
+            title="Promotion Request",
+            description=f"User: {user.mention}\n"
+            f"**Reason:** {reason}",
+            color=discord.Colour.gold(),
+        )
+        embed_information.set_author(
+            name=interaction.user.name,
+            icon_url=interaction.user.avatar.url,
+        )
+        embed_information.set_footer(
+            text=f"ID: {interaction.user.id}"
+        )
+        await ticket_channel.send(embed=embed_information)
+
+        await interaction.response.send_message(
+            content=f"""{interaction.user.mention} Successfully created a promotion request for **{user.name}**.\n
+                    **Reason:** {reason}\n,
+                    You can view the ticket here: {ticket_channel.mention}""",
+            ephemeral=True,
+        )
+
+
+    @app_commands.command(
+        name="fire",
+        description="Create a firing request to HR.",
+    )
+    @app_commands.guilds(discord.Object(815753072742891532))
+    @app_commands.describe(
+        user="Select the user you want to fire.",
+        reason="Enter the reason for the firing.",
+        evidence_text="Enter any *textual* evidence* for the firing.",
+        evidence_url="Upload any attachment relating to the firing.",
+    )
+    async def fire(
+            self,
+            interaction: discord.Interaction,
+            user: discord.User,
+            reason: str,
+            evidence_text: str = None,
+            evidence_url: discord.Attachment = None
+    ):
+        if user.bot:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You cannot fire a bot."
+            )
+
+        if user == interaction.user:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You cannot fire yourself."
+            )
+
+        if not reason:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You must enter a reason for the firing."
+            )
+
+        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
+        ticket_category = discord.utils.get(mgm_server.categories, id=956297567346495568)
+        member = interaction.guild.get_member(interaction.user.id)
+
+        ticket_channel = await ticket_category.create_text_channel(
+            f"{user.name}-firing",
+            topic=f"{user.name} | {user.id} firing",
+            reason=f"Requested by {interaction.user.name} firing",
+        )
+        query = database.MGMTickets.create(
+            ChannelID=ticket_channel.id,
+            authorID=interaction.user.id,
+            createdAt=datetime.now(),
+        )
+        query.save()
+
+        await ticket_channel.set_permissions(
+            discord.utils.get(mgm_server.roles, name="Human Resources"),
+            read_messages=True,
+            send_messages=True,
+            manage_messages=True,
+        )
+        await ticket_channel.set_permissions(
+            member,
+            read_messages=True,
+            send_messages=True,
+            manage_messages=True,
+        )
+        control_embed = discord.Embed(
+            title="Control Panel",
+            description="To end this ticket, click the lock button!",
+            color=discord.Colour.gold(),
+        )
+
+        LCB = discord.ui.View()
+        LCB.add_item(
+            ButtonHandler(
+                style=discord.ButtonStyle.green,
+                url=None,
+                disabled=False,
+                label="Lock",
+                emoji="🔒",
+                custom_id="mgm_ch_lock",
+            )
+        )
+        LCM = await ticket_channel.send(
+            interaction.user.mention, embed=control_embed, view=LCB
+        )
+        await LCM.pin()
+        if evidence_text is None:
+            evidence_text = "No evidence provided."
+
+        if evidence_url is None:
+            evidence_url = "No evidence provided."
+        else:
+            evidence_url = evidence_url.url
+
+        embed_information = discord.Embed(
+            title="Firing Request",
+            description=f"User: {user.mention}\n"
+            f"**Reason:** {reason}\n"
+            f"**Evidence:** {evidence_text}\n"
+            f"**Evidence URL:** {evidence_url}",
+            color=discord.Colour.gold(),
+        )
+        embed_information.set_author(
+            name=interaction.user.name,
+            icon_url=interaction.user.avatar.url,
+        )
+        embed_information.set_footer(
+            text=f"ID: {interaction.user.id}"
+        )
+        await ticket_channel.send(embed=embed_information)
+        await interaction.response.send_message(
+            content=f"""{interaction.user.mention} Successfully created a firing request for **{user.name}**.\n
+            **Reason:** {reason}\n,
+            You can view the ticket here: {ticket_channel.mention}""",
+            ephemeral=True,
+        )
+
+
+    @app_commands.command(
+        name="censure",
+        description="Create a censure request to HR.",
+    )
+    @app_commands.guilds(discord.Object(815753072742891532))
+    @app_commands.describe(
+        user="Select the user you want to censure.",
+        reason="Enter the reason for the censure.",
+        evidence_text="Enter any *textual* evidence* for the censure.",
+        evidence_url="Upload any attachment relating to the censure.",
+    )
+    async def censure(
+            self,
+            interaction: discord.Interaction,
+            user: discord.User,
+            reason: str,
+            evidence_text: str = None,
+            evidence_url: discord.Attachment = None
+    ):
+        if user.bot:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You cannot censure a bot."
+            )
+
+        if user == interaction.user:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You cannot censure yourself."
+            )
+
+        if not reason:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You must enter a reason for the censure."
+            )
+
+        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
+        ticket_category = discord.utils.get(mgm_server.categories, id=956297567346495568)
+        member = interaction.guild.get_member(interaction.user.id)
+
+        ticket_channel = await ticket_category.create_text_channel(
+            f"{user.name}-censure",
+            topic=f"{user.name} | {user.id} censure",
+            reason=f"Requested by {interaction.user.name} censure",
+        )
+        query = database.MGMTickets.create(
+            ChannelID=ticket_channel.id,
+            authorID=interaction.user.id,
+            createdAt=datetime.now(),
+        )
+        query.save()
+
+        await ticket_channel.set_permissions(
+            discord.utils.get(mgm_server.roles, name="Human Resources"),
+            read_messages=True,
+            send_messages=True,
+            manage_messages=True,
+        )
+        await ticket_channel.set_permissions(
+            member,
+            read_messages=True,
+            send_messages=True,
+            manage_messages=True,
+        )
+        control_embed = discord.Embed(
+            title="Control Panel",
+            description="To end this ticket, click the lock button!",
+            color=discord.Colour.gold(),
+        )
+
+        LCB = discord.ui.View()
+        LCB.add_item(
+            ButtonHandler(
+                style=discord.ButtonStyle.green,
+                url=None,
+                disabled=False,
+                label="Lock",
+                emoji="🔒",
+                custom_id="mgm_ch_lock",
+            )
+        )
+        LCM = await ticket_channel.send(
+            interaction.user.mention, embed=control_embed, view=LCB
+        )
+        await LCM.pin()
+        if evidence_text is None:
+            evidence_text = "No evidence provided."
+
+        if evidence_url is None:
+            evidence_url = "No evidence provided."
+        else:
+            evidence_url = evidence_url.url
+        embed_information = discord.Embed(
+            title="Censure Request",
+            description=f"User: {user.mention}\n"
+            f"**Reason:** {reason}\n"
+            f"**Evidence:** {evidence_text}\n"
+            f"**Evidence URL:** {evidence_url}",
+            color=discord.Colour.gold(),
+        )
+        embed_information.set_author(
+            name=interaction.user.name,
+            icon_url=interaction.user.avatar.url,
+        )
+        embed_information.set_footer(
+            text=f"ID: {interaction.user.id}"
+        )
+        await ticket_channel.send(embed=embed_information)
+        await interaction.response.send_message(
+            content=f"""{interaction.user.mention} Successfully created a censure request for **{user.name}**.\n
+            **Reason:** {reason}\n
+            You can view the ticket here: {ticket_channel.mention}""",
+            ephemeral=True,
+        )
 
 
 async def setup(bot):

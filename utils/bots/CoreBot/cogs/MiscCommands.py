@@ -219,13 +219,6 @@ class MiscCMD(commands.Cog):
 
     @commands.command(aliases=["ttc", "tictactoe"])
     async def tic(self, ctx: commands.Context, user: discord.User = None):
-        if not ctx.channel.id == MainID.ch_commands:
-            await ctx.message.delete()
-            return await ctx.send(
-                f"{ctx.author.mention}"
-                f"\nMove to <#{MainID.ch_commands}> to play Tic Tac Toe!"
-            )
-
         if user is None:
             return await ctx.send(
                 "lonely :(, sorry but you need a person to play against!"
@@ -614,20 +607,9 @@ class MiscCMD(commands.Cog):
         RoleID = self.decodeDict[ViewResponse]
         await ctx.send(f"<@&{RoleID}>\n{message}")
 
-    @commands.command(hidden=True)
-    @is_botAdmin
-    async def purgemasa(self, ctx, num: int = 10):
-        user = self.bot.get_user(736765405728735232)
-        await ctx.channel.purge(check=lambda m: m.author == user, limit=num)
-
     @app_commands.command(description="Play a game of TicTacToe with someone!")
     @app_commands.describe(user="The user you want to play with.")
     async def tictactoe(self, interaction: discord.Interaction, user: discord.Member):
-        if interaction.channel.id != MainID.ch_commands:
-            return await interaction.response.send_message(
-                f"{interaction.user.mention}\nMove to <#{MainID.ch_commands}> to play Tic Tac Toe!",
-                ephemeral=True,
-            )
         if user is None:
             return await interaction.response.send_message(
                 "lonely :(, sorry but you need a person to play against!"

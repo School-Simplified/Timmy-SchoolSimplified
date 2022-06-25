@@ -12,7 +12,11 @@ from utils.events.TicketDropdown import TicketExport
 class MGMDropdownTickets(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.main_server = 955911166520082452
+        self.main_server = [955911166520082452, 824421093015945216]
+        self.response_channel_dict = {
+            955911166520082452: LeaderID.ch_com_log,
+            824421093015945216: 990311940989534229,
+        }
 
 
     @commands.Cog.listener("on_interaction")
@@ -28,7 +32,7 @@ class MGMDropdownTickets(commands.Cog):
             return
 
         if (
-            interaction.guild_id == self.main_server
+            interaction.guild_id in self.main_server
             # and interaction.message.id == int(self.CHID_DEFAULT)
             and inter_response["custom_id"] == "persistent_view:mgm_ticketdrop"
         ):
@@ -215,7 +219,7 @@ class MGMDropdownTickets(commands.Cog):
         elif inter_response["custom_id"] == "mgm_ch_lock_T":
             channel: discord.TextChannel = interaction.channel
             response_log_channel: discord.TextChannel = self.bot.get_channel(
-                LeaderID.ch_com_log
+                self.response_channel_dict[interaction.guild_id]
             )
 
             author = interaction.user
@@ -235,7 +239,7 @@ class MGMDropdownTickets(commands.Cog):
             channel = self.bot.get_channel(interaction.channel_id)
             author = interaction.user
             response_log_channel: discord.TextChannel = self.bot.get_channel(
-                LeaderID.ch_com_log
+                self.response_channel_dict[interaction.guild_id]
             )
             query = (
                 database.MGMTickets.select()

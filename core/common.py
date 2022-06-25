@@ -498,6 +498,7 @@ class StaffID:
     # *** Guilds ***
     g_staff = int(ConfigCatClient.STAFF_ID_CC.get_value("g_staff", 891521033700540457))
     g_staff_resources = int(ConfigCatClient.STAFF_ID_CC.get_value("g_staff_resources", 955911166520082452))
+    g_staff_mgm = int(ConfigCatClient.STAFF_ID_CC.get_value("g_staff_mgm", 824421093015945216))
 
     # *** Channels ***
     ch_verification_logs = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_verificationlogs", 894241199433580614))
