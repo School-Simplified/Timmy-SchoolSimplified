@@ -3,17 +3,15 @@ from __future__ import annotations
 import os
 from typing import Dict, List, Literal, TYPE_CHECKING, Union, Optional
 
-from core.checks import slash_is_bot_admin_4
-
+import discord
+from discord.app_commands import command, describe, Group
+from discord.ext import commands
 from github import Github
 from github.Issue import Issue
 from github.Label import Label
 from github.Repository import Repository
 
-import discord
-from discord.ext import commands
-from discord.app_commands import command, describe, Group
-
+from core.checks import slash_is_bot_admin_4
 
 if TYPE_CHECKING:
     from main import Timmy

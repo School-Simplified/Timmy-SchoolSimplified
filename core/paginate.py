@@ -157,7 +157,10 @@ class RoboPages(discord.ui.View):
         page = await self.source.get_page(0)
         kwargs = await self._get_kwargs_from_page(page)
         self._update_labels(0)
-        self.message = await self.interaction.response.send_message(**kwargs, view=self)
+        try:
+            self.message = await self.interaction.response.send_message(**kwargs, view=self)
+        except discord.InteractionResponded:
+            self.message = await self.interaction.followup.send(**kwargs, view=self)
 
     @discord.ui.button(label="≪", style=discord.ButtonStyle.grey)
     async def go_to_first_page(

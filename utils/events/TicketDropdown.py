@@ -140,7 +140,7 @@ async def TicketExport(
         f.write(myIO.getbuffer())
 
     S3_upload_file(f"transcript-{channel.name}.html", "ch-transcriptlogs")
-    S3_URL = f"[Direct Transcript Link](https://acad-transcripts.schoolsimplified.org/transcript-{channel.name}.html)"
+    S3_URL = f"[Direct Transcript Link](https://transcripts.schoolsimplified.org/transcript-{channel.name}.html)"
     embed.add_field(name="Transcript Link", value=S3_URL)
 
     if response != None:

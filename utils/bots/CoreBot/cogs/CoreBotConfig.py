@@ -418,6 +418,11 @@ class CoreBotConfig(commands.Cog):
         )
         for admin in query1:
             user = self.bot.get_user(admin.discordID)
+            if user is None:
+                try:
+                    user = await self.bot.fetch_user(admin.discordID)
+                except:
+                    continue
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL1 = "\n".join(adminList)
@@ -428,6 +433,11 @@ class CoreBotConfig(commands.Cog):
         )
         for admin in query2:
             user = self.bot.get_user(admin.discordID)
+            if user is None:
+                try:
+                    user = await self.bot.fetch_user(admin.discordID)
+                except:
+                    continue
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL2 = "\n".join(adminList)
@@ -438,6 +448,11 @@ class CoreBotConfig(commands.Cog):
         )
         for admin in query3:
             user = self.bot.get_user(admin.discordID)
+            if user is None:
+                try:
+                    user = await self.bot.fetch_user(admin.discordID)
+                except:
+                    continue
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL3 = "\n".join(adminList)
@@ -448,6 +463,11 @@ class CoreBotConfig(commands.Cog):
         )
         for admin in query4:
             user = self.bot.get_user(admin.discordID)
+            if user is None:
+                try:
+                    user = await self.bot.fetch_user(admin.discordID)
+                except:
+                    continue
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL4 = "\n".join(adminList)

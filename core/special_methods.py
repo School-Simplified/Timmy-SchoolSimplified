@@ -28,7 +28,8 @@ from core.common import (
     TechID,
     CheckDB_CC,
     Emoji,
-    MGMCommissionButton, HREmailConfirm, EmailDropdown
+    MGMCommissionButton, HREmailConfirm, EmailDropdown,
+    create_ui_modal_class, create_ticket_button
 )
 from core.gh_modals import FeedbackButton
 from utils.bots.CommissionSys.cogs.techCommissions import CommissionTechButton
@@ -114,6 +115,16 @@ async def on_ready_(bot: Timmy):
         bot.add_view(MGMCommissionButton(bot))
         bot.add_view(HREmailConfirm(bot))
         bot.add_view(EmailDropdown(bot))
+
+        ticket_sys = database.TicketConfiguration
+        for ticket in ticket_sys:
+            ticket: database.TicketConfiguration = ticket
+            UIModal = create_ui_modal_class(ticket.id)
+            modal = UIModal(bot, ticket.title, ticket.questions, ticket.id)
+
+            GlobalSubmitButton = create_ticket_button(ticket.id)
+            submit_button = GlobalSubmitButton(modal)
+            bot.add_view(view=submit_button)
 
         query.PersistantChange = True
         query.save()
@@ -488,7 +499,7 @@ async def on_app_command_error_(
                 if interaction.response.is_done():
                     await interaction.followup.send(embed=embed)
                 else:
-                    await interaction.response.send_message(embed=embed)
+                    await interaction.channel.send(embed=embed)
 
             guild = bot.get_guild(Me.TechGuild)
             channel = guild.get_channel(Me.TracebackChannel)
@@ -508,17 +519,15 @@ async def on_app_command_error_(
             await channel.send(embed=embed2)
 
             view = FeedbackButton(bot=bot, gist_url=gisturl)
-            if interaction.response.is_done():
+            try:
+                error_file.unlink()
                 await interaction.followup.send(
                     "Want to help even more? Click here to submit feedback!", view=view
                 )
-            try:
-                await interaction.response.send_message(
+            except:
+                await interaction.channel.send(
                     "Want to help even more? Click here to submit feedback!", view=view
                 )
-                error_file.unlink()
-            except discord.errors.InteractionResponded:
-                pass
 
     raise error
 

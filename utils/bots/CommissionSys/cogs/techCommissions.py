@@ -10,11 +10,9 @@ from core.common import TechID, Emoji, StaffID
 
 
 class BotRequestModal(ui.Modal, title="Bot Development Request"):
-    def __init__(self, bot: commands.Bot, extguild: bool = False, responseid: int = None) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         super().__init__(timeout=None)
         self.bot = bot
-        self.extguild = extguild
-        self.responseid = responseid
 
     titleTI = ui.TextInput(
         label="What is a descriptive title for your project?",
@@ -70,18 +68,92 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
         embed.set_footer(text="Bot Developer Commission")
 
         c_ch: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
+        await c_ch.set_permissions(
+            interaction.guild.get_member(interaction.user.id),
+            read_messages=True,
+            send_messages=True,
+        )
+
         msg: discord.Message = await c_ch.send(interaction.user.mention, embed=embed)
-        thread = await msg.create_thread(name=self.titleTI.value)
+        thread = await msg.create_thread(name=f"⚪-{self.titleTI.value}")
 
         await thread.send(
             f"{interaction.user.mention} has requested a bot development project.\n<@&{TechID.r_bot_developer}>"
         )
-        if self.extguild:
-            resp_channel = self.bot.get_channel(self.responseid)
-            await resp_channel.send(
-                f"{interaction.user.mention} your commission has been opened!\nYou can view it here: <#{thread.id}>",
-                delete_after=10.0
-            )
+
+
+class SubdomainForm(ui.Modal, title="Custom Subdomain Request"):
+    def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    subdomain = ui.TextInput(
+        label="What Subdomain are you requesting?",
+        style=discord.TextStyle.short,
+        max_length=50,
+        default="REPLACE_WANTED_SUBDOMAIN_HERE.ssimpl.org",
+    )
+
+    reason = ui.TextInput(
+        label="Reason/Usage for the subdomain?",
+        style=discord.TextStyle.long,
+        max_length=1024,
+    )
+
+    team = ui.TextInput(
+        label="What team/dept. is this subdomain for?",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    approval = ui.TextInput(
+        label="Do you have approval for this commission?",
+        style=discord.TextStyle.short,
+        max_length=1024,
+    )
+
+    anything_else = ui.TextInput(
+        label="Anything else?",
+        style=discord.TextStyle.long,
+        required=False,
+        max_length=1024,
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.send_message(
+            content="Got it! Please wait while I create your ticket.", ephemeral=True
+        )
+
+        embed = discord.Embed(
+            title="Subdomain Commission", color=discord.Color.blurple()
+        )
+        embed.set_author(
+            name=interaction.user.name, icon_url=interaction.user.avatar.url
+        )
+        embed.add_field(name="Subdomain Requested:", value=self.subdomain.value, inline=False)
+        embed.add_field(name="Team Requester:", value=self.team.value, inline=False)
+        embed.add_field(
+            name="Subdomain Usage:", value=self.reason.value, inline=False
+        )
+        embed.add_field(name="Approval", value=self.approval.value, inline=False)
+        embed.add_field(
+            name="Anything else?", value=f"E: {self.anything_else.value}", inline=False
+        )
+        embed.set_footer(text="Bot Developer Commission")
+
+        c_ch: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
+        # add the user to have view_messages permissions to c_ch channel
+        await c_ch.set_permissions(
+            interaction.guild.get_member(interaction.user.id),
+            read_messages=True,
+            send_messages=True,
+        )
+        msg: discord.Message = await c_ch.send(interaction.user.mention, embed=embed)
+        thread = await msg.create_thread(name=f"⚪-{self.subdomain.value}")
+
+        await thread.send(
+            f"{interaction.user.mention} has requested a subdomain.\n<@409152798609899530>"
+        )
 
 
 class CommissionTechButton(discord.ui.View):
@@ -91,7 +163,7 @@ class CommissionTechButton(discord.ui.View):
         self.bot = bot
 
     @discord.ui.button(
-        label="Start Commission",
+        label="Start Bot Commission",
         style=discord.ButtonStyle.blurple,
         custom_id="persistent_view:tech_pjt",
         emoji="📝",
@@ -101,18 +173,35 @@ class CommissionTechButton(discord.ui.View):
         interaction: discord.Interaction,
         button: discord.ui.Button,
     ):
-        extguild = False
-        if interaction.guild.id == StaffID.g_staff_resources:
-            guild = self.bot.get_guild(TechID.g_tech)
-            if guild.get_member(interaction.user.id) is not None:
-                extguild = True
-            else:
-                return await interaction.followup.send(
-                    f"{interaction.user.mention} you aren't in the IT server, please join the server and try again.",
-                    ephemeral=True
-                )
+        if interaction.guild.id == TechID.g_tech:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} commissions have moved to the Staff Resources & Information Server!\nYou "
+                f"can start one here: <#956619270899499028>.",
+                ephemeral=True
+            )
 
-        modal = BotRequestModal(self.bot, extguild, interaction.channel.id)
+        modal = BotRequestModal(self.bot)
+        return await interaction.response.send_modal(modal)
+
+    @discord.ui.button(
+        label="Request Custom Subdomain",
+        style=discord.ButtonStyle.grey,
+        custom_id="persistent_view:custom_subdomain",
+        emoji="🖇",
+    )
+    async def custom_subdomain(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
+    ):
+        if interaction.guild.id == TechID.g_tech:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} commissions have moved to the Staff Resources & Information Server!\nYou "
+                f"can start one here: <#956619270899499028>.",
+                ephemeral=True
+            )
+
+        modal = SubdomainForm(self.bot)
         return await interaction.response.send_modal(modal)
 
 
@@ -136,18 +225,7 @@ class TechProjectCMD(commands.Cog):
     @commands.command()
     @is_botAdmin
     async def techEmbed(self, ctx):
-        embed = discord.Embed(
-            title="Bot Developer Commissions", color=discord.Color.brand_green()
-        )
-        embed.add_field(
-            name="Get Started",
-            value="To get started, click the button below!\n*Please make sure you are authorized to make commissions!*",
-        )
-        embed.set_footer(
-            text="The Bot Development Team has the right to cancel and ignore any commissions if deemed appropriate. "
-            "We also have the right to cancel and ignore any commissions if an improper deadline is given, "
-            "please make sure you create a commission ahead of time and not right before a due date",
-        )
+        message = ""
         view = CommissionTechButton(self.bot)
         await ctx.send(embed=embed, view=view)
 

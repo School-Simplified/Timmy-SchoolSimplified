@@ -776,12 +776,95 @@ class MGMTickets(BaseModel):
 
     `createdAt`: DateTimeField()
     A datetime object when the ticket opened.
+
+    `configuration_id`: TextField()
+    The related configuration ID of the ticket.
     """
 
     id = AutoField()
     ChannelID = BigIntegerField()
     authorID = BigIntegerField()
     createdAt = DateTimeField()
+    configuration_id = TextField(default=None)
+
+
+class TicketConfiguration(BaseModel):
+    """
+    #Tickets
+
+    `id`: AutoField()
+    Database Entry
+
+    `guild_id` = BigIntegerField()
+    Guild ID of the guild the ticket config is in.
+
+    `channel_id`: BigIntegerField()
+    Channel ID of where tickets originated.
+
+    `category_id`: BigIntegerField()
+    Category ID of where tickets go.
+
+    `transcript_channel_id`: BigIntegerField()
+    Channel ID of where transcripts go.
+
+    `title`: TextField()
+    Title of the form.
+
+    `channel_identifier`: TextField()
+    The channel identifier of the ticket.
+
+    `button_label`: TextField()
+    The label of the button.
+
+    `role_id`: TextField()
+    Role ID of the role that can view the ticket.
+
+    `author_id`: BigIntegerField()
+    Owner of ticket configuration
+
+    `limit`: IntegerField()
+    Limit of tickets per user.
+
+    `questions`: TextField()
+    Questions that are asked in the ticket. | Default to None if not set.
+
+    `created_at`: DateTimeField()
+    DateTime object when ticket configuration was created.
+    """
+
+    id = AutoField()
+    guild_id = BigIntegerField()
+    channel_id = BigIntegerField()
+    category_id = BigIntegerField()
+    transcript_channel_id = BigIntegerField()
+    title = TextField()
+    channel_identifier = TextField()
+    button_label = TextField()
+    role_id = TextField()
+    author_id = BigIntegerField()
+    limit = IntegerField()
+    questions = TextField(default=None)
+    created_at = DateTimeField()
+
+
+class ApprovedSubDomains(BaseModel):
+    """
+    #ApprovedSubDomains
+
+    `id`: AutoField()
+    Database Entry
+
+    `sub_domain`: TextField()
+    Domain that is approved.
+
+    `author_id`: BigIntegerField()
+    Author ID of the user that requested the domain.
+    """
+
+    id = AutoField()
+    sub_domain = TextField()
+    author_id = BigIntegerField()
+
 
 app = Flask(__name__)
 
@@ -834,6 +917,14 @@ tables = {
     # "SetPuzzleSchedule": SetPuzzleSchedule,
     "CommandAnalytics": CommandAnalytics,
     "MGMTickets": MGMTickets,
+    "Ticket_Configuration": TicketConfiguration,
 }
 
 iter_table(tables)
+"""
+1. Please describe the item you need completed
+
+2. What department or team is this request for?
+
+3. Is there a final deadline for this request?
+"""

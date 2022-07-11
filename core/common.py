@@ -511,6 +511,18 @@ class StaffID:
 
     # *** Categories ***
     cat_private_vc = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_privatevc", 895041016057446411))
+    cat_staffapps_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_staffapps_tickets", 979485444364468345))
+    cat_announcements_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_announcements", 979485569337946192))
+
+    cat_promote_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_promote_tickets", 956297567346495568))
+    cat_fire_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_fire_tickets", 956297567346495568))
+    cat_censure_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_censure_tickets", 956297567346495568))
+    cat_break_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_ban_tickets", 992191587281027144))
+    cat_resignation_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_resignation_tickets", 992191685415145542))
+    cat_suggestions_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_suggestions_tickets", 992191996947083275))
+    cat_complaint_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_complaint_tickets", 992191762611327029))
+    cat_cs_hours_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_cs_hours_tickets", 992191874309828658))
+
 
     # *** Roles ***
     r_director = int(ConfigCatClient.STAFF_ID_CC.get_value("r_director", 891521034333880416))
@@ -679,7 +691,7 @@ class TutID:
 
     # *** Channels ***
     ch_bot_commands = int(ConfigCatClient.TUT_ID_CC.get_value("ch_botcommands", 862480236965003275))
-    ch_hour_logs = int(ConfigCatClient.TUT_ID_CC.get_value("ch_hourlogs", 873326994220265482))
+    ch_hour_logs = int(ConfigCatClient.TUT_ID_CC.get_value("ch_hourlogs", 953454389652226068))
     ch_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_announcements", 861711851330994247))
     ch_leadership_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_leadershipannouncements",
                                                                           861712109757530112))
@@ -1118,6 +1130,161 @@ EmailSelectOptions = [
     )
 ]
 
+
+def create_ui_modal_class(conf_id):
+    query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == conf_id)
+    if query.exists():
+        query: database.TicketConfiguration = query.get()
+    else:
+        return None
+
+    class UIModal(ui.Modal, title=query.title):
+        def __init__(self, bot: commands.Bot, title: str, questions_l: str, conf_id: int):
+            super().__init__(timeout=None)
+            self.bot = bot
+            self.title = title
+            self.questions = str(questions_l).strip('][').split(', ')
+            self.conf_id = conf_id
+
+            self.question_obj = []
+            self.answers = []
+            self.create_ui_elements()
+
+        def create_ui_elements(self):
+            cache_list = []
+            for elem in self.questions:
+                cache_list.append(elem.strip("'"))
+            self.questions = cache_list
+
+            for question_e in self.questions:
+                element = self.add_item(
+                    ui.TextInput(
+                        label=question_e,
+                        required=True,
+                        style=discord.TextStyle.long
+                    )
+                )
+                self.question_obj.append(element)
+
+        async def submit(self, interaction: discord.Interaction):
+            for question_obj in self.question_obj:
+                self.answers.append(question_obj.value)
+            query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == self.conf_id)
+
+            if not query.exists():
+                return await interaction.response.send_message("Ticket configuration no longer exists!")
+            else:
+                query: database.TicketConfiguration = query.get()
+
+            if query.limit != 0:
+                lim_query = database.MGMTickets.select().where(
+                    (database.MGMTickets.configuration_id == self.conf_id)
+                    & (database.MGMTickets.authorID == interaction.user.id)
+                )
+
+                if lim_query.count() >= query.limit:
+                    return await interaction.response.send_message("You have hit the ticket limit for this "
+                                                                   "category, please close already open "
+                                                                   "tickets before opening a new one!")
+
+            ticket_server = self.bot.get_guild(query.guild_id)
+            ticket_category = discord.utils.get(ticket_server.categories, id=query.category_id)
+            member = interaction.guild.get_member(interaction.user.id)
+
+            ticket_channel = await ticket_category.create_text_channel(
+                f"{interaction.user.name}-{query.channel_identifier}",
+                topic=f"{interaction.user.name} | {interaction.user.id}\n{query.title}",
+                reason=f"Requested by {interaction.user.name} break",
+            )
+            query = database.MGMTickets.create(
+                ChannelID=ticket_channel.id,
+                authorID=interaction.user.id,
+                createdAt=datetime.now(),
+            )
+            query.save()
+
+            # make query.role_id into a list (comma seperated string) and add each role to the ticket channel
+            role_list = [int(e) if e.strip().isdigit() else e for e in query.role_id.split(',')]
+            for role in role_list:
+                role = discord.utils.get(ticket_server.roles, id=int(role))
+                try:
+                    await ticket_channel.set_permissions(role, read_messages=True, send_messages=True)
+                except discord.NotFound:
+                    pass
+
+            await ticket_channel.set_permissions(
+                member,
+                read_messages=True,
+                send_messages=True,
+            )
+            control_embed = discord.Embed(
+                title="Control Panel",
+                description="To end this ticket, click the lock button!",
+                color=discord.Colour.gold(),
+            )
+            LCB = discord.ui.View()
+            LCB.add_item(
+                ButtonHandler(
+                    style=discord.ButtonStyle.green,
+                    url=None,
+                    disabled=False,
+                    label="Lock",
+                    emoji="🔒",
+                    custom_id=f"mgm_ch_lock_menu:{query.id}",
+                )
+            )
+            LCM = await ticket_channel.send(
+                interaction.user.mention, embed=control_embed, view=LCB
+            )
+            await LCM.pin()
+            # make an embed that has the questions and answers
+            embed = discord.Embed(
+                title="Ticket Created",
+                description=f"{interaction.user.mention} has created a ticket in {ticket_channel.mention}",
+                color=discord.Colour.gold(),
+            )
+            for question_final_embed, answer in zip(self.questions, self.answers):
+                embed.add_field(name=question_final_embed, value=answer, inline=False)
+            embed.set_author(
+                name=interaction.user.name,
+                icon_url=interaction.user.avatar.url,
+            )
+            embed.set_footer(
+                text=f"ID: {interaction.user.id}"
+            )
+            await ticket_channel.send(embed=embed)
+            await interaction.response.send_message("Ticket created!")
+
+            await interaction.response.send_message(
+                content=f"{interaction.user.mention}, I've created a ticket for you!\n> {ticket_channel.mention}",
+                ephemeral=True,
+            )
+    return UIModal
+
+
+def create_ticket_button(conf_id):
+    query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == conf_id)
+    if query.exists():
+        query: database.TicketConfiguration = query.get()
+    else:
+        return None
+
+    class GlobalSubmitButton(discord.ui.View):
+        def __init__(self, modal_view) -> None:
+            super().__init__(timeout=None)
+            self.modal_view = modal_view
+            self.value = None
+
+        @discord.ui.button(label=query.button_label, style=discord.ButtonStyle.blurple, disabled=False, custom_id=f"cts_pers:{query.id}")
+        async def starts_commission(self, interaction: discord.Interaction, button: discord.ui.Button):
+            if self.modal_view is not None:
+                await interaction.response.send_modal(self.modal_view)
+            else:
+                await interaction.response.send_message("No modal found!")
+
+    return GlobalSubmitButton
+
+
 class HREmailDisabled(discord.ui.View):
     def __init__(self) -> None:
         super().__init__()
@@ -1145,7 +1312,7 @@ class HREmailConfirm(discord.ui.View):
         embed.colour = discord.Colour.green()
         temppass = get_random_string()
         if embed.fields[0].value == "G":
-            return await interaction.response.send("Error, not supported yet.\nYou'll need to contact a Super/User "
+            return await interaction.response.send_message("Error, not supported yet.\nYou'll need to contact a Super/User "
                                                    "Administrator to create this manually.", ephemeral=True)
         elif embed.fields[0].value == "T":
             firstname = embed.fields[4].value
@@ -1238,7 +1405,7 @@ class HREmailConfirm(discord.ui.View):
         await interaction.message.edit(embed=embed, view=HREmailDisabled())
         self.stop()
 
-    @discord.ui.button(label='Cancel', emoji="❌", style=discord.ButtonStyle.red, custom_id="temp_mgm_confirm")
+    @discord.ui.button(label='Cancel', emoji="❌", style=discord.ButtonStyle.red, custom_id="temp_mgm_cancel")
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message('Cancelling', ephemeral=True)
         embed = interaction.message.embeds[0]
@@ -1307,6 +1474,15 @@ class TEmailForm(ui.Modal, title="Email Address Requests"):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__(timeout=None)
         self.bot = bot
+        self.add_item(
+            discord.ui.Select(
+                placeholder="Email Type",
+                options=[
+                    discord.SelectOption(label="Group Email", value="G"),
+                    discord.SelectOption(label="Team Email", value="T"),
+                ],
+            )
+        )
 
     email_purpose = ui.TextInput(
         label="Purpose of Email",
@@ -1322,13 +1498,6 @@ class TEmailForm(ui.Modal, title="Email Address Requests"):
         max_length=1024,
     )
 
-    email_type = ui.TextInput(
-        label="Email Type",
-        style=discord.TextStyle.short,
-        placeholder="G for Group Email, T for Team Email",
-        max_length=1,
-    )
-
     team_name = ui.TextInput(
         label="Team Name",
         style=discord.TextStyle.short,
@@ -1337,6 +1506,7 @@ class TEmailForm(ui.Modal, title="Email Address Requests"):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
+        email_type = self.children[3].values[0]
         await interaction.response.send_message("Thank you for your submission, forwarding your request to HR!", ephemeral=True)
         hr_email: discord.TextChannel = self.bot.get_channel(HRID.ch_email_requests)
         embed = discord.Embed(
@@ -1346,10 +1516,10 @@ class TEmailForm(ui.Modal, title="Email Address Requests"):
         )
         account_type = {"G": "Group", "T": "Team"}
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
-        embed.add_field(name="Account Type", value=account_type[self.email_type.value], inline=False)
+        embed.add_field(name="Account Type", value=account_type[email_type], inline=False)
         embed.add_field(name="Email Purpose", value=self.email_purpose.value)
         embed.add_field(name="Desired Email", value=self.requested_address.value)
-        embed.add_field(name="Email Type", value=self.email_type.value)
+        embed.add_field(name="Email Type", value=email_type)
         embed.add_field(name="Team Name", value=self.team_name.value, inline=False)
         await hr_email.send(embed=embed, view=HREmailConfirm(self.bot))
 
@@ -1388,7 +1558,7 @@ class StaffApps(ui.Modal, title="Staff Applications"):
         counter_num.counter = counter_num.counter + 1
         counter_num.save()
 
-        category = discord.utils.get(interaction.guild.categories, id=979485444364468345)
+        category = discord.utils.get(interaction.guild.categories, id=StaffID.cat_staffapps_tickets)
         channel = await interaction.guild.create_text_channel(f"staff-apps-{num}", category=category)
 
         await channel.set_permissions(
@@ -1417,7 +1587,7 @@ class StaffApps(ui.Modal, title="Staff Applications"):
                 disabled=False,
                 label="Lock",
                 emoji="🔒",
-                custom_id="mgm_ch_lock",
+                custom_id="mgm_ch_lock_menu",
             )
         )
 
@@ -1450,18 +1620,33 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__(timeout=None)
         self.bot = bot
+        self.add_item(
+            discord.ui.Select(
+                placeholder="Where will this be published?",
+                options=[
+                    discord.SelectOption(label="For Staff", value="Staff"),
+                    discord.SelectOption(label="For the Public", value="Public"),
+                ]
+            )
+        )
 
     app_title = ui.TextInput(
-        label="Announcement Title",
+        label="Subject:",
         style=discord.TextStyle.short,
         max_length=1024,
     )
 
     team_name = ui.TextInput(
-        label="Team Name",
+        label="What team/dept. is this for?",
         style=discord.TextStyle.short,
         max_length=1024,
     )
+
+    """target_publication = ui.TextInput(
+        label="Where will this be published?",
+        style=discord.TextStyle.long,
+        max_length=1024,
+    )"""
 
     approval = ui.TextInput(
         label="Who approved this?",
@@ -1481,7 +1666,7 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
         counter_num.counter = counter_num.counter + 1
         counter_num.save()
 
-        category = discord.utils.get(interaction.guild.categories, id=979485569337946192)
+        category = discord.utils.get(interaction.guild.categories, id=StaffID.cat_announcements_tickets)
         channel = await interaction.guild.create_text_channel(f"staff-announce-{num}", category=category)
 
         await channel.set_permissions(
@@ -1510,7 +1695,7 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
                 disabled=False,
                 label="Lock",
                 emoji="🔒",
-                custom_id="mgm_ch_lock",
+                custom_id="mgm_ch_lock_menu",
             )
         )
 
@@ -1532,8 +1717,9 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
             timestamp=discord.utils.utcnow(),
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
-        embed.add_field(name="Team Name", value=self.app_title.value, inline=False)
-        embed.add_field(name="Application", value=self.team_name.value, inline=False)
+        embed.add_field(name="Subject", value=self.app_title.value, inline=False)
+        embed.add_field(name="Team Name", value=self.team_name.value, inline=False)
+        embed.add_field(name="Target Publication", value=self.children[3].values[0], inline=False)
         embed.add_field(name="Approved By", value=self.approval.value, inline=False)
         await channel.send(embed=embed)
 

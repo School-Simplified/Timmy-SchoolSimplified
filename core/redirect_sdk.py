@@ -5,11 +5,12 @@ import typing
 from datetime import datetime
 from typing import List, TYPE_CHECKING
 from urllib.parse import urlparse
+
 import requests
 from dotenv import load_dotenv
 
 if TYPE_CHECKING:
-    from main import Timmy
+    pass
 
 """[summary]
 
@@ -114,11 +115,12 @@ class RedirectClient:
                 )
         return list_of_data
 
-    def fetch_redirect(self, r_id: str) -> typing.Union[RedirectPizza, None]:
+    def fetch_redirect(self, r_id: str, subdomain: str = None) -> typing.Union[RedirectPizza, None]:
         """Fetches a redirect.
 
         Args:
             r_id (str): The URL code to fetch.
+            subdomain (str, optional): The subdomain to use. Defaults to None.
 
         Raises:
             InvalidAuth: Invalid authorization key passed in.
@@ -136,13 +138,19 @@ class RedirectClient:
         elif r.status_code == 404:
             if "ssimpl.org" not in r_id:
                 r_id = f"ssimpl.org/{r_id}"
+            elif subdomain is not None and "ssimpl.org" not in r_id:
+                r_id = f"{subdomain}.ssimpl.org/{r_id}"
+
             redirects = self.get_redirects()
             for redirect in redirects:
                 if redirect.source == r_id:
                     return redirect
 
         try:
-            full_url = r.json()["data"]["sources"]["url"]
+            if len(list(r.json()["data"]["sources"])) > 1:
+                full_url = r.json()["data"]["sources"][0]["url"]
+            else:
+                full_url = r.json()["data"]["sources"]["url"]
         except KeyError:
             return None
         parsed_domain = urlparse(full_url)
@@ -207,11 +215,12 @@ class RedirectClient:
             r.json()["data"]["created_at"],
         )
 
-    def del_redirect(self, id_or_path: str) -> int:
+    def del_redirect(self, id_or_path: str, sub_domain: str = None) -> int:
         """Deletes a redirect.
 
         Args:
             id_or_path (str): The URL code to delete.
+            sub_domain (str, optional): The subdomain to use. Defaults to None.
 
         Raises:
             InvalidAuth: Invalid authorization key passed in.
@@ -225,8 +234,10 @@ class RedirectClient:
         except ValueError:
             found = False
             self.get_redirects()
-            if "ssimpl.org" not in id_or_path:
+            if "ssimpl.org" not in id_or_path and sub_domain is None:
                 id_or_path = f"ssimpl.org/{id_or_path}"
+            elif sub_domain is not None and "ssimpl.org" not in id_or_path:
+                id_or_path = f"{sub_domain}.ssimpl.org/{id_or_path}"
             for redirect in self.get_redirects():
                 if redirect.source == id_or_path:
                     id_or_path = redirect.id

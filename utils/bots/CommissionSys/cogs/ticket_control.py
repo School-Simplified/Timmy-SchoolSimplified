@@ -2,20 +2,19 @@ import asyncio
 
 import discord
 from discord.ext import commands
-from core import database
-from core.common import ButtonHandler, Emoji, LeaderID
-from datetime import datetime
 
+from core import database
+from core.common import ButtonHandler, Emoji, LeaderID, StaffID
 from utils.events.TicketDropdown import TicketExport
 
 
 class MGMDropdownTickets(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.main_server = [955911166520082452, 824421093015945216]
+        self.main_server = [StaffID.g_staff_resources, StaffID.g_staff_mgm]
         self.response_channel_dict = {
-            955911166520082452: LeaderID.ch_com_log,
-            824421093015945216: 990311940989534229,
+            StaffID.g_staff_resources: LeaderID.ch_com_log,
+            StaffID.g_staff_mgm: 990311940989534229,
         }
 
 
@@ -30,23 +29,20 @@ class MGMDropdownTickets(commands.Cog):
             val = inter_response["custom_id"]
         except KeyError:
             return
+        query = database.TicketConfiguration.select().where(database.TicketConfiguration.guild_id == interaction.guild_id)
+        print(val)
 
         if (
-            interaction.guild_id in self.main_server
+            not query.exists()
             # and interaction.message.id == int(self.CHID_DEFAULT)
             and inter_response["custom_id"] == "persistent_view:mgm_ticketdrop"
         ):
             pass
-        elif val == "mgm_ch_lock":
+        elif "mgm_ch_lock_menu" in val:
             channel = interaction.message.channel
             guild = interaction.message.guild
             author = interaction.user
 
-            query = (
-                database.MGMTickets.select()
-                .where(database.MGMTickets.ChannelID == interaction.channel_id)
-                .get()
-            )
             embed = discord.Embed(
                 title="Confirm?",
                 description="Click an appropriate button.",
@@ -78,8 +74,11 @@ class MGMDropdownTickets(commands.Cog):
             except Exception:
                 await interaction.followup.send(f"{author.mention}\n", embed=embed, view=ButtonViews)
 
-
-        elif inter_response["custom_id"] == "mgm_ch_lock_CONFIRM":
+        elif "mgm_ch_lock_CONFIRM" in val:
+            if val == "mgm_ch_lock_CONFIRM" or val == "mgm_ch_lock_CONFIRM:NONE":
+                conf_id = "NONE"
+            else:
+                conf_id = val.split(":")[1]
             channel = interaction.message.channel
             guild = interaction.message.guild
             author = interaction.user
@@ -115,7 +114,7 @@ class MGMDropdownTickets(commands.Cog):
                 ButtonHandler(
                     style=discord.ButtonStyle.green,
                     label="Close & Delete Ticket",
-                    custom_id="mgm_ch_lock_C&D",
+                    custom_id=f"mgm_ch_lock_C&D:{conf_id}",
                     emoji="🔒",
                 )
             )
@@ -123,7 +122,7 @@ class MGMDropdownTickets(commands.Cog):
                 ButtonHandler(
                     style=discord.ButtonStyle.grey,
                     label="Re-Open Ticket",
-                    custom_id="mgm_ch_lock_R",
+                    custom_id=f"mgm_ch_lock_R:{conf_id}",
                     emoji="🔓",
                 )
             )
@@ -131,7 +130,7 @@ class MGMDropdownTickets(commands.Cog):
                 ButtonHandler(
                     style=discord.ButtonStyle.blurple,
                     label="Create Transcript",
-                    custom_id="mgm_ch_lock_T",
+                    custom_id=f"mgm_ch_lock_T{conf_id}",
                     emoji="📝",
                 )
             )
@@ -139,7 +138,7 @@ class MGMDropdownTickets(commands.Cog):
                 ButtonHandler(
                     style=discord.ButtonStyle.red,
                     label="Cancel",
-                    custom_id="mgm_ch_lock_C",
+                    custom_id=f"mgm_ch_lock_STOP{conf_id}",
                     emoji="❌",
                 )
             )
@@ -150,7 +149,7 @@ class MGMDropdownTickets(commands.Cog):
             except Exception:
                 await interaction.followup.send(author.mention, embed=embed, view=ButtonViews2)
 
-        elif inter_response["custom_id"] == "mgm_ch_lock_CANCEL":
+        elif "mgm_ch_lock_STOP" in val:
             channel = interaction.message.channel
             author = interaction.user
             try:
@@ -161,7 +160,7 @@ class MGMDropdownTickets(commands.Cog):
                 await interaction.followup.send(f"{author.mention} Alright, canceling request.", ephemeral=True)
             await interaction.message.delete()
 
-        elif inter_response["custom_id"] == "mgm_ch_lock_C":
+        elif "mgm_ch_lock_S" in val:
             channel = self.bot.get_channel(interaction.channel_id)
             author = interaction.user
 
@@ -175,7 +174,7 @@ class MGMDropdownTickets(commands.Cog):
                 )
             await interaction.message.delete()
 
-        elif inter_response["custom_id"] == "mgm_ch_lock_R":
+        elif "mgm_ch_lock_R" in val:
             """
             Re-open Ticket
             """
@@ -216,11 +215,18 @@ class MGMDropdownTickets(commands.Cog):
                     )
                 await interaction.message.delete()
 
-        elif inter_response["custom_id"] == "mgm_ch_lock_T":
+        elif "mgm_ch_lock_T" in val:
+            if val == "mgm_ch_lock_T" or val == "mgm_ch_lock_T:NONE":
+                conf_id = "NONE"
+                response_log_channel: discord.TextChannel = self.bot.get_channel(
+                    self.response_channel_dict[interaction.guild_id]
+                )
+            else:
+                conf_id = val.split(":")[1]
+                query = database.TicketConfiguration.select().where(database.TicketConfiguration.ID == conf_id).get()
+                response_log_channel: discord.TextChannel = self.bot.get_channel(query.transcript_channel_id)
             channel: discord.TextChannel = interaction.channel
-            response_log_channel: discord.TextChannel = self.bot.get_channel(
-                self.response_channel_dict[interaction.guild_id]
-            )
+
 
             author = interaction.user
             msg = await interaction.channel.send(
@@ -235,7 +241,7 @@ class MGMDropdownTickets(commands.Cog):
                 f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {S3_URL}"
             )
 
-        elif inter_response["custom_id"] == "mgm_ch_lock_C&D":
+        elif "mgm_ch_lock_C&D" in val:
             channel = self.bot.get_channel(interaction.channel_id)
             author = interaction.user
             response_log_channel: discord.TextChannel = self.bot.get_channel(
@@ -283,41 +289,6 @@ class MGMDropdownTickets(commands.Cog):
             await channel.send(f"{author.mention} Alright, closing ticket.")
             await channel.delete()
             query.delete_instance()
-
-    @commands.command()
-    async def mgmclose(self, ctx: commands.Context):
-        query = database.MGMTickets.select().where(
-            database.MGMTickets.ChannelID == ctx.channel.id
-        )
-        if query.exists():
-            query = query.get()
-            embed = discord.Embed(
-                title="Confirm?",
-                description="Click an appropriate button.",
-                color=discord.Colour.red(),
-            )
-            ButtonViews = discord.ui.View()
-            ButtonViews.add_item(
-                ButtonHandler(
-                    style=discord.ButtonStyle.green,
-                    label="Confirm",
-                    custom_id="mgm_ch_lock_CONFIRM",
-                    emoji="✅",
-                    button_user=ctx.author,
-                )
-            )
-            ButtonViews.add_item(
-                ButtonHandler(
-                    style=discord.ButtonStyle.red,
-                    label="Cancel",
-                    custom_id="mgm_ch_lock_CANCEL",
-                    emoji="❌",
-                    button_user=ctx.author,
-                )
-            )
-            await ctx.send(f"{ctx.author.mention}\n", embed=embed, view=ButtonViews)
-        else:
-            await ctx.send("Not a ticket.")
 
 
 async def setup(bot):

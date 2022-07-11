@@ -124,7 +124,10 @@ class TutorVCUpdate(commands.Cog):
         after: discord.VoiceState,
     ):
         database.db.connect(reuse_if_open=True)
-        print(self.LobbyStartIDs[member.guild.id])
+        try:
+            print(self.LobbyStartIDs[member.guild.id])
+        except KeyError:
+            return
         lobbyStart = member.guild.get_channel(self.LobbyStartIDs[member.guild.id])
         if lobbyStart == None:
             try:
