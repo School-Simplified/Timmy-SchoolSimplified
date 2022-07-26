@@ -5,7 +5,7 @@ from discord import ui, app_commands
 from discord.ext import commands, tasks
 
 from core import database
-from core.checks import is_botAdmin
+from core.checks import is_botAdmin, slash_is_bot_admin_3
 from core.common import TechID, Emoji, StaffID
 
 
@@ -222,15 +222,44 @@ class TechProjectCMD(commands.Cog):
     async def cog_unload(self):
         self.autoUnarchiveThread.cancel()
 
-    @commands.command()
-    @is_botAdmin
-    async def techEmbed(self, ctx):
-        message = ""
-        view = CommissionTechButton(self.bot)
-        await ctx.send(embed=embed, view=view)
+    @app_commands.command(
+        description="Change the status of a bot commission. | Only to be used by Bot Developer Staff."
+    )
+    @app_commands.guilds(StaffID.g_staff_resources)
+    @slash_is_bot_admin_3()
+    @app_commands.checks.cooldown(1, 5, key=lambda i: (i.guild_id, i.channel.id))
+    @app_commands.describe(status="Read options for the list of statuses.")
+    async def status_update(
+            self,
+            interaction: discord.Interaction,
+            status: Literal[
+                "⚪️ - Pending developer review; unclaimed.",
+                "🎯 - Claimed; used for internal tracking. ",
+                "🔴 - Extra information needed or not possible.",
+                "🟡 - In progress; working on the project.",
+                "🟢 - Complete; pending requestor to accept final product."
+            ]
+    ):
+        channel: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
+        thread: discord.Thread = interaction.channel
+
+        if not isinstance(thread, discord.Thread) or thread.parent_id != channel.id:
+            return await interaction.response.send_message(
+                "This is not a bot commission.", ephemeral=True
+            )
+        channel_name = thread.name.split("-")[1]
+        status = str(status)
+        l = status.split(" - ")
+        status = l[0]
+        definition = l[1]
+
+        await thread.edit(name=f"{status}-{channel_name}")
+        await interaction.response.send_message(
+            f"**{interaction.user.mention}** updated the status of this bot commission to {status} | `{definition}`"
+        )
 
     @app_commands.command()
-    @app_commands.guilds(TechID.g_tech)
+    @app_commands.guilds(StaffID.g_staff_resources)
     @app_commands.checks.cooldown(1, 300, key=lambda i: (i.guild_id, i.channel.id))
     async def commission(
         self, interaction: discord.Interaction, action: Literal["close"]

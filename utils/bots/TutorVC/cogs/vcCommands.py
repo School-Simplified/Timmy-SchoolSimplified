@@ -603,9 +603,8 @@ class TutorVCCMD(commands.Cog):
                     student = self.bot.get_user(tutorSession.StudentID)
                     tutor = self.bot.get_user(tutorSession.TutorID)
 
-                    try:
-                        HOURCH = self.bot.get_channel(self.TutorLogID)
-                    except Exception:
+                    HOURCH = self.bot.get_channel(self.TutorLogID)
+                    if HOURCH is None:
                         HOURCH = await self.bot.fetch_channel(self.TutorLogID)
 
                     hourlog = discord.Embed(
@@ -703,7 +702,7 @@ class TutorVCCMD(commands.Cog):
                     student = self.bot.get_user(tutorSession.StudentID)
                     tutor = self.bot.get_user(tutorSession.TutorID)
 
-                    HOURCH = self.bot.get_user(self.TutorLogID)
+                    HOURCH = await self.bot.fetch_channel(self.TutorLogID)
 
                     hourlog = discord.Embed(
                         title="Hour Log",

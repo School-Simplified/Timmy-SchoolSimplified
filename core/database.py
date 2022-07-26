@@ -828,6 +828,18 @@ class TicketConfiguration(BaseModel):
     `questions`: TextField()
     Questions that are asked in the ticket. | Default to None if not set.
 
+    `question_config` = TextField(default=None)
+    Question configuration. | Default to None if not set.
+
+    `q1_config` = TextField(default=None)
+    `q2_config` = TextField(default=None)
+    `q3_config` = TextField(default=None)
+    `q4_config` = TextField(default=None)
+    `q5_config` = TextField(default=None)
+    Question configuration. | Default to None if not set.
+    > Format: S/L , Char. Limit Min, Char. Limit Max
+
+
     `created_at`: DateTimeField()
     DateTime object when ticket configuration was created.
     """
@@ -844,6 +856,12 @@ class TicketConfiguration(BaseModel):
     author_id = BigIntegerField()
     limit = IntegerField()
     questions = TextField(default=None)
+    q1_config = TextField(default=None)
+    q2_config = TextField(default=None)
+    q3_config = TextField(default=None)
+    q4_config = TextField(default=None)
+    q5_config = TextField(default=None)
+    question_config = TextField(default=None)
     created_at = DateTimeField()
 
 

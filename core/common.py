@@ -515,13 +515,18 @@ class StaffID:
     cat_announcements_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_announcements", 979485569337946192))
 
     cat_promote_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_promote_tickets", 956297567346495568))
+    cat_demote_tickers = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_demote_tickets", 956297567346495568))
     cat_fire_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_fire_tickets", 956297567346495568))
+
     cat_censure_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_censure_tickets", 956297567346495568))
-    cat_break_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_ban_tickets", 992191587281027144))
+    cat_break_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_break_tickets", 992191587281027144))
     cat_resignation_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_resignation_tickets", 992191685415145542))
     cat_suggestions_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_suggestions_tickets", 992191996947083275))
     cat_complaint_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_complaint_tickets", 992191762611327029))
     cat_cs_hours_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_cs_hours_tickets", 992191874309828658))
+    cat_suggestion_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_suggestion_tickets", 992191996947083275))
+
+    cat_recruiting_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_recruiting_tickets", 997646929553018920))
 
 
     # *** Roles ***
@@ -580,7 +585,7 @@ class TechID:
     r_developer_manager = int(ConfigCatClient.TECH_ID_CC.get_value("r_developermanager", 805596419066822686))
     r_assistant_bot_dev_manager = int(ConfigCatClient.TECH_ID_CC.get_value("r_assistantbotdevmanager",
                                                                            816498160880844802))
-    r_bot_developer = int(ConfigCatClient.TECH_ID_CC.get_value("r_botdeveloper", 805610985594814475))
+    r_bot_developer = int(ConfigCatClient.TECH_ID_CC.get_value("r_botdeveloper", 997238819055222894))
 
 
 class SandboxConfig:
@@ -1146,8 +1151,19 @@ def create_ui_modal_class(conf_id):
             self.questions = str(questions_l).strip('][').split(', ')
             self.conf_id = conf_id
 
-            self.question_obj = []
+            self.question_obj: List[ui.TextInput] = []
             self.answers = []
+            self.index_to_config_dict = {
+                1: query.q1_config,
+                2: query.q2_config,
+                3: query.q3_config,
+                4: query.q4_config,
+                5: query.q5_config,
+            }
+            self.config_to_TextStyle_dict = {
+                "S": discord.TextStyle.short,
+                "L": discord.TextStyle.long,
+            }
             self.create_ui_elements()
 
         def create_ui_elements(self):
@@ -1155,20 +1171,40 @@ def create_ui_modal_class(conf_id):
             for elem in self.questions:
                 cache_list.append(elem.strip("'"))
             self.questions = cache_list
+            index = 1
 
             for question_e in self.questions:
-                element = self.add_item(
-                    ui.TextInput(
-                        label=question_e,
-                        required=True,
-                        style=discord.TextStyle.long
-                    )
-                )
-                self.question_obj.append(element)
+                # get q1.config and update config to match ui.TextInput arguments
+                config = self.index_to_config_dict[index]
+                print("yo")
+                if config is None or config == "":
+                    style = discord.TextStyle.long
+                    min_length = None
+                    max_length = None
+                    print("am not here")
+                else:
+                    print("am here")
+                    style, min_length, max_length = config.split(",")
+                    style = self.config_to_TextStyle_dict[style]
+                    print(style, min_length, max_length)
 
-        async def submit(self, interaction: discord.Interaction):
-            for question_obj in self.question_obj:
-                self.answers.append(question_obj.value)
+                text_input = ui.TextInput(
+                    label=question_e,
+                    required=True,
+                    style=style,
+                    min_length=min_length,
+                    max_length=max_length,
+                )
+                self.add_item(
+                    text_input
+                )
+                self.question_obj.append(text_input)
+                index += 1
+
+        async def on_submit(self, interaction: discord.Interaction):
+            for question in self.question_obj:
+                self.answers.append(question.value)
+
             query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == self.conf_id)
 
             if not query.exists():
@@ -1196,12 +1232,13 @@ def create_ui_modal_class(conf_id):
                 topic=f"{interaction.user.name} | {interaction.user.id}\n{query.title}",
                 reason=f"Requested by {interaction.user.name} break",
             )
-            query = database.MGMTickets.create(
+            cache_query = database.MGMTickets.create(
                 ChannelID=ticket_channel.id,
                 authorID=interaction.user.id,
                 createdAt=datetime.now(),
+                configuration_id=self.conf_id,
             )
-            query.save()
+            cache_query.save()
 
             # make query.role_id into a list (comma seperated string) and add each role to the ticket channel
             role_list = [int(e) if e.strip().isdigit() else e for e in query.role_id.split(',')]
@@ -1253,7 +1290,6 @@ def create_ui_modal_class(conf_id):
                 text=f"ID: {interaction.user.id}"
             )
             await ticket_channel.send(embed=embed)
-            await interaction.response.send_message("Ticket created!")
 
             await interaction.response.send_message(
                 content=f"{interaction.user.mention}, I've created a ticket for you!\n> {ticket_channel.mention}",

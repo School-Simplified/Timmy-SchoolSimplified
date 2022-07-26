@@ -103,7 +103,134 @@ class GSuiteButton(discord.ui.View):
         interaction: discord.Interaction,
         button: discord.ui.Button,
     ):
-        await interaction.followup.send_modal(GSuiteForm(self.bot))
+        await interaction.response.send_modal(GSuiteForm(self.bot))
+
+
+class RecruitmentForm(ui.Modal, title="Recruitment Request"):
+    def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(timeout=None)
+        self.bot = bot
+        self.add_item(
+            discord.ui.Select(
+                placeholder="How urgent is your request?",
+                options=[
+                    discord.SelectOption(label="LOW", value="LOW"),
+                    discord.SelectOption(label="MED", value="MED"),
+                    discord.SelectOption(label="HIGH", value="HIGH"),
+                    discord.SelectOption(label="CRIT", value="CRIT"),
+
+                ]
+            )
+        )
+
+        self.add_item(
+            discord.ui.Select(
+                placeholder="What rank is this position?",
+                options=[
+                    discord.SelectOption(label="Leadership", value="Leadership"),
+                    discord.SelectOption(label="Associate", value="Associate"),
+                ]
+            )
+        )
+
+    position_title = ui.TextInput(
+        label="What is the position title?",
+        style=discord.TextStyle.short,
+        max_length=100,
+    )
+
+    num_people = ui.TextInput(
+        label="How many people are needed?",
+        style=discord.TextStyle.short,
+        max_length=5,
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
+        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_recruiting_tickets)
+        member = interaction.guild.get_member(interaction.user.id)
+
+        ticket_channel = await ticket_category.create_text_channel(
+            f"{interaction.user.name}-recruitment-request",
+            topic=f"{interaction.user.name} | {interaction.user.id} recruitment-request",
+            reason=f"Requested by {interaction.user.name} recruitment-request",
+        )
+        query = database.MGMTickets.create(
+            ChannelID=ticket_channel.id,
+            authorID=interaction.user.id,
+            createdAt=datetime.now(),
+        )
+        query.save()
+
+        await ticket_channel.set_permissions(
+            discord.utils.get(mgm_server.roles, name="Human Resources"),
+            read_messages=True,
+            send_messages=True,
+            manage_messages=True,
+        )
+        await ticket_channel.set_permissions(
+            member,
+            read_messages=True,
+            send_messages=True,
+        )
+        control_embed = discord.Embed(
+            title="Control Panel",
+            description="To end this ticket, click the lock button!",
+            color=discord.Colour.gold(),
+        )
+        LCB = discord.ui.View()
+        LCB.add_item(
+            ButtonHandler(
+                style=discord.ButtonStyle.green,
+                url=None,
+                disabled=False,
+                label="Lock",
+                emoji="🔒",
+                custom_id="mgm_ch_lock_menu",
+            )
+        )
+        LCM = await ticket_channel.send(
+            interaction.user.mention, embed=control_embed, view=LCB
+        )
+        await LCM.pin()
+        embed_information = discord.Embed(
+            title="Recruitment Request",
+            description=f"User: {member.mention}\n"
+                        f"**Position Title:** {self.position_title.value}\n"
+                        f"**Ranking:** {self.children[0].value}\n"
+                        f"**People Needed:** {self.num_people.value}\n"
+                        f"**Urgency:** {self.children[1].value}",
+            color=discord.Colour.gold(),
+        )
+        embed_information.set_author(
+            name=interaction.user.name,
+            icon_url=interaction.user.avatar.url,
+        )
+        embed_information.set_footer(
+            text=f"ID: {interaction.user.id}"
+        )
+        await ticket_channel.send(embed=embed_information)
+        await interaction.response.send("Your ticket has been created!\nYou can view it here: <#{ticket_channel.id}>")
+
+
+class RecruitmentButton(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.value = None
+        self.bot = bot
+
+    @discord.ui.button(
+        label="Start Recruitment Request",
+        style=discord.ButtonStyle.blurple,
+        custom_id="persistent_view:recruit_form",
+        emoji="📝",
+    )
+    async def verify(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
+    ):
+        await interaction.response.send_modal(RecruitmentForm(self.bot))
 
 
 class AdminAPI(commands.Cog):
@@ -275,6 +402,14 @@ class AdminAPI(commands.Cog):
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
         ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_promote_tickets)
         member = interaction.guild.get_member(interaction.user.id)
+        if member is None:
+            try:
+                member = await interaction.guild.fetch_member(interaction.user.id)
+            except discord.errors.NotFound:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} You must be in the server to create a resignation request.\nIf you "
+                    f"are not a manager+, please DM someone from HR! "
+                )
 
         ticket_channel = await ticket_category.create_text_channel(
             f"{user.name}-promotion",
@@ -387,6 +522,14 @@ class AdminAPI(commands.Cog):
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
         ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_fire_tickets)
         member = interaction.guild.get_member(interaction.user.id)
+        if member is None:
+            try:
+                member = await interaction.guild.fetch_member(interaction.user.id)
+            except discord.errors.NotFound:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} You must be in the server to create a resignation request.\nIf you "
+                    f"are not a manager+, please DM someone from HR! "
+                )
 
         ticket_channel = await ticket_category.create_text_channel(
             f"{user.name}-firing",
@@ -509,6 +652,14 @@ class AdminAPI(commands.Cog):
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
         ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_censure_tickets)
         member = interaction.guild.get_member(interaction.user.id)
+        if member is None:
+            try:
+                member = await interaction.guild.fetch_member(interaction.user.id)
+            except discord.errors.NotFound:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} You must be in the server to create a resignation request.\nIf you "
+                    f"are not a manager+, please DM someone from HR! "
+                )
 
         ticket_channel = await ticket_category.create_text_channel(
             f"{user.name}-censure",
@@ -586,6 +737,151 @@ class AdminAPI(commands.Cog):
         )
 
     @app_commands.command(
+        name="strike",
+        description="Create a strike request to HR.",
+    )
+    @app_commands.guilds(discord.Object(954104500388511784), discord.Object(932066545117585428),
+                         discord.Object(950799439625355294), discord.Object(953433561178968104),
+                         discord.Object(950813235588780122), discord.Object(952294235028201572),
+                         discord.Object(952287046750310440), discord.Object(950799370855518268),
+                         discord.Object(950799485901107270), discord.Object(951595352090374185),
+                         discord.Object(950795656853876806), discord.Object(955911166520082452),
+                         discord.Object(824421093015945216), discord.Object(815753072742891532),
+                         discord.Object(891521033700540457))
+    @app_commands.describe(
+        user="Select the user you want to strike.",
+        reason="Enter the reason for the strike.",
+        department="Select the department this user is in.",
+        evidence_text="Enter any *textual* evidence* for the strike.",
+        evidence_url="Upload any attachment relating to the strike.",
+    )
+    async def censure(
+            self,
+            interaction: discord.Interaction,
+            user: discord.User,
+            reason: str,
+            department: str,
+            evidence_text: str = None,
+            evidence_url: discord.Attachment = None
+    ):
+        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
+        manager_role = discord.utils.get(mgm_server.roles, name="Manager")
+
+        try:
+            user_in_mgm = await mgm_server.fetch_member(interaction.user.id)
+        except discord.errors.NotFound:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} I can't seem to verify you are a manager, please contact HR for assistance."
+            )
+
+        if user.bot:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You cannot strike a bot."
+            )
+
+        if user == interaction.user:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You cannot strike yourself."
+            )
+
+        if not reason:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You must enter a reason for the strike."
+            )
+
+        if user_in_mgm.top_role.position < manager_role.position:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} This command is only for managers+, contact HR for more information."
+            )
+
+        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_censure_tickets)
+        member = interaction.guild.get_member(interaction.user.id)
+        if member is None:
+            try:
+                member = await interaction.guild.fetch_member(interaction.user.id)
+            except discord.errors.NotFound:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} You must be in the server to create a resignation request.\nIf you "
+                    f"are not a manager+, please DM someone from HR! "
+                )
+
+        ticket_channel = await ticket_category.create_text_channel(
+            f"{user.name}-strike",
+            topic=f"{user.name} | {user.id} strike",
+            reason=f"Requested by {interaction.user.name} strike",
+        )
+        query = database.MGMTickets.create(
+            ChannelID=ticket_channel.id,
+            authorID=interaction.user.id,
+            createdAt=datetime.now(),
+        )
+        query.save()
+
+        await ticket_channel.set_permissions(
+            discord.utils.get(mgm_server.roles, name="Human Resources"),
+            read_messages=True,
+            send_messages=True,
+            manage_messages=True,
+        )
+        await ticket_channel.set_permissions(
+            member,
+            read_messages=True,
+            send_messages=True,
+            manage_messages=True,
+        )
+        control_embed = discord.Embed(
+            title="Control Panel",
+            description="To end this ticket, click the lock button!",
+            color=discord.Colour.gold(),
+        )
+
+        LCB = discord.ui.View()
+        LCB.add_item(
+            ButtonHandler(
+                style=discord.ButtonStyle.green,
+                url=None,
+                disabled=False,
+                label="Lock",
+                emoji="🔒",
+                custom_id="mgm_ch_lock_menu",
+            )
+        )
+        LCM = await ticket_channel.send(
+            interaction.user.mention, embed=control_embed, view=LCB
+        )
+        await LCM.pin()
+        if evidence_text is None:
+            evidence_text = "No evidence provided."
+
+        if evidence_url is None:
+            evidence_url = "No evidence provided."
+        else:
+            evidence_url = evidence_url.url
+        embed_information = discord.Embed(
+            title="Strike Request",
+            description=f"User: {user.mention}\n"
+                        f"**Reason:** {reason}\n"
+                        f"**Department:** {department}\n"
+                        f"**Evidence:** {evidence_text}\n"
+                        f"**Evidence URL:** {evidence_url}",
+            color=discord.Colour.gold(),
+        )
+        embed_information.set_author(
+            name=interaction.user.name,
+            icon_url=interaction.user.avatar.url,
+        )
+        embed_information.set_footer(
+            text=f"ID: {interaction.user.id}"
+        )
+        await ticket_channel.send(embed=embed_information)
+        await interaction.response.send_message(
+            content=f"""{interaction.user.mention} Successfully created a strike request for **{user.name}**.\n
+                **Reason:** {reason}\n
+                You can view the ticket here: {ticket_channel.mention}""",
+            ephemeral=True,
+        )
+
+    @app_commands.command(
         name="break",
         description="Create a break request to HR.",
     )
@@ -619,6 +915,14 @@ class AdminAPI(commands.Cog):
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
         ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_break_tickets)
         member = interaction.guild.get_member(interaction.user.id)
+        if member is None:
+            try:
+                member = await interaction.guild.fetch_member(interaction.user.id)
+            except discord.errors.NotFound:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} You must be in the server to create a resignation request.\nIf you "
+                    f"are not a manager+, please DM someone from HR! "
+                )
 
         ticket_channel = await ticket_category.create_text_channel(
             f"{interaction.user.name}-break",
@@ -717,6 +1021,15 @@ class AdminAPI(commands.Cog):
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
         ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_resignation_tickets)
         member = interaction.guild.get_member(interaction.user.id)
+        if member is None:
+            try:
+                member = await interaction.guild.fetch_member(interaction.user.id)
+            except discord.errors.NotFound:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} You must be in the server to create a resignation request.\nIf you "
+                    f"are not a manager+, please DM someone from HR! "
+                )
+
 
         ticket_channel = await ticket_category.create_text_channel(
             f"{interaction.user.name}-resignation",
@@ -811,6 +1124,14 @@ class AdminAPI(commands.Cog):
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
         ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_suggestion_tickets)
         member = interaction.guild.get_member(interaction.user.id)
+        if member is None:
+            try:
+                member = await interaction.guild.fetch_member(interaction.user.id)
+            except discord.errors.NotFound:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} You must be in the server to create a resignation request.\nIf you "
+                    f"are not a manager+, please DM someone from HR! "
+                )
 
         ticket_channel = await ticket_category.create_text_channel(
             f"{interaction.user.name}-suggestion",
@@ -905,6 +1226,14 @@ class AdminAPI(commands.Cog):
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
         ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_complaint_tickets)
         member = interaction.guild.get_member(interaction.user.id)
+        if member is None:
+            try:
+                member = await interaction.guild.fetch_member(interaction.user.id)
+            except discord.errors.NotFound:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} You must be in the server to create a resignation request.\nIf you "
+                    f"are not a manager+, please DM someone from HR! "
+                )
 
         ticket_channel = await ticket_category.create_text_channel(
             f"{interaction.user.name}-complaint",
@@ -998,7 +1327,7 @@ class AdminAPI(commands.Cog):
         hours="Enter the number of hours you want to request.",
         form_link="Paste your form link here.",
     )
-    async def cs_hours(self, interaction: discord.Interaction, team: str, hours: int, form_link: str = "None provided"):
+    async def cs_hours(self, interaction: discord.Interaction, team: str, hours: int, form_link: str):
         if not team:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You must enter a team."
@@ -1011,9 +1340,19 @@ class AdminAPI(commands.Cog):
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You must enter a form link."
             )
+
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
         ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_cs_hours_tickets)
         member = interaction.guild.get_member(interaction.user.id)
+
+        if member is None:
+            try:
+                member = await interaction.guild.fetch_member(interaction.user.id)
+            except discord.errors.NotFound:
+                return await interaction.response.send_message(
+                    f"{interaction.user.mention} You must be in the server to create a resignation request.\nIf you "
+                    f"are not a manager+, please DM someone from HR! "
+                )
 
         ticket_channel = await ticket_category.create_text_channel(
             f"{interaction.user.name}-cs-hours",
@@ -1095,14 +1434,16 @@ class AdminAPI(commands.Cog):
         force="Force a nickname change regardless, maybe they disguised furry??? | Only works on targeted users.",
     )
     async def furry_raid(self, interaction: discord.Interaction, user: discord.User = None, force: bool = False):
-        stupid = ["furry", "kitten", "meow", "daddy", "fruity"]
+        # TODO: Make sure to check if the username translates to furry in a different language
+
+        stupid = ["furry", "kitten", "meow", "daddy", "fruity", "gato"]
         user_count = 0
         await interaction.response.defer()
 
         if not user:
             for member in interaction.guild.members:
                 for element in stupid:
-                    if element in member.display_name and not user.bot:
+                    if element in member.display_name and not member.bot and member.id != 409152798609899530:
                         user_count += 1
                         try:
                             await member.edit(nick="name seized by anti-furry police")
@@ -1151,6 +1492,7 @@ class AdminAPI(commands.Cog):
                     await interaction.followup.send(
                         f"{interaction.user.mention}: {user.mention} has been raided by the anti-furry police."
                     )
+
 
 
 

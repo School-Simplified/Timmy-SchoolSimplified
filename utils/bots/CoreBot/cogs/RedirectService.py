@@ -90,11 +90,11 @@ class RedirectURL(commands.Cog):
     @app_commands.command(name="redirect-remove", description="Remove a redirect.")
     @app_commands.describe(
         redirect_id="Specify an ID or URL PATH to remove a redirect.",
-        sub_domain="Specify the subdomain if using URL Path to remove a redirect.",
+        subdomain="Specify the subdomain if using URL Path to remove a redirect.",
     )
     @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
-    async def rr(self, interaction: discord.Interaction, redirect_id: str, sub_domain: str = None):
-        self.raOBJ.del_redirect(redirect_id, sub_domain)
+    async def rr(self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None):
+        self.raOBJ.del_redirect(redirect_id, subdomain)
         await interaction.response.send_message(f"Redirect removed for {redirect_id}\n{sub_domain}")
 
     @app_commands.command(name="redirect-list", description="List all redirects.")
@@ -117,11 +117,14 @@ class RedirectURL(commands.Cog):
         await RoboPages(source, bot=self.bot, interaction=interaction, compact=True).start()
 
     @app_commands.command(name="redirect-info", description="Get information about a specific redirect.")
-    @app_commands.describe(redirect_id="Specify an ID or URL PATH to get info about a redirect.")
+    @app_commands.describe(
+        redirect_id="Specify an ID or URL PATH to get info about a redirect.",
+        subdomain="Specify the subdomain if using URL Path to get info about a redirect."
+    )
     @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
-    async def ri(self, interaction: discord.Interaction, redirect_id: str):
+    async def ri(self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None):
         await interaction.response.defer(thinking=True)
-        obj = self.raOBJ.fetch_redirect(redirect_id)
+        obj = self.raOBJ.fetch_redirect(redirect_id, subdomain)
         if obj is None:
             return await interaction.followup.send(f"Redirect not found for {redirect_id}")
         embed = discord.Embed(

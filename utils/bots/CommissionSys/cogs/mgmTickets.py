@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal, List
 
 import discord
 from discord import ui, app_commands
@@ -9,6 +10,9 @@ from core.checks import is_botAdmin
 from core.common import Emoji, MGMCommissionButton, EmailDropdown, create_ui_modal_class, \
     create_ticket_button, TechID, StaffID
 
+
+def text_to_list(hashtags):
+    return hashtags.strip('[]').replace('\'', '').split(',')
 
 class QuestionInput(ui.Modal, title="Submit Questions here!"):
     def __init__(self, bot: commands.Bot, title: str, channel_name: str, button_label: str, category_id: int, channel_id: int, transcript_channel: int, role_id: str, limit: int = None) -> None:
@@ -134,8 +138,6 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
             await interaction.response.send_message(embed=embed)
 
 
-
-
 class MGMTickets(commands.Cog):
     """
     Commands for bot commissions
@@ -162,7 +164,9 @@ class MGMTickets(commands.Cog):
             view = EmailDropdown(self.bot)
             await ctx.send("Testing Mode", view=view)
 
-    @app_commands.command(
+    CTS = app_commands.Group(name="cts", description="Custom Ticket System Commands", guild_ids=[TechID.g_tech, StaffID.g_staff_resources])
+
+    @CTS.command(
         name="setup_tickets",
         description="Setup tickets for a category",
     )
@@ -176,11 +180,8 @@ class MGMTickets(commands.Cog):
         role_id="Role IDs (seperated by commas) that will be able to view tickets",
         limit="The limit of tickets that can be created per person, leave blank for no limit",
     )
-    @app_commands.guilds(
-        discord.Object(TechID.g_tech), discord.Object(StaffID.g_staff_resources)
-    )
     @is_botAdmin
-    async def setup_tickets(
+    async def setup(
             self,
             interaction: discord.Interaction,
             title: str,
@@ -217,19 +218,24 @@ class MGMTickets(commands.Cog):
             limit
         ))
 
-    @app_commands.command(
+    @CTS.command(
         name="send_button",
         description="Send a pre-configured ticket button",
-    )
-    @app_commands.guilds(
-        discord.Object(TechID.g_tech), discord.Object(StaffID.g_staff_resources)
     )
     @app_commands.describe(
         configuration_id="The configuration ID that corresponds to the button.",
         channel="Where the button will be sent; leave blank to send it to the channel it was configured with.",
+        message_id="If you are providing a message ID, channel must be filled out too. This will edit the message to "
+                   "include the button in the same message. "
     )
     @is_botAdmin
-    async def send_button(self, interaction: discord.Interaction, configuration_id: int, channel: discord.TextChannel = None):
+    async def send_button(
+            self,
+            interaction: discord.Interaction,
+            configuration_id: int,
+            channel: discord.TextChannel = None,
+            message_id: str = None
+    ):
         """
         Send a pre-configured ticket button
 
@@ -247,18 +253,227 @@ class MGMTickets(commands.Cog):
         UIButton = create_ticket_button(query.id)
         submit_button = UIButton(modal)
 
-        if channel is None:
+        if channel is None and message_id is None:
             ticket_start_channel = self.bot.get_channel(query.channel_id)
-        else:
+            await ticket_start_channel.send(
+                "** **", view=submit_button
+            )
+        elif message_id is not None and channel is None:
+            return await interaction.response.send_message("You must provide a channel (the channel where the message "
+                                                           "is in) if you are providing a message ID")
+        elif channel is not None and message_id is None:
             ticket_start_channel = channel
+            await ticket_start_channel.send(
+                "** **", view=submit_button
+            )
+        elif channel is not None and message_id is not None:
+            ticket_start_channel = channel
+            try:
+                message = await ticket_start_channel.fetch_message(message_id)
+            except:
+                return await interaction.response.send_message("Invalid message ID")
+            await message.edit(view=submit_button)
 
         await interaction.response.send_message("Sent!", ephemeral=True)
 
-        await ticket_start_channel.send(
-            "** **", view=submit_button
-        )
+    @CTS.command(
+        name="edit_modal",
+        description="Edit a pre-configured ticket's questions.",
+    )
+    @app_commands.describe(
+        configuration_id="The configuration ID that corresponds to the button.",
+        edit_mode="If you are editing the actual questions itself, select Edit Questions. If you would like to edit "
+                  "attributes such as min length, max length, or field type, select Edit Attributes.",
+    )
+    @is_botAdmin
+    async def edit_modal(
+            self,
+            interaction: discord.Interaction,
+            configuration_id: int,
+            edit_mode: Literal["Edit Questions", "Edit Attributes"]
+    ):
+        """
+        Edit a pre-configured ticket button
 
+        configuration_id: The configuration ID that corresponds to the button
+        """
+        query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == configuration_id)
+        if not query.exists():
+            return await interaction.response.send_message("Invalid configuration ID")
+        query = query.get()
 
+        questions = text_to_list(query.questions)
+        if edit_mode == "Edit Questions":
+
+            class QuestionEdit(ui.Modal, title=query.title):
+                def __init__(self, bot: commands.Bot):
+                    super().__init__(timeout=None)
+                    self.bot = bot
+                    self.title = query.title
+                    self.questions = questions
+                    self.conf_id = query.id
+
+                    self.question_obj: List[ui.TextInput] = []
+                    self.answers = []
+                    self.create_ui_elements()
+
+                def create_ui_elements(self):
+                    """cache_list = []
+                    for elem in self.questions:
+                        cache_list.append(elem.strip("'"))
+                    self.questions = cache_list"""
+                    index = 1
+
+                    for question_e in self.questions:
+                        text_input = ui.TextInput(
+                            label=f"Question {index}",
+                            required=True,
+                            style=discord.TextStyle.long,
+                            max_length=45,
+                            placeholder=question_e
+                        )
+                        self.add_item(
+                            text_input
+                        )
+                        self.question_obj.append(text_input)
+                        index += 1
+
+                async def on_submit(self, interaction_i: discord.Interaction):
+                    for question in self.question_obj:
+                        self.answers.append(question.value)
+
+                    # Update the database with new questions
+                    query.questions = self.answers
+                    query.save()
+
+                    await interaction_i.response.send_message("Updated Questions!")
+
+            modal = QuestionEdit(self.bot)
+            await interaction.response.send_modal(modal)
+
+        elif edit_mode == "Edit Question Attributes":
+
+            class QuestionAttributesEdit(ui.Modal, title=query.title):
+                def __init__(self, bot: commands.Bot):
+                    super().__init__(timeout=None)
+                    self.bot = bot
+                    self.title = query.title
+                    self.questions = questions
+                    self.conf_id = query.id
+
+                    self.question_obj: List[ui.TextInput] = []
+                    self.answers = []
+                    self.create_ui_elements()
+
+                def create_ui_elements(self):
+                    """cache_list = []
+                    for elem in self.questions:
+                        cache_list.append(elem.strip("'"))
+                    self.questions = cache_list"""
+
+                    for question_e in self.questions:
+                        print(question_e)
+                        text_input = ui.TextInput(
+                            label=question_e,
+                            required=True,
+                            style=discord.TextStyle.short,
+                            max_length=75,
+                            placeholder="S/L, Char. Limit Min, Char. Limit Max"
+                        )
+                        self.add_item(
+                            text_input
+                        )
+                        self.question_obj.append(text_input)
+
+                async def on_submit(self, interaction_i: discord.Interaction):
+                    index = 1
+                    for question in self.question_obj:
+                        print(index, question.value)
+                        self.answers.append(question.value)
+                        if index == 1:
+                            query.q1_config = question.value
+                        elif index == 2:
+                            query.q2_config = question.value
+                        elif index == 3:
+                            query.q3_config = question.value
+                        elif index == 4:
+                            query.q4_config = question.value
+                        elif index == 5:
+                            query.q5_config = question.value
+                        query.save()
+                        index += 1
+
+                    await interaction_i.response.send_message("Updated Question Configs!")
+
+            modal = QuestionAttributesEdit(self.bot)
+            await interaction.response.send_modal(modal)
+
+    @CTS.command(
+        name="edit_config",
+        description="Edit a pre-configured ticket's config.",
+    )
+    @app_commands.describe(
+        configuration_id="The configuration ID that corresponds to the button.",
+        element="The element to edit. Valid elements are: title, channel_identifier, button_label, category_id, "
+                "start_channel, transcript_channel, role_id, limit",
+        value="The new value for the element.",
+    )
+    @is_botAdmin
+    async def edit_modal(
+            self,
+            interaction: discord.Interaction,
+            configuration_id: int,
+            element: Literal["title", "channel_identifier", "button_label", "category_id", "start_channel",
+                             "transcript_channel", "role_id", "limit"],
+            value: str,
+    ):
+        """
+        Edit a pre-configured ticket button
+
+        configuration_id: The configuration ID that corresponds to the button
+        """
+        query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == configuration_id)
+        if not query.exists():
+            return await interaction.response.send_message("Invalid configuration ID")
+        query = query.get()
+
+        if element == "title":
+            query.title = value
+        elif element == "channel_identifier":
+            query.channel_identifier = value
+        elif element == "button_label":
+            query.button_label = value
+        elif element == "category_id":
+            try:
+                value = int(value)
+            except:
+                return await interaction.response.send_message("Invalid category ID")
+            query.category_id = value
+        elif element == "start_channel":
+            try:
+                value = int(value)
+            except:
+                return await interaction.response.send_message("Invalid channel ID")
+            query.start_channel = value
+        elif element == "transcript_channel":
+            try:
+                value = int(value)
+            except:
+                return await interaction.response.send_message("Invalid channel ID")
+            query.transcript_channel = value
+        elif element == "role_id":
+            query.role_id = value
+        elif element == "limit":
+            try:
+                value = int(value)
+            except:
+                return await interaction.response.send_message("Invalid limit")
+            query.limit = value
+        else:
+            return await interaction.response.send_message("Invalid element")
+        query.save()
+
+        await interaction.response.send_message(f"Updated field {element} to {value}")
 
 
 async def setup(bot: commands.Bot):

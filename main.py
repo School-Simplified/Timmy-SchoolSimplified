@@ -114,6 +114,7 @@ class Timmy(commands.Bot):
                 except commands.ExtensionNotFound:
                     raise commands.ExtensionNotFound(ext)
                 bar()
+                calue = r"/r"
 
     async def is_owner(self, user: discord.User):
         admin_ids = []
@@ -160,6 +161,6 @@ if os.getenv("DSN_SENTRY") is not None:
     )
 
 
-
 initializeDB(bot)
+
 bot.run(os.getenv("TOKEN"))

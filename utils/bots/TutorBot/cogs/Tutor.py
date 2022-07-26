@@ -462,7 +462,7 @@ class TutorBotStaffCMD(commands.Cog):
                     description="This session does exist, but you are not the owner of it!",
                     color=discord.Color.red(),
                 )
-            await interaction.response.send_message(embed=embed)
+                await interaction.response.send_message(embed=embed)
         else:
             embed = discord.Embed(
                 title="Invalid Session",

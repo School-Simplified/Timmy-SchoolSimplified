@@ -39,6 +39,16 @@ class MGMDropdownTickets(commands.Cog):
         ):
             pass
         elif "mgm_ch_lock_menu" in val:
+            if val == "mgm_ch_lock_menu" or val == "mgm_ch_lock_menu:NONE" or val == "mgm_ch_lock_menu:None":
+                query = database.MGMTickets.select().where(database.MGMTickets.ChannelID == interaction.channel_id)
+                if query.exists():
+                    query = query.get()
+                    conf_id = query.configuration_id
+                else:
+                    conf_id = "NONE"
+            else:
+                conf_id = val.split(":")[1]
+
             channel = interaction.message.channel
             guild = interaction.message.guild
             author = interaction.user
@@ -53,7 +63,7 @@ class MGMDropdownTickets(commands.Cog):
                 ButtonHandler(
                     style=discord.ButtonStyle.green,
                     label="Confirm",
-                    custom_id="mgm_ch_lock_CONFIRM",
+                    custom_id="mgm_ch_lock_CONFIRM:{}".format(str(conf_id)),
                     emoji="✅",
                     button_user=author,
                 )
@@ -62,7 +72,7 @@ class MGMDropdownTickets(commands.Cog):
                 ButtonHandler(
                     style=discord.ButtonStyle.red,
                     label="Cancel",
-                    custom_id="mgm_ch_lock_CANCEL",
+                    custom_id="mgm_ch_lock_CANCEL:{}".format(str(conf_id)),
                     emoji="❌",
                     button_user=author,
                 )
@@ -75,7 +85,7 @@ class MGMDropdownTickets(commands.Cog):
                 await interaction.followup.send(f"{author.mention}\n", embed=embed, view=ButtonViews)
 
         elif "mgm_ch_lock_CONFIRM" in val:
-            if val == "mgm_ch_lock_CONFIRM" or val == "mgm_ch_lock_CONFIRM:NONE":
+            if val == "mgm_ch_lock_CONFIRM" or val == "mgm_ch_lock_CONFIRM:NONE" or val == "mgm_ch_lock_CONFIRM:None":
                 conf_id = "NONE"
             else:
                 conf_id = val.split(":")[1]
@@ -130,7 +140,7 @@ class MGMDropdownTickets(commands.Cog):
                 ButtonHandler(
                     style=discord.ButtonStyle.blurple,
                     label="Create Transcript",
-                    custom_id=f"mgm_ch_lock_T{conf_id}",
+                    custom_id=f"mgm_ch_lock_T:{conf_id}",
                     emoji="📝",
                 )
             )
@@ -138,7 +148,7 @@ class MGMDropdownTickets(commands.Cog):
                 ButtonHandler(
                     style=discord.ButtonStyle.red,
                     label="Cancel",
-                    custom_id=f"mgm_ch_lock_STOP{conf_id}",
+                    custom_id=f"mgm_ch_lock_STOP:{conf_id}",
                     emoji="❌",
                 )
             )
@@ -216,17 +226,17 @@ class MGMDropdownTickets(commands.Cog):
                 await interaction.message.delete()
 
         elif "mgm_ch_lock_T" in val:
-            if val == "mgm_ch_lock_T" or val == "mgm_ch_lock_T:NONE":
+            if val == "mgm_ch_lock_T" or val == "mgm_ch_lock_T:NONE" or val == "mgm_ch_lock_T:None":
                 conf_id = "NONE"
                 response_log_channel: discord.TextChannel = self.bot.get_channel(
                     self.response_channel_dict[interaction.guild_id]
                 )
             else:
+                print(val)
                 conf_id = val.split(":")[1]
                 query = database.TicketConfiguration.select().where(database.TicketConfiguration.ID == conf_id).get()
                 response_log_channel: discord.TextChannel = self.bot.get_channel(query.transcript_channel_id)
             channel: discord.TextChannel = interaction.channel
-
 
             author = interaction.user
             msg = await interaction.channel.send(
@@ -242,11 +252,19 @@ class MGMDropdownTickets(commands.Cog):
             )
 
         elif "mgm_ch_lock_C&D" in val:
+            if val == "mgm_ch_lock_C&D" or val == "mgm_ch_lock_C&D:NONE" or val == "mgm_ch_lock_C&D:None":
+                conf_id = "NONE"
+                response_log_channel: discord.TextChannel = self.bot.get_channel(
+                    self.response_channel_dict[interaction.guild_id]
+                )
+            else:
+                print(val)
+                conf_id = val.split(":")[1]
+                query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == conf_id).get()
+                response_log_channel: discord.TextChannel = self.bot.get_channel(query.transcript_channel_id)
+
             channel = self.bot.get_channel(interaction.channel_id)
             author = interaction.user
-            response_log_channel: discord.TextChannel = self.bot.get_channel(
-                self.response_channel_dict[interaction.guild_id]
-            )
             query = (
                 database.MGMTickets.select()
                 .where(database.MGMTickets.ChannelID == interaction.channel_id)

@@ -17,6 +17,8 @@ import sentry_sdk
 from discord import app_commands
 from discord.ext import commands
 
+from utils.bots.CommissionSys.cogs.web_commissions import CommissionWebButton
+from utils.bots.CoreBot.cogs.hr_system import RecruitmentButton
 from core import database
 from core.common import (
     ConsoleColors,
@@ -115,6 +117,8 @@ async def on_ready_(bot: Timmy):
         bot.add_view(MGMCommissionButton(bot))
         bot.add_view(HREmailConfirm(bot))
         bot.add_view(EmailDropdown(bot))
+        bot.add_view(CommissionWebButton(bot))
+        bot.add_view(RecruitmentButton(bot))
 
         ticket_sys = database.TicketConfiguration
         for ticket in ticket_sys:
@@ -486,7 +490,8 @@ async def on_app_command_error_(
                 embed.set_footer(text="Submit a bug report or feedback below!")
                 if interaction.response.is_done():
                     await interaction.followup.send(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
-                await interaction.response.send_message(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
+                else:
+                    await interaction.response.send_message(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
             else:
                 embed = discord.Embed(
                     title="Traceback Detected!",
@@ -499,7 +504,7 @@ async def on_app_command_error_(
                 if interaction.response.is_done():
                     await interaction.followup.send(embed=embed)
                 else:
-                    await interaction.channel.send(embed=embed)
+                    await interaction.response.send_message(embed=embed)
 
             guild = bot.get_guild(Me.TechGuild)
             channel = guild.get_channel(Me.TracebackChannel)
