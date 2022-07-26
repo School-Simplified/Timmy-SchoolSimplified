@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import Dict, List, Literal, Union, TYPE_CHECKING
 
-from discord.ext import commands
-from discord.app_commands import command, describe, Group, guilds, check
 import discord
+from discord.app_commands import command, describe, Group, guilds, check
+from discord.ext import commands
+
 from core import database
-from core.common import MAIN_ID, SET_ID, Emoji
+from core.common import MainID, SETID, Emoji
 
 if TYPE_CHECKING:
     from main import Timmy
-
 
 QuestionLiteral = List[Dict[str, Union[str, bool, None]]]
 MediaLiteralType = Literal[
@@ -25,7 +25,6 @@ MediaLiteralType = Literal[
     "Music",
     "Opportunities",
 ]
-
 
 blacklist = []
 
@@ -45,8 +44,12 @@ def reload_blacklist():
 
 class SetSuggestBlacklist(Group):
     def __init__(self, bot: Timmy):
-        super().__init__(name="set_blacklist", guild_ids=[MAIN_ID.g_main, SET_ID.g_set])
+        super().__init__(name="set_blacklist", guild_ids=[MainID.g_main, SETID.g_set])
         self.bot = bot
+
+    @property
+    def cog(self) -> commands.Cog:
+        return self.bot.get_cog("Student Engagement")
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         return interaction.user.id in [752984497259151370, 747126643587416174]
@@ -63,7 +66,7 @@ class SetSuggestBlacklist(Group):
         embed = discord.Embed(
             title="Successfully Blacklisted User!",
             description=f"{user.mention} has been added to the blacklist.\n"
-            f"`User ID:` `{user.id}`",
+                        f"`User ID:` `{user.id}`",
             color=discord.Color.brand_green(),
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -84,7 +87,7 @@ class SetSuggestBlacklist(Group):
             embed = discord.Embed(
                 title="Successfully Removed User!",
                 description=f"{user.mention} has been removed from the blacklist!"
-                f"`User ID:` `{user.id}`",
+                            f"`User ID:` `{user.id}`",
                 color=discord.Color.brand_green(),
             )
             return await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -108,7 +111,7 @@ class Suggest(Group):
         super().__init__(
             name="suggest",
             description="Suggest something for community engagement!",
-            guild_ids=[MAIN_ID.g_main],
+            guild_ids=[MainID.g_main],
         )
         self.bot = bot
 
@@ -182,7 +185,7 @@ class Suggest(Group):
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
         embed.set_image(url=art.url)
-        channel = self.bot.get_channel(SET_ID.ch_suggestions)
+        channel = self.bot.get_channel(SETID.ch_suggestions)
         await channel.send(embed=embed)
 
 
@@ -374,7 +377,7 @@ class SuggestModal(discord.ui.Modal):
             )
 
         channel: discord.abc.MessageableChannel = self.bot.get_channel(
-            SET_ID.ch_suggestions
+            SETID.ch_suggestions
         )
         await channel.send(embed=embed)
 
@@ -392,17 +395,27 @@ class Engagement(commands.Cog):
 
     @property
     def display_emoji(self) -> str:
-        return Emoji.turtlesmirk
+        return Emoji.turtle_smirk
 
     async def cog_load(self) -> None:
         for item in database.ResponseSpamBlacklist:
             blacklist.append(item.discordID)
 
+    @commands.command(name="annoy-rachel")
+    async def __annoy(self, ctx: commands.Context, on_or_off: bool):
+        if ctx.author.id != 747126643587416174:
+            return
+        if on_or_off:
+            await self.bot.add_cog(AnnoyRachel(self.bot))
+        else:
+            await self.bot.remove_cog("AnnoyRachel")
+        await ctx.send(":thumbsup:")
+
     @command(name="acceptance-letter")
     @spammer_check()
-    @guilds(MAIN_ID.g_main)
+    @guilds(MainID.g_main)
     async def _college_accept(
-        self, interaction: discord.Interaction, file: discord.Attachment
+            self, interaction: discord.Interaction, file: discord.Attachment
     ):
         embed = discord.Embed(
             title="College Acceptance Letter",
@@ -412,12 +425,12 @@ class Engagement(commands.Cog):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
         embed.set_image(url=file.url)
         await interaction.response.send_message("Submitted! Congrats!!")
-        channel = self.bot.get_channel(SET_ID.ch_college_acceptance)
+        channel = self.bot.get_channel(SETID.ch_college_acceptance)
         await channel.send(embed=embed)
 
     @command(name="puzzle-guess")
     @spammer_check()
-    @guilds(MAIN_ID.g_main)
+    @guilds(MainID.g_main)
     async def _guess(self, interaction: discord.Interaction, guess: str):
         """
         Make a guess for the weekly puzzle
@@ -432,8 +445,19 @@ class Engagement(commands.Cog):
         await interaction.response.send_message(
             "Your guess has been submitted!", ephemeral=True
         )
-        guess_channel = self.bot.get_channel(SET_ID.ch_puzzle)
+        guess_channel = self.bot.get_channel(SETID.ch_puzzle)
         await guess_channel.send(embed=embed)
+
+
+class AnnoyRachel(commands.Cog):
+    def __init__(self, bot: Timmy):
+        self.bot = bot
+
+    @commands.Cog.listener('on_message')
+    async def on_message_(self, message: discord.Message):
+        if message.author.id != 752984497259151370:
+            return
+        await message.add_reaction(Emoji.turtle_smirk)
 
 
 async def setup(bot: Timmy):

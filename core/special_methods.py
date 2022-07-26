@@ -8,29 +8,34 @@ import time
 import traceback
 from datetime import datetime
 from difflib import get_close_matches
-from typing import TYPE_CHECKING, Union
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import discord
+import requests
+import sentry_sdk
 from discord import app_commands
 from discord.ext import commands
-import sentry_sdk
-import requests
+
+from utils.bots.CommissionSys.cogs.web_commissions import CommissionWebButton
+from utils.bots.CoreBot.cogs.hr_system import RecruitmentButton
 from core import database
 from core.common import (
-    bcolors,
+    ConsoleColors,
     GSuiteVerify,
     Colors,
     LockButton,
     Others,
-    MAIN_ID,
-    TECH_ID,
+    MainID,
+    TechID,
     CheckDB_CC,
     Emoji,
+    MGMCommissionButton, HREmailConfirm, EmailDropdown,
+    create_ui_modal_class, create_ticket_button
 )
 from core.gh_modals import FeedbackButton
+from utils.bots.CommissionSys.cogs.techCommissions import CommissionTechButton
 from utils.events.TicketDropdown import TicketButton
-from utils.bots.CoreBot.cogs.techCommissions import CommissionTechButton
-from pathlib import Path
 
 if TYPE_CHECKING:
     from main import Timmy
@@ -56,6 +61,14 @@ class VerifyButton(discord.ui.View):
 
 
 async def before_invoke_(ctx: commands.Context):
+    q = database.CommandAnalytics.create(
+        command=ctx.command.name,
+        user=ctx.author.id,
+        date=datetime.now(),
+        command_type="regular",
+        guild_id=ctx.guild.id
+    ).save()
+
     sentry_sdk.set_user(None)
     sentry_sdk.set_user({"id": ctx.author.id, "username": ctx.author.name})
     sentry_sdk.set_tag("username", f"{ctx.author.name}#{ctx.author.discriminator}")
@@ -101,18 +114,34 @@ async def on_ready_(bot: Timmy):
         bot.add_view(GSuiteVerify())
         bot.add_view(CommissionTechButton(bot))
         bot.add_view(TicketButton(bot))
+        bot.add_view(MGMCommissionButton(bot))
+        bot.add_view(HREmailConfirm(bot))
+        bot.add_view(EmailDropdown(bot))
+        bot.add_view(CommissionWebButton(bot))
+        bot.add_view(RecruitmentButton(bot))
+
+        ticket_sys = database.TicketConfiguration
+        for ticket in ticket_sys:
+            ticket: database.TicketConfiguration = ticket
+            UIModal = create_ui_modal_class(ticket.id)
+            modal = UIModal(bot, ticket.title, ticket.questions, ticket.id)
+
+            GlobalSubmitButton = create_ticket_button(ticket.id)
+            submit_button = GlobalSubmitButton(modal)
+            bot.add_view(view=submit_button)
+
         query.PersistantChange = True
         query.save()
 
     if not os.getenv("USEREAL"):
         IP = os.getenv("IP")
         databaseField = (
-            f"{bcolors.OKGREEN}Selected Database: External ({IP}){bcolors.ENDC}"
+            f"{ConsoleColors.OKGREEN}Selected Database: External ({IP}){ConsoleColors.ENDC}"
         )
     else:
         databaseField = (
-            f"{bcolors.FAIL}Selected Database: localhost{bcolors.ENDC}\n{bcolors.WARNING}WARNING: Not "
-            f"recommended to use SQLite.{bcolors.ENDC} "
+            f"{ConsoleColors.FAIL}Selected Database: localhost{ConsoleColors.ENDC}\n{ConsoleColors.WARNING}WARNING: Not "
+            f"recommended to use SQLite.{ConsoleColors.ENDC} "
         )
 
     try:
@@ -138,14 +167,14 @@ async def on_ready_(bot: Timmy):
             ╱╱╱╱╱╱╱╱╱╱╰━╯
 
             Bot Account: {bot.user.name} | {bot.user.id}
-            {bcolors.OKCYAN}Discord API Wrapper Version: {discord.__version__}{bcolors.ENDC}
-            {bcolors.WARNING}TimmyOS Version: {output}{bcolors.ENDC}
+            {ConsoleColors.OKCYAN}Discord API Wrapper Version: {discord.__version__}{ConsoleColors.ENDC}
+            {ConsoleColors.WARNING}TimmyOS Version: {output}{ConsoleColors.ENDC}
             {databaseField}
 
-            {bcolors.OKCYAN}Current Time: {now}{bcolors.ENDC}
-            {bcolors.OKGREEN}Cogs, libraries, and views have successfully been initalized.{bcolors.ENDC}
+            {ConsoleColors.OKCYAN}Current Time: {now}{ConsoleColors.ENDC}
+            {ConsoleColors.OKGREEN}Cogs, libraries, and views have successfully been initalized.{ConsoleColors.ENDC}
             ==================================================
-            {bcolors.WARNING}Statistics{bcolors.ENDC}
+            {ConsoleColors.WARNING}Statistics{ConsoleColors.ENDC}
 
             Guilds: {len(bot.guilds)}
             Members: {len(bot.users)}
@@ -336,7 +365,7 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
                     description="Seems like I've ran into an unexpected error!",
                     color=Colors.red,
                 )
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 await ctx.send(embed=embed)
 
@@ -351,7 +380,7 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
                     color=Colors.red,
                 )
                 embed.add_field(name="GIST URL", value=gisturl)
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 await ctx.send(embed=embed)
 
@@ -379,7 +408,6 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
 async def on_app_command_error_(
     bot: Timmy,
     interaction: discord.Interaction,
-    command: Union[app_commands.Command, app_commands.ContextMenu],
     error: app_commands.AppCommandError,
 ):
     tb = error.__traceback__
@@ -458,11 +486,12 @@ async def on_app_command_error_(
                           "check the command you've sent for any issues.\n "
                           "Consult the help command for more information."
                 )
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text="Submit a bug report or feedback below!")
                 if interaction.response.is_done():
                     await interaction.followup.send(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
-                await interaction.response.send_message(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
+                else:
+                    await interaction.response.send_message(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
             else:
                 embed = discord.Embed(
                     title="Traceback Detected!",
@@ -470,11 +499,12 @@ async def on_app_command_error_(
                     color=Colors.red,
                 )
                 embed.add_field(name="GIST URL", value=gisturl)
-                embed.set_thumbnail(url=Others.timmyDog_png)
+                embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text=f"Error: {str(error)}")
                 if interaction.response.is_done():
                     await interaction.followup.send(embed=embed)
-                await interaction.response.send_message(embed=embed)
+                else:
+                    await interaction.response.send_message(embed=embed)
 
             guild = bot.get_guild(Me.TechGuild)
             channel = guild.get_channel(Me.TracebackChannel)
@@ -494,31 +524,32 @@ async def on_app_command_error_(
             await channel.send(embed=embed2)
 
             view = FeedbackButton(bot=bot, gist_url=gisturl)
-            if interaction.response.is_done():
+            try:
+                error_file.unlink()
                 await interaction.followup.send(
                     "Want to help even more? Click here to submit feedback!", view=view
                 )
-            await interaction.response.send_message(
-                "Want to help even more? Click here to submit feedback!", view=view
-            )
-            error_file.unlink()
+            except:
+                await interaction.channel.send(
+                    "Want to help even more? Click here to submit feedback!", view=view
+                )
 
     raise error
 
 
 class Me:
     publicCH = [
-        MAIN_ID.cat_casual,
-        MAIN_ID.cat_community,
-        MAIN_ID.cat_lounge,
-        MAIN_ID.cat_events,
-        MAIN_ID.cat_voice,
+        MainID.cat_casual,
+        MainID.cat_community,
+        MainID.cat_lounge,
+        MainID.cat_events,
+        MainID.cat_voice,
     ]
-    TechGuild = TECH_ID.g_tech
-    TracebackChannel = TECH_ID.ch_tracebacks
+    TechGuild = TechID.g_tech
+    TracebackChannel = TechID.ch_tracebacks
 
 
-async def main_mode_check_(ctx: commands.Context):
+async def main_mode_check_(ctx: commands.Context) -> bool:
     """MT = discord.utils.get(ctx.guild.roles, name="Moderator")
     VP = discord.utils.get(ctx.guild.roles, name="VP")
     CO = discord.utils.get(ctx.guild.roles, name="CO")
@@ -560,23 +591,23 @@ async def main_mode_check_(ctx: commands.Context):
 
     # DM Check
     elif ctx.guild is None:
-        return CheckDB_CC.guildNone
+        return CheckDB_CC.guild_None
 
     # External Server Check
-    elif ctx.guild.id != MAIN_ID.g_main:
-        return CheckDB_CC.externalGuild
+    elif ctx.guild.id != MainID.g_main:
+        return CheckDB_CC.external_guild
 
     # Rule Command Check
     elif ctx.command.name == "rule":
-        return CheckDB_CC.ruleBypass
+        return CheckDB_CC.rule_bypass
 
     # Public Category Check
     elif ctx.channel.category_id in Me.publicCH:
-        return CheckDB_CC.publicCategories
+        return CheckDB_CC.public_categories
 
     # Else...
     else:
-        return CheckDB_CC.elseSituation
+        return CheckDB_CC.else_situation
 
 
 def initializeDB(bot):

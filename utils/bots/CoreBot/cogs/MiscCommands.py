@@ -1,6 +1,4 @@
 import asyncio
-import random
-import subprocess
 import sys
 import time
 from datetime import timedelta
@@ -8,26 +6,23 @@ from typing import List, Literal
 
 import discord
 import psutil
+from discord import app_commands
+from discord.ext import commands
+from dotenv import load_dotenv
+from google.cloud import texttospeech
+from sentry_sdk import Hub
+
 from core import database
 from core.checks import is_botAdmin, is_botAdmin2
 from core.common import (
-    ButtonHandler,
-    MAIN_ID,
-    TECH_ID,
-    Colors,
-    Others,
+    TechID,
     Emoji,
     NitroConfirmFake,
     SelectMenuHandler,
     Colors,
     Others,
-    MAIN_ID,
+    MainID,
 )
-from discord.ext import commands
-from dotenv import load_dotenv
-from sentry_sdk import Hub
-from discord import app_commands
-from google.cloud import texttospeech
 from core.common import access_secret
 
 
@@ -170,14 +165,14 @@ class MiscCMD(commands.Cog):
         self.client = Hub.current.client
 
         self.whitelistedRoles = [
-            MAIN_ID.r_codingClub,
-            MAIN_ID.r_debateClub,
-            MAIN_ID.r_musicClub,
-            MAIN_ID.r_cookingClub,
-            MAIN_ID.r_chessClub,
-            MAIN_ID.r_bookClub,
-            MAIN_ID.r_advocacyClub,
-            MAIN_ID.r_speechClub,
+            MainID.r_coding_club,
+            MainID.r_debate_club,
+            MainID.r_music_club,
+            MainID.r_cooking_club,
+            MainID.r_chess_club,
+            MainID.r_book_club,
+            MainID.r_advocacy_club,
+            MainID.r_speech_club,
         ]
 
         self.decodeDict = {
@@ -224,13 +219,6 @@ class MiscCMD(commands.Cog):
 
     @commands.command(aliases=["ttc", "tictactoe"])
     async def tic(self, ctx: commands.Context, user: discord.User = None):
-        if not ctx.channel.id == MAIN_ID.ch_commands:
-            await ctx.message.delete()
-            return await ctx.send(
-                f"{ctx.author.mention}"
-                f"\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!"
-            )
-
         if user is None:
             return await ctx.send(
                 "lonely :(, sorry but you need a person to play against!"
@@ -283,8 +271,8 @@ class MiscCMD(commands.Cog):
                 return
             else:
                 await message.delete()
-                guild = self.bot.get_guild(TECH_ID.g_tech)
-                channel = guild.get_channel(TECH_ID.ch_tracebacks)
+                guild = self.bot.get_guild(TechID.g_tech)
+                channel = guild.get_channel(TechID.ch_tracebacks)
 
                 embed = discord.Embed(
                     title="New Suggestion!",
@@ -319,7 +307,7 @@ class MiscCMD(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.guild)
     async def donate(self, ctx: commands.Context):
         timmyDonation_png = discord.File(
-            Others.timmyDonation_path, filename=Others.timmyDonation_png
+            Others.timmy_donation_path, filename=Others.timmy_donation_png
         )
 
         embedDonate = discord.Embed(
@@ -331,7 +319,7 @@ class MiscCMD(commands.Cog):
             f"\n\n**Donate here: https://schoolsimplified.org/donate**",
         )
         embedDonate.set_footer(text="Great thanks to all our donors!")
-        embedDonate.set_thumbnail(url=f"attachment://{Others.timmyDonation_png}")
+        embedDonate.set_thumbnail(url=f"attachment://{Others.timmy_donation_png}")
         await ctx.send(embed=embedDonate, file=timmyDonation_png)
 
     @commands.command()
@@ -349,7 +337,7 @@ class MiscCMD(commands.Cog):
         role="What should the user be banned from?",
         reason="Why is the user being banned?",
     )
-    @app_commands.guilds(MAIN_ID.g_main)
+    @app_commands.guilds(MainID.g_main)
     async def miscban(
         self,
         interaction: discord.Interaction,
@@ -357,16 +345,16 @@ class MiscCMD(commands.Cog):
         role: Literal["debate", "count", "ticket"],
         reason: str
     ):
-        modRole = discord.utils.get(interaction.user.guild.roles, id=MAIN_ID.r_moderator)
+        modRole = discord.utils.get(interaction.user.guild.roles, id=MainID.r_moderator)
         if modRole not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the required permissions to use this command.",
                 ephemeral=True
             )
         roleName = {
-            "debate": [MAIN_ID.r_debateban, "Debate"],
-            "count": [MAIN_ID.r_countban, "Count"],
-            "ticket": [MAIN_ID.r_ticketban, "Ticket"],
+            "debate": [MainID.r_debate_ban, "Debate"],
+            "count": [MainID.r_count_ban, "Count"],
+            "ticket": [MainID.r_ticket_ban, "Ticket"],
         }[role]
 
         role = discord.utils.get(interaction.user.guild.roles, id=roleName[0])
@@ -411,7 +399,7 @@ class MiscCMD(commands.Cog):
             description="Current Discord API Latency",
         )
         pingembed.set_author(
-            name="Timmy", url=Others.timmyLaptop_png, icon_url=Others.timmyHappy_png
+            name="Timmy", url=Others.timmy_laptop_png, icon_url=Others.timmy_happy_png
         )
         pingembed.add_field(
             name="Ping & Uptime:",
@@ -532,7 +520,7 @@ class MiscCMD(commands.Cog):
             await message.delete()
 
     @commands.command()
-    @commands.has_role(MAIN_ID.r_clubPresident)
+    @commands.has_role(MainID.r_club_president)
     async def role(
         self,
         ctx: commands.Context,
@@ -619,20 +607,9 @@ class MiscCMD(commands.Cog):
         RoleID = self.decodeDict[ViewResponse]
         await ctx.send(f"<@&{RoleID}>\n{message}")
 
-    @commands.command(hidden=True)
-    @is_botAdmin
-    async def purgemasa(self, ctx, num: int = 10):
-        user = self.bot.get_user(736765405728735232)
-        await ctx.channel.purge(check=lambda m: m.author == user, limit=num)
-
     @app_commands.command(description="Play a game of TicTacToe with someone!")
     @app_commands.describe(user="The user you want to play with.")
     async def tictactoe(self, interaction: discord.Interaction, user: discord.Member):
-        if interaction.channel.id != MAIN_ID.ch_commands:
-            return await interaction.response.send_message(
-                f"{interaction.user.mention}\nMove to <#{MAIN_ID.ch_commands}> to play Tic Tac Toe!",
-                ephemeral=True,
-            )
         if user is None:
             return await interaction.response.send_message(
                 "lonely :(, sorry but you need a person to play against!"

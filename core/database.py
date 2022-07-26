@@ -2,6 +2,7 @@ import collections
 import os
 from datetime import datetime
 from distutils.util import strtobool
+from typing import Literal
 
 from dotenv import load_dotenv
 from flask import Flask
@@ -15,7 +16,7 @@ from peewee import (
     Model,
     MySQLDatabase,
     SqliteDatabase,
-    TextField,
+    TextField
 )
 
 load_dotenv()
@@ -709,6 +710,7 @@ class StudyVCLeaderboard(BaseModel):
     xp = BigIntegerField(default=0)
     totalXP = BigIntegerField(default=0)
 
+
 class AuthorizedGuilds(BaseModel):
     """
     #AuthorizedGuilds
@@ -722,6 +724,165 @@ class AuthorizedGuilds(BaseModel):
 
     id = AutoField()
     guildID = BigIntegerField()
+
+
+class SetPuzzleSchedule(BaseModel):
+    id = AutoField()
+
+
+class CommandAnalytics(BaseModel):
+    """
+    #CommandAnalytics
+
+    `id`: AutoField()
+    Database Entry ID
+
+    `command`: TextField()
+    The command that was used.
+
+    `user`: IntegerField()
+    The user that used the command.
+
+    `date`: DateTimeField()
+    The date when the command was used.
+
+    `command_type`: TextField()
+    The type of command that was used.
+
+    `guild_id`: BigIntegerField()
+    The guild ID of the guild that the command was used in.
+    """
+
+    id = AutoField()
+    command = TextField()
+    date = DateTimeField()
+    command_type = TextField()
+    guild_id = BigIntegerField()
+    user = BigIntegerField()
+
+
+class MGMTickets(BaseModel):
+    """
+    #MGMTickets
+
+    `id`: AutoField()
+    Database Entry
+
+    `ChannelID`: BigIntegerField()
+    Channel ID of the Ticket.
+
+    `authorID`: BigIntegerField()
+    Author ID of the Ticket Owner.
+
+    `createdAt`: DateTimeField()
+    A datetime object when the ticket opened.
+
+    `configuration_id`: TextField()
+    The related configuration ID of the ticket.
+    """
+
+    id = AutoField()
+    ChannelID = BigIntegerField()
+    authorID = BigIntegerField()
+    createdAt = DateTimeField()
+    configuration_id = TextField(default=None)
+
+
+class TicketConfiguration(BaseModel):
+    """
+    #Tickets
+
+    `id`: AutoField()
+    Database Entry
+
+    `guild_id` = BigIntegerField()
+    Guild ID of the guild the ticket config is in.
+
+    `channel_id`: BigIntegerField()
+    Channel ID of where tickets originated.
+
+    `category_id`: BigIntegerField()
+    Category ID of where tickets go.
+
+    `transcript_channel_id`: BigIntegerField()
+    Channel ID of where transcripts go.
+
+    `title`: TextField()
+    Title of the form.
+
+    `channel_identifier`: TextField()
+    The channel identifier of the ticket.
+
+    `button_label`: TextField()
+    The label of the button.
+
+    `role_id`: TextField()
+    Role ID of the role that can view the ticket.
+
+    `author_id`: BigIntegerField()
+    Owner of ticket configuration
+
+    `limit`: IntegerField()
+    Limit of tickets per user.
+
+    `questions`: TextField()
+    Questions that are asked in the ticket. | Default to None if not set.
+
+    `question_config` = TextField(default=None)
+    Question configuration. | Default to None if not set.
+
+    `q1_config` = TextField(default=None)
+    `q2_config` = TextField(default=None)
+    `q3_config` = TextField(default=None)
+    `q4_config` = TextField(default=None)
+    `q5_config` = TextField(default=None)
+    Question configuration. | Default to None if not set.
+    > Format: S/L , Char. Limit Min, Char. Limit Max
+
+
+    `created_at`: DateTimeField()
+    DateTime object when ticket configuration was created.
+    """
+
+    id = AutoField()
+    guild_id = BigIntegerField()
+    channel_id = BigIntegerField()
+    category_id = BigIntegerField()
+    transcript_channel_id = BigIntegerField()
+    title = TextField()
+    channel_identifier = TextField()
+    button_label = TextField()
+    role_id = TextField()
+    author_id = BigIntegerField()
+    limit = IntegerField()
+    questions = TextField(default=None)
+    q1_config = TextField(default=None)
+    q2_config = TextField(default=None)
+    q3_config = TextField(default=None)
+    q4_config = TextField(default=None)
+    q5_config = TextField(default=None)
+    question_config = TextField(default=None)
+    created_at = DateTimeField()
+
+
+class ApprovedSubDomains(BaseModel):
+    """
+    #ApprovedSubDomains
+
+    `id`: AutoField()
+    Database Entry
+
+    `sub_domain`: TextField()
+    Domain that is approved.
+
+    `author_id`: BigIntegerField()
+    Author ID of the user that requested the domain.
+    """
+
+    id = AutoField()
+    sub_domain = TextField()
+    author_id = BigIntegerField()
+
 
 app = Flask(__name__)
 
@@ -770,7 +931,18 @@ tables = {
     "StudyVCDB": StudyVCDB,
     "StudyVCLeaderboard": StudyVCLeaderboard,
     "ResponseSpamBlacklist": ResponseSpamBlacklist,
-    "AuthorizedGuilds": AuthorizedGuilds
+    "AuthorizedGuilds": AuthorizedGuilds,
+    # "SetPuzzleSchedule": SetPuzzleSchedule,
+    "CommandAnalytics": CommandAnalytics,
+    "MGMTickets": MGMTickets,
+    "Ticket_Configuration": TicketConfiguration,
 }
 
 iter_table(tables)
+"""
+1. Please describe the item you need completed
+
+2. What department or team is this request for?
+
+3. Is there a final deadline for this request?
+"""

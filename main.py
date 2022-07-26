@@ -4,17 +4,19 @@ Copyright (C) School Simplified - All Rights Reserved
  * Written by School Simplified, IT Dept. <timmy@schoolsimplified.org>, March 2022
 """
 
-__version__ = "beta3.0.2"
+__version__ = "beta3.1.0"
 __author__ = "School Simplified, IT Dept."
 __author_email__ = "timmy@schoolsimplified.org"
 
 import faulthandler
 import logging
 import os
+from datetime import datetime
 from typing import Union
 
-from alive_progress import alive_bar
+import aiohttp
 import discord
+from alive_progress import alive_bar
 from discord import app_commands
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
@@ -24,10 +26,14 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
 from core.common import get_extensions
-from core.special_methods import (before_invoke_, initializeDB,
-                                  main_mode_check_, on_app_command_error_,
-                                  on_command_error_, on_ready_)
-
+from core.special_methods import (
+    before_invoke_,
+    initializeDB,
+    main_mode_check_,
+    on_app_command_error_,
+    on_command_error_,
+    on_ready_
+)
 
 load_dotenv()
 faulthandler.enable()
@@ -52,11 +58,12 @@ class TimmyCommandTree(app_commands.CommandTree):
             return False
         return True
 
-    async def on_error(self,
-                       interaction: discord.Interaction,
-                       command: Union[app_commands.Command, app_commands.ContextMenu],
-                       error: app_commands.AppCommandError):
-        await on_app_command_error_(self.bot, interaction, command, error)
+    async def on_error(
+            self,
+            interaction: discord.Interaction,
+            error: app_commands.AppCommandError
+    ):
+        await on_app_command_error_(self.bot, interaction, error)
 
 
 class Timmy(commands.Bot):
@@ -65,14 +72,19 @@ class Timmy(commands.Bot):
     """
 
     def __init__(self):
-        super().__init__(command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
-                         intents=discord.Intents.all(),
-                         case_insensitive=True,
-                         tree_cls=TimmyCommandTree,
-                         activity=discord.Activity(
-                             type=discord.ActivityType.watching,
-                             name="/help | ssimpl.org/timmy"))
+        super().__init__(
+            command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
+            intents=discord.Intents.all(),
+            case_insensitive=True,
+            tree_cls=TimmyCommandTree,
+            activity=discord.Activity(
+                type=discord.ActivityType.watching,
+                name="/help | ssimpl.org/timmy"
+            )
+        )
         self.help_command = None
+        self.before_invoke(self.analytics_before_invoke)
+        self.add_check(self.check)
 
     async def on_ready(self):
         await on_ready_(self)
@@ -80,17 +92,19 @@ class Timmy(commands.Bot):
     async def on_command_error(self, ctx: commands.Context, error: Exception):
         await on_command_error_(self, ctx, error)
 
-    async def before_invoke(self, ctx: commands.Context):
+    async def analytics_before_invoke(self, ctx: commands.Context):
         await before_invoke_(ctx)
 
     async def check(self, ctx: commands.Context):
-        await main_mode_check_(ctx)
+        return await main_mode_check_(ctx)
 
     async def setup_hook(self) -> None:
-        with alive_bar(len(get_extensions()),
-                       ctrl_c=False,
-                       bar="bubbles",
-                       title="Initializing Cogs:") as bar:
+        with alive_bar(
+                len(get_extensions()),
+                ctrl_c=False,
+                bar="bubbles",
+                title="Initializing Cogs:") as bar:
+
             for ext in get_extensions():
                 try:
                     await bot.load_extension(ext)
@@ -100,6 +114,7 @@ class Timmy(commands.Bot):
                 except commands.ExtensionNotFound:
                     raise commands.ExtensionNotFound(ext)
                 bar()
+                calue = r"/r"
 
     async def is_owner(self, user: discord.User):
         admin_ids = []
@@ -119,16 +134,33 @@ class Timmy(commands.Bot):
 
 bot = Timmy()
 
+
+@bot.event
+async def on_interaction(interaction: discord.Interaction):
+    if interaction.type == discord.InteractionType.application_command:
+        database.CommandAnalytics.create(
+            command=interaction.command.name,
+            guild_id=interaction.guild.id,
+            user=interaction.user.id,
+            date=datetime.now(),
+            command_type="slash"
+        ).save()
+
 if os.getenv("DSN_SENTRY") is not None:
-    sentry_logging = LoggingIntegration(level=logging.INFO,         # Capture info and above as breadcrumbs
-                                        event_level=logging.ERROR   # Send errors as events
-                                        )
+    sentry_logging = LoggingIntegration(
+        level=logging.INFO,  # Capture info and above as breadcrumbs
+        event_level=logging.ERROR  # Send errors as events
+    )
 
     # Traceback tracking, DO NOT MODIFY THIS
-    use_sentry(bot,
-               dsn=os.getenv("DSN_SENTRY"),
-               traces_sample_rate=1.0,
-               integrations=[FlaskIntegration(), sentry_logging])
+    use_sentry(
+        bot,
+        dsn=os.getenv("DSN_SENTRY"),
+        traces_sample_rate=1.0,
+        integrations=[FlaskIntegration(), sentry_logging]
+    )
+
 
 initializeDB(bot)
+
 bot.run(os.getenv("TOKEN"))

@@ -1,10 +1,11 @@
 import math
 
-import peewee
 import discord
+import peewee
+from discord.ext import commands
+
 from core import common, database
 from core.common import Colors, Emoji
-from discord.ext import commands
 
 
 class PunishmentTag(commands.Cog):
@@ -16,7 +17,7 @@ class PunishmentTag(commands.Cog):
 
     @property
     def display_emoji(self) -> str:
-        return Emoji.modshield
+        return Emoji.mod_shield
 
     @staticmethod
     def get_by_index(index):
