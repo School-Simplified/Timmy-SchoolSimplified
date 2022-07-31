@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from core import database
 from core.common import ButtonHandler, Emoji, LeaderID, StaffID
-from utils.events.TicketDropdown import TicketExport
+from utils.events.chat_helper_ticket_sys import TicketExport
 
 
 class MGMDropdownTickets(commands.Cog):

@@ -4,17 +4,19 @@ Copyright (C) School Simplified - All Rights Reserved
  * Written by School Simplified, IT Dept. <timmy@schoolsimplified.org>, March 2022
 """
 
-__version__ = "beta3.1.0"
+__version__ = "beta3.1.1"
 __author__ = "School Simplified, IT Dept."
 __author_email__ = "timmy@schoolsimplified.org"
 
 import faulthandler
 import logging
 import os
-from datetime import datetime
-from typing import Union
+import socket
+import time
+from datetime import datetime, timedelta
 
-import aiohttp
+import uvicorn
+import asyncio
 import discord
 from alive_progress import alive_bar
 from discord import app_commands
@@ -34,6 +36,9 @@ from core.special_methods import (
     on_command_error_,
     on_ready_
 )
+from fastapi import FastAPI
+
+app = FastAPI()
 
 load_dotenv()
 faulthandler.enable()
@@ -131,6 +136,11 @@ class Timmy(commands.Bot):
     def version(self):
         return __version__
 
+    @property
+    def start_time(self):
+        q: database.Uptime = database.Uptime.select().where(database.Uptime.id == 1).get()
+        return q.UpStart
+
 
 bot = Timmy()
 
@@ -163,4 +173,27 @@ if os.getenv("DSN_SENTRY") is not None:
 
 initializeDB(bot)
 
-bot.run(os.getenv("TOKEN"))
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(bot.start(os.getenv("TOKEN")))
+
+
+@app.get("/info")
+async def info():
+    current_time = float(time.time())
+    difference = int(round(current_time - float(bot.start_time)))
+    text = str(timedelta(seconds=difference))
+    return {
+        "uptime": text,
+        "version": __version__,
+        "author": __author__,
+        "author_email": __author_email__,
+        "start_time": bot.start_time,
+        "latency": bot.latency
+    }
+
+
+if __name__ == "__main__":
+    #socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    uvicorn.run(app, host="0.0.0.0", port=5000)

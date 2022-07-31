@@ -34,8 +34,8 @@ from core.common import (
     create_ui_modal_class, create_ticket_button
 )
 from core.gh_modals import FeedbackButton
-from utils.bots.CommissionSys.cogs.techCommissions import CommissionTechButton
-from utils.events.TicketDropdown import TicketButton
+from utils.bots.CommissionSys.cogs.tech_commissions import CommissionTechButton
+from utils.events.chat_helper_ticket_sys import TicketButton
 
 if TYPE_CHECKING:
     from main import Timmy
@@ -210,12 +210,13 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
                 f'Command "{cmd}" not found, maybe you meant "{matches[0]}"?'
             )
         else:
-            return await ctx.send(
+            """return await ctx.send(
                 f'Command "{cmd}" not found, use the help command to know what commands are available. '
                 f"Some commands have moved over to slash commands, please check "
                 f"https://timmy.schoolsimplified.org/#slash-command-port "
                 f"for more updates! "
-            )
+            )"""
+            return await ctx.message.add_reaction("❌")
 
     elif isinstance(
         error, (commands.MissingRequiredArgument, commands.TooManyArguments)
