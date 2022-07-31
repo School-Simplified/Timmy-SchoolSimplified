@@ -7,15 +7,34 @@ from discord.ext import commands
 
 from core import database
 from core.checks import is_botAdmin
-from core.common import Emoji, MGMCommissionButton, EmailDropdown, create_ui_modal_class, \
-    create_ticket_button, TechID, StaffID
+from core.common import (
+    Emoji,
+    MGMCommissionButton,
+    EmailDropdown,
+    create_ui_modal_class,
+    create_ticket_button,
+    TechID,
+    StaffID,
+)
 
 
 def text_to_list(hashtags):
-    return hashtags.strip('[]').replace('\'', '').split(',')
+    return hashtags.strip("[]").replace("'", "").split(",")
+
 
 class QuestionInput(ui.Modal, title="Submit Questions here!"):
-    def __init__(self, bot: commands.Bot, title: str, channel_name: str, button_label: str, category_id: int, channel_id: int, transcript_channel: int, role_id: str, limit: int = None) -> None:
+    def __init__(
+        self,
+        bot: commands.Bot,
+        title: str,
+        channel_name: str,
+        button_label: str,
+        category_id: int,
+        channel_id: int,
+        transcript_channel: int,
+        role_id: str,
+        limit: int = None,
+    ) -> None:
         super().__init__(timeout=None)
         self.bot = bot
         self.title = title
@@ -33,7 +52,7 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
         max_length=45,
         min_length=5,
         required=False,
-        placeholder="Leave blank if you don't want to use this question or leave everything blank for no questions!"
+        placeholder="Leave blank if you don't want to use this question or leave everything blank for no questions!",
     )
     second_question = ui.TextInput(
         label="Question Two:",
@@ -41,7 +60,7 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
         max_length=45,
         min_length=5,
         required=False,
-        placeholder="Leave blank if you don't want to use this question or leave everything blank for no questions!"
+        placeholder="Leave blank if you don't want to use this question or leave everything blank for no questions!",
     )
     third_question = ui.TextInput(
         label="Question Three:",
@@ -49,7 +68,7 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
         max_length=45,
         min_length=5,
         required=False,
-        placeholder="Leave blank if you don't want to use this question or leave everything blank for no questions!"
+        placeholder="Leave blank if you don't want to use this question or leave everything blank for no questions!",
     )
     fourth_question = ui.TextInput(
         label="Question Four:",
@@ -57,7 +76,7 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
         max_length=45,
         min_length=5,
         required=False,
-        placeholder="Leave blank if you don't want to use this question or leave everything blank for no questions!"
+        placeholder="Leave blank if you don't want to use this question or leave everything blank for no questions!",
     )
     fifth_question = ui.TextInput(
         label="Question Five:",
@@ -65,22 +84,38 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
         max_length=45,
         min_length=5,
         required=False,
-        placeholder="Leave blank if you don't want to use this question or leave everything blank for no questions!"
+        placeholder="Leave blank if you don't want to use this question or leave everything blank for no questions!",
     )
 
     async def on_submit(self, interaction: discord.Interaction):
         if self.limit is None:
             limit = 0
-        if self.first_question.value == "" and self.second_question.value == "" and self.third_question.value == "" and self.fourth_question.value == "" and self.fifth_question.value == "":
+        if (
+            self.first_question.value == ""
+            and self.second_question.value == ""
+            and self.third_question.value == ""
+            and self.fourth_question.value == ""
+            and self.fifth_question.value == ""
+        ):
             questions = []
         else:
-            questions = [self.first_question.value, self.second_question.value, self.third_question.value, self.fourth_question.value, self.fifth_question.value]
+            questions = [
+                self.first_question.value,
+                self.second_question.value,
+                self.third_question.value,
+                self.fourth_question.value,
+                self.fifth_question.value,
+            ]
             questions = list(filter(None, questions))
 
-        query = database.TicketConfiguration.select().where(database.TicketConfiguration.category_id == self.category_id)
+        query = database.TicketConfiguration.select().where(
+            database.TicketConfiguration.category_id == self.category_id
+        )
         if query.exists():
-            return await interaction.response.send_message("Tickets already setup in this category, delete the category and create a new one "
-                                  "if you wish to re-configure this config!!.")
+            return await interaction.response.send_message(
+                "Tickets already setup in this category, delete the category and create a new one "
+                "if you wish to re-configure this config!!."
+            )
         else:
             query = database.TicketConfiguration.create(
                 category_id=self.category_id,
@@ -94,7 +129,7 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
                 guild_id=interaction.guild.id,
                 title=self.title,
                 channel_identifier=self.channel_name,
-                button_label=self.button_label
+                button_label=self.button_label,
             )
             query.save()
 
@@ -104,10 +139,10 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
             GlobalSubmitButton = create_ticket_button(query.id)
             submit_button = GlobalSubmitButton(modal)
 
-            ticket_start_channel: discord.TextChannel = self.bot.get_channel(query.channel_id)
-            await ticket_start_channel.send(
-             "** **", view=submit_button
+            ticket_start_channel: discord.TextChannel = self.bot.get_channel(
+                query.channel_id
             )
+            await ticket_start_channel.send("** **", view=submit_button)
 
             # Send a final output of everything in an embed
             embed = discord.Embed(
@@ -115,13 +150,18 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
                 description=f"{interaction.user.mention} has created a ticket configuration for {ticket_start_channel.mention}",
                 color=discord.Colour.brand_green(),
             )
-            embed.add_field(name="Instructions", value=f"This configuration has been setup and your requested button "
-                                                       f"has been sent the start channel you provided in the command. "
-                                                       f"If you wish to re-send the button for any reason, "
-                                                       f"please use the following ID: {query.id} with /send_button.",
-                            inline=False)
+            embed.add_field(
+                name="Instructions",
+                value=f"This configuration has been setup and your requested button "
+                f"has been sent the start channel you provided in the command. "
+                f"If you wish to re-send the button for any reason, "
+                f"please use the following ID: {query.id} with /send_button.",
+                inline=False,
+            )
             embed.add_field(name="Title", value=query.title, inline=False)
-            embed.add_field(name="Channel Identifier", value=query.channel_identifier, inline=False)
+            embed.add_field(
+                name="Channel Identifier", value=query.channel_identifier, inline=False
+            )
             embed.add_field(name="Category", value=query.category_id, inline=False)
             embed.add_field(name="Guild", value=query.guild_id, inline=False)
             embed.add_field(name="Limit", value=query.limit, inline=False)
@@ -132,9 +172,7 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
                 name=interaction.user.name,
                 icon_url=interaction.user.avatar.url,
             )
-            embed.set_footer(
-                text=f"ID: {query.id}"
-            )
+            embed.set_footer(text=f"ID: {query.id}")
             await interaction.response.send_message(embed=embed)
 
 
@@ -146,7 +184,7 @@ class MGMTickets(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.__cog_name__ = "MGM Commissions"
-        #self.autoUnarchiveThread.start()
+        # self.autoUnarchiveThread.start()
 
     @property
     def display_emoji(self) -> str:
@@ -164,7 +202,11 @@ class MGMTickets(commands.Cog):
             view = EmailDropdown(self.bot)
             await ctx.send("Testing Mode", view=view)
 
-    CTS = app_commands.Group(name="cts", description="Custom Ticket System Commands", guild_ids=[TechID.g_tech, StaffID.g_staff_resources])
+    CTS = app_commands.Group(
+        name="cts",
+        description="Custom Ticket System Commands",
+        guild_ids=[TechID.g_tech, StaffID.g_staff_resources],
+    )
 
     @CTS.command(
         name="setup_tickets",
@@ -182,17 +224,17 @@ class MGMTickets(commands.Cog):
     )
     @is_botAdmin
     async def setup(
-            self,
-            interaction: discord.Interaction,
-            title: str,
-            channel_identifier: str,
-            button_label: str,
-            category_id: str,
-            start_channel: discord.TextChannel,
-            transcript_channel: discord.TextChannel,
-            role_id: str,
-            limit: int = 0
-        ):
+        self,
+        interaction: discord.Interaction,
+        title: str,
+        channel_identifier: str,
+        button_label: str,
+        category_id: str,
+        start_channel: discord.TextChannel,
+        transcript_channel: discord.TextChannel,
+        role_id: str,
+        limit: int = 0,
+    ):
         """
         Setup tickets for a category
 
@@ -206,17 +248,19 @@ class MGMTickets(commands.Cog):
         limit: The limit of tickets that can be created per person, leave blank for no limit
         """
 
-        await interaction.response.send_modal(QuestionInput(
-            self.bot,
-            title,
-            channel_identifier,
-            button_label,
-            int(category_id),
-            start_channel.id,
-            transcript_channel.id,
-            role_id,
-            limit
-        ))
+        await interaction.response.send_modal(
+            QuestionInput(
+                self.bot,
+                title,
+                channel_identifier,
+                button_label,
+                int(category_id),
+                start_channel.id,
+                transcript_channel.id,
+                role_id,
+                limit,
+            )
+        )
 
     @CTS.command(
         name="send_button",
@@ -226,15 +270,15 @@ class MGMTickets(commands.Cog):
         configuration_id="The configuration ID that corresponds to the button.",
         channel="Where the button will be sent; leave blank to send it to the channel it was configured with.",
         message_id="If you are providing a message ID, channel must be filled out too. This will edit the message to "
-                   "include the button in the same message. "
+        "include the button in the same message. ",
     )
     @is_botAdmin
     async def send_button(
-            self,
-            interaction: discord.Interaction,
-            configuration_id: int,
-            channel: discord.TextChannel = None,
-            message_id: str = None
+        self,
+        interaction: discord.Interaction,
+        configuration_id: int,
+        channel: discord.TextChannel = None,
+        message_id: str = None,
     ):
         """
         Send a pre-configured ticket button
@@ -242,7 +286,9 @@ class MGMTickets(commands.Cog):
         configuration_id: The configuration ID that corresponds to the button
         channel: Where the button will be sent
         """
-        query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == configuration_id)
+        query = database.TicketConfiguration.select().where(
+            database.TicketConfiguration.id == configuration_id
+        )
         if not query.exists():
             return await interaction.response.send_message("Invalid configuration ID")
         query = query.get()
@@ -255,17 +301,15 @@ class MGMTickets(commands.Cog):
 
         if channel is None and message_id is None:
             ticket_start_channel = self.bot.get_channel(query.channel_id)
-            await ticket_start_channel.send(
-                "** **", view=submit_button
-            )
+            await ticket_start_channel.send("** **", view=submit_button)
         elif message_id is not None and channel is None:
-            return await interaction.response.send_message("You must provide a channel (the channel where the message "
-                                                           "is in) if you are providing a message ID")
+            return await interaction.response.send_message(
+                "You must provide a channel (the channel where the message "
+                "is in) if you are providing a message ID"
+            )
         elif channel is not None and message_id is None:
             ticket_start_channel = channel
-            await ticket_start_channel.send(
-                "** **", view=submit_button
-            )
+            await ticket_start_channel.send("** **", view=submit_button)
         elif channel is not None and message_id is not None:
             ticket_start_channel = channel
             try:
@@ -283,21 +327,23 @@ class MGMTickets(commands.Cog):
     @app_commands.describe(
         configuration_id="The configuration ID that corresponds to the button.",
         edit_mode="If you are editing the actual questions itself, select Edit Questions. If you would like to edit "
-                  "attributes such as min length, max length, or field type, select Edit Attributes.",
+        "attributes such as min length, max length, or field type, select Edit Attributes.",
     )
     @is_botAdmin
     async def edit_modal(
-            self,
-            interaction: discord.Interaction,
-            configuration_id: int,
-            edit_mode: Literal["Edit Questions", "Edit Attributes"]
+        self,
+        interaction: discord.Interaction,
+        configuration_id: int,
+        edit_mode: Literal["Edit Questions", "Edit Attributes"],
     ):
         """
         Edit a pre-configured ticket button
 
         configuration_id: The configuration ID that corresponds to the button
         """
-        query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == configuration_id)
+        query = database.TicketConfiguration.select().where(
+            database.TicketConfiguration.id == configuration_id
+        )
         if not query.exists():
             return await interaction.response.send_message("Invalid configuration ID")
         query = query.get()
@@ -330,11 +376,9 @@ class MGMTickets(commands.Cog):
                             required=True,
                             style=discord.TextStyle.long,
                             max_length=45,
-                            placeholder=question_e
+                            placeholder=question_e,
                         )
-                        self.add_item(
-                            text_input
-                        )
+                        self.add_item(text_input)
                         self.question_obj.append(text_input)
                         index += 1
 
@@ -378,11 +422,9 @@ class MGMTickets(commands.Cog):
                             required=True,
                             style=discord.TextStyle.short,
                             max_length=75,
-                            placeholder="S/L, Char. Limit Min, Char. Limit Max"
+                            placeholder="S/L, Char. Limit Min, Char. Limit Max",
                         )
-                        self.add_item(
-                            text_input
-                        )
+                        self.add_item(text_input)
                         self.question_obj.append(text_input)
 
                 async def on_submit(self, interaction_i: discord.Interaction):
@@ -403,7 +445,9 @@ class MGMTickets(commands.Cog):
                         query.save()
                         index += 1
 
-                    await interaction_i.response.send_message("Updated Question Configs!")
+                    await interaction_i.response.send_message(
+                        "Updated Question Configs!"
+                    )
 
             modal = QuestionAttributesEdit(self.bot)
             await interaction.response.send_modal(modal)
@@ -415,24 +459,34 @@ class MGMTickets(commands.Cog):
     @app_commands.describe(
         configuration_id="The configuration ID that corresponds to the button.",
         element="The element to edit. Valid elements are: title, channel_identifier, button_label, category_id, "
-                "start_channel, transcript_channel, role_id, limit",
+        "start_channel, transcript_channel, role_id, limit",
         value="The new value for the element.",
     )
     @is_botAdmin
     async def edit_modal(
-            self,
-            interaction: discord.Interaction,
-            configuration_id: int,
-            element: Literal["title", "channel_identifier", "button_label", "category_id", "start_channel",
-                             "transcript_channel", "role_id", "limit"],
-            value: str,
+        self,
+        interaction: discord.Interaction,
+        configuration_id: int,
+        element: Literal[
+            "title",
+            "channel_identifier",
+            "button_label",
+            "category_id",
+            "start_channel",
+            "transcript_channel",
+            "role_id",
+            "limit",
+        ],
+        value: str,
     ):
         """
         Edit a pre-configured ticket button
 
         configuration_id: The configuration ID that corresponds to the button
         """
-        query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == configuration_id)
+        query = database.TicketConfiguration.select().where(
+            database.TicketConfiguration.id == configuration_id
+        )
         if not query.exists():
             return await interaction.response.send_message("Invalid configuration ID")
         query = query.get()

@@ -343,13 +343,13 @@ class MiscCMD(commands.Cog):
         interaction: discord.Interaction,
         user: discord.Member,
         role: Literal["debate", "count", "ticket"],
-        reason: str
+        reason: str,
     ):
         modRole = discord.utils.get(interaction.user.guild.roles, id=MainID.r_moderator)
         if modRole not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the required permissions to use this command.",
-                ephemeral=True
+                ephemeral=True,
             )
         roleName = {
             "debate": [MainID.r_debate_ban, "Debate"],

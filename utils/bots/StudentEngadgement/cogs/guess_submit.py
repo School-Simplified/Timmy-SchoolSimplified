@@ -22,8 +22,7 @@ class GuessModal(ui.Modal, title="May Day Event Submission"):
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.send_message(
-            f"{interaction.user.mention}, I have submitted your guess!",
-            ephemeral=True
+            f"{interaction.user.mention}, I have submitted your guess!", ephemeral=True
         )
         ch: discord.TextChannel = self.bot.get_channel(SETID.ch_may_day_guess)
         embed = discord.Embed(

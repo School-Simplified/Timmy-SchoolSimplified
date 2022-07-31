@@ -118,8 +118,7 @@ class RecruitmentForm(ui.Modal, title="Recruitment Request"):
                     discord.SelectOption(label="MED", value="MED"),
                     discord.SelectOption(label="HIGH", value="HIGH"),
                     discord.SelectOption(label="CRIT", value="CRIT"),
-
-                ]
+                ],
             )
         )
 
@@ -129,7 +128,7 @@ class RecruitmentForm(ui.Modal, title="Recruitment Request"):
                 options=[
                     discord.SelectOption(label="Leadership", value="Leadership"),
                     discord.SelectOption(label="Associate", value="Associate"),
-                ]
+                ],
             )
         )
 
@@ -147,7 +146,9 @@ class RecruitmentForm(ui.Modal, title="Recruitment Request"):
 
     async def on_submit(self, interaction: discord.Interaction):
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_recruiting_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_recruiting_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
 
         ticket_channel = await ticket_category.create_text_channel(
@@ -196,21 +197,21 @@ class RecruitmentForm(ui.Modal, title="Recruitment Request"):
         embed_information = discord.Embed(
             title="Recruitment Request",
             description=f"User: {member.mention}\n"
-                        f"**Position Title:** {self.position_title.value}\n"
-                        f"**Ranking:** {self.children[0].value}\n"
-                        f"**People Needed:** {self.num_people.value}\n"
-                        f"**Urgency:** {self.children[1].value}",
+            f"**Position Title:** {self.position_title.value}\n"
+            f"**Ranking:** {self.children[0].value}\n"
+            f"**People Needed:** {self.num_people.value}\n"
+            f"**Urgency:** {self.children[1].value}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
-        await interaction.response.send("Your ticket has been created!\nYou can view it here: <#{ticket_channel.id}>")
+        await interaction.response.send(
+            "Your ticket has been created!\nYou can view it here: <#{ticket_channel.id}>"
+        )
 
 
 class RecruitmentButton(discord.ui.View):
@@ -334,7 +335,9 @@ class AdminAPI(commands.Cog):
     @app_commands.describe(
         suspend="Select whether to suspend or restore the account. This field is required."
     )
-    async def suspend_gsuite(self, interaction: discord.Interaction, email: str, suspend: bool):
+    async def suspend_gsuite(
+        self, interaction: discord.Interaction, email: str, suspend: bool
+    ):
         HR_Role = discord.utils.get(interaction.guild.roles, id=HRID.r_hr_staff)
         if HR_Role not in interaction.user.roles:
             return await interaction.response.send_message(
@@ -348,7 +351,7 @@ class AdminAPI(commands.Cog):
 
         try:
             user = service.users().get(userKey=email).execute()
-            user['suspended'] = suspend
+            user["suspended"] = suspend
             service.users().update(userKey=email, body=user).execute()
         except:
             await interaction.response.send_message(
@@ -356,33 +359,41 @@ class AdminAPI(commands.Cog):
             )
         else:
             if suspend:
-                await interaction.response.send_message("Successfully suspended the account.")
+                await interaction.response.send_message(
+                    "Successfully suspended the account."
+                )
             else:
-                await interaction.response.send_message("Successfully restored the account.")
-
-
+                await interaction.response.send_message(
+                    "Successfully restored the account."
+                )
 
     @app_commands.command(
         name="promote",
         description="Create a promotion request to HR.",
     )
-    @app_commands.guilds(discord.Object(954104500388511784), discord.Object(932066545117585428),
-                         discord.Object(950799439625355294), discord.Object(953433561178968104),
-                         discord.Object(950813235588780122), discord.Object(952294235028201572),
-                         discord.Object(952287046750310440), discord.Object(950799370855518268),
-                         discord.Object(950799485901107270), discord.Object(951595352090374185),
-                         discord.Object(950795656853876806), discord.Object(955911166520082452),
-                         discord.Object(824421093015945216), discord.Object(815753072742891532),
-                         discord.Object(891521033700540457))
+    @app_commands.guilds(
+        discord.Object(954104500388511784),
+        discord.Object(932066545117585428),
+        discord.Object(950799439625355294),
+        discord.Object(953433561178968104),
+        discord.Object(950813235588780122),
+        discord.Object(952294235028201572),
+        discord.Object(952287046750310440),
+        discord.Object(950799370855518268),
+        discord.Object(950799485901107270),
+        discord.Object(951595352090374185),
+        discord.Object(950795656853876806),
+        discord.Object(955911166520082452),
+        discord.Object(824421093015945216),
+        discord.Object(815753072742891532),
+        discord.Object(891521033700540457),
+    )
     @app_commands.describe(
         user="Select the user you want to promote.",
         reason="Enter the reason for the promotion.",
     )
     async def promote(
-            self,
-            interaction: discord.Interaction,
-            user: discord.User,
-            reason: str
+        self, interaction: discord.Interaction, user: discord.User, reason: str
     ):
         if user.bot:
             return await interaction.response.send_message(
@@ -400,7 +411,9 @@ class AdminAPI(commands.Cog):
             )
 
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_promote_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_promote_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -458,17 +471,14 @@ class AdminAPI(commands.Cog):
         await LCM.pin()
         embed_information = discord.Embed(
             title="Promotion Request",
-            description=f"User: {user.mention}\n"
-            f"**Reason:** {reason}",
+            description=f"User: {user.mention}\n" f"**Reason:** {reason}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
 
         await interaction.response.send_message(
@@ -482,14 +492,23 @@ class AdminAPI(commands.Cog):
         name="fire",
         description="Create a firing request to HR.",
     )
-    @app_commands.guilds(discord.Object(954104500388511784), discord.Object(932066545117585428),
-                         discord.Object(950799439625355294), discord.Object(953433561178968104),
-                         discord.Object(950813235588780122), discord.Object(952294235028201572),
-                         discord.Object(952287046750310440), discord.Object(950799370855518268),
-                         discord.Object(950799485901107270), discord.Object(951595352090374185),
-                         discord.Object(950795656853876806), discord.Object(955911166520082452),
-                         discord.Object(824421093015945216), discord.Object(815753072742891532),
-                         discord.Object(891521033700540457))
+    @app_commands.guilds(
+        discord.Object(954104500388511784),
+        discord.Object(932066545117585428),
+        discord.Object(950799439625355294),
+        discord.Object(953433561178968104),
+        discord.Object(950813235588780122),
+        discord.Object(952294235028201572),
+        discord.Object(952287046750310440),
+        discord.Object(950799370855518268),
+        discord.Object(950799485901107270),
+        discord.Object(951595352090374185),
+        discord.Object(950795656853876806),
+        discord.Object(955911166520082452),
+        discord.Object(824421093015945216),
+        discord.Object(815753072742891532),
+        discord.Object(891521033700540457),
+    )
     @app_commands.describe(
         user="Select the user you want to fire.",
         reason="Enter the reason for the firing.",
@@ -497,12 +516,12 @@ class AdminAPI(commands.Cog):
         evidence_url="Upload any attachment relating to the firing.",
     )
     async def fire(
-            self,
-            interaction: discord.Interaction,
-            user: discord.User,
-            reason: str,
-            evidence_text: str = None,
-            evidence_url: discord.Attachment = None
+        self,
+        interaction: discord.Interaction,
+        user: discord.User,
+        reason: str,
+        evidence_text: str = None,
+        evidence_url: discord.Attachment = None,
     ):
         if user.bot:
             return await interaction.response.send_message(
@@ -520,7 +539,9 @@ class AdminAPI(commands.Cog):
             )
 
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_fire_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_fire_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -596,9 +617,7 @@ class AdminAPI(commands.Cog):
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
         await interaction.response.send_message(
             content=f"""{interaction.user.mention} Successfully created a firing request for **{user.name}**.\n
@@ -607,19 +626,27 @@ class AdminAPI(commands.Cog):
             ephemeral=True,
         )
 
-
     @app_commands.command(
         name="censure",
         description="Create a censure request to HR.",
     )
-    @app_commands.guilds(discord.Object(954104500388511784), discord.Object(932066545117585428),
-                         discord.Object(950799439625355294), discord.Object(953433561178968104),
-                         discord.Object(950813235588780122), discord.Object(952294235028201572),
-                         discord.Object(952287046750310440), discord.Object(950799370855518268),
-                         discord.Object(950799485901107270), discord.Object(951595352090374185),
-                         discord.Object(950795656853876806), discord.Object(955911166520082452),
-                         discord.Object(824421093015945216), discord.Object(815753072742891532),
-                         discord.Object(891521033700540457))
+    @app_commands.guilds(
+        discord.Object(954104500388511784),
+        discord.Object(932066545117585428),
+        discord.Object(950799439625355294),
+        discord.Object(953433561178968104),
+        discord.Object(950813235588780122),
+        discord.Object(952294235028201572),
+        discord.Object(952287046750310440),
+        discord.Object(950799370855518268),
+        discord.Object(950799485901107270),
+        discord.Object(951595352090374185),
+        discord.Object(950795656853876806),
+        discord.Object(955911166520082452),
+        discord.Object(824421093015945216),
+        discord.Object(815753072742891532),
+        discord.Object(891521033700540457),
+    )
     @app_commands.describe(
         user="Select the user you want to censure.",
         reason="Enter the reason for the censure.",
@@ -627,12 +654,12 @@ class AdminAPI(commands.Cog):
         evidence_url="Upload any attachment relating to the censure.",
     )
     async def censure(
-            self,
-            interaction: discord.Interaction,
-            user: discord.User,
-            reason: str,
-            evidence_text: str = None,
-            evidence_url: discord.Attachment = None
+        self,
+        interaction: discord.Interaction,
+        user: discord.User,
+        reason: str,
+        evidence_text: str = None,
+        evidence_url: discord.Attachment = None,
     ):
         if user.bot:
             return await interaction.response.send_message(
@@ -650,7 +677,9 @@ class AdminAPI(commands.Cog):
             )
 
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_censure_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_censure_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -725,9 +754,7 @@ class AdminAPI(commands.Cog):
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
         await interaction.response.send_message(
             content=f"""{interaction.user.mention} Successfully created a censure request for **{user.name}**.\n
@@ -740,14 +767,23 @@ class AdminAPI(commands.Cog):
         name="strike",
         description="Create a strike request to HR.",
     )
-    @app_commands.guilds(discord.Object(954104500388511784), discord.Object(932066545117585428),
-                         discord.Object(950799439625355294), discord.Object(953433561178968104),
-                         discord.Object(950813235588780122), discord.Object(952294235028201572),
-                         discord.Object(952287046750310440), discord.Object(950799370855518268),
-                         discord.Object(950799485901107270), discord.Object(951595352090374185),
-                         discord.Object(950795656853876806), discord.Object(955911166520082452),
-                         discord.Object(824421093015945216), discord.Object(815753072742891532),
-                         discord.Object(891521033700540457))
+    @app_commands.guilds(
+        discord.Object(954104500388511784),
+        discord.Object(932066545117585428),
+        discord.Object(950799439625355294),
+        discord.Object(953433561178968104),
+        discord.Object(950813235588780122),
+        discord.Object(952294235028201572),
+        discord.Object(952287046750310440),
+        discord.Object(950799370855518268),
+        discord.Object(950799485901107270),
+        discord.Object(951595352090374185),
+        discord.Object(950795656853876806),
+        discord.Object(955911166520082452),
+        discord.Object(824421093015945216),
+        discord.Object(815753072742891532),
+        discord.Object(891521033700540457),
+    )
     @app_commands.describe(
         user="Select the user you want to strike.",
         reason="Enter the reason for the strike.",
@@ -756,13 +792,13 @@ class AdminAPI(commands.Cog):
         evidence_url="Upload any attachment relating to the strike.",
     )
     async def censure(
-            self,
-            interaction: discord.Interaction,
-            user: discord.User,
-            reason: str,
-            department: str,
-            evidence_text: str = None,
-            evidence_url: discord.Attachment = None
+        self,
+        interaction: discord.Interaction,
+        user: discord.User,
+        reason: str,
+        department: str,
+        evidence_text: str = None,
+        evidence_url: discord.Attachment = None,
     ):
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
         manager_role = discord.utils.get(mgm_server.roles, name="Manager")
@@ -794,7 +830,9 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} This command is only for managers+, contact HR for more information."
             )
 
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_censure_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_censure_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -860,19 +898,17 @@ class AdminAPI(commands.Cog):
         embed_information = discord.Embed(
             title="Strike Request",
             description=f"User: {user.mention}\n"
-                        f"**Reason:** {reason}\n"
-                        f"**Department:** {department}\n"
-                        f"**Evidence:** {evidence_text}\n"
-                        f"**Evidence URL:** {evidence_url}",
+            f"**Reason:** {reason}\n"
+            f"**Department:** {department}\n"
+            f"**Evidence:** {evidence_text}\n"
+            f"**Evidence URL:** {evidence_url}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
         await interaction.response.send_message(
             content=f"""{interaction.user.mention} Successfully created a strike request for **{user.name}**.\n
@@ -885,21 +921,37 @@ class AdminAPI(commands.Cog):
         name="break",
         description="Create a break request to HR.",
     )
-    @app_commands.guilds(discord.Object(954104500388511784), discord.Object(932066545117585428),
-                            discord.Object(950799439625355294), discord.Object(953433561178968104),
-                            discord.Object(950813235588780122), discord.Object(952294235028201572),
-                            discord.Object(952287046750310440), discord.Object(950799370855518268),
-                            discord.Object(950799485901107270), discord.Object(951595352090374185),
-                            discord.Object(950795656853876806), discord.Object(955911166520082452),
-                            discord.Object(824421093015945216), discord.Object(815753072742891532),
-                            discord.Object(891521033700540457))
+    @app_commands.guilds(
+        discord.Object(954104500388511784),
+        discord.Object(932066545117585428),
+        discord.Object(950799439625355294),
+        discord.Object(953433561178968104),
+        discord.Object(950813235588780122),
+        discord.Object(952294235028201572),
+        discord.Object(952287046750310440),
+        discord.Object(950799370855518268),
+        discord.Object(950799485901107270),
+        discord.Object(951595352090374185),
+        discord.Object(950795656853876806),
+        discord.Object(955911166520082452),
+        discord.Object(824421093015945216),
+        discord.Object(815753072742891532),
+        discord.Object(891521033700540457),
+    )
     @app_commands.describe(
         team="Identify the teams you are in/want to take a break from.",
         start_date="Enter the start date of the break.",
         end_date="Enter the end date of the break.",
         reason="Enter the reason for the break.",
     )
-    async def break_request(self, interaction: discord.Interaction, team: str, start_date: str, end_date: str, reason: str = "No reason provided."):
+    async def break_request(
+        self,
+        interaction: discord.Interaction,
+        team: str,
+        start_date: str,
+        end_date: str,
+        reason: str = "No reason provided.",
+    ):
         if not team:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You must enter a team."
@@ -913,7 +965,9 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter an end date."
             )
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_break_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_break_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -970,19 +1024,17 @@ class AdminAPI(commands.Cog):
         embed_information = discord.Embed(
             title="Break Request",
             description=f"User: {member.mention}\n"
-                f"**Reason:** {reason}\n"
-                f"**Team:** {team}\n"
-                f"**Start Date:** {start_date}\n"
-                f"**End Date:** {end_date}",
+            f"**Reason:** {reason}\n"
+            f"**Team:** {team}\n"
+            f"**Start Date:** {start_date}\n"
+            f"**End Date:** {end_date}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
 
         await interaction.response.send_message(
@@ -996,20 +1048,35 @@ class AdminAPI(commands.Cog):
         name="resignations",
         description="Create a resignation request to HR.",
     )
-    @app_commands.guilds(discord.Object(954104500388511784), discord.Object(932066545117585428),
-                         discord.Object(950799439625355294), discord.Object(953433561178968104),
-                         discord.Object(950813235588780122), discord.Object(952294235028201572),
-                         discord.Object(952287046750310440), discord.Object(950799370855518268),
-                         discord.Object(950799485901107270), discord.Object(951595352090374185),
-                         discord.Object(950795656853876806), discord.Object(955911166520082452),
-                         discord.Object(824421093015945216), discord.Object(815753072742891532),
-                         discord.Object(891521033700540457))
+    @app_commands.guilds(
+        discord.Object(954104500388511784),
+        discord.Object(932066545117585428),
+        discord.Object(950799439625355294),
+        discord.Object(953433561178968104),
+        discord.Object(950813235588780122),
+        discord.Object(952294235028201572),
+        discord.Object(952287046750310440),
+        discord.Object(950799370855518268),
+        discord.Object(950799485901107270),
+        discord.Object(951595352090374185),
+        discord.Object(950795656853876806),
+        discord.Object(955911166520082452),
+        discord.Object(824421093015945216),
+        discord.Object(815753072742891532),
+        discord.Object(891521033700540457),
+    )
     @app_commands.describe(
         team="Identify the team(s) want to resign from.",
         expected_date="Enter the expected date of your resignation.",
         reason="Enter the reason for your resignation.",
     )
-    async def resignation_request(self, interaction: discord.Interaction, team: str, expected_date: str, reason: str = "No reason provided."):
+    async def resignation_request(
+        self,
+        interaction: discord.Interaction,
+        team: str,
+        expected_date: str,
+        reason: str = "No reason provided.",
+    ):
         if not team:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You must enter a team."
@@ -1019,7 +1086,9 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter a expected date."
             )
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_resignation_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_resignation_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -1029,7 +1098,6 @@ class AdminAPI(commands.Cog):
                     f"{interaction.user.mention} You must be in the server to create a resignation request.\nIf you "
                     f"are not a manager+, please DM someone from HR! "
                 )
-
 
         ticket_channel = await ticket_category.create_text_channel(
             f"{interaction.user.name}-resignation",
@@ -1077,18 +1145,16 @@ class AdminAPI(commands.Cog):
         embed_information = discord.Embed(
             title="Resignation Request",
             description=f"User: {member.mention}\n"
-                        f"**Team:** {team}\n"
-                        f"**Expected Date:** {expected_date}\n"
-                        f"**Reason:** {reason}",
+            f"**Team:** {team}\n"
+            f"**Expected Date:** {expected_date}\n"
+            f"**Reason:** {reason}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
 
         await interaction.response.send_message(
@@ -1104,25 +1170,41 @@ class AdminAPI(commands.Cog):
         name="suggestions",
         description="Create a suggestion request to HR.",
     )
-    @app_commands.guilds(discord.Object(954104500388511784), discord.Object(932066545117585428),
-                         discord.Object(950799439625355294), discord.Object(953433561178968104),
-                         discord.Object(950813235588780122), discord.Object(952294235028201572),
-                         discord.Object(952287046750310440), discord.Object(950799370855518268),
-                         discord.Object(950799485901107270), discord.Object(951595352090374185),
-                         discord.Object(950795656853876806), discord.Object(955911166520082452),
-                         discord.Object(824421093015945216), discord.Object(815753072742891532),
-                         discord.Object(891521033700540457))
+    @app_commands.guilds(
+        discord.Object(954104500388511784),
+        discord.Object(932066545117585428),
+        discord.Object(950799439625355294),
+        discord.Object(953433561178968104),
+        discord.Object(950813235588780122),
+        discord.Object(952294235028201572),
+        discord.Object(952287046750310440),
+        discord.Object(950799370855518268),
+        discord.Object(950799485901107270),
+        discord.Object(951595352090374185),
+        discord.Object(950795656853876806),
+        discord.Object(955911166520082452),
+        discord.Object(824421093015945216),
+        discord.Object(815753072742891532),
+        discord.Object(891521033700540457),
+    )
     @app_commands.describe(
         suggestion="Enter the suggestion you want to make.",
         related_team="Enter the team(s) this suggestion is related to.",
     )
-    async def suggestion_request(self, interaction: discord.Interaction, suggestion: str, related_team: str = "No team provided."):
+    async def suggestion_request(
+        self,
+        interaction: discord.Interaction,
+        suggestion: str,
+        related_team: str = "No team provided.",
+    ):
         if not suggestion:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You must enter a suggestion."
             )
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_suggestion_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_suggestion_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -1179,17 +1261,15 @@ class AdminAPI(commands.Cog):
         embed_information = discord.Embed(
             title="Suggestion Request",
             description=f"User: {member.mention}\n"
-                        f"**Related Team:** {related_team}\n"
-                        f"**Suggestion:** {suggestion}",
+            f"**Related Team:** {related_team}\n"
+            f"**Suggestion:** {suggestion}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
 
         await interaction.response.send_message(
@@ -1204,27 +1284,46 @@ class AdminAPI(commands.Cog):
         name="complaint",
         description="Create a complaint request to HR.",
     )
-    @app_commands.guilds(discord.Object(954104500388511784), discord.Object(932066545117585428),
-                         discord.Object(950799439625355294), discord.Object(953433561178968104),
-                         discord.Object(950813235588780122), discord.Object(952294235028201572),
-                         discord.Object(952287046750310440), discord.Object(950799370855518268),
-                         discord.Object(950799485901107270), discord.Object(951595352090374185),
-                         discord.Object(950795656853876806), discord.Object(955911166520082452),
-                         discord.Object(824421093015945216), discord.Object(815753072742891532),
-                         discord.Object(891521033700540457), discord.Object(763119924385939498))
+    @app_commands.guilds(
+        discord.Object(954104500388511784),
+        discord.Object(932066545117585428),
+        discord.Object(950799439625355294),
+        discord.Object(953433561178968104),
+        discord.Object(950813235588780122),
+        discord.Object(952294235028201572),
+        discord.Object(952287046750310440),
+        discord.Object(950799370855518268),
+        discord.Object(950799485901107270),
+        discord.Object(951595352090374185),
+        discord.Object(950795656853876806),
+        discord.Object(955911166520082452),
+        discord.Object(824421093015945216),
+        discord.Object(815753072742891532),
+        discord.Object(891521033700540457),
+        discord.Object(763119924385939498),
+    )
     @app_commands.describe(
         user="Who is the user you wish to submit a complaint about?",
         complaint="Enter the complaint you want to make.",
         evidence="Enter the evidence you have for the complaint.",
         evidence_url="Upload attachments here.",
     )
-    async def complaint_request(self, interaction: discord.Interaction, user: discord.User, complaint: str, evidence: str = "None provided", evidence_url: discord.Attachment = None):
+    async def complaint_request(
+        self,
+        interaction: discord.Interaction,
+        user: discord.User,
+        complaint: str,
+        evidence: str = "None provided",
+        evidence_url: discord.Attachment = None,
+    ):
         if not complaint:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You must enter a complaint."
             )
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_complaint_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_complaint_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -1286,18 +1385,16 @@ class AdminAPI(commands.Cog):
         embed_information = discord.Embed(
             title="Complaint Request",
             description=f"User: {user.mention}\n"
-                        f"**Complaint:** {complaint}\n"
-                        f"**Evidence:** {evidence}\n"
-                        f"**Evidence URL:** {evidence_url}",
+            f"**Complaint:** {complaint}\n"
+            f"**Evidence:** {evidence}\n"
+            f"**Evidence URL:** {evidence_url}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
 
         await interaction.response.send_message(
@@ -1314,20 +1411,31 @@ class AdminAPI(commands.Cog):
         name="cs-hours",
         description="Request CS hours.",
     )
-    @app_commands.guilds(discord.Object(954104500388511784), discord.Object(932066545117585428),
-                         discord.Object(950799439625355294), discord.Object(953433561178968104),
-                         discord.Object(950813235588780122), discord.Object(952294235028201572),
-                         discord.Object(952287046750310440), discord.Object(950799370855518268),
-                         discord.Object(950799485901107270), discord.Object(951595352090374185),
-                         discord.Object(950795656853876806), discord.Object(955911166520082452),
-                         discord.Object(824421093015945216), discord.Object(815753072742891532),
-                         discord.Object(891521033700540457))
+    @app_commands.guilds(
+        discord.Object(954104500388511784),
+        discord.Object(932066545117585428),
+        discord.Object(950799439625355294),
+        discord.Object(953433561178968104),
+        discord.Object(950813235588780122),
+        discord.Object(952294235028201572),
+        discord.Object(952287046750310440),
+        discord.Object(950799370855518268),
+        discord.Object(950799485901107270),
+        discord.Object(951595352090374185),
+        discord.Object(950795656853876806),
+        discord.Object(955911166520082452),
+        discord.Object(824421093015945216),
+        discord.Object(815753072742891532),
+        discord.Object(891521033700540457),
+    )
     @app_commands.describe(
         team="Enter the team(s) you want to request CS hours for.",
         hours="Enter the number of hours you want to request.",
         form_link="Paste your form link here.",
     )
-    async def cs_hours(self, interaction: discord.Interaction, team: str, hours: int, form_link: str):
+    async def cs_hours(
+        self, interaction: discord.Interaction, team: str, hours: int, form_link: str
+    ):
         if not team:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You must enter a team."
@@ -1342,7 +1450,9 @@ class AdminAPI(commands.Cog):
             )
 
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_cs_hours_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_cs_hours_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
 
         if member is None:
@@ -1400,18 +1510,16 @@ class AdminAPI(commands.Cog):
         embed_information = discord.Embed(
             title="CS Hours Request",
             description=f"User: {member.mention}\n"
-                        f"**Team:** {team}\n"
-                        f"**Hours:** {hours}\n"
-                        f"**Form Link:** {form_link}",
+            f"**Team:** {team}\n"
+            f"**Hours:** {hours}\n"
+            f"**Form Link:** {form_link}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
 
         await interaction.response.send_message(
@@ -1433,7 +1541,12 @@ class AdminAPI(commands.Cog):
         user="Target a specific user to raid, if left blank it raids everyone.",
         force="Force a nickname change regardless, maybe they disguised furry??? | Only works on targeted users.",
     )
-    async def furry_raid(self, interaction: discord.Interaction, user: discord.User = None, force: bool = False):
+    async def furry_raid(
+        self,
+        interaction: discord.Interaction,
+        user: discord.User = None,
+        force: bool = False,
+    ):
         # TODO: Make sure to check if the username translates to furry in a different language
 
         stupid = ["furry", "kitten", "meow", "daddy", "fruity", "gato"]
@@ -1443,7 +1556,11 @@ class AdminAPI(commands.Cog):
         if not user:
             for member in interaction.guild.members:
                 for element in stupid:
-                    if element in member.display_name and not member.bot and member.id != 409152798609899530:
+                    if (
+                        element in member.display_name
+                        and not member.bot
+                        and member.id != 409152798609899530
+                    ):
                         user_count += 1
                         try:
                             await member.edit(nick="name seized by anti-furry police")
@@ -1492,15 +1609,6 @@ class AdminAPI(commands.Cog):
                     await interaction.followup.send(
                         f"{interaction.user.mention}: {user.mention} has been raided by the anti-furry police."
                     )
-
-
-
-
-
-
-
-
-
 
 
 async def setup(bot):

@@ -31,8 +31,14 @@ class GSuiteLogin(commands.Cog):
                     'https://www.googleapis.com/auth/userinfo.profile'],
             redirect_uri='urn:ietf:wg:oauth:2.0:oob'
         )"""
-        self.staffrole = {932066545117585428: 932066545117585430, 955911166520082452: 955990675160199189}
-        self.logchannel = {932066545117585428: 932066545885134904, 955911166520082452: 955991444483608606}
+        self.staffrole = {
+            932066545117585428: 932066545117585430,
+            955911166520082452: 955990675160199189,
+        }
+        self.logchannel = {
+            932066545117585428: 932066545885134904,
+            955911166520082452: 955991444483608606,
+        }
         self.est = pytz.timezone("US/Eastern")
 
     @commands.Cog.listener("on_interaction")

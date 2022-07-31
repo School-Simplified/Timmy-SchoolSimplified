@@ -24,8 +24,7 @@ class WebRequestModal(ui.Modal, title="Web Development Request"):
                     discord.SelectOption(label="MED", value="MED"),
                     discord.SelectOption(label="HIGH", value="HIGH"),
                     discord.SelectOption(label="CRIT", value="CRIT"),
-
-                ]
+                ],
             )
         )
 
@@ -33,11 +32,17 @@ class WebRequestModal(ui.Modal, title="Web Development Request"):
             discord.ui.Select(
                 placeholder="Select Request Type",
                 options=[
-                    discord.SelectOption(label="Content Changes", value="Content Changes"),
+                    discord.SelectOption(
+                        label="Content Changes", value="Content Changes"
+                    ),
                     discord.SelectOption(label="Typo Fixes", value="hello"),
-                    discord.SelectOption(label="Page Redesign ", value="Page Redesign "),
-                    discord.SelectOption(label="Build New Page", value="Build New Page"),
-                ]
+                    discord.SelectOption(
+                        label="Page Redesign ", value="Page Redesign "
+                    ),
+                    discord.SelectOption(
+                        label="Build New Page", value="Build New Page"
+                    ),
+                ],
             )
         )
 
@@ -62,7 +67,9 @@ class WebRequestModal(ui.Modal, title="Web Development Request"):
 
     async def on_submit(self, interaction: discord.Interaction):
         mgm_server = self.bot.get_guild(StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(mgm_server.categories, id=StaffID.cat_cs_hours_tickets)
+        ticket_category = discord.utils.get(
+            mgm_server.categories, id=StaffID.cat_cs_hours_tickets
+        )
         member = interaction.guild.get_member(interaction.user.id)
 
         ticket_channel = await ticket_category.create_text_channel(
@@ -111,20 +118,18 @@ class WebRequestModal(ui.Modal, title="Web Development Request"):
         embed_information = discord.Embed(
             title="Web Development Request",
             description=f"User: {member.mention}\n"
-                        f"Priority: {self.children[0].value}\n"
-                        f"Request Type: {self.children[1].value}\n"
-                        f"Deadline: {self.deadline.value}\n"
-                        f"Title: {self.title_commission.value}\n"
-                        f"Information: {self.information.value}",
+            f"Priority: {self.children[0].value}\n"
+            f"Request Type: {self.children[1].value}\n"
+            f"Deadline: {self.deadline.value}\n"
+            f"Title: {self.title_commission.value}\n"
+            f"Information: {self.information.value}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(
             name=interaction.user.name,
             icon_url=interaction.user.avatar.url,
         )
-        embed_information.set_footer(
-            text=f"ID: {interaction.user.id}"
-        )
+        embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
 
         await interaction.response.send_message(
@@ -147,15 +152,15 @@ class CommissionWebButton(discord.ui.View):
         emoji="📝",
     )
     async def verify(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         if interaction.guild.id == TechID.g_tech:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} commissions have moved to the Staff Resources & Information Server!\nYou "
                 f"can start one here: <#956619270899499028>.",
-                ephemeral=True
+                ephemeral=True,
             )
 
         modal = WebRequestModal(self.bot)
@@ -206,6 +211,7 @@ class WebCommissionCode(commands.Cog):
                 inline=False,
             )
         await ctx.send(embed=embed)
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(WebCommissionCode(bot))

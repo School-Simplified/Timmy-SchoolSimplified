@@ -43,7 +43,7 @@ def cleanup_url(url: str) -> str:
 
 class RedirectPizza:
     def __init__(
-            self, id: int, domain: str, source: str, destination: str, created_at: datetime
+        self, id: int, domain: str, source: str, destination: str, created_at: datetime
     ) -> None:
         self.id = id
         self.domain = domain
@@ -58,7 +58,9 @@ class UnprocessableEntity(Exception):
         self.message = message
         self.errors = errors
         self.pre = "Unprocessable Entity"
-        self.message = f"{self.pre}: {self.message}\n  -> Response Code: {self.status_code}."
+        self.message = (
+            f"{self.pre}: {self.message}\n  -> Response Code: {self.status_code}."
+        )
         super().__init__(self.message)
 
 
@@ -83,17 +85,19 @@ class RedirectClient:
             list: List of redirects.
         """
         r = requests.get(
-                "https://redirect.pizza/api/v1/redirects", auth=("bearer", self.token)
+            "https://redirect.pizza/api/v1/redirects", auth=("bearer", self.token)
         )
         if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
+            raise UnprocessableEntity(
+                r.status_code, r.json()["message"], r.json()["errors"]
+            )
 
         last_page = r.json()["meta"]["last_page"]
         list_of_data = []
         for page in range(1, last_page + 1):
             r = requests.get(
-                    f"https://redirect.pizza/api/v1/redirects?page={page}",
-                    auth=("bearer", self.token),
+                f"https://redirect.pizza/api/v1/redirects?page={page}",
+                auth=("bearer", self.token),
             )
 
             data = r.json()["data"]
@@ -115,7 +119,9 @@ class RedirectClient:
                 )
         return list_of_data
 
-    def fetch_redirect(self, r_id: str, subdomain: str = None) -> typing.Union[RedirectPizza, None]:
+    def fetch_redirect(
+        self, r_id: str, subdomain: str = None
+    ) -> typing.Union[RedirectPizza, None]:
         """Fetches a redirect.
 
         Args:
@@ -129,11 +135,13 @@ class RedirectClient:
             typing.Union[dict, int]: Returns a dict of the redirect or an int of the status code.
         """
         r = requests.get(
-                f"https://redirect.pizza/api/v1/redirects/{r_id}",
-                auth=("bearer", self.token),
+            f"https://redirect.pizza/api/v1/redirects/{r_id}",
+            auth=("bearer", self.token),
         )
         if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
+            raise UnprocessableEntity(
+                r.status_code, r.json()["message"], r.json()["errors"]
+            )
 
         elif r.status_code == 404:
             if "ssimpl.org" not in r_id:
@@ -166,7 +174,7 @@ class RedirectClient:
         )
 
     def add_redirect(
-            self, redirect_url: str, destination: str, domain: str = None
+        self, redirect_url: str, destination: str, domain: str = None
     ) -> RedirectPizza:
         """Adds a redirect.
 
@@ -196,10 +204,12 @@ class RedirectClient:
                 "uri_forwarding": False,
                 "keep_query_string": False,
                 "tracking": True,
-            }
+            },
         )
         if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
+            raise UnprocessableEntity(
+                r.status_code, r.json()["message"], r.json()["errors"]
+            )
         pprint.pprint(r.json())
 
         full_url = r.json()["data"]["sources"][0]["url"]
@@ -247,9 +257,11 @@ class RedirectClient:
                 raise ValueError(f"Could not find redirect with path {id_or_path}")
 
         r = requests.delete(
-                f"https://redirect.pizza/api/v1/redirects/{id_or_path}",
-                auth=("bearer", self.token),
+            f"https://redirect.pizza/api/v1/redirects/{id_or_path}",
+            auth=("bearer", self.token),
         )
         if r.status_code == 422:
-            raise UnprocessableEntity(r.status_code, r.json()["message"], r.json()["errors"])
+            raise UnprocessableEntity(
+                r.status_code, r.json()["message"], r.json()["errors"]
+            )
         return r.status_code

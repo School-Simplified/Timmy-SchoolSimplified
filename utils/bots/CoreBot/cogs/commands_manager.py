@@ -15,7 +15,9 @@ class CommandsManager(commands.Cog):
     @commands.command()
     @is_botAdmin3
     async def sync(
-        self, ctx: commands.Context, action: Union[Literal["global"], Literal["all"], discord.Guild]
+        self,
+        ctx: commands.Context,
+        action: Union[Literal["global"], Literal["all"], discord.Guild],
     ):
         if isinstance(action, discord.Guild):
             guild = action
@@ -123,7 +125,7 @@ class CommandsManager(commands.Cog):
                         color=Colors.yellow,
                         title="Sync",
                         description=f"Syncing slash commands globally..."
-                                    f"\nThis may take a while.",
+                        f"\nThis may take a while.",
                     )
                     await message_confirm.edit(embed=embed_processing, view=None)
 

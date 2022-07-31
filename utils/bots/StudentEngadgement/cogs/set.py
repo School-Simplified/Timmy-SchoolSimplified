@@ -66,7 +66,7 @@ class SetSuggestBlacklist(Group):
         embed = discord.Embed(
             title="Successfully Blacklisted User!",
             description=f"{user.mention} has been added to the blacklist.\n"
-                        f"`User ID:` `{user.id}`",
+            f"`User ID:` `{user.id}`",
             color=discord.Color.brand_green(),
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -87,7 +87,7 @@ class SetSuggestBlacklist(Group):
             embed = discord.Embed(
                 title="Successfully Removed User!",
                 description=f"{user.mention} has been removed from the blacklist!"
-                            f"`User ID:` `{user.id}`",
+                f"`User ID:` `{user.id}`",
                 color=discord.Color.brand_green(),
             )
             return await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -415,7 +415,7 @@ class Engagement(commands.Cog):
     @spammer_check()
     @guilds(MainID.g_main)
     async def _college_accept(
-            self, interaction: discord.Interaction, file: discord.Attachment
+        self, interaction: discord.Interaction, file: discord.Attachment
     ):
         embed = discord.Embed(
             title="College Acceptance Letter",
@@ -453,7 +453,7 @@ class AnnoyRachel(commands.Cog):
     def __init__(self, bot: Timmy):
         self.bot = bot
 
-    @commands.Cog.listener('on_message')
+    @commands.Cog.listener("on_message")
     async def on_message_(self, message: discord.Message):
         if message.author.id != 752984497259151370:
             return

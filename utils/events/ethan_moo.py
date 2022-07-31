@@ -14,8 +14,12 @@ class EthanMoo(commands.Cog):
             if member.id == 998386623593058394:
                 voice_channel: discord.VoiceChannel = after.channel
                 voice_client = await voice_channel.connect()
-                source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("./ethan_moo.mp3"))
-                voice_client.play(source, after=lambda e: print(f'Player error: {e}') if e else None)
+                source = discord.PCMVolumeTransformer(
+                    discord.FFmpegPCMAudio("./ethan_moo.mp3")
+                )
+                voice_client.play(
+                    source, after=lambda e: print(f"Player error: {e}") if e else None
+                )
                 await asyncio.sleep(80)
                 await voice_client.disconnect()
 

@@ -25,21 +25,15 @@ IssueFeatureLiteral = Literal["Command", "Slash Command", "Dropdown or Button", 
 
 class GithubIssueLabels(discord.ui.View):
     def __init__(
-            self,
-            bot: Timmy,
-            issue: Issue,
-            repository: Repository,
+        self,
+        bot: Timmy,
+        issue: Issue,
+        repository: Repository,
     ):
         super().__init__(timeout=500)
         self.bot = bot
         self._issue = issue
-        self.add_item(
-            GithubIssueSelect(
-                bot,
-                issue,
-                list(repository.get_labels())
-            )
-        )
+        self.add_item(GithubIssueSelect(bot, issue, list(repository.get_labels())))
 
     async def on_timeout(self) -> None:
         for item in self.children:
@@ -47,12 +41,7 @@ class GithubIssueLabels(discord.ui.View):
 
 
 class GithubIssueSelect(discord.ui.Select):
-    def __init__(
-            self,
-            bot: Timmy,
-            issue: Issue,
-            labels: List[Label]
-    ):
+    def __init__(self, bot: Timmy, issue: Issue, labels: List[Label]):
         super().__init__(max_values=5)
         self.bot = bot
         self._issue = issue
@@ -61,7 +50,7 @@ class GithubIssueSelect(discord.ui.Select):
             discord.SelectOption(
                 label=label.name,
                 description=label.description or None,
-                value=label.name
+                value=label.name,
             )
             for label in self._labels
         ]
@@ -85,13 +74,13 @@ class GithubIssueSelect(discord.ui.Select):
 
 class GithubControlModal(discord.ui.Modal):
     def __init__(
-            self,
-            bot: Timmy,
-            type_: GithubActionLiteral,
-            feature: IssueFeatureLiteral,
-            github_client: Github,
-            attachment: Optional[discord.Attachment] = None,
-            gist_url: Optional[str] = None,
+        self,
+        bot: Timmy,
+        type_: GithubActionLiteral,
+        feature: IssueFeatureLiteral,
+        github_client: Github,
+        attachment: Optional[discord.Attachment] = None,
+        gist_url: Optional[str] = None,
     ):
         super().__init__(timeout=None, title="Create Issue")
 
@@ -150,8 +139,8 @@ class GithubControlModal(discord.ui.Modal):
         issue = repo.create_issue(
             title=str(self.children[0]),
             body=f"**Issue Feature**\n{self._feature_type}\n\n"
-                 + issue_body
-                 + self._attachment,
+            + issue_body
+            + self._attachment,
         )
         issue.add_to_labels(repo.get_label(name="Discord"))
         url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue.number}"
@@ -161,9 +150,9 @@ class GithubControlModal(discord.ui.Modal):
 
 class GithubIssues(Group):
     def __init__(
-            self,
-            bot: Timmy,
-            github_client: Github,
+        self,
+        bot: Timmy,
+        github_client: Github,
     ):
         super().__init__(
             name="issue", description="Open an issue for a bug related to the bot"
@@ -177,10 +166,10 @@ class GithubIssues(Group):
 
     @command(name="open")
     async def __open(
-            self,
-            interaction: discord.Interaction,
-            feature: IssueFeatureLiteral,
-            screenshot: discord.Attachment,
+        self,
+        interaction: discord.Interaction,
+        feature: IssueFeatureLiteral,
+        screenshot: discord.Attachment,
     ):
         await interaction.response.send_modal(
             GithubControlModal(
@@ -195,7 +184,7 @@ class GithubIssues(Group):
     @command(name="close")
     @slash_is_bot_admin_4()
     async def __close(
-            self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None
+        self, interaction: discord.Interaction, issue: int, reason: Optional[str] = None
     ):
         await interaction.response.defer(thinking=True)
         r = self._github_client.get_repo("School-Simplified/Timmy-SchoolSimplified")
@@ -217,11 +206,7 @@ class GithubIssues(Group):
         issue = repo.get_issue(int(issue))
         await interaction.response.send_message(
             "Add labels to this issue",
-            view=GithubIssueLabels(
-                bot=self.bot,
-                issue=issue,
-                repository=repo
-            )
+            view=GithubIssueLabels(bot=self.bot, issue=issue, repository=repo),
         )
 
 

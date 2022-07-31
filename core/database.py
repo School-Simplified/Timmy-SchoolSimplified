@@ -16,7 +16,7 @@ from peewee import (
     Model,
     MySQLDatabase,
     SqliteDatabase,
-    TextField
+    TextField,
 )
 
 load_dotenv()

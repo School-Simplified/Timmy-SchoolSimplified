@@ -17,7 +17,6 @@ class MGMDropdownTickets(commands.Cog):
             StaffID.g_staff_mgm: 990311940989534229,
         }
 
-
     @commands.Cog.listener("on_interaction")
     async def mgm_ticket_control(self, interaction: discord.Interaction):
         inter_response = interaction.data
@@ -29,7 +28,9 @@ class MGMDropdownTickets(commands.Cog):
             val = inter_response["custom_id"]
         except KeyError:
             return
-        query = database.TicketConfiguration.select().where(database.TicketConfiguration.guild_id == interaction.guild_id)
+        query = database.TicketConfiguration.select().where(
+            database.TicketConfiguration.guild_id == interaction.guild_id
+        )
         print(val)
 
         if (
@@ -39,8 +40,14 @@ class MGMDropdownTickets(commands.Cog):
         ):
             pass
         elif "mgm_ch_lock_menu" in val:
-            if val == "mgm_ch_lock_menu" or val == "mgm_ch_lock_menu:NONE" or val == "mgm_ch_lock_menu:None":
-                query = database.MGMTickets.select().where(database.MGMTickets.ChannelID == interaction.channel_id)
+            if (
+                val == "mgm_ch_lock_menu"
+                or val == "mgm_ch_lock_menu:NONE"
+                or val == "mgm_ch_lock_menu:None"
+            ):
+                query = database.MGMTickets.select().where(
+                    database.MGMTickets.ChannelID == interaction.channel_id
+                )
                 if query.exists():
                     query = query.get()
                     conf_id = query.configuration_id
@@ -82,10 +89,16 @@ class MGMDropdownTickets(commands.Cog):
                     f"{author.mention}\n", embed=embed, view=ButtonViews
                 )
             except Exception:
-                await interaction.followup.send(f"{author.mention}\n", embed=embed, view=ButtonViews)
+                await interaction.followup.send(
+                    f"{author.mention}\n", embed=embed, view=ButtonViews
+                )
 
         elif "mgm_ch_lock_CONFIRM" in val:
-            if val == "mgm_ch_lock_CONFIRM" or val == "mgm_ch_lock_CONFIRM:NONE" or val == "mgm_ch_lock_CONFIRM:None":
+            if (
+                val == "mgm_ch_lock_CONFIRM"
+                or val == "mgm_ch_lock_CONFIRM:NONE"
+                or val == "mgm_ch_lock_CONFIRM:None"
+            ):
                 conf_id = "NONE"
             else:
                 conf_id = val.split(":")[1]
@@ -106,7 +119,9 @@ class MGMDropdownTickets(commands.Cog):
                         f"{author.mention} The ticket owner has left the server."
                     )
                 except Exception:
-                    await interaction.followup.send(f"{author.mention} The ticket owner has left the server.")
+                    await interaction.followup.send(
+                        f"{author.mention} The ticket owner has left the server."
+                    )
             else:
                 await channel.set_permissions(
                     TicketOwner, read_messages=False, reason="Ticket Perms Close(User)"
@@ -157,7 +172,9 @@ class MGMDropdownTickets(commands.Cog):
                     author.mention, embed=embed, view=ButtonViews2
                 )
             except Exception:
-                await interaction.followup.send(author.mention, embed=embed, view=ButtonViews2)
+                await interaction.followup.send(
+                    author.mention, embed=embed, view=ButtonViews2
+                )
 
         elif "mgm_ch_lock_STOP" in val:
             channel = interaction.message.channel
@@ -167,7 +184,9 @@ class MGMDropdownTickets(commands.Cog):
                     f"{author.mention} Alright, canceling request.", ephemeral=True
                 )
             except Exception:
-                await interaction.followup.send(f"{author.mention} Alright, canceling request.", ephemeral=True)
+                await interaction.followup.send(
+                    f"{author.mention} Alright, canceling request.", ephemeral=True
+                )
             await interaction.message.delete()
 
         elif "mgm_ch_lock_S" in val:
@@ -226,7 +245,11 @@ class MGMDropdownTickets(commands.Cog):
                 await interaction.message.delete()
 
         elif "mgm_ch_lock_T" in val:
-            if val == "mgm_ch_lock_T" or val == "mgm_ch_lock_T:NONE" or val == "mgm_ch_lock_T:None":
+            if (
+                val == "mgm_ch_lock_T"
+                or val == "mgm_ch_lock_T:NONE"
+                or val == "mgm_ch_lock_T:None"
+            ):
                 conf_id = "NONE"
                 response_log_channel: discord.TextChannel = self.bot.get_channel(
                     self.response_channel_dict[interaction.guild_id]
@@ -234,8 +257,14 @@ class MGMDropdownTickets(commands.Cog):
             else:
                 print(val)
                 conf_id = val.split(":")[1]
-                query = database.TicketConfiguration.select().where(database.TicketConfiguration.ID == conf_id).get()
-                response_log_channel: discord.TextChannel = self.bot.get_channel(query.transcript_channel_id)
+                query = (
+                    database.TicketConfiguration.select()
+                    .where(database.TicketConfiguration.ID == conf_id)
+                    .get()
+                )
+                response_log_channel: discord.TextChannel = self.bot.get_channel(
+                    query.transcript_channel_id
+                )
             channel: discord.TextChannel = interaction.channel
 
             author = interaction.user
@@ -252,7 +281,11 @@ class MGMDropdownTickets(commands.Cog):
             )
 
         elif "mgm_ch_lock_C&D" in val:
-            if val == "mgm_ch_lock_C&D" or val == "mgm_ch_lock_C&D:NONE" or val == "mgm_ch_lock_C&D:None":
+            if (
+                val == "mgm_ch_lock_C&D"
+                or val == "mgm_ch_lock_C&D:NONE"
+                or val == "mgm_ch_lock_C&D:None"
+            ):
                 conf_id = "NONE"
                 response_log_channel: discord.TextChannel = self.bot.get_channel(
                     self.response_channel_dict[interaction.guild_id]
@@ -260,8 +293,14 @@ class MGMDropdownTickets(commands.Cog):
             else:
                 print(val)
                 conf_id = val.split(":")[1]
-                query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == conf_id).get()
-                response_log_channel: discord.TextChannel = self.bot.get_channel(query.transcript_channel_id)
+                query = (
+                    database.TicketConfiguration.select()
+                    .where(database.TicketConfiguration.id == conf_id)
+                    .get()
+                )
+                response_log_channel: discord.TextChannel = self.bot.get_channel(
+                    query.transcript_channel_id
+                )
 
             channel = self.bot.get_channel(interaction.channel_id)
             author = interaction.user

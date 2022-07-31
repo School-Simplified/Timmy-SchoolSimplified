@@ -11,6 +11,7 @@ from core.common import Colors, ScheduleView, SETID
 
 if TYPE_CHECKING:
     from main import Timmy
+
     T = TypeVar("T")
 
 TaskLiteral = Literal[
@@ -25,9 +26,13 @@ TaskLiteral = Literal[
 
 
 class SetScheduleCog(commands.Cog):
-    def __init__(self, bot: 'Timmy'):
+    def __init__(self, bot: "Timmy"):
         self._schedule: Dict[
-            TaskLiteral, Dict[Literal["_type", "_schedule"], Union[str, List[Union[Literal["rachel", "ignore"], int]]]]
+            TaskLiteral,
+            Dict[
+                Literal["_type", "_schedule"],
+                Union[str, List[Union[Literal["rachel", "ignore"], int]]],
+            ],
         ] = {
             "Motivation": {
                 "_type": "DAILY",
@@ -39,7 +44,7 @@ class SetScheduleCog(commands.Cog):
                     768198790590103614,
                     672955248444309504,
                     672955248444309504,
-                ]  # first index is monday
+                ],  # first index is monday
             },
             "Weekly Puzzle": {
                 "_type": "WEEKLY",
@@ -56,15 +61,11 @@ class SetScheduleCog(commands.Cog):
                     422540484079255572,
                     706668075545526273,
                     337250887858782209,
-                    132848537435242496
-                ]
+                    132848537435242496,
+                ],
             },
-            "Media Recommendations": {
-                "_type": "WEEKLY"
-            },
-            "Art Appreciation": {
-                "_type": "WEEKLY"
-            },
+            "Media Recommendations": {"_type": "WEEKLY"},
+            "Art Appreciation": {"_type": "WEEKLY"},
             "Daily Laugh": {
                 "_type": "DAILY",
                 "_schedule": [
@@ -74,9 +75,8 @@ class SetScheduleCog(commands.Cog):
                     599302211272441876,
                     422540484079255572,
                     132848537435242496,
-                    599302211272441876
-
-                ]
+                    599302211272441876,
+                ],
             },
         }
         self.bot = bot
@@ -88,7 +88,11 @@ class SetScheduleCog(commands.Cog):
         """
         Handles daily reminders
         """
-        day: int = discord.utils.utcnow().astimezone(pytz.timezone("America/New_York")).isoweekday()
+        day: int = (
+            discord.utils.utcnow()
+            .astimezone(pytz.timezone("America/New_York"))
+            .isoweekday()
+        )
         await self._handle_motivation(day, self._schedule["Motivation"])
         await self._handle_question(day, self._schedule["Daily Question"])
         await self._handle_laugh(day, self._schedule["Daily Laugh"])
@@ -98,66 +102,81 @@ class SetScheduleCog(commands.Cog):
         """
         Handles weekly reminders
         """
-        day: int = discord.utils.utcnow().astimezone(pytz.timezone("America/New_York")).isoweekday()
-        hour: int = discord.utils.utcnow().astimezone(pytz.timezone("America/New_York")).hour
+        day: int = (
+            discord.utils.utcnow()
+            .astimezone(pytz.timezone("America/New_York"))
+            .isoweekday()
+        )
+        hour: int = (
+            discord.utils.utcnow().astimezone(pytz.timezone("America/New_York")).hour
+        )
         if day != 7:
             return
         if hour < 9:
             return
         pass  # Implement later
 
-    async def _handle_motivation(
-            self, day: int, dict_: Dict
-    ) -> None:
+    async def _handle_motivation(self, day: int, dict_: Dict) -> None:
         if self._get_user_id(day=day, dict_=dict_) == "ignore":
             return
         embed = discord.Embed(
             color=Colors.blurple,
             title="Reminder!",
             description="Reminder to complete the motivational quote for today! "
-                        "Once you have completed your quote please press the completed button below. "
-                        "If you cannot complete it please select the red button below. "
+            "Once you have completed your quote please press the completed button below. "
+            "If you cannot complete it please select the red button below. ",
         )
-        await self._dm_member(embed=embed, user_id=self._get_user_id(day=day, dict_=dict_), _type="Motivation")
+        await self._dm_member(
+            embed=embed,
+            user_id=self._get_user_id(day=day, dict_=dict_),
+            _type="Motivation",
+        )
 
-    async def _handle_question(
-            self, day: int, dict_: Dict
-    ) -> None:
+    async def _handle_question(self, day: int, dict_: Dict) -> None:
         if self._get_user_id(day=day, dict_=dict_) == "ignore":
             return
         embed = discord.Embed(
             color=Colors.blurple,
             title="Reminder!",
             description="Reminder to complete the daily question for today! "
-                        "Once you have completed your question please press the completed button below. "
-                        "If you cannot complete it please select the red button below. "
+            "Once you have completed your question please press the completed button below. "
+            "If you cannot complete it please select the red button below. ",
         )
-        await self._dm_member(embed=embed, user_id=self._get_user_id(day=day, dict_=dict_), _type="Daily Question")
+        await self._dm_member(
+            embed=embed,
+            user_id=self._get_user_id(day=day, dict_=dict_),
+            _type="Daily Question",
+        )
 
-    async def _handle_laugh(
-            self, day: int, dict_: Dict
-    ) -> None:
+    async def _handle_laugh(self, day: int, dict_: Dict) -> None:
         if self._get_user_id(day=day, dict_=dict_) == "ignore":
             return
         embed = discord.Embed(
             color=Colors.blurple,
             title="Reminder!",
             description="Reminder to complete the daily laugh for today! "
-                        "Once you have completed your meme/pickup line please press the completed button below. "
-                        "If you cannot complete it please select the red button below. "
+            "Once you have completed your meme/pickup line please press the completed button below. "
+            "If you cannot complete it please select the red button below. ",
         )
-        await self._dm_member(embed=embed, user_id=self._get_user_id(day=day, dict_=dict_), _type="Daily Laugh")
+        await self._dm_member(
+            embed=embed,
+            user_id=self._get_user_id(day=day, dict_=dict_),
+            _type="Daily Laugh",
+        )
 
     def _get_user_id(
-            self,
-            day: int,
-            dict_: Dict[Literal["_type", "_schedule"], Union[str, List[Union[Literal["rachel", "ignore"], int]]]]
+        self,
+        day: int,
+        dict_: Dict[
+            Literal["_type", "_schedule"],
+            Union[str, List[Union[Literal["rachel", "ignore"], int]]],
+        ],
     ) -> Union[int, Literal["rachel", "ignore"]]:
         schedule_list = dict_["_schedule"]
         return schedule_list[day - 1]
 
     async def _dm_member(
-            self, embed: discord.Embed, user_id: Union[int, str], _type: TaskLiteral
+        self, embed: discord.Embed, user_id: Union[int, str], _type: TaskLiteral
     ) -> None:
         if user_id in ["rachel", "ignore"] or isinstance(user_id, str):
             return

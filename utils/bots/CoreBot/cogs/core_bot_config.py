@@ -338,8 +338,10 @@ class CoreBotConfig(commands.Cog):
             directory = "TimmyBeta-SS"
 
         else:
-            return await interaction.response.send_message("Host directory is neither 'timmya' nor "
-                                                           "'timmy-beta'.\nSomeone else is currently hosting the bot.")
+            return await interaction.response.send_message(
+                "Host directory is neither 'timmya' nor "
+                "'timmy-beta'.\nSomeone else is currently hosting the bot."
+            )
 
         try:
             p = subprocess.run(

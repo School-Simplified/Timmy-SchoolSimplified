@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import discord
 import pytz
 from discord.ext import commands
+
 # global variables
 from discord.http import Route
 
@@ -337,7 +338,9 @@ class TutorVCCMD(commands.Cog):
                 channel: discord.VoiceChannel = self.bot.get_channel(
                     int(query.ChannelID)
                 )
-                gamelink = await channel.create_invite(target_application_id=880218394199220334)
+                gamelink = await channel.create_invite(
+                    target_application_id=880218394199220334
+                )
                 await ctx.send(f"**Click the link to get started!**\n{gamelink.url}")
 
             else:
@@ -377,7 +380,9 @@ class TutorVCCMD(commands.Cog):
                     .get()
                 )
                 channel: discord.VoiceChannel = self.bot.get_channel(q.ChannelID)
-                invite = await channel.create_invite(target_application_id=880218394199220334)
+                invite = await channel.create_invite(
+                    target_application_id=880218394199220334
+                )
                 await ctx.send(f"**Click the link to get started!**\n{invite.url}")
 
             else:

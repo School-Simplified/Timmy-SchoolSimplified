@@ -12,7 +12,17 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from threading import Thread
-from typing import Any, Awaitable, Callable, List, Literal, Tuple, Union, Optional, TYPE_CHECKING
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    List,
+    Literal,
+    Tuple,
+    Union,
+    Optional,
+    TYPE_CHECKING,
+)
 
 import boto3
 import chat_exporter
@@ -21,11 +31,7 @@ import discord
 import pytz
 import requests
 from botocore.exceptions import ClientError
-from discord import (
-    ButtonStyle,
-    SelectOption,
-    ui
-)
+from discord import ButtonStyle, SelectOption, ui
 from discord.ext import commands
 from dotenv import load_dotenv
 from github import Github
@@ -64,20 +70,21 @@ class ConfigCatClient:
     LEADER_ID_CC = configcatclient.create_client(os.getenv("LEADERID_CC"))
     CHECK_DB_CC = configcatclient.create_client(os.getenv("CHECKDB_CC"))
     SANDBOX_CONFIG_CC = configcatclient.create_client_with_auto_poll(
-        os.getenv("SANDBOX_CONFIG_CC"),
-        poll_interval_seconds=10
+        os.getenv("SANDBOX_CONFIG_CC"), poll_interval_seconds=10
     )
 
+
 class ConsoleColors:
-   HEADER = '\033[95m'
-   OKBLUE = '\033[94m'
-   OKCYAN = '\033[96m'
-   OKGREEN = '\033[92m'
-   WARNING = '\033[93m'
-   FAIL = '\033[91m'
-   ENDC = '\033[0m'
-   BOLD = '\033[1m'
-   UNDERLINE = '\033[4m'
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
 
 async def raw_export(channel, response, user: discord.User):
     transcript = await chat_exporter.export(channel, None)
@@ -88,24 +95,26 @@ async def raw_export(channel, response, user: discord.User):
     embed = discord.Embed(
         title="Channel Transcript",
         description=f"**Channel:** {channel.name}"
-                    f"\n**User Invoked:** {user.name}*"
-                    f"\nTranscript Attached Below*",
-        color=discord.Colour.green()
+        f"\n**User Invoked:** {user.name}*"
+        f"\nTranscript Attached Below*",
+        color=discord.Colour.green(),
     )
-    transcript_file = discord.File(io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html")
+    transcript_file = discord.File(
+        io.BytesIO(transcript.encode()), filename=f"transcript-{channel.name}.html"
+    )
 
     msg: discord.Message = await response.send(embed=embed, file=transcript_file)
     return msg
 
 
 async def paginate_embed(
-        bot: discord.Client,
-        ctx: commands.Context,
-        embed: discord.Embed,
-        population_func,
-        end: int,
-        begin: int = 1,
-        page=1
+    bot: discord.Client,
+    ctx: commands.Context,
+    embed: discord.Embed,
+    population_func,
+    end: int,
+    begin: int = 1,
+    page=1,
 ):
     emotes = ["◀️", "▶️"]
 
@@ -124,7 +133,9 @@ async def paginate_embed(
 
     while True:
         try:
-            reaction, user = await bot.wait_for("reaction_add", timeout=60, check=check_reaction)
+            reaction, user = await bot.wait_for(
+                "reaction_add", timeout=60, check=check_reaction
+            )
             if user == bot.user:
                 continue
             if str(reaction.emoji) == emotes[1] and page < end:
@@ -144,22 +155,22 @@ async def paginate_embed(
 
 class CompletedButton(discord.ui.Button):
     def __init__(
-            self,
-            bot: 'Timmy',
-            task: Literal[
-                "Motivation",
-                "Weekly Puzzle",
-                "Opportunities",
-                "Daily Question",
-                "Media Recommendations",
-                "Art Appreciation",
-                "Daily Laugh",
-            ]
+        self,
+        bot: "Timmy",
+        task: Literal[
+            "Motivation",
+            "Weekly Puzzle",
+            "Opportunities",
+            "Daily Question",
+            "Media Recommendations",
+            "Art Appreciation",
+            "Daily Laugh",
+        ],
     ):
         super().__init__(
             style=discord.ButtonStyle.green,
             label="Completed",
-            custom_id="task::completed"
+            custom_id="task::completed",
         )
         self.bot = bot
         self.value: Optional[Literal["complete", "incomplete", "busy"]] = "incomplete"
@@ -176,22 +187,22 @@ class CompletedButton(discord.ui.Button):
 
 class CannotComplete(discord.ui.Button):
     def __init__(
-            self,
-            bot: 'Timmy',
-            task: Literal[
-                "Motivation",
-                "Weekly Puzzle",
-                "Opportunities",
-                "Daily Question",
-                "Media Recommendations",
-                "Art Appreciation",
-                "Daily Laugh",
-            ]
+        self,
+        bot: "Timmy",
+        task: Literal[
+            "Motivation",
+            "Weekly Puzzle",
+            "Opportunities",
+            "Daily Question",
+            "Media Recommendations",
+            "Art Appreciation",
+            "Daily Laugh",
+        ],
     ):
         super().__init__(
             style=discord.ButtonStyle.red,
             label="Can't Complete",
-            custom_id="task::cannotcomplete"
+            custom_id="task::cannotcomplete",
         )
         self.bot = bot
         self.value: Optional[Literal["complete", "incomplete", "busy"]] = "incomplete"
@@ -205,7 +216,7 @@ class CannotComplete(discord.ui.Button):
             title=f"{self._task} needs to be filled!",
             description=f"{self._task} for today cannot be completed.",
             colour=Colors.red,
-            timestamp=discord.utils.utcnow()
+            timestamp=discord.utils.utcnow(),
         )
         await channel.send(embed=embed)
         await interaction.edit_original_message(view=None)
@@ -214,17 +225,17 @@ class CannotComplete(discord.ui.Button):
 
 class ScheduleView(discord.ui.View):
     def __init__(
-            self,
-            bot: 'Timmy',
-            task: Literal[
-                "Motivation",
-                "Weekly Puzzle",
-                "Opportunities",
-                "Daily Question",
-                "Media Recommendations",
-                "Art Appreciation",
-                "Daily Laugh",
-            ]
+        self,
+        bot: "Timmy",
+        task: Literal[
+            "Motivation",
+            "Weekly Puzzle",
+            "Opportunities",
+            "Daily Question",
+            "Media Recommendations",
+            "Art Appreciation",
+            "Daily Laugh",
+        ],
     ):
         super().__init__(timeout=None)
         self.bot = bot
@@ -259,28 +270,32 @@ def load_config(name) -> Tuple[dict, Path]:
 
     return config, config_file
 
+
 class CommissionConfirm(discord.ui.View):
     def __init__(self):
         super().__init__()
         self.value = None
 
-    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green)
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.green)
+    async def confirm(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
         self.value = True
         self.stop()
 
-    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red)
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message('Cancelling', ephemeral=True)
+        await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
 
+
 def access_secret(
-        secret_id,
-        google_auth_load_mode=False,
-        type_auth=None,
-        scopes=None,
-        redirect_uri=None
+    secret_id,
+    google_auth_load_mode=False,
+    type_auth=None,
+    scopes=None,
+    redirect_uri=None,
 ):
     """
     Access credentials and secrets from Google.
@@ -323,10 +338,14 @@ def access_secret(
             creds = Credentials.from_authorized_user_file("cred_file.json", scopes)
             os.remove("cred_file.json")
         elif type_auth == 1:
-            creds = Flow.from_client_secrets_file("cred_file.json", scopes=scopes, redirect_uri=redirect_uri)
+            creds = Flow.from_client_secrets_file(
+                "cred_file.json", scopes=scopes, redirect_uri=redirect_uri
+            )
             os.remove("cred_file.json")
         elif type_auth == 2:
-            creds = service_account.Credentials.from_service_account_file("cred_file.json")
+            creds = service_account.Credentials.from_service_account_file(
+                "cred_file.json"
+            )
             os.remove("cred_file.json")
         elif type_auth == 3:
             payload: dict = json.loads(payload)
@@ -339,11 +358,7 @@ def access_secret(
         return creds
 
 
-def S3_upload_file(
-        file_name,
-        bucket,
-        object_name=None
-):
+def S3_upload_file(file_name, bucket, object_name=None):
     """
     Upload a file to an S3 bucket
 
@@ -435,51 +450,125 @@ class MainID:
         ConfigCatClient.MAIN_ID_CC.get_value("ch_modannouncements", 887780215789617202)
     )
     ch_event_announcements = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_eventannouncements", 951302954965692436)
+        ConfigCatClient.MAIN_ID_CC.get_value(
+            "ch_eventannouncements", 951302954965692436
+        )
     )
 
     # *** Categories ***
-    cat_casual = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_casual", 763121170324783146))
-    cat_community = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_community", 800163651805773824))
-    cat_lounge = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_lounge", 774847738239385650))
-    cat_events = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_events", 805299289604620328))
-    cat_voice = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_voice", 763857608964046899))
-    cat_science_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_scienceticket", 800479815471333406))
-    cat_fine_arts_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_fineartsticket", 833210452758364210))
-    cat_math_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_mathticket", 800472371973980181))
-    cat_social_studies_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_socialstudiesticket", 800481237608824882))
-    cat_english_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_englishticket", 800475854353596469))
-    cat_essay_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_essayticket", 854945037875806220))
-    cat_language_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_languageticket", 800477414361792562))
-    cat_other_ticket = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_otherticket", 825917349558747166))
-    cat_private_vc = int(ConfigCatClient.MAIN_ID_CC.get_value("cat_privatevc", 776988961087422515))
+    cat_casual = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_casual", 763121170324783146)
+    )
+    cat_community = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_community", 800163651805773824)
+    )
+    cat_lounge = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_lounge", 774847738239385650)
+    )
+    cat_events = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_events", 805299289604620328)
+    )
+    cat_voice = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_voice", 763857608964046899)
+    )
+    cat_science_ticket = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_scienceticket", 800479815471333406)
+    )
+    cat_fine_arts_ticket = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_fineartsticket", 833210452758364210)
+    )
+    cat_math_ticket = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_mathticket", 800472371973980181)
+    )
+    cat_social_studies_ticket = int(
+        ConfigCatClient.MAIN_ID_CC.get_value(
+            "cat_socialstudiesticket", 800481237608824882
+        )
+    )
+    cat_english_ticket = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_englishticket", 800475854353596469)
+    )
+    cat_essay_ticket = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_essayticket", 854945037875806220)
+    )
+    cat_language_ticket = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_languageticket", 800477414361792562)
+    )
+    cat_other_ticket = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_otherticket", 825917349558747166)
+    )
+    cat_private_vc = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("cat_privatevc", 776988961087422515)
+    )
 
     # *** Roles ***
-    r_coding_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_codingclub", 883169286665936996))
-    r_debate_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_debateclub", 883170141771272294))
-    r_music_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_musicclub", 883170072355561483))
-    r_cooking_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_cookingclub", 883162279904960562))
-    r_chess_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_chessclub", 883564455219306526))
-    r_book_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_bookclub", 883162511560560720))
-    r_advocacy_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_advocacyclub", 883169000866070539))
-    r_speech_club = int(ConfigCatClient.MAIN_ID_CC.get_value("r_speechclub", 883170166161149983))
-    r_club_president = int(ConfigCatClient.MAIN_ID_CC.get_value("r_clubpresident", 883160826180173895))
-    r_chat_helper = int(ConfigCatClient.MAIN_ID_CC.get_value("r_chathelper", 811416051144458250))
-    r_lead_helper = int(ConfigCatClient.MAIN_ID_CC.get_value("r_leadhelper", 810684359765393419))
-    r_essay_reviser = int(ConfigCatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369))
-    r_moderator = int(ConfigCatClient.MAIN_ID_CC.get_value("r_moderator", 951302697263452240))
-    r_debate_ban = int(ConfigCatClient.MAIN_ID_CC.get_value("r_debateban", 951302659657334784))
-    r_ticket_ban = int(ConfigCatClient.MAIN_ID_CC.get_value("r_ticketban", 951302690011492452))
-    r_count_ban = int(ConfigCatClient.MAIN_ID_CC.get_value("r_countban", 951302821079318539))
+    r_coding_club = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_codingclub", 883169286665936996)
+    )
+    r_debate_club = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_debateclub", 883170141771272294)
+    )
+    r_music_club = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_musicclub", 883170072355561483)
+    )
+    r_cooking_club = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_cookingclub", 883162279904960562)
+    )
+    r_chess_club = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_chessclub", 883564455219306526)
+    )
+    r_book_club = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_bookclub", 883162511560560720)
+    )
+    r_advocacy_club = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_advocacyclub", 883169000866070539)
+    )
+    r_speech_club = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_speechclub", 883170166161149983)
+    )
+    r_club_president = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_clubpresident", 883160826180173895)
+    )
+    r_chat_helper = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_chathelper", 811416051144458250)
+    )
+    r_lead_helper = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_leadhelper", 810684359765393419)
+    )
+    r_essay_reviser = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369)
+    )
+    r_moderator = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_moderator", 951302697263452240)
+    )
+    r_debate_ban = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_debateban", 951302659657334784)
+    )
+    r_ticket_ban = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_ticketban", 951302690011492452)
+    )
+    r_count_ban = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("r_countban", 951302821079318539)
+    )
 
     # *** Messages ***
     msg_math = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_math", 866904767568543744))
-    msg_science = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_science", 866904901174427678))
-    msg_english = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_english", 866905061182930944))
-    msg_language = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_language", 866905971519389787))
+    msg_science = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("msg_science", 866904901174427678)
+    )
+    msg_english = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("msg_english", 866905061182930944)
+    )
+    msg_language = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("msg_language", 866905971519389787)
+    )
     msg_art = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_art", 866906016602652743))
-    msg_social_studies = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_socialstudies", 866905205094481951))
-    msg_computer_science = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_computerscience", 867550791635566623))
+    msg_social_studies = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("msg_socialstudies", 866905205094481951)
+    )
+    msg_computer_science = int(
+        ConfigCatClient.MAIN_ID_CC.get_value("msg_computerscience", 867550791635566623)
+    )
 
 
 class StaffID:
@@ -497,62 +586,157 @@ class StaffID:
 
     # *** Guilds ***
     g_staff = int(ConfigCatClient.STAFF_ID_CC.get_value("g_staff", 891521033700540457))
-    g_staff_resources = int(ConfigCatClient.STAFF_ID_CC.get_value("g_staff_resources", 955911166520082452))
-    g_staff_mgm = int(ConfigCatClient.STAFF_ID_CC.get_value("g_staff_mgm", 824421093015945216))
+    g_staff_resources = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("g_staff_resources", 955911166520082452)
+    )
+    g_staff_mgm = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("g_staff_mgm", 824421093015945216)
+    )
 
     # *** Channels ***
-    ch_verification_logs = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_verificationlogs", 894241199433580614))
-    ch_verification = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_verification", 894240578651443232))
-    ch_console = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_console", 895041227123228703))
-    ch_start_private_vc = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_startprivatevc", 895041070956675082))
-    ch_announcements = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_announcements", 891920066550059028))
-    ch_leadership_announcements = int(ConfigCatClient.STAFF_ID_CC.get_value("ch_leadershipannouncements",
-                                                                            910357129972551710))
+    ch_verification_logs = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("ch_verificationlogs", 894241199433580614)
+    )
+    ch_verification = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("ch_verification", 894240578651443232)
+    )
+    ch_console = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("ch_console", 895041227123228703)
+    )
+    ch_start_private_vc = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("ch_startprivatevc", 895041070956675082)
+    )
+    ch_announcements = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("ch_announcements", 891920066550059028)
+    )
+    ch_leadership_announcements = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "ch_leadershipannouncements", 910357129972551710
+        )
+    )
 
     # *** Categories ***
-    cat_private_vc = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_privatevc", 895041016057446411))
-    cat_staffapps_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_staffapps_tickets", 979485444364468345))
-    cat_announcements_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_announcements", 979485569337946192))
+    cat_private_vc = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("cat_privatevc", 895041016057446411)
+    )
+    cat_staffapps_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "cat_staffapps_tickets", 979485444364468345
+        )
+    )
+    cat_announcements_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("cat_announcements", 979485569337946192)
+    )
 
-    cat_promote_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_promote_tickets", 956297567346495568))
-    cat_demote_tickers = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_demote_tickets", 956297567346495568))
-    cat_fire_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_fire_tickets", 956297567346495568))
+    cat_promote_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("cat_promote_tickets", 956297567346495568)
+    )
+    cat_demote_tickers = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("cat_demote_tickets", 956297567346495568)
+    )
+    cat_fire_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("cat_fire_tickets", 956297567346495568)
+    )
 
-    cat_censure_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_censure_tickets", 956297567346495568))
-    cat_break_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_break_tickets", 992191587281027144))
-    cat_resignation_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_resignation_tickets", 992191685415145542))
-    cat_suggestions_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_suggestions_tickets", 992191996947083275))
-    cat_complaint_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_complaint_tickets", 992191762611327029))
-    cat_cs_hours_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_cs_hours_tickets", 992191874309828658))
-    cat_suggestion_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_suggestion_tickets", 992191996947083275))
+    cat_censure_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("cat_censure_tickets", 956297567346495568)
+    )
+    cat_break_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("cat_break_tickets", 992191587281027144)
+    )
+    cat_resignation_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "cat_resignation_tickets", 992191685415145542
+        )
+    )
+    cat_suggestions_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "cat_suggestions_tickets", 992191996947083275
+        )
+    )
+    cat_complaint_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "cat_complaint_tickets", 992191762611327029
+        )
+    )
+    cat_cs_hours_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "cat_cs_hours_tickets", 992191874309828658
+        )
+    )
+    cat_suggestion_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "cat_suggestion_tickets", 992191996947083275
+        )
+    )
 
-    cat_recruiting_tickets = int(ConfigCatClient.STAFF_ID_CC.get_value("cat_recruiting_tickets", 997646929553018920))
-
+    cat_recruiting_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "cat_recruiting_tickets", 997646929553018920
+        )
+    )
 
     # *** Roles ***
-    r_director = int(ConfigCatClient.STAFF_ID_CC.get_value("r_director", 891521034333880416))
-    r_SS_digital_committee = int(ConfigCatClient.STAFF_ID_CC.get_value("r_ssdigitalcommittee", 898772246808637541))
-    r_chairperson_SSD_committee = int(ConfigCatClient.STAFF_ID_CC.get_value("r_chairpersonssdcommittee",
-                                                                            934971902781431869))
-    r_executive_assistant = int(ConfigCatClient.STAFF_ID_CC.get_value("r_executiveassistant", 892535575574372372))
-    r_chapter_president = int(ConfigCatClient.STAFF_ID_CC.get_value("r_chapterpresident", 892532950019735602))
-    r_organization_president = int(ConfigCatClient.STAFF_ID_CC.get_value("r_organizationpresident",
-                                                                         892532907078475816))
-    r_vice_president = int(ConfigCatClient.STAFF_ID_CC.get_value("r_vicepresident", 891521034371608671))
-    r_president = int(ConfigCatClient.STAFF_ID_CC.get_value("r_president", 932861531224428555))
-    r_editor_in_chief = int(ConfigCatClient.STAFF_ID_CC.get_value("r_editorinchief", 910269854592950352))
-    r_corporate_officer = int(ConfigCatClient.STAFF_ID_CC.get_value("r_corporateofficer", 932861485917540402))
+    r_director = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("r_director", 891521034333880416)
+    )
+    r_SS_digital_committee = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "r_ssdigitalcommittee", 898772246808637541
+        )
+    )
+    r_chairperson_SSD_committee = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "r_chairpersonssdcommittee", 934971902781431869
+        )
+    )
+    r_executive_assistant = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "r_executiveassistant", 892535575574372372
+        )
+    )
+    r_chapter_president = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("r_chapterpresident", 892532950019735602)
+    )
+    r_organization_president = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "r_organizationpresident", 892532907078475816
+        )
+    )
+    r_vice_president = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("r_vicepresident", 891521034371608671)
+    )
+    r_president = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("r_president", 932861531224428555)
+    )
+    r_editor_in_chief = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("r_editorinchief", 910269854592950352)
+    )
+    r_corporate_officer = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("r_corporateofficer", 932861485917540402)
+    )
     r_CHRO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_chro", 892530791005978624))
     r_CIO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cio", 892530239996059728))
     r_CFO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cfo", 892530080029503608))
     r_CMO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cmo", 892529974303686726))
     r_CAO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cao", 892530033430790165))
     r_COO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_coo", 892530902528307271))
-    r_CEO_and_president = int(ConfigCatClient.STAFF_ID_CC.get_value("r_ceoandpresident", 892529865247580160))
-    r_board_member = int(ConfigCatClient.STAFF_ID_CC.get_value("r_boardmember", 891521034371608675))
-    r_administrative_executive = int(ConfigCatClient.STAFF_ID_CC.get_value("r_administrativeexecutive",
-                                                                           946873101956841473))
-    r_information_technology = int(ConfigCatClient.STAFF_ID_CC.get_value("r_informationtechnology", 891521034333880410))
+    r_CEO_and_president = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("r_ceoandpresident", 892529865247580160)
+    )
+    r_board_member = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("r_boardmember", 891521034371608675)
+    )
+    r_administrative_executive = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "r_administrativeexecutive", 946873101956841473
+        )
+    )
+    r_information_technology = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "r_informationtechnology", 891521034333880410
+        )
+    )
 
 
 class TechID:
@@ -571,21 +755,46 @@ class TechID:
     g_tech = int(ConfigCatClient.TECH_ID_CC.get_value("g_tech", 805593783684562965))
 
     # *** Channels ***
-    ch_tracebacks = int(ConfigCatClient.TECH_ID_CC.get_value("ch_tracebacks", 851949397533392936))
-    ch_commission_logs = int(ConfigCatClient.TECH_ID_CC.get_value("ch_commissionlogs", 849722616880300061))
-    ch_ticket_log = int(ConfigCatClient.TECH_ID_CC.get_value("ch_ticketlog", 872915565600182282))
-    ch_bot_requests = int(ConfigCatClient.TECH_ID_CC.get_value("ch_botreq", 933181562885914724))
-    ch_announcements = int(ConfigCatClient.TECH_ID_CC.get_value("ch_announcements", 934109939373314068))
-    ch_IT_announcements = int(ConfigCatClient.TECH_ID_CC.get_value("ch_itannouncements", 932066545587327000))
-    ch_web_announcements = int(ConfigCatClient.TECH_ID_CC.get_value("ch_webannouncements", 932487991958577152))
-    ch_bot_announcements = int(ConfigCatClient.TECH_ID_CC.get_value("ch_botannouncements", 932725755115368478))
-    ch_snake_pit = int(ConfigCatClient.TECH_ID_CC.get_value("ch_snakepit", 942076483290161203))
+    ch_tracebacks = int(
+        ConfigCatClient.TECH_ID_CC.get_value("ch_tracebacks", 851949397533392936)
+    )
+    ch_commission_logs = int(
+        ConfigCatClient.TECH_ID_CC.get_value("ch_commissionlogs", 849722616880300061)
+    )
+    ch_ticket_log = int(
+        ConfigCatClient.TECH_ID_CC.get_value("ch_ticketlog", 872915565600182282)
+    )
+    ch_bot_requests = int(
+        ConfigCatClient.TECH_ID_CC.get_value("ch_botreq", 933181562885914724)
+    )
+    ch_announcements = int(
+        ConfigCatClient.TECH_ID_CC.get_value("ch_announcements", 934109939373314068)
+    )
+    ch_IT_announcements = int(
+        ConfigCatClient.TECH_ID_CC.get_value("ch_itannouncements", 932066545587327000)
+    )
+    ch_web_announcements = int(
+        ConfigCatClient.TECH_ID_CC.get_value("ch_webannouncements", 932487991958577152)
+    )
+    ch_bot_announcements = int(
+        ConfigCatClient.TECH_ID_CC.get_value("ch_botannouncements", 932725755115368478)
+    )
+    ch_snake_pit = int(
+        ConfigCatClient.TECH_ID_CC.get_value("ch_snakepit", 942076483290161203)
+    )
 
     # *** Roles ***
-    r_developer_manager = int(ConfigCatClient.TECH_ID_CC.get_value("r_developermanager", 805596419066822686))
-    r_assistant_bot_dev_manager = int(ConfigCatClient.TECH_ID_CC.get_value("r_assistantbotdevmanager",
-                                                                           816498160880844802))
-    r_bot_developer = int(ConfigCatClient.TECH_ID_CC.get_value("r_botdeveloper", 997238819055222894))
+    r_developer_manager = int(
+        ConfigCatClient.TECH_ID_CC.get_value("r_developermanager", 805596419066822686)
+    )
+    r_assistant_bot_dev_manager = int(
+        ConfigCatClient.TECH_ID_CC.get_value(
+            "r_assistantbotdevmanager", 816498160880844802
+        )
+    )
+    r_bot_developer = int(
+        ConfigCatClient.TECH_ID_CC.get_value("r_botdeveloper", 997238819055222894)
+    )
 
 
 class SandboxConfig:
@@ -604,20 +813,57 @@ class SandboxConfig:
     mode = str(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("mode", "404"))
 
     # *** Channels ***
-    ch_TV_console = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_console", 404))
-    ch_TV_start_vc = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_startvc", 404))
+    ch_TV_console = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_console", 404)
+    )
+    ch_TV_start_vc = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_startvc", 404)
+    )
 
     # *** Categories ***
-    cat_sandbox = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_sandbox", 945459539967348787))
-    cat_science_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_scienceticket", 800479815471333406))
-    cat_fine_arts_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_fineartsticket", 833210452758364210))
-    cat_math_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_mathticket", 800472371973980181))
-    cat_social_studies_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_socialstudiesticket",
-                                                                                800481237608824882))
-    cat_english_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_englishticket", 800475854353596469))
-    cat_essay_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_essayticket", 854945037875806220))
-    cat_language_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_languageticket", 800477414361792562))
-    cat_other_ticket = int(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_otherticket", 825917349558747166))
+    cat_sandbox = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_sandbox", 945459539967348787)
+    )
+    cat_science_ticket = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
+            "cat_scienceticket", 800479815471333406
+        )
+    )
+    cat_fine_arts_ticket = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
+            "cat_fineartsticket", 833210452758364210
+        )
+    )
+    cat_math_ticket = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
+            "cat_mathticket", 800472371973980181
+        )
+    )
+    cat_social_studies_ticket = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
+            "cat_socialstudiesticket", 800481237608824882
+        )
+    )
+    cat_english_ticket = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
+            "cat_englishticket", 800475854353596469
+        )
+    )
+    cat_essay_ticket = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
+            "cat_essayticket", 854945037875806220
+        )
+    )
+    cat_language_ticket = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
+            "cat_languageticket", 800477414361792562
+        )
+    )
+    cat_other_ticket = int(
+        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
+            "cat_otherticket", 825917349558747166
+        )
+    )
 
 
 class ChID:
@@ -636,7 +882,9 @@ class ChID:
     # *** Guilds ***
     g_ch = int(ConfigCatClient.CH_ID_CC.get_value("g_ch", 801974357395636254))
     cat_essay = int(ConfigCatClient.CH_ID_CC.get_value("cat_essay", 854945037875806220))
-    cat_english = int(ConfigCatClient.CH_ID_CC.get_value("cat_english", 800475854353596469))
+    cat_english = int(
+        ConfigCatClient.CH_ID_CC.get_value("cat_english", 800475854353596469)
+    )
 
 
 class MktID:
@@ -656,26 +904,66 @@ class MktID:
     g_mkt = int(ConfigCatClient.MKT_ID_CC.get_value("g_mkt", 799855854182596618))
 
     # *** Channels ***
-    ch_commands = int(ConfigCatClient.MKT_ID_CC.get_value("ch_commands", 799855856295608345))
-    ch_commission_transcripts = int(ConfigCatClient.MKT_ID_CC.get_value("ch_commissiontranscripts", 820843692385632287))
-    ch_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_announcements", 799855854244855847))
-    ch_design_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_designannouncements", 891926914258829323))
-    ch_media_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_mediaannouncements", 864050588023259196))
-    ch_bp_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_bpannouncements", 852371717744885760))
-    ch_events_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_eventsannouncements", 820508373791277067))
-    ch_mod_announcements = int(ConfigCatClient.MKT_ID_CC.get_value("ch_modannouncements", 820532007620575282))
+    ch_commands = int(
+        ConfigCatClient.MKT_ID_CC.get_value("ch_commands", 799855856295608345)
+    )
+    ch_commission_transcripts = int(
+        ConfigCatClient.MKT_ID_CC.get_value(
+            "ch_commissiontranscripts", 820843692385632287
+        )
+    )
+    ch_announcements = int(
+        ConfigCatClient.MKT_ID_CC.get_value("ch_announcements", 799855854244855847)
+    )
+    ch_design_announcements = int(
+        ConfigCatClient.MKT_ID_CC.get_value(
+            "ch_designannouncements", 891926914258829323
+        )
+    )
+    ch_media_announcements = int(
+        ConfigCatClient.MKT_ID_CC.get_value("ch_mediaannouncements", 864050588023259196)
+    )
+    ch_bp_announcements = int(
+        ConfigCatClient.MKT_ID_CC.get_value("ch_bpannouncements", 852371717744885760)
+    )
+    ch_events_announcements = int(
+        ConfigCatClient.MKT_ID_CC.get_value(
+            "ch_eventsannouncements", 820508373791277067
+        )
+    )
+    ch_mod_announcements = int(
+        ConfigCatClient.MKT_ID_CC.get_value("ch_modannouncements", 820532007620575282)
+    )
 
     # *** Categories ***
-    cat_design = int(ConfigCatClient.MKT_ID_CC.get_value("cat_design", 820873176208375838))
-    cat_media = int(ConfigCatClient.MKT_ID_CC.get_value("cat_media", 882031123541143632))
-    cat_discord = int(ConfigCatClient.MKT_ID_CC.get_value("cat_discord", 888668259220615198))
+    cat_design = int(
+        ConfigCatClient.MKT_ID_CC.get_value("cat_design", 820873176208375838)
+    )
+    cat_media = int(
+        ConfigCatClient.MKT_ID_CC.get_value("cat_media", 882031123541143632)
+    )
+    cat_discord = int(
+        ConfigCatClient.MKT_ID_CC.get_value("cat_discord", 888668259220615198)
+    )
 
     # *** Roles ***
-    r_discord_manager = int(ConfigCatClient.MKT_ID_CC.get_value("r_discordmanager", 890778255655841833))
-    r_discord_team = int(ConfigCatClient.MKT_ID_CC.get_value("r_discordteam", 805276710404489227))
-    r_design_manager = int(ConfigCatClient.MKT_ID_CC.get_value("r_designmanager", 882755765910261760))
-    r_design_team = int(ConfigCatClient.MKT_ID_CC.get_value("r_designteam", 864161064526020628))
-    r_content_creator_manager = int(ConfigCatClient.MKT_ID_CC.get_value("r_contentcreatormanager", 864165192148189224))
+    r_discord_manager = int(
+        ConfigCatClient.MKT_ID_CC.get_value("r_discordmanager", 890778255655841833)
+    )
+    r_discord_team = int(
+        ConfigCatClient.MKT_ID_CC.get_value("r_discordteam", 805276710404489227)
+    )
+    r_design_manager = int(
+        ConfigCatClient.MKT_ID_CC.get_value("r_designmanager", 882755765910261760)
+    )
+    r_design_team = int(
+        ConfigCatClient.MKT_ID_CC.get_value("r_designteam", 864161064526020628)
+    )
+    r_content_creator_manager = int(
+        ConfigCatClient.MKT_ID_CC.get_value(
+            "r_contentcreatormanager", 864165192148189224
+        )
+    )
 
 
 class TutID:
@@ -695,17 +983,42 @@ class TutID:
     g_tut = int(ConfigCatClient.TUT_ID_CC.get_value("g_tut", 860897711334621194))
 
     # *** Channels ***
-    ch_bot_commands = int(ConfigCatClient.TUT_ID_CC.get_value("ch_botcommands", 862480236965003275))
-    ch_hour_logs = int(ConfigCatClient.TUT_ID_CC.get_value("ch_hourlogs", 953454389652226068))
-    ch_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_announcements", 861711851330994247))
-    ch_leadership_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_leadershipannouncements",
-                                                                          861712109757530112))
-    ch_math_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_mathannouncements", 860929479961739274))
-    ch_science_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_scienceannouncements", 860929498782629948))
-    ch_english_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_englishannouncements", 860929517102039050))
-    ch_SS_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_ssannouncements", 860929548639797258))
-    ch_cs_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_csannouncements", 860929585355948042))
-    ch_misc_announcements = int(ConfigCatClient.TUT_ID_CC.get_value("ch_miscannouncements", 860929567132221481))
+    ch_bot_commands = int(
+        ConfigCatClient.TUT_ID_CC.get_value("ch_botcommands", 862480236965003275)
+    )
+    ch_hour_logs = int(
+        ConfigCatClient.TUT_ID_CC.get_value("ch_hourlogs", 953454389652226068)
+    )
+    ch_announcements = int(
+        ConfigCatClient.TUT_ID_CC.get_value("ch_announcements", 861711851330994247)
+    )
+    ch_leadership_announcements = int(
+        ConfigCatClient.TUT_ID_CC.get_value(
+            "ch_leadershipannouncements", 861712109757530112
+        )
+    )
+    ch_math_announcements = int(
+        ConfigCatClient.TUT_ID_CC.get_value("ch_mathannouncements", 860929479961739274)
+    )
+    ch_science_announcements = int(
+        ConfigCatClient.TUT_ID_CC.get_value(
+            "ch_scienceannouncements", 860929498782629948
+        )
+    )
+    ch_english_announcements = int(
+        ConfigCatClient.TUT_ID_CC.get_value(
+            "ch_englishannouncements", 860929517102039050
+        )
+    )
+    ch_SS_announcements = int(
+        ConfigCatClient.TUT_ID_CC.get_value("ch_ssannouncements", 860929548639797258)
+    )
+    ch_cs_announcements = int(
+        ConfigCatClient.TUT_ID_CC.get_value("ch_csannouncements", 860929585355948042)
+    )
+    ch_misc_announcements = int(
+        ConfigCatClient.TUT_ID_CC.get_value("ch_miscannouncements", 860929567132221481)
+    )
 
 
 class HRID:
@@ -725,16 +1038,31 @@ class HRID:
     g_hr = int(ConfigCatClient.HR_ID_CC.get_value("g_hr", 815753072742891532))
 
     # *** Channels ***
-    ch_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362))
-    ch_mkt_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_mktannouncements", 816733579660754944))
-    ch_acad_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557))
-    ch_tech_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
-    ch_leadership_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_leadershipannouncements",
-                                                                         819009569979629569))
-    ch_email_requests = int(ConfigCatClient.HR_ID_CC.get_value("ch_emailrequests", 968345000100384788))
+    ch_announcements = int(
+        ConfigCatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362)
+    )
+    ch_mkt_announcements = int(
+        ConfigCatClient.HR_ID_CC.get_value("ch_mktannouncements", 816733579660754944)
+    )
+    ch_acad_announcements = int(
+        ConfigCatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557)
+    )
+    ch_tech_announcements = int(
+        ConfigCatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421)
+    )
+    ch_leadership_announcements = int(
+        ConfigCatClient.HR_ID_CC.get_value(
+            "ch_leadershipannouncements", 819009569979629569
+        )
+    )
+    ch_email_requests = int(
+        ConfigCatClient.HR_ID_CC.get_value("ch_emailrequests", 968345000100384788)
+    )
 
     # *** Roles ***
-    r_hr_staff = int(ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+    r_hr_staff = int(
+        ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033)
+    )
 
 
 class PSID:
@@ -771,40 +1099,103 @@ class LeaderID:
     """
 
     # *** Guilds ***
-    g_leader = int(ConfigCatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154))
-    g_staff_resources = int(ConfigCatClient.LEADER_ID_CC.get_value("g_staffresources", 955911166520082452))
+    g_leader = int(
+        ConfigCatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154)
+    )
+    g_staff_resources = int(
+        ConfigCatClient.LEADER_ID_CC.get_value("g_staffresources", 955911166520082452)
+    )
 
     # *** Channels ***
-    ch_staff_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_staffannouncements", 936134263777148949))
-    ch_env_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_envannouncements", 942572395640782909))
-    ch_rebrand_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_rebrandannouncements",
-                                                                          946180039630782474))
-    ch_workonly_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_workonlyannouncements",
-                                                                           890993285940789299))
-    ch_finance_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_financeannouncements",
-                                                                          919341240280023060))
-    ch_mkt_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_mktannouncements", 942792208841588837))
-    ch_ssd_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_ssdannouncements", 947656507162525698))
-    ch_main_announcements = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_mainannouncements", 936464173687259226))
-    ch_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362))
-    ch_acad_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557))
-    ch_tech_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421))
-    ch_leadership_announcements = int(ConfigCatClient.HR_ID_CC.get_value("ch_leadershipannouncements",
-                                                                         819009569979629569))
-    ch_com_log = int(ConfigCatClient.LEADER_ID_CC.get_value("ch_com_log", 955991586364334082))
+    ch_staff_announcements = int(
+        ConfigCatClient.LEADER_ID_CC.get_value(
+            "ch_staffannouncements", 936134263777148949
+        )
+    )
+    ch_env_announcements = int(
+        ConfigCatClient.LEADER_ID_CC.get_value(
+            "ch_envannouncements", 942572395640782909
+        )
+    )
+    ch_rebrand_announcements = int(
+        ConfigCatClient.LEADER_ID_CC.get_value(
+            "ch_rebrandannouncements", 946180039630782474
+        )
+    )
+    ch_workonly_announcements = int(
+        ConfigCatClient.LEADER_ID_CC.get_value(
+            "ch_workonlyannouncements", 890993285940789299
+        )
+    )
+    ch_finance_announcements = int(
+        ConfigCatClient.LEADER_ID_CC.get_value(
+            "ch_financeannouncements", 919341240280023060
+        )
+    )
+    ch_mkt_announcements = int(
+        ConfigCatClient.LEADER_ID_CC.get_value(
+            "ch_mktannouncements", 942792208841588837
+        )
+    )
+    ch_ssd_announcements = int(
+        ConfigCatClient.LEADER_ID_CC.get_value(
+            "ch_ssdannouncements", 947656507162525698
+        )
+    )
+    ch_main_announcements = int(
+        ConfigCatClient.LEADER_ID_CC.get_value(
+            "ch_mainannouncements", 936464173687259226
+        )
+    )
+    ch_announcements = int(
+        ConfigCatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362)
+    )
+    ch_acad_announcements = int(
+        ConfigCatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557)
+    )
+    ch_tech_announcements = int(
+        ConfigCatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421)
+    )
+    ch_leadership_announcements = int(
+        ConfigCatClient.HR_ID_CC.get_value(
+            "ch_leadershipannouncements", 819009569979629569
+        )
+    )
+    ch_com_log = int(
+        ConfigCatClient.LEADER_ID_CC.get_value("ch_com_log", 955991586364334082)
+    )
 
     # *** Roles ***
-    r_corporate_officer = int(ConfigCatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444))
-    r_president = int(ConfigCatClient.LEADER_ID_CC.get_value("r_president", 900940957783056444))
-    r_vice_president = int(ConfigCatClient.LEADER_ID_CC.get_value("r_vicepresident", 888929996175978508))
-    r_board_member = int(ConfigCatClient.LEADER_ID_CC.get_value("r_boardmember", 888929996188549189))
-    r_director = int(ConfigCatClient.LEADER_ID_CC.get_value("r_director", 892531463482900480))
-    r_SS_digital_committee = int(ConfigCatClient.LEADER_ID_CC.get_value("r_ssdigitalcommittee", 912472488594771968))
-    r_information_technology_manager = int(ConfigCatClient.LEADER_ID_CC.get_value("r_informationtechnologymanager",
-                                                                                  943942441357172758))
+    r_corporate_officer = int(
+        ConfigCatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444)
+    )
+    r_president = int(
+        ConfigCatClient.LEADER_ID_CC.get_value("r_president", 900940957783056444)
+    )
+    r_vice_president = int(
+        ConfigCatClient.LEADER_ID_CC.get_value("r_vicepresident", 888929996175978508)
+    )
+    r_board_member = int(
+        ConfigCatClient.LEADER_ID_CC.get_value("r_boardmember", 888929996188549189)
+    )
+    r_director = int(
+        ConfigCatClient.LEADER_ID_CC.get_value("r_director", 892531463482900480)
+    )
+    r_SS_digital_committee = int(
+        ConfigCatClient.LEADER_ID_CC.get_value(
+            "r_ssdigitalcommittee", 912472488594771968
+        )
+    )
+    r_information_technology_manager = int(
+        ConfigCatClient.LEADER_ID_CC.get_value(
+            "r_informationtechnologymanager", 943942441357172758
+        )
+    )
 
     # *** Roles **
-    r_hr_staff = int(ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+    r_hr_staff = int(
+        ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033)
+    )
 
 
 class SETID:
@@ -836,17 +1227,11 @@ class SETID:
     ch_may_day_guess = int(
         ConfigCatClient.SET_ID_CC.get_value("ch_puzzle_guessv2", 966857151417028608)
     )
-    ch_general = int(
-        950799440766177297  #  will replace later
-    )
-    ch_reminders = int(
-        971215505828511744
-    )
+    ch_general = int(950799440766177297)  #  will replace later
+    ch_reminders = int(971215505828511744)
 
     # *** Roles ***
     r_hrStaff = int(ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
-
-
 
 
 class CheckDB_CC:
@@ -854,14 +1239,20 @@ class CheckDB_CC:
     Checks and Safeguards for the Bot.
     """
 
-    MasterMaintenance = int(ConfigCatClient.CHECK_DB_CC.get_value("mastermaintenance", False))
+    MasterMaintenance = int(
+        ConfigCatClient.CHECK_DB_CC.get_value("mastermaintenance", False)
+    )
     guild_None = int(ConfigCatClient.CHECK_DB_CC.get_value("guildnone", False))
     external_guild = int(ConfigCatClient.CHECK_DB_CC.get_value("externalguild", True))
     mod_role_bypass = int(ConfigCatClient.CHECK_DB_CC.get_value("modrolebypass", True))
     rule_bypass = int(ConfigCatClient.CHECK_DB_CC.get_value("rulebypass", True))
-    public_categories = int(ConfigCatClient.CHECK_DB_CC.get_value("publiccategories", False))
+    public_categories = int(
+        ConfigCatClient.CHECK_DB_CC.get_value("publiccategories", False)
+    )
     else_situation = int(ConfigCatClient.CHECK_DB_CC.get_value("elsesituation", True))
-    persistent_change = int(ConfigCatClient.CHECK_DB_CC.get_value("persistantchange", True))
+    persistent_change = int(
+        ConfigCatClient.CHECK_DB_CC.get_value("persistantchange", True)
+    )
 
 
 def config_patch(key, value):
@@ -1066,6 +1457,7 @@ deprecatedFiles = [
     "admincred.json",
 ]
 
+
 class EmbeddedActivity:
     awkword = 879863881349087252
     betrayal = 773336526917861400
@@ -1122,6 +1514,7 @@ def get_random_string(length=13):
     rnd = random.SystemRandom()
     return "".join(rnd.choice(chars) for i in range(length))
 
+
 EmailSelectOptions = [
     discord.SelectOption(
         label="Individual Email",
@@ -1132,23 +1525,27 @@ EmailSelectOptions = [
         label="Team Email",
         description="Request a team email address.",
         emoji="👥",
-    )
+    ),
 ]
 
 
 def create_ui_modal_class(conf_id):
-    query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == conf_id)
+    query = database.TicketConfiguration.select().where(
+        database.TicketConfiguration.id == conf_id
+    )
     if query.exists():
         query: database.TicketConfiguration = query.get()
     else:
         return None
 
     class UIModal(ui.Modal, title=query.title):
-        def __init__(self, bot: commands.Bot, title: str, questions_l: str, conf_id: int):
+        def __init__(
+            self, bot: commands.Bot, title: str, questions_l: str, conf_id: int
+        ):
             super().__init__(timeout=None)
             self.bot = bot
             self.title = title
-            self.questions = str(questions_l).strip('][').split(', ')
+            self.questions = str(questions_l).strip("][").split(", ")
             self.conf_id = conf_id
 
             self.question_obj: List[ui.TextInput] = []
@@ -1195,9 +1592,7 @@ def create_ui_modal_class(conf_id):
                     min_length=min_length,
                     max_length=max_length,
                 )
-                self.add_item(
-                    text_input
-                )
+                self.add_item(text_input)
                 self.question_obj.append(text_input)
                 index += 1
 
@@ -1205,10 +1600,14 @@ def create_ui_modal_class(conf_id):
             for question in self.question_obj:
                 self.answers.append(question.value)
 
-            query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == self.conf_id)
+            query = database.TicketConfiguration.select().where(
+                database.TicketConfiguration.id == self.conf_id
+            )
 
             if not query.exists():
-                return await interaction.response.send_message("Ticket configuration no longer exists!")
+                return await interaction.response.send_message(
+                    "Ticket configuration no longer exists!"
+                )
             else:
                 query: database.TicketConfiguration = query.get()
 
@@ -1219,12 +1618,16 @@ def create_ui_modal_class(conf_id):
                 )
 
                 if lim_query.count() >= query.limit:
-                    return await interaction.response.send_message("You have hit the ticket limit for this "
-                                                                   "category, please close already open "
-                                                                   "tickets before opening a new one!")
+                    return await interaction.response.send_message(
+                        "You have hit the ticket limit for this "
+                        "category, please close already open "
+                        "tickets before opening a new one!"
+                    )
 
             ticket_server = self.bot.get_guild(query.guild_id)
-            ticket_category = discord.utils.get(ticket_server.categories, id=query.category_id)
+            ticket_category = discord.utils.get(
+                ticket_server.categories, id=query.category_id
+            )
             member = interaction.guild.get_member(interaction.user.id)
 
             ticket_channel = await ticket_category.create_text_channel(
@@ -1241,11 +1644,15 @@ def create_ui_modal_class(conf_id):
             cache_query.save()
 
             # make query.role_id into a list (comma seperated string) and add each role to the ticket channel
-            role_list = [int(e) if e.strip().isdigit() else e for e in query.role_id.split(',')]
+            role_list = [
+                int(e) if e.strip().isdigit() else e for e in query.role_id.split(",")
+            ]
             for role in role_list:
                 role = discord.utils.get(ticket_server.roles, id=int(role))
                 try:
-                    await ticket_channel.set_permissions(role, read_messages=True, send_messages=True)
+                    await ticket_channel.set_permissions(
+                        role, read_messages=True, send_messages=True
+                    )
                 except discord.NotFound:
                     pass
 
@@ -1286,20 +1693,21 @@ def create_ui_modal_class(conf_id):
                 name=interaction.user.name,
                 icon_url=interaction.user.avatar.url,
             )
-            embed.set_footer(
-                text=f"ID: {interaction.user.id}"
-            )
+            embed.set_footer(text=f"ID: {interaction.user.id}")
             await ticket_channel.send(embed=embed)
 
             await interaction.response.send_message(
                 content=f"{interaction.user.mention}, I've created a ticket for you!\n> {ticket_channel.mention}",
                 ephemeral=True,
             )
+
     return UIModal
 
 
 def create_ticket_button(conf_id):
-    query = database.TicketConfiguration.select().where(database.TicketConfiguration.id == conf_id)
+    query = database.TicketConfiguration.select().where(
+        database.TicketConfiguration.id == conf_id
+    )
     if query.exists():
         query: database.TicketConfiguration = query.get()
     else:
@@ -1311,8 +1719,15 @@ def create_ticket_button(conf_id):
             self.modal_view = modal_view
             self.value = None
 
-        @discord.ui.button(label=query.button_label, style=discord.ButtonStyle.blurple, disabled=False, custom_id=f"cts_pers:{query.id}")
-        async def starts_commission(self, interaction: discord.Interaction, button: discord.ui.Button):
+        @discord.ui.button(
+            label=query.button_label,
+            style=discord.ButtonStyle.blurple,
+            disabled=False,
+            custom_id=f"cts_pers:{query.id}",
+        )
+        async def starts_commission(
+            self, interaction: discord.Interaction, button: discord.ui.Button
+        ):
             if self.modal_view is not None:
                 await interaction.response.send_modal(self.modal_view)
             else:
@@ -1326,11 +1741,13 @@ class HREmailDisabled(discord.ui.View):
         super().__init__()
         self.value = None
 
-    @discord.ui.button(label='Confirm', style=discord.ButtonStyle.green, disabled=True)
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.green, disabled=True)
+    async def confirm(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
         pass
 
-    @discord.ui.button(label='Cancel', style=discord.ButtonStyle.red, disabled=True)
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, disabled=True)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         pass
 
@@ -1341,15 +1758,25 @@ class HREmailConfirm(discord.ui.View):
         self.value = None
         self.bot = bot
 
-    @discord.ui.button(label='Confirm', emoji="✅", style=discord.ButtonStyle.green, custom_id="temp_mgm_confirm")
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @discord.ui.button(
+        label="Confirm",
+        emoji="✅",
+        style=discord.ButtonStyle.green,
+        custom_id="temp_mgm_confirm",
+    )
+    async def confirm(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
         embed = interaction.message.embeds[0]
         embed.title = f"[CREATED] {embed.title}"
         embed.colour = discord.Colour.green()
         temppass = get_random_string()
         if embed.fields[0].value == "G":
-            return await interaction.response.send_message("Error, not supported yet.\nYou'll need to contact a Super/User "
-                                                   "Administrator to create this manually.", ephemeral=True)
+            return await interaction.response.send_message(
+                "Error, not supported yet.\nYou'll need to contact a Super/User "
+                "Administrator to create this manually.",
+                ephemeral=True,
+            )
         elif embed.fields[0].value == "T":
             firstname = embed.fields[4].value
             lastname = "Team"
@@ -1370,7 +1797,7 @@ class HREmailConfirm(discord.ui.View):
                         "department": embed.fields[4].value,
                         "description": "Team",
                     }
-                ]
+                ],
             }
         elif embed.fields[0].value == "Personal":
             firstname = embed.fields[1].value
@@ -1385,12 +1812,7 @@ class HREmailConfirm(discord.ui.View):
                 "primaryEmail": f"{embed.fields[1].value}.{embed.fields[2].value}@schoolsimplified.org",
                 "changePasswordAtNextLogin": True,
                 "orgUnitPath": "/School Simplified Personal Acc.",
-                "relations": [
-                    {
-                        "value": embed.fields[3].value,
-                        "type": "manager"
-                    }
-                ],
+                "relations": [{"value": embed.fields[3].value, "type": "manager"}],
                 "organizations": [
                     {
                         "title": embed.fields[5].value,
@@ -1398,8 +1820,7 @@ class HREmailConfirm(discord.ui.View):
                         "type": "work",
                         "department": embed.fields[4].value,
                     }
-                ]
-
+                ],
             }
         else:
             return
@@ -1441,11 +1862,16 @@ class HREmailConfirm(discord.ui.View):
         await interaction.message.edit(embed=embed, view=HREmailDisabled())
         self.stop()
 
-    @discord.ui.button(label='Cancel', emoji="❌", style=discord.ButtonStyle.red, custom_id="temp_mgm_cancel")
+    @discord.ui.button(
+        label="Cancel",
+        emoji="❌",
+        style=discord.ButtonStyle.red,
+        custom_id="temp_mgm_cancel",
+    )
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message('Cancelling', ephemeral=True)
+        await interaction.response.send_message("Cancelling", ephemeral=True)
         embed = interaction.message.embeds[0]
-        embed.title = f'[RESOLVED] {embed.title}'
+        embed.title = f"[RESOLVED] {embed.title}"
         embed.colour = discord.Color.brand_red()
 
         await interaction.message.edit(embed=embed, view=HREmailDisabled())
@@ -1489,7 +1915,10 @@ class IEmailForm(ui.Modal, title="Auto Email Form"):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Thank you for your submission, forwarding your request to HR!", ephemeral=True)
+        await interaction.response.send_message(
+            "Thank you for your submission, forwarding your request to HR!",
+            ephemeral=True,
+        )
         hr_email: discord.TextChannel = self.bot.get_channel(HRID.ch_email_requests)
         embed = discord.Embed(
             title=f"Email Request from {interaction.user.name}#{interaction.user.discriminator}",
@@ -1500,7 +1929,9 @@ class IEmailForm(ui.Modal, title="Auto Email Form"):
         embed.add_field(name="Account Type", value="Personal", inline=False)
         embed.add_field(name="First Name", value=self.first_name.value)
         embed.add_field(name="Last Name", value=self.last_name.value)
-        embed.add_field(name="Managers Email", value=self.managers_email.value, inline=False)
+        embed.add_field(
+            name="Managers Email", value=self.managers_email.value, inline=False
+        )
         embed.add_field(name="Team Name", value=self.team_name.value, inline=False)
         embed.add_field(name="Team Role", value=self.team_role.value)
         await hr_email.send(embed=embed, view=HREmailConfirm(self.bot))
@@ -1543,7 +1974,10 @@ class TEmailForm(ui.Modal, title="Email Address Requests"):
 
     async def on_submit(self, interaction: discord.Interaction):
         email_type = self.children[3].values[0]
-        await interaction.response.send_message("Thank you for your submission, forwarding your request to HR!", ephemeral=True)
+        await interaction.response.send_message(
+            "Thank you for your submission, forwarding your request to HR!",
+            ephemeral=True,
+        )
         hr_email: discord.TextChannel = self.bot.get_channel(HRID.ch_email_requests)
         embed = discord.Embed(
             title=f"Email Request from {interaction.user.name}#{interaction.user.discriminator}",
@@ -1552,7 +1986,9 @@ class TEmailForm(ui.Modal, title="Email Address Requests"):
         )
         account_type = {"G": "Group", "T": "Team"}
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
-        embed.add_field(name="Account Type", value=account_type[email_type], inline=False)
+        embed.add_field(
+            name="Account Type", value=account_type[email_type], inline=False
+        )
         embed.add_field(name="Email Purpose", value=self.email_purpose.value)
         embed.add_field(name="Desired Email", value=self.requested_address.value)
         embed.add_field(name="Email Type", value=email_type)
@@ -1584,18 +2020,24 @@ class StaffApps(ui.Modal, title="Staff Applications"):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Thank you for your submission, creating your ticket now!", ephemeral=True)
+        await interaction.response.send_message(
+            "Thank you for your submission, creating your ticket now!", ephemeral=True
+        )
         counter_num = (
             database.BaseTickerInfo.select()
-                .where(database.BaseTickerInfo.guildID == interaction.guild.id)
-                .get()
+            .where(database.BaseTickerInfo.guildID == interaction.guild.id)
+            .get()
         )
         num = counter_num.counter
         counter_num.counter = counter_num.counter + 1
         counter_num.save()
 
-        category = discord.utils.get(interaction.guild.categories, id=StaffID.cat_staffapps_tickets)
-        channel = await interaction.guild.create_text_channel(f"staff-apps-{num}", category=category)
+        category = discord.utils.get(
+            interaction.guild.categories, id=StaffID.cat_staffapps_tickets
+        )
+        channel = await interaction.guild.create_text_channel(
+            f"staff-apps-{num}", category=category
+        )
 
         await channel.set_permissions(
             interaction.user,
@@ -1635,10 +2077,11 @@ class StaffApps(ui.Modal, title="Staff Applications"):
         tz = pytz.timezone("EST")
         opened_at = datetime.now(tz)
         query = database.MGMTickets.create(
-            ChannelID=channel.id, authorID=interaction.message.author.id, createdAt=opened_at
+            ChannelID=channel.id,
+            authorID=interaction.message.author.id,
+            createdAt=opened_at,
         )
         query.save()
-
 
         embed = discord.Embed(
             title=f"Staff Application from {interaction.user.name}#{interaction.user.discriminator}",
@@ -1662,7 +2105,7 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
                 options=[
                     discord.SelectOption(label="For Staff", value="Staff"),
                     discord.SelectOption(label="For the Public", value="Public"),
-                ]
+                ],
             )
         )
 
@@ -1691,19 +2134,24 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Thank you for your submission, creating your ticket now!",
-                                                ephemeral=True)
+        await interaction.response.send_message(
+            "Thank you for your submission, creating your ticket now!", ephemeral=True
+        )
         counter_num = (
             database.BaseTickerInfo.select()
-                .where(database.BaseTickerInfo.guildID == interaction.guild.id)
-                .get()
+            .where(database.BaseTickerInfo.guildID == interaction.guild.id)
+            .get()
         )
         num = counter_num.counter
         counter_num.counter = counter_num.counter + 1
         counter_num.save()
 
-        category = discord.utils.get(interaction.guild.categories, id=StaffID.cat_announcements_tickets)
-        channel = await interaction.guild.create_text_channel(f"staff-announce-{num}", category=category)
+        category = discord.utils.get(
+            interaction.guild.categories, id=StaffID.cat_announcements_tickets
+        )
+        channel = await interaction.guild.create_text_channel(
+            f"staff-announce-{num}", category=category
+        )
 
         await channel.set_permissions(
             interaction.user,
@@ -1743,7 +2191,9 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
         tz = pytz.timezone("EST")
         opened_at = datetime.now(tz)
         query = database.MGMTickets.create(
-            ChannelID=channel.id, authorID=interaction.message.author.id, createdAt=opened_at
+            ChannelID=channel.id,
+            authorID=interaction.message.author.id,
+            createdAt=opened_at,
         )
         query.save()
 
@@ -1755,7 +2205,9 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
         embed.add_field(name="Subject", value=self.app_title.value, inline=False)
         embed.add_field(name="Team Name", value=self.team_name.value, inline=False)
-        embed.add_field(name="Target Publication", value=self.children[3].values[0], inline=False)
+        embed.add_field(
+            name="Target Publication", value=self.children[3].values[0], inline=False
+        )
         embed.add_field(name="Approved By", value=self.approval.value, inline=False)
         await channel.send(embed=embed)
 
@@ -1773,9 +2225,9 @@ class MGMCommissionButton(discord.ui.View):
         emoji="📝",
     )
     async def start_commission(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         # TODO: Comply with Code Guidelines and use ConfigCat for IDs
         channel_to_modal_map = {
@@ -1799,9 +2251,9 @@ class EmailDropdown(discord.ui.View):
         emoji="👤",
     )
     async def i_email(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         modal = IEmailForm(self.bot)
         return await interaction.response.send_modal(modal)
@@ -1813,9 +2265,9 @@ class EmailDropdown(discord.ui.View):
         emoji="👥",
     )
     async def t_email(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         modal = TEmailForm(self.bot)
         return await interaction.response.send_modal(modal)
@@ -1895,8 +2347,9 @@ class SelectMenuHandler(ui.Select):
             )
 
     async def callback(self, interaction: discord.Interaction):
-        if self.select_user in [None, interaction.user] or \
-                any(role in interaction.user.roles for role in self.roles):
+        if self.select_user in [None, interaction.user] or any(
+            role in interaction.user.roles for role in self.roles
+        ):
 
             self.view.value = self.values[0]
             self.view_response = self.values[0]
@@ -1942,7 +2395,7 @@ class ButtonHandler(ui.Button):
         interaction_message: Union[str, None] = None,
         ephemeral: bool = True,
         coroutine: CoroutineType = None,
-        view_response=None
+        view_response=None,
     ):
         """
         Parameters:
@@ -2051,7 +2504,9 @@ class TechnicalCommissionConfirm(discord.ui.View):
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red, emoji="❌")
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.message.delete()
-        await interaction.response.send_message( "ok, not removing this channel.", ephemeral=True)
+        await interaction.response.send_message(
+            "ok, not removing this channel.", ephemeral=True
+        )
         self.value = False
         self.stop()
 
@@ -2062,13 +2517,20 @@ class LockButton(discord.ui.View):
         self.value = None
         self.bot = bot
 
-    @discord.ui.button(label="Lock", style=discord.ButtonStyle.green, custom_id="persistent_view:lock", emoji="🔒")
+    @discord.ui.button(
+        label="Lock",
+        style=discord.ButtonStyle.green,
+        custom_id="persistent_view:lock",
+        emoji="🔒",
+    )
     async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
         ch = self.bot.get_channel(interaction.channel_id)
         temp_confirm_instance = TechnicalCommissionConfirm(self.bot)
 
-        await ch.send("Are you sure you want to close this ticket?", view=temp_confirm_instance)
+        await ch.send(
+            "Are you sure you want to close this ticket?", view=temp_confirm_instance
+        )
 
 
 class GSuiteVerify(discord.ui.View):
@@ -2080,9 +2542,9 @@ class GSuiteVerify(discord.ui.View):
         label="Verify with GSuite",
         style=discord.ButtonStyle.blurple,
         custom_id="persistent_view:gsuiteverify",
-        emoji=Emoji.gsuite_logo
+        emoji=Emoji.gsuite_logo,
     )
-    async def lock(self,interaction: discord.Interaction, button: discord.ui.Button):
+    async def lock(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.value = True
 
 
@@ -2097,7 +2559,11 @@ class TempConfirm(discord.ui.View):
         emoji="✅",
         custom_id="persistent_view:tempconfirm",
     )
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def confirm(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
+    ):
         self.value = True
         self.stop()
 
@@ -2153,7 +2619,9 @@ class TicketLockButton(discord.ui.View):
         ch = self.bot.get_channel(interaction.channel_id)
         TempConfirmInstance = TicketTempConfirm()
 
-        await ch.send("Are you sure you want to close this ticket?", view=TempConfirmInstance)
+        await ch.send(
+            "Are you sure you want to close this ticket?", view=TempConfirmInstance
+        )
 
 
 class TicketTempConfirm(discord.ui.View):
@@ -2167,7 +2635,11 @@ class TicketTempConfirm(discord.ui.View):
         emoji="✅",
         custom_id="persistent_view:tempconfirm",
     )
-    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button,):
+    async def confirm(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
+    ):
         self.value = True
         self.stop()
 
@@ -2218,7 +2690,9 @@ class TicketTempConfirm(discord.ui.View):
 async def id_generator(size=3, chars=string.ascii_uppercase):
     while True:
         ID = "".join(random.choice(chars) for _ in range(size))
-        query = database.TutorBot_Sessions.select().where(database.TutorBot_Sessions.SessionID == ID)
+        query = database.TutorBot_Sessions.select().where(
+            database.TutorBot_Sessions.SessionID == ID
+        )
 
         if query.exists():
             continue
@@ -2227,14 +2701,18 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
 
 
 async def force_restart(ctx, main_or_beta):
-    p = subprocess.run("git status -uno", shell=True, text=True, capture_output=True, check=True)
+    p = subprocess.run(
+        "git status -uno", shell=True, text=True, capture_output=True, check=True
+    )
 
     embed = discord.Embed(
         title="Restarting...",
         description="Doing GIT Operation (1/3)",
         color=discord.Color.green(),
     )
-    embed.add_field(name="Checking GIT (1/3)", value=f"**Git Output:**\n```shell\n{p.stdout}\n```")
+    embed.add_field(
+        name="Checking GIT (1/3)", value=f"**Git Output:**\n```shell\n{p.stdout}\n```"
+    )
 
     msg = await ctx.send(embed=embed)
     try:
@@ -2356,8 +2834,7 @@ def search_custom_emoji(string: str):
 
 
 async def get_active_or_archived_thread(
-        guild: discord.Guild,
-        thread_id: int
+    guild: discord.Guild, thread_id: int
 ) -> Optional[discord.Thread]:
 
     active_thread = guild.get_thread(thread_id)

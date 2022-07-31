@@ -130,11 +130,11 @@ class SubdomainForm(ui.Modal, title="Custom Subdomain Request"):
         embed.set_author(
             name=interaction.user.name, icon_url=interaction.user.avatar.url
         )
-        embed.add_field(name="Subdomain Requested:", value=self.subdomain.value, inline=False)
-        embed.add_field(name="Team Requester:", value=self.team.value, inline=False)
         embed.add_field(
-            name="Subdomain Usage:", value=self.reason.value, inline=False
+            name="Subdomain Requested:", value=self.subdomain.value, inline=False
         )
+        embed.add_field(name="Team Requester:", value=self.team.value, inline=False)
+        embed.add_field(name="Subdomain Usage:", value=self.reason.value, inline=False)
         embed.add_field(name="Approval", value=self.approval.value, inline=False)
         embed.add_field(
             name="Anything else?", value=f"E: {self.anything_else.value}", inline=False
@@ -177,7 +177,7 @@ class CommissionTechButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"{interaction.user.mention} commissions have moved to the Staff Resources & Information Server!\nYou "
                 f"can start one here: <#956619270899499028>.",
-                ephemeral=True
+                ephemeral=True,
             )
 
         modal = BotRequestModal(self.bot)
@@ -198,7 +198,7 @@ class CommissionTechButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"{interaction.user.mention} commissions have moved to the Staff Resources & Information Server!\nYou "
                 f"can start one here: <#956619270899499028>.",
-                ephemeral=True
+                ephemeral=True,
             )
 
         modal = SubdomainForm(self.bot)
@@ -230,15 +230,15 @@ class TechProjectCMD(commands.Cog):
     @app_commands.checks.cooldown(1, 5, key=lambda i: (i.guild_id, i.channel.id))
     @app_commands.describe(status="Read options for the list of statuses.")
     async def status_update(
-            self,
-            interaction: discord.Interaction,
-            status: Literal[
-                "⚪️ - Pending developer review; unclaimed.",
-                "🎯 - Claimed; used for internal tracking. ",
-                "🔴 - Extra information needed or not possible.",
-                "🟡 - In progress; working on the project.",
-                "🟢 - Complete; pending requestor to accept final product."
-            ]
+        self,
+        interaction: discord.Interaction,
+        status: Literal[
+            "⚪️ - Pending developer review; unclaimed.",
+            "🎯 - Claimed; used for internal tracking. ",
+            "🔴 - Extra information needed or not possible.",
+            "🟡 - In progress; working on the project.",
+            "🟢 - Complete; pending requestor to accept final product.",
+        ],
     ):
         channel: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
         thread: discord.Thread = interaction.channel
@@ -315,7 +315,9 @@ class TechProjectCMD(commands.Cog):
         """
         Post the Bot Development Commission Process in the leadership server.
         """
-        await ctx.send("https://cdn.discordapp.com/attachments/956619270899499028/956625228371492885/4.png\n\n")
+        await ctx.send(
+            "https://cdn.discordapp.com/attachments/956619270899499028/956625228371492885/4.png\n\n"
+        )
         await ctx.send(
             "** **\n\n**Bot Development Commission Process**\n"
             "Information Technology is able to help automate and improve School Simplified through technology. If you "
@@ -323,7 +325,7 @@ class TechProjectCMD(commands.Cog):
             "commission!\n\n"
             "*Join the IT server (https://discord.gg/WugSf4a74a) and click the button to create a Developer"
             "Commission (bot creation, bot changes).*",
-            view=CommissionTechButton(self.bot)
+            view=CommissionTechButton(self.bot),
         )
 
     @tasks.loop(seconds=60.0)

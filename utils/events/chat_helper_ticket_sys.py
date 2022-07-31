@@ -570,7 +570,7 @@ class TicketBT(discord.ui.Button):
                     "Chat Helper",
                     "Bot: TeXit",
                     "Academics Management",
-                    "Helper"
+                    "Helper",
                 ]
                 for role in roles:
                     RoleOBJ = discord.utils.get(
@@ -719,7 +719,9 @@ class TicketBT(discord.ui.Button):
                 )
             await channel.send(f"Attachment URL: {str(attachmentlist)}")
 
-            await LDC.edit(content=f"Ticket Created!\nYou can view it here: {channel.mention}")
+            await LDC.edit(
+                content=f"Ticket Created!\nYou can view it here: {channel.mention}"
+            )
 
 
 class TicketButton(discord.ui.View):
@@ -824,8 +826,9 @@ class DropdownTickets(commands.Cog):
                     f"{author.mention}\n", embed=embed, view=ButtonViews
                 )
             except Exception:
-                await interaction.followup.send(f"{author.mention}\n", embed=embed, view=ButtonViews)
-
+                await interaction.followup.send(
+                    f"{author.mention}\n", embed=embed, view=ButtonViews
+                )
 
         elif InteractionResponse["custom_id"] == "ch_lock_CONFIRM":
             channel = interaction.message.channel
@@ -845,7 +848,9 @@ class DropdownTickets(commands.Cog):
                         f"{author.mention} The ticket owner has left the server."
                     )
                 except Exception:
-                    await interaction.followup.send(f"{author.mention} The ticket owner has left the server.")
+                    await interaction.followup.send(
+                        f"{author.mention} The ticket owner has left the server."
+                    )
             else:
                 await channel.set_permissions(
                     TicketOwner, read_messages=False, reason="Ticket Perms Close(User)"
@@ -896,7 +901,9 @@ class DropdownTickets(commands.Cog):
                     author.mention, embed=embed, view=ButtonViews2
                 )
             except Exception:
-                await interaction.followup.send(author.mention, embed=embed, view=ButtonViews2)
+                await interaction.followup.send(
+                    author.mention, embed=embed, view=ButtonViews2
+                )
 
         elif InteractionResponse["custom_id"] == "ch_lock_CANCEL":
             channel = interaction.message.channel
@@ -906,7 +913,9 @@ class DropdownTickets(commands.Cog):
                     f"{author.mention} Alright, canceling request.", ephemeral=True
                 )
             except Exception:
-                await interaction.followup.send(f"{author.mention} Alright, canceling request.", ephemeral=True)
+                await interaction.followup.send(
+                    f"{author.mention} Alright, canceling request.", ephemeral=True
+                )
             await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_C":

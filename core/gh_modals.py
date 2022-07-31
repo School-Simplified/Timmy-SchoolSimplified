@@ -21,19 +21,21 @@ if TYPE_CHECKING:
 
 class GithubControlModal(discord.ui.Modal):
     def __init__(
-            self,
-            bot: Timmy,
-            type_: GithubActionLiteral,
-            github_client: Github,
-            feature: Optional[IssueFeatureLiteral] = None,
-            attachment: Optional[discord.Attachment] = None,
-            gist_url: Optional[str] = None,
+        self,
+        bot: Timmy,
+        type_: GithubActionLiteral,
+        github_client: Github,
+        feature: Optional[IssueFeatureLiteral] = None,
+        attachment: Optional[discord.Attachment] = None,
+        gist_url: Optional[str] = None,
     ):
         super().__init__(
             timeout=None,
-            title="Create Issue" if type_ == "ISSUE"
-            else "Submit Feedback" if type_ == "FEEDBACK"
-            else "Error has Occurred!"
+            title="Create Issue"
+            if type_ == "ISSUE"
+            else "Submit Feedback"
+            if type_ == "FEEDBACK"
+            else "Error has Occurred!",
         )
         self.bot = bot
         self._type = type_
@@ -42,11 +44,7 @@ class GithubControlModal(discord.ui.Modal):
         self._gist_url = gist_url if gist_url else None
         self._gh_client = github_client
         self.issue_list: QuestionListType = [
-            {
-                "title": "Issue Title",
-                "required": True,
-                "placeholder": None
-            },
+            {"title": "Issue Title", "required": True, "placeholder": None},
             {
                 "title": "Issue Summary",
                 "required": True,
@@ -59,31 +57,23 @@ class GithubControlModal(discord.ui.Modal):
             },
         ]
         self.feedback_list: QuestionListType = [
-            {
-                "title": "What did you try to do?",
-                "required": True,
-                "placeholder": None
-            },
+            {"title": "What did you try to do?", "required": True, "placeholder": None},
             {
                 "title": "Describe the steps to reproduce the issue",
                 "required": True,
-                "placeholder": None
+                "placeholder": None,
             },
-            {
-                "title": "What happened?",
-                "required": True,
-                "placeholder": None
-            },
+            {"title": "What happened?", "required": True, "placeholder": None},
             {
                 "title": "What was supposed to happen?",
                 "required": True,
-                "placeholder": None
+                "placeholder": None,
             },
             {
                 "title": "Anything else?",
                 "required": False,
-                "placeholder": "Add pictures or links here to help us understand your issue."
-            }
+                "placeholder": "Add pictures or links here to help us understand your issue.",
+            },
         ]
         for item_blueprint in self._transform():
             self.add_item(
@@ -111,7 +101,9 @@ class GithubControlModal(discord.ui.Modal):
         if self._type == "ISSUE":
             return await self._issue_dispatch_to_gh(repo=repo, interaction=interaction)
         elif self._type == "FEEDBACK":
-            return await self._feedback_dispatch_to_gh(repo=repo, interaction=interaction)
+            return await self._feedback_dispatch_to_gh(
+                repo=repo, interaction=interaction
+            )
 
     async def _issue_dispatch_to_gh(self, repo, interaction: discord.Interaction):
         embed = discord.Embed(
@@ -124,17 +116,17 @@ class GithubControlModal(discord.ui.Modal):
             none_text = "None"
             embed.add_field(
                 name=question["title"],
-                value=str(item) if str(item) != ''
-                else none_text,
-                inline=False)
+                value=str(item) if str(item) != "" else none_text,
+                inline=False,
+            )
 
             issue_body += f"**{question['title']}**\n{str(item) if str(item) != '' else none_text}\n\n"
 
         issue = repo.create_issue(
             title=str(self.children[0]),
             body=f"**Issue Feature**\n{self._feature_type}\n\n"
-                 + issue_body
-                 + self._attachment,
+            + issue_body
+            + self._attachment,
         )
         issue.add_to_labels(repo.get_label(name="Discord"))
         url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue.number}"
@@ -152,15 +144,17 @@ class GithubControlModal(discord.ui.Modal):
         )
         issue = repo.create_issue(
             title=f"{interaction.user.name} | {interaction.user.id} Issue/Feedback",
-            body=f"**Feedback:**\n\n{response}"
+            body=f"**Feedback:**\n\n{response}",
         )
-        issue.add_to_labels(repo.get_label(name="Discord"), repo.get_label(name="question"))
+        issue.add_to_labels(
+            repo.get_label(name="Discord"), repo.get_label(name="question")
+        )
         url = f"https://github.com/School-Simplified/Timmy-SchoolSimplified/issues/{issue.number}"
         user_embed = discord.Embed(
             title="Your issue has been submitted!",
             description="A developer will reach out soon to respond to your issue.\n"
-                        f"You can view your issue [here!]({url})",
-            colour=Colors.green
+            f"You can view your issue [here!]({url})",
+            colour=Colors.green,
         )
         await interaction.followup.send(embed=user_embed)
 
@@ -168,7 +162,7 @@ class GithubControlModal(discord.ui.Modal):
         embed = discord.Embed(
             title="New Issue",
             description=f"{interaction.user.mention} has submitted a new issue! `#{issue.number}` "
-                        f"\n[Click here to view the issue]({url})",
+            f"\n[Click here to view the issue]({url})",
             color=discord.Color.brand_red(),
         )
         await dev_channel.send(embed=embed)
@@ -192,18 +186,19 @@ class FeedbackButton(discord.ui.View):
         emoji="📝",
     )
     async def feedback_button(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         return await interaction.response.send_modal(
             GithubControlModal(
                 bot=self.bot,
                 type_="FEEDBACK",
                 github_client=Github(os.getenv("GH_TOKEN")),
-                gist_url=self.gist_url
+                gist_url=self.gist_url,
             )
         )
+
 
 # class FeedbackModel(discord.ui.Modal, title="Submit Feedback"):
 #     def __init__(self, bot) -> None:

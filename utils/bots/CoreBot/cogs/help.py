@@ -421,7 +421,9 @@ class Help(commands.Cog):
     async def _send_cog_help(self, interaction: discord.Interaction, cog: commands.Cog):
         __commands_iter = (cog.get_commands(), cog.__cog_app_commands__)
         __commands = set(itertools.chain.from_iterable(__commands_iter))
-        entries = await self._filter_commands(__commands, interaction=interaction, sort=True)
+        entries = await self._filter_commands(
+            __commands, interaction=interaction, sort=True
+        )
         menu = HelpMenu(
             GroupHelpPageSource(cog, entries, prefix="/"),
             interaction=interaction,
@@ -463,7 +465,9 @@ class Help(commands.Cog):
             subcommands = group.commands
             if len(subcommands) == 0:
                 return await self._send_command_help(interaction, group)
-            entries = await self._filter_commands(subcommands, interaction=interaction, sort=True)
+            entries = await self._filter_commands(
+                subcommands, interaction=interaction, sort=True
+            )
             if len(entries) == 0:
                 return await self._send_command_help(interaction, group)
 
@@ -472,7 +476,9 @@ class Help(commands.Cog):
             if len(subcommands) == 0:
                 return await self._send_command_help(interaction, group)
 
-            entries = await self._filter_commands(subcommands, interaction=interaction,sort=True)
+            entries = await self._filter_commands(
+                subcommands, interaction=interaction, sort=True
+            )
             if len(entries) == 0:
                 return await self._send_command_help(interaction, group)
 
@@ -518,9 +524,7 @@ class Help(commands.Cog):
                 _command,
                 guild=interaction.guild,
             ),
-            self.bot.tree.get_command(
-                _command, guild=None
-            ),
+            self.bot.tree.get_command(_command, guild=None),
         )[0]
 
         regular_command = self.bot.get_command(_command)

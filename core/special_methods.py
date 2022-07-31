@@ -30,8 +30,11 @@ from core.common import (
     TechID,
     CheckDB_CC,
     Emoji,
-    MGMCommissionButton, HREmailConfirm, EmailDropdown,
-    create_ui_modal_class, create_ticket_button
+    MGMCommissionButton,
+    HREmailConfirm,
+    EmailDropdown,
+    create_ui_modal_class,
+    create_ticket_button,
 )
 from core.gh_modals import FeedbackButton
 from utils.bots.CommissionSys.cogs.tech_commissions import CommissionTechButton
@@ -66,7 +69,7 @@ async def before_invoke_(ctx: commands.Context):
         user=ctx.author.id,
         date=datetime.now(),
         command_type="regular",
-        guild_id=ctx.guild.id
+        guild_id=ctx.guild.id,
     ).save()
 
     sentry_sdk.set_user(None)
@@ -135,9 +138,7 @@ async def on_ready_(bot: Timmy):
 
     if not os.getenv("USEREAL"):
         IP = os.getenv("IP")
-        databaseField = (
-            f"{ConsoleColors.OKGREEN}Selected Database: External ({IP}){ConsoleColors.ENDC}"
-        )
+        databaseField = f"{ConsoleColors.OKGREEN}Selected Database: External ({IP}){ConsoleColors.ENDC}"
     else:
         databaseField = (
             f"{ConsoleColors.FAIL}Selected Database: localhost{ConsoleColors.ENDC}\n{ConsoleColors.WARNING}WARNING: Not "
@@ -484,15 +485,19 @@ async def on_app_command_error_(
                 embed.add_field(
                     name="Error Message",
                     value="I've contacted the IT Department and they have been notified, meanwhile, please double "
-                          "check the command you've sent for any issues.\n "
-                          "Consult the help command for more information."
+                    "check the command you've sent for any issues.\n "
+                    "Consult the help command for more information.",
                 )
                 embed.set_thumbnail(url=Others.timmy_dog_png)
                 embed.set_footer(text="Submit a bug report or feedback below!")
                 if interaction.response.is_done():
-                    await interaction.followup.send(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
+                    await interaction.followup.send(
+                        embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl)
+                    )
                 else:
-                    await interaction.response.send_message(embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl))
+                    await interaction.response.send_message(
+                        embed=embed, view=FeedbackButton(bot=bot, gist_url=gisturl)
+                    )
             else:
                 embed = discord.Embed(
                     title="Traceback Detected!",

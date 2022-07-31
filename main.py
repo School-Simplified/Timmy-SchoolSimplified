@@ -34,7 +34,7 @@ from core.special_methods import (
     main_mode_check_,
     on_app_command_error_,
     on_command_error_,
-    on_ready_
+    on_ready_,
 )
 from fastapi import FastAPI
 
@@ -58,15 +58,14 @@ class TimmyCommandTree(app_commands.CommandTree):
     async def interaction_check(self, interaction: discord.Interaction, /) -> bool:
         blacklisted_users = [p.discordID for p in database.Blacklist]
         if interaction.user.id in blacklisted_users:
-            await interaction.response.send_message("You have been blacklisted from using commands!",
-                                                    ephemeral=True)
+            await interaction.response.send_message(
+                "You have been blacklisted from using commands!", ephemeral=True
+            )
             return False
         return True
 
     async def on_error(
-            self,
-            interaction: discord.Interaction,
-            error: app_commands.AppCommandError
+        self, interaction: discord.Interaction, error: app_commands.AppCommandError
     ):
         await on_app_command_error_(self.bot, interaction, error)
 
@@ -83,9 +82,8 @@ class Timmy(commands.Bot):
             case_insensitive=True,
             tree_cls=TimmyCommandTree,
             activity=discord.Activity(
-                type=discord.ActivityType.watching,
-                name="/help | ssimpl.org/timmy"
-            )
+                type=discord.ActivityType.watching, name="/help | ssimpl.org/timmy"
+            ),
         )
         self.help_command = None
         self.before_invoke(self.analytics_before_invoke)
@@ -105,10 +103,11 @@ class Timmy(commands.Bot):
 
     async def setup_hook(self) -> None:
         with alive_bar(
-                len(get_extensions()),
-                ctrl_c=False,
-                bar="bubbles",
-                title="Initializing Cogs:") as bar:
+            len(get_extensions()),
+            ctrl_c=False,
+            bar="bubbles",
+            title="Initializing Cogs:",
+        ) as bar:
 
             for ext in get_extensions():
                 try:
@@ -123,7 +122,9 @@ class Timmy(commands.Bot):
 
     async def is_owner(self, user: discord.User):
         admin_ids = []
-        query = database.Administrators.select().where(database.Administrators.TierLevel >= 3)
+        query = database.Administrators.select().where(
+            database.Administrators.TierLevel >= 3
+        )
         for admin in query:
             admin_ids.append(admin.discordID)
 
@@ -138,7 +139,9 @@ class Timmy(commands.Bot):
 
     @property
     def start_time(self):
-        q: database.Uptime = database.Uptime.select().where(database.Uptime.id == 1).get()
+        q: database.Uptime = (
+            database.Uptime.select().where(database.Uptime.id == 1).get()
+        )
         return q.UpStart
 
 
@@ -153,13 +156,14 @@ async def on_interaction(interaction: discord.Interaction):
             guild_id=interaction.guild.id,
             user=interaction.user.id,
             date=datetime.now(),
-            command_type="slash"
+            command_type="slash",
         ).save()
+
 
 if os.getenv("DSN_SENTRY") is not None:
     sentry_logging = LoggingIntegration(
         level=logging.INFO,  # Capture info and above as breadcrumbs
-        event_level=logging.ERROR  # Send errors as events
+        event_level=logging.ERROR,  # Send errors as events
     )
 
     # Traceback tracking, DO NOT MODIFY THIS
@@ -167,7 +171,7 @@ if os.getenv("DSN_SENTRY") is not None:
         bot,
         dsn=os.getenv("DSN_SENTRY"),
         traces_sample_rate=1.0,
-        integrations=[FlaskIntegration(), sentry_logging]
+        integrations=[FlaskIntegration(), sentry_logging],
     )
 
 
@@ -190,10 +194,10 @@ async def info():
         "author": __author__,
         "author_email": __author_email__,
         "start_time": bot.start_time,
-        "latency": bot.latency
+        "latency": bot.latency,
     }
 
 
 if __name__ == "__main__":
-    #socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    # socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     uvicorn.run(app, host="0.0.0.0", port=5000)

@@ -21,16 +21,18 @@ class MetricPoster(commands.Cog):
         Thanks, GitHub copilot <3
         """
 
-        payload = {
-            "value": round(self.bot.latency * 1000),
-            "timestamp": time.time()
-        }
+        payload = {"value": round(self.bot.latency * 1000), "timestamp": time.time()}
         headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + os.getenv("INSTATUS_TOKEN")
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + os.getenv("INSTATUS_TOKEN"),
         }
-        response = requests.request("POST", "https://api.instatus.com/v1/cl69luezk0117y5lr0hll9h9y/metrics"
-                                            "/cl69p8y0b11647velr16gs6ial", headers=headers, json=payload)
+        response = requests.request(
+            "POST",
+            "https://api.instatus.com/v1/cl69luezk0117y5lr0hll9h9y/metrics"
+            "/cl69p8y0b11647velr16gs6ial",
+            headers=headers,
+            json=payload,
+        )
         print(response.text)
         print(response.status_code)
         if response.status_code == 200:

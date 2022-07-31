@@ -12,13 +12,13 @@ if TYPE_CHECKING:
 
 class RoboPages(discord.ui.View):
     def __init__(
-            self,
-            source: menus.PageSource,
-            *,
-            interaction: discord.Interaction,
-            check_embeds: bool = True,
-            compact: bool = False,
-            bot: Timmy,
+        self,
+        source: menus.PageSource,
+        *,
+        interaction: discord.Interaction,
+        check_embeds: bool = True,
+        compact: bool = False,
+        bot: Timmy,
     ):
         super().__init__()
         self.source: menus.PageSource = source
@@ -64,7 +64,7 @@ class RoboPages(discord.ui.View):
             return {}
 
     async def show_page(
-            self, interaction: discord.Interaction, page_number: int
+        self, interaction: discord.Interaction, page_number: int
     ) -> None:
         page = await self.source.get_page(page_number)
         self.current_page = page_number
@@ -82,10 +82,10 @@ class RoboPages(discord.ui.View):
         if self.compact:
             max_pages = self.source.get_max_pages()
             self.go_to_last_page.disabled = (
-                    max_pages is None or (page_number + 1) >= max_pages
+                max_pages is None or (page_number + 1) >= max_pages
             )
             self.go_to_next_page.disabled = (
-                    max_pages is not None and (page_number + 1) >= max_pages
+                max_pages is not None and (page_number + 1) >= max_pages
             )
             self.go_to_previous_page.disabled = page_number == 0
             return
@@ -108,7 +108,7 @@ class RoboPages(discord.ui.View):
                 self.go_to_previous_page.label = "…"
 
     async def show_checked_page(
-            self, interaction: discord.Interaction, page_number: int
+        self, interaction: discord.Interaction, page_number: int
     ) -> None:
         max_pages = self.source.get_max_pages()
         try:
@@ -143,10 +143,10 @@ class RoboPages(discord.ui.View):
 
     async def start(self) -> None:
         if (
-                self.check_embeds
-                and not self.interaction.channel.permissions_for(
-            self.interaction.guild.me
-        ).embed_links
+            self.check_embeds
+            and not self.interaction.channel.permissions_for(
+                self.interaction.guild.me
+            ).embed_links
         ):
             await self.interaction.response.send_message(
                 "Bot does not have embed links permission in this channel."
@@ -158,46 +158,48 @@ class RoboPages(discord.ui.View):
         kwargs = await self._get_kwargs_from_page(page)
         self._update_labels(0)
         try:
-            self.message = await self.interaction.response.send_message(**kwargs, view=self)
+            self.message = await self.interaction.response.send_message(
+                **kwargs, view=self
+            )
         except discord.InteractionResponded:
             self.message = await self.interaction.followup.send(**kwargs, view=self)
 
     @discord.ui.button(label="≪", style=discord.ButtonStyle.grey)
     async def go_to_first_page(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         """go to the first page"""
         await self.show_page(interaction, 0)
 
     @discord.ui.button(label="Back", style=discord.ButtonStyle.blurple)
     async def go_to_previous_page(
-            self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         """go to the previous page"""
         await self.show_checked_page(interaction, self.current_page - 1)
 
     @discord.ui.button(label="Current", style=discord.ButtonStyle.grey, disabled=True)
     async def go_to_current_page(
-            self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         pass
 
     @discord.ui.button(label="Next", style=discord.ButtonStyle.blurple)
     async def go_to_next_page(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         """go to the next page"""
         await self.show_checked_page(interaction, self.current_page + 1)
 
     @discord.ui.button(label="≫", style=discord.ButtonStyle.grey)
     async def go_to_last_page(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         """go to the last page"""
         # The call here is safe because it's guarded by skip_if
@@ -205,9 +207,9 @@ class RoboPages(discord.ui.View):
 
     @discord.ui.button(label="Skip to page...", style=discord.ButtonStyle.grey)
     async def numbered_page(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         """lets you type a page number to go to"""
         if self.input_lock.locked():
@@ -228,9 +230,9 @@ class RoboPages(discord.ui.View):
 
             def message_check(m):
                 return (
-                        m.author.id == author_id
-                        and channel == m.channel
-                        and m.content.isdigit()
+                    m.author.id == author_id
+                    and channel == m.channel
+                    and m.content.isdigit()
                 )
 
             try:
@@ -247,9 +249,9 @@ class RoboPages(discord.ui.View):
 
     @discord.ui.button(label="Quit", style=discord.ButtonStyle.red)
     async def stop_pages(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         """stops the pagination session."""
         await interaction.response.defer()
@@ -259,13 +261,13 @@ class RoboPages(discord.ui.View):
 
 class Pages(discord.ui.View):
     def __init__(
-            self,
-            source: menus.PageSource,
-            *,
-            ctx: commands.Context,
-            check_embeds: bool = True,
-            compact: bool = False,
-            bot: Timmy,
+        self,
+        source: menus.PageSource,
+        *,
+        ctx: commands.Context,
+        check_embeds: bool = True,
+        compact: bool = False,
+        bot: Timmy,
     ):
         super().__init__()
         self.source: menus.PageSource = source
@@ -311,7 +313,7 @@ class Pages(discord.ui.View):
             return {}
 
     async def show_page(
-            self, interaction: discord.Interaction, page_number: int
+        self, interaction: discord.Interaction, page_number: int
     ) -> None:
         page = await self.source.get_page(page_number)
         self.current_page = page_number
@@ -329,10 +331,10 @@ class Pages(discord.ui.View):
         if self.compact:
             max_pages = self.source.get_max_pages()
             self.go_to_last_page.disabled = (
-                    max_pages is None or (page_number + 1) >= max_pages
+                max_pages is None or (page_number + 1) >= max_pages
             )
             self.go_to_next_page.disabled = (
-                    max_pages is not None and (page_number + 1) >= max_pages
+                max_pages is not None and (page_number + 1) >= max_pages
             )
             self.go_to_previous_page.disabled = page_number == 0
             return
@@ -355,7 +357,7 @@ class Pages(discord.ui.View):
                 self.go_to_previous_page.label = "…"
 
     async def show_checked_page(
-            self, interaction: discord.Interaction, page_number: int
+        self, interaction: discord.Interaction, page_number: int
     ) -> None:
         max_pages = self.source.get_max_pages()
         try:
@@ -390,10 +392,8 @@ class Pages(discord.ui.View):
 
     async def start(self) -> None:
         if (
-                self.check_embeds
-                and not self.ctx.channel.permissions_for(
-            self.ctx.guild.me
-        ).embed_links
+            self.check_embeds
+            and not self.ctx.channel.permissions_for(self.ctx.guild.me).embed_links
         ):
             await self.ctx.send(
                 "Bot does not have embed links permission in this channel."
@@ -408,40 +408,40 @@ class Pages(discord.ui.View):
 
     @discord.ui.button(label="≪", style=discord.ButtonStyle.grey)
     async def go_to_first_page(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         """go to the first page"""
         await self.show_page(interaction, 0)
 
     @discord.ui.button(label="Back", style=discord.ButtonStyle.blurple)
     async def go_to_previous_page(
-            self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         """go to the previous page"""
         await self.show_checked_page(interaction, self.current_page - 1)
 
     @discord.ui.button(label="Current", style=discord.ButtonStyle.grey, disabled=True)
     async def go_to_current_page(
-            self, interaction: discord.Interaction, button: discord.ui.Button
+        self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         pass
 
     @discord.ui.button(label="Next", style=discord.ButtonStyle.blurple)
     async def go_to_next_page(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         """go to the next page"""
         await self.show_checked_page(interaction, self.current_page + 1)
 
     @discord.ui.button(label="≫", style=discord.ButtonStyle.grey)
     async def go_to_last_page(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         """go to the last page"""
         # The call here is safe because it's guarded by skip_if
@@ -449,9 +449,9 @@ class Pages(discord.ui.View):
 
     @discord.ui.button(label="Skip to page...", style=discord.ButtonStyle.grey)
     async def numbered_page(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         """lets you type a page number to go to"""
         if self.input_lock.locked():
@@ -472,9 +472,9 @@ class Pages(discord.ui.View):
 
             def message_check(m):
                 return (
-                        m.author.id == author_id
-                        and channel == m.channel
-                        and m.content.isdigit()
+                    m.author.id == author_id
+                    and channel == m.channel
+                    and m.content.isdigit()
                 )
 
             try:
@@ -491,9 +491,9 @@ class Pages(discord.ui.View):
 
     @discord.ui.button(label="Quit", style=discord.ButtonStyle.red)
     async def stop_pages(
-            self,
-            interaction: discord.Interaction,
-            button: discord.ui.Button,
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
     ):
         """stops the pagination session."""
         await interaction.response.defer()
@@ -504,7 +504,9 @@ class Pages(discord.ui.View):
 class RedirectPageSource(menus.ListPageSource):
     """A page source that requires Dict[field_name, field_value] items"""
 
-    def __init__(self, entries: List[Dict[str, str]], *, per_page=12, embed: discord.Embed = None):
+    def __init__(
+        self, entries: List[Dict[str, str]], *, per_page=12, embed: discord.Embed = None
+    ):
         ...
         super().__init__(entries, per_page=per_page)
         self.embed = embed or discord.Embed(colour=discord.Colour.blurple())

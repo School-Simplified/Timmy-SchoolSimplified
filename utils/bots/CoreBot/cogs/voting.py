@@ -21,7 +21,7 @@ from core.common import (
     LeaderID,
     StaffID,
     Emoji,
-    Colors
+    Colors,
 )
 from core.common import string_time_convert, ButtonHandler, search_custom_emoji
 
@@ -33,12 +33,12 @@ class VotingBot(commands.Cog):
             MainID.ch_announcements,
             MainID.ch_mod_announcements,
             StaffID.ch_announcements,
-            #StaffID.ch_acadAnnouncements,
-            #StaffID.ch_clubAnnouncements,
-            #StaffID.ch_coAnnouncements,
-            #StaffID.ch_mktAnnouncements,
-            #StaffID.ch_notesAnnouncements,
-            #StaffID.ch_techAnnouncements,
+            # StaffID.ch_acadAnnouncements,
+            # StaffID.ch_clubAnnouncements,
+            # StaffID.ch_coAnnouncements,
+            # StaffID.ch_mktAnnouncements,
+            # StaffID.ch_notesAnnouncements,
+            # StaffID.ch_techAnnouncements,
             TechID.ch_announcements,
             TechID.ch_bot_announcements,
             TechID.ch_IT_announcements,

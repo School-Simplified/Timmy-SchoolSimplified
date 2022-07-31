@@ -26,9 +26,7 @@ def get_extensions():
 @pytest.fixture
 def bot(event_loop):
     bot = commands.Bot(
-        command_prefix="/",
-        event_loop=event_loop,
-        intents=discord.Intents.all()
+        command_prefix="/", event_loop=event_loop, intents=discord.Intents.all()
     )
     bot.remove_command("help")
     dpytest.configure(bot)
