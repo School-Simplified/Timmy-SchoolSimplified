@@ -11,7 +11,6 @@ __author_email__ = "timmy@schoolsimplified.org"
 import faulthandler
 import logging
 import os
-import socket
 import time
 from datetime import datetime, timedelta
 
@@ -75,7 +74,7 @@ class Timmy(commands.Bot):
     Generates a Timmy Instance.
     """
 
-    def __init__(self):
+    def __init__(self, uptime: datetime):
         super().__init__(
             command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
             intents=discord.Intents.all(),
@@ -88,6 +87,7 @@ class Timmy(commands.Bot):
         self.help_command = None
         self.before_invoke(self.analytics_before_invoke)
         self.add_check(self.check)
+        self._start_time = uptime
 
     async def on_ready(self):
         await on_ready_(self)
@@ -138,13 +138,10 @@ class Timmy(commands.Bot):
 
     @property
     def start_time(self):
-        q: database.Uptime = (
-            database.Uptime.select().where(database.Uptime.id == 1).get()
-        )
-        return q.UpStart
+        return self._start_time
 
 
-bot = Timmy()
+bot = Timmy(datetime.now())
 
 
 @bot.event

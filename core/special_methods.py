@@ -621,14 +621,9 @@ def initializeDB(bot):
     Initializes the database, and creates the needed table data if they don't exist.
     """
     database.db.connect(reuse_if_open=True)
-    UpQ = database.Uptime.select().where(database.Uptime.id == 1)
     CIQ = database.CheckInformation.select().where(database.CheckInformation.id == 1)
     BTE = database.BaseTickerInfo.select().where(database.BaseTickerInfo.id == 1)
     SM = database.SandboxConfig.select().where(database.SandboxConfig.id == 1)
-
-    if not UpQ.exists():
-        database.Uptime.create(UpStart="1")
-        print("Created Uptime Entry.")
 
     if not CIQ.exists():
         database.CheckInformation.create(
@@ -661,9 +656,6 @@ def initializeDB(bot):
         )
         print("Created SandboxConfig Entry.")
 
-    q: database.Uptime = database.Uptime.select().where(database.Uptime.id == 1).get()
-    q.UpStart = time.time()
-    q.save()
 
     query: database.CheckInformation = (
         database.CheckInformation.select()

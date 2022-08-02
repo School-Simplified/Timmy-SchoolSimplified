@@ -386,11 +386,8 @@ class MiscCMD(commands.Cog):
     async def ping(self, ctx):
         database.db.connect(reuse_if_open=True)
 
-        q: database.Uptime = (
-            database.Uptime.select().where(database.Uptime.id == 1).get()
-        )
         current_time = float(time.time())
-        difference = int(round(current_time - float(q.UpStart)))
+        difference = int(round(current_time - float(self.bot.start_time)))
         text = str(timedelta(seconds=difference))
 
         pingembed = discord.Embed(

@@ -485,21 +485,6 @@ class TutorBot_Sessions(BaseModel):
     GracePeriod_Status = BooleanField(default=False)
 
 
-class Uptime(BaseModel):
-    """
-    #Uptime
-
-    `id`: AutoField()
-    Database Entry
-
-    `UpStart`: TextField()
-    Time Object of Bot being started.
-    """
-
-    id = AutoField()
-    UpStart = TextField()
-
-
 class TicketInfo(BaseModel):
     """
     #TicketInfo
@@ -917,7 +902,6 @@ tables = {
     "StudyToDo": StudyToDo,
     "WhitelistedPrefix": WhitelistedPrefix,
     "TutorBot_Sessions": TutorBot_Sessions,
-    "Uptime": Uptime,
     "TicketInfo": TicketInfo,
     "PunishmentTag": PunishmentTag,
     "CTag:": CTag,
