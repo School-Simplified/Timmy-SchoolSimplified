@@ -927,5 +927,6 @@ This function automatically adds tables to the database if they do not exist,
 however it does take a significant amount of time to run so this will be commented out. 
 
 Uncomment when you need to update tables again, however it is recommended to create them manually/request them.
-iter_table(tables)
 """
+# iter_table(tables)
+
