@@ -43,11 +43,11 @@ elif os.getenv("IP") is not None:
     if useDB:
         try:
             db = MySQLDatabase(
-                os.getenv("DatabaseName"),
-                user=os.getenv("Username"),
-                password=os.getenv("Password"),
-                host=os.getenv("IP"),
-                port=int(os.getenv("PORT")),
+                os.getenv("DATABASE_COLLECTION"),
+                user=os.getenv("DATABASE_USERNAME"),
+                password=os.getenv("DATABASE_PASSWORD"),
+                host=os.getenv("DATABASE_IP"),
+                port=int(os.getenv("DATABASE_PORT")),
             )
             print("Successfully connected to the MySQL Database")
         except Exception as e:
@@ -938,11 +938,10 @@ tables = {
     "Ticket_Configuration": TicketConfiguration,
 }
 
-iter_table(tables)
 """
-1. Please describe the item you need completed
+This function automatically adds tables to the database if they do not exist,
+however it does take a significant amount of time to run so this will be commented out. 
 
-2. What department or team is this request for?
-
-3. Is there a final deadline for this request?
+Uncomment when you need to update tables again, however it is recommended to create them manually/request them.
+iter_table(tables)
 """
