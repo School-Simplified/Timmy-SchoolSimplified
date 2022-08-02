@@ -179,7 +179,7 @@ class CompletedButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction) -> None:
         self.value = "complete"
         await interaction.response.send_message("Great!")
-        channel = self.bot.get_channel(SETID.ch_reminders)
+        channel = self.bot.get_channel(SetID.ch_reminders)
         await channel.send(f"✅ {self._task} has been completed for today!")
         await interaction.edit_original_message(view=None)
         self.view.stop()
@@ -211,7 +211,7 @@ class CannotComplete(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction) -> Any:
         self.value = "busy"
         await interaction.response.send_message("Notified the team!")
-        channel = self.bot.get_channel(SETID.ch_reminders)
+        channel = self.bot.get_channel(SetID.ch_reminders)
         embed = discord.Embed(
             title=f"{self._task} needs to be filled!",
             description=f"{self._task} for today cannot be completed.",
@@ -1198,7 +1198,7 @@ class LeaderID:
     )
 
 
-class SETID:
+class SetID:
     """
     IDs of the SSD SET SERVER
 
@@ -1573,7 +1573,6 @@ def create_ui_modal_class(conf_id):
             for question_e in self.questions:
                 # get q1.config and update config to match ui.TextInput arguments
                 config = self.index_to_config_dict[index]
-                print("yo")
                 if config is None or config == "":
                     style = discord.TextStyle.long
                     min_length = None
