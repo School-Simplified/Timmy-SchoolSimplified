@@ -7,7 +7,7 @@ from discord.app_commands import command, describe, Group, guilds, check
 from discord.ext import commands
 
 from core import database
-from core.common import MainID, SETID, Emoji
+from core.common import MainID, SetID, Emoji
 
 if TYPE_CHECKING:
     from main import Timmy
@@ -24,6 +24,7 @@ MediaLiteralType = Literal[
     "Motivation",
     "Music",
     "Opportunities",
+    "General"
 ]
 
 blacklist = []
@@ -44,7 +45,7 @@ def reload_blacklist():
 
 class SetSuggestBlacklist(Group):
     def __init__(self, bot: Timmy):
-        super().__init__(name="set_blacklist", guild_ids=[MainID.g_main, SETID.g_set])
+        super().__init__(name="set_blacklist", guild_ids=[MainID.g_main, SetID.g_set])
         self.bot = bot
 
     @property
@@ -185,9 +186,14 @@ class Suggest(Group):
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
         embed.set_image(url=art.url)
-        channel = self.bot.get_channel(SETID.ch_suggestions)
+        channel = self.bot.get_channel(SetID.ch_suggestions)
         await channel.send(embed=embed)
 
+    @command(name="general")
+    @spammer_check()
+    async def __general(self, interaction: discord.Interaction):
+        """Make a general suggestion!"""
+        await interaction.response.send_modal(SuggestModal(self.bot, "General"))
 
 class SuggestModal(discord.ui.Modal):
     def __init__(self, bot: Timmy, suggest_type: MediaLiteralType):
@@ -325,6 +331,14 @@ class SuggestModal(discord.ui.Modal):
                 "required": False,
             },
         ]
+        self.general_question_list: QuestionLiteral = [
+            {
+                "question": "What do you want to suggest?",
+                "placeholder": "Suggestion should be as detailed as possible.",
+                "required": True
+            }
+        ]
+
         for question in self._transform(type_=self.type):
             self.add_item(
                 discord.ui.TextInput(
@@ -349,6 +363,7 @@ class SuggestModal(discord.ui.Modal):
             "Daily Question": self.daily_q_question_list,
             "Motivation": self.motivation_question_list,
             "Music": self.music_question_list,
+            "General": self.general_question_list
         }
         return transform_dict[type_]
 
@@ -377,7 +392,7 @@ class SuggestModal(discord.ui.Modal):
             )
 
         channel: discord.abc.MessageableChannel = self.bot.get_channel(
-            SETID.ch_suggestions
+            SetID.ch_suggestions
         )
         await channel.send(embed=embed)
 
@@ -425,7 +440,7 @@ class Engagement(commands.Cog):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
         embed.set_image(url=file.url)
         await interaction.response.send_message("Submitted! Congrats!!")
-        channel = self.bot.get_channel(SETID.ch_college_acceptance)
+        channel = self.bot.get_channel(SetID.ch_college_acceptance)
         await channel.send(embed=embed)
 
     @command(name="puzzle-guess")
@@ -445,7 +460,7 @@ class Engagement(commands.Cog):
         await interaction.response.send_message(
             "Your guess has been submitted!", ephemeral=True
         )
-        guess_channel = self.bot.get_channel(SETID.ch_puzzle)
+        guess_channel = self.bot.get_channel(SetID.ch_puzzle)
         await guess_channel.send(embed=embed)
 
 
