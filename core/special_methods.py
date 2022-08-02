@@ -137,7 +137,7 @@ async def on_ready_(bot: Timmy):
         query.save()
 
     if not os.getenv("USEREAL"):
-        IP = os.getenv("IP")
+        IP = os.getenv("DATABASE_IP")
         databaseField = f"{ConsoleColors.OKGREEN}Selected Database: External ({IP}){ConsoleColors.ENDC}"
     else:
         databaseField = (
@@ -643,19 +643,6 @@ def initializeDB(bot):
             database.Administrators.create(discordID=person, TierLevel=4)
             print("Created Administrator Entry.")
         database.Administrators.create(discordID=409152798609899530, TierLevel=4)
-
-    if not BTE.exists():
-        database.BaseTickerInfo.create(
-            counter=0,
-        )
-        print("Created BaseTickerInfo Entry.")
-
-    if not SM.exists():
-        database.SandboxConfig.create(
-            mode="None",
-        )
-        print("Created SandboxConfig Entry.")
-
 
     query: database.CheckInformation = (
         database.CheckInformation.select()

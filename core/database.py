@@ -34,11 +34,11 @@ Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
 """
 
-if os.getenv("IP") is None:
+if os.getenv("DATABASE_IP") is None:
     print(f"Successfully connected to the SQLite Database")
     db = SqliteDatabase("data.db")
 
-elif os.getenv("IP") is not None:
+elif os.getenv("DATABASE_IP") is not None:
     # useDB = bool(input(f"{bcolors.WARNING}Do you want to use MySQL? (y/n)\n    > This option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications.{bcolors.ENDC}"))
     if useDB:
         try:
@@ -928,5 +928,5 @@ however it does take a significant amount of time to run so this will be comment
 
 Uncomment when you need to update tables again, however it is recommended to create them manually/request them.
 """
-# iter_table(tables)
+#iter_table(tables)
 

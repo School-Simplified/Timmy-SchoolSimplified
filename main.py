@@ -74,7 +74,7 @@ class Timmy(commands.Bot):
     Generates a Timmy Instance.
     """
 
-    def __init__(self, uptime: datetime):
+    def __init__(self, uptime: time.time):
         super().__init__(
             command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
             intents=discord.Intents.all(),
@@ -141,7 +141,7 @@ class Timmy(commands.Bot):
         return self._start_time
 
 
-bot = Timmy(datetime.now())
+bot = Timmy(time.time())
 
 
 @bot.event
