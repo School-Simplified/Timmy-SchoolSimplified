@@ -411,6 +411,7 @@ class MiscCMD(commands.Cog):
             value=f"```diff\n- CPU Usage: {psutil.cpu_percent()}%\n- Memory Usage: {psutil.virtual_memory().percent}%\n```",
             inline=False,
         )
+        pingembed.add_field(name="Status Page", value="[Click here](https://status.timmy.ssimpl.org/)")
         pingembed.set_footer(
             text=f"TimmyOS Version: {self.bot.version}", icon_url=ctx.author.avatar.url
         )

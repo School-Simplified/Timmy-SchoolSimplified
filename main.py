@@ -118,7 +118,6 @@ class Timmy(commands.Bot):
                 except commands.ExtensionNotFound:
                     raise commands.ExtensionNotFound(ext)
                 bar()
-                calue = r"/r"
 
     async def is_owner(self, user: discord.User):
         admin_ids = []
@@ -177,6 +176,9 @@ if os.getenv("DSN_SENTRY") is not None:
 
 initializeDB(bot)
 
+"""if not os.getenv("StartAPI"):
+    bot.run(os.getenv("TOKEN"))"""
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -199,5 +201,8 @@ async def info():
 
 
 if __name__ == "__main__":
-    # socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    if os.getenv("StartAPI"):
+        uvicorn.run(app, host="0.0.0.0", port=443)
+    else:
+        bot.run(os.getenv("TOKEN"))
+
