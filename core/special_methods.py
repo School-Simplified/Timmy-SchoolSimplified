@@ -337,7 +337,7 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
             data = "\n".join([l.strip() for l in f])
 
             GITHUB_API = "https://api.github.com"
-            API_TOKEN = os.getenv("GIST")
+            API_TOKEN = os.getenv("GITHUB")
             url = GITHUB_API + "/gists"
             headers = {"Authorization": "token %s" % API_TOKEN}
             params = {"scope": "gist"}
@@ -453,7 +453,7 @@ async def on_app_command_error_(
             data = "\n".join([l.strip() for l in f])
 
             GITHUB_API = "https://api.github.com"
-            API_TOKEN = os.getenv("GIST")
+            API_TOKEN = os.getenv("GITHUB")
             url = GITHUB_API + "/gists"
             headers = {"Authorization": "token %s" % API_TOKEN}
             params = {"scope": "gist"}
