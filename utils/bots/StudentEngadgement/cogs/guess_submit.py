@@ -6,7 +6,7 @@ from discord import app_commands, ui
 from discord.ext import commands, tasks
 
 from core import database
-from core.common import MainID, Emoji, SETID
+from core.common import MainID, Emoji, SetID
 
 
 class GuessModal(ui.Modal, title="May Day Event Submission"):
@@ -24,7 +24,7 @@ class GuessModal(ui.Modal, title="May Day Event Submission"):
         await interaction.response.send_message(
             f"{interaction.user.mention}, I have submitted your guess!", ephemeral=True
         )
-        ch: discord.TextChannel = self.bot.get_channel(SETID.ch_may_day_guess)
+        ch: discord.TextChannel = self.bot.get_channel(SetID.ch_may_day_guess)
         embed = discord.Embed(
             color=0xC387FF,
             title="May Day Event Guess",
