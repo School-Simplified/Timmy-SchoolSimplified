@@ -22,6 +22,7 @@ from core.common import (
     Colors,
     Others,
     MainID,
+    LeaderID, StaffID,
 )
 from core.common import access_secret
 
@@ -266,12 +267,20 @@ class MiscCMD(commands.Cog):
             view=TicTacToe(ctx.author, user),
         )
 
-    @app_commands.command()
-    @is_botAdmin3()
+    @app_commands.command(description="Send a message to everyone who has a specific role. | President+ use only.")
+    @app_commands.guilds(StaffID.g_staff_resources, StaffID.g_staff_mgm)
     async def mass_dm(self, interaction: discord.Interaction, target_role: discord.Role):
-        await interaction.response.send_modal(
-            DMForm(self.bot, target_role)
-        )
+        # Check if they the role "President" or higher, otherwise don't allow them to use.
+        member: discord.Member = interaction.user
+        role = discord.utils.get(member.guild.roles, name="President")
+        if member.top_role.position >= role.position:
+            await interaction.response.send_modal(
+                DMForm(self.bot, target_role)
+            )
+        else:
+            await interaction.response.send_message(
+                "You do not have the required permissions to use this command."
+            )
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
