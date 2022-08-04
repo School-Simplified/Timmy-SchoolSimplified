@@ -25,7 +25,8 @@ class MetricPoster(commands.Cog):
         Thanks, GitHub copilot <3
         """
         host_dir = get_host_dir()
-        if host_dir == "/home/timmya" or host_dir == "/home/timmya/timmy-beta":
+        print(f"Host dir: {host_dir}")
+        if host_dir == "/home/timmya" or host_dir == "/home/timmy-beta":
             ping_payload = {"value": round(self.bot.latency * 1000), "timestamp": time.time()}
             cpu_payload = {"value": psutil.cpu_percent(), "timestamp": time.time()}
             ram_payload = {"value": psutil.virtual_memory().percent, "timestamp": time.time()}

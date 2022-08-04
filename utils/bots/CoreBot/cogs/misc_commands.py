@@ -6,14 +6,14 @@ from typing import List, Literal
 
 import discord
 import psutil
-from discord import app_commands
+from discord import app_commands, ui
 from discord.ext import commands
 from dotenv import load_dotenv
 from google.cloud import texttospeech
 from sentry_sdk import Hub
 
 from core import database
-from core.checks import is_botAdmin, is_botAdmin2
+from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3
 from core.common import (
     TechID,
     Emoji,
@@ -24,6 +24,37 @@ from core.common import (
     MainID,
 )
 from core.common import access_secret
+
+
+class DMForm(ui.Modal, title="Mass DM Announcement"):
+    def __init__(self, bot: commands.Bot, target_role: discord.Role) -> None:
+        super().__init__(timeout=None)
+        self.bot = bot
+        self.role: discord.Role = target_role
+
+    message_content = ui.TextInput(
+        label="Paste Message to Send Here",
+        placeholder="Markdown is supported!",
+        max_length=2000,
+        required=True,
+        style=discord.TextStyle.long
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        # Send the message to everyone in the guild with that role.
+        await interaction.response.send_message("Starting DM Announcement...")
+        for member in self.role.members:
+            await asyncio.sleep(0.2)
+            try:
+                await member.send(self.message_content.value)
+            except discord.Forbidden:
+                await interaction.response.send_message(
+                    f"{member.mention} is not accepting DMs from me."
+                )
+
+        await interaction.response.send_message("DM Announcement Complete!")
+
+
 
 
 class TicTacToeButton(discord.ui.Button["TicTacToe"]):
@@ -233,6 +264,13 @@ class MiscCMD(commands.Cog):
         await ctx.send(
             f"Tic Tac Toe: {ctx.author.mention} goes first",
             view=TicTacToe(ctx.author, user),
+        )
+
+    @app_commands.command()
+    @is_botAdmin3()
+    async def mass_dm(self, interaction: discord.Interaction, target_role: discord.Role):
+        await interaction.response.send_modal(
+            DMForm(self.bot, target_role)
         )
 
     @commands.command()
