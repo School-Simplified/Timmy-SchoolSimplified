@@ -117,7 +117,7 @@ class RedirectURL(commands.Cog):
     ):
         self.raOBJ.del_redirect(redirect_id, subdomain)
         await interaction.response.send_message(
-            f"Redirect removed for {redirect_id}\n{sub_domain}"
+            f"Redirect removed for {redirect_id}\nSubdomain: {subdomain}"
         )
 
     @app_commands.command(name="redirect-list", description="List all redirects.")
