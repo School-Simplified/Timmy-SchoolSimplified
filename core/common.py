@@ -627,7 +627,9 @@ class StaffID:
     cat_announcements_tickets = int(
         ConfigCatClient.STAFF_ID_CC.get_value("cat_announcements", 979485569337946192)
     )
-
+    cat_hr_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value("cat_hr_tickets", 956297567346495568)
+    )
     cat_promote_tickets = int(
         ConfigCatClient.STAFF_ID_CC.get_value("cat_promote_tickets", 956297567346495568)
     )
@@ -649,11 +651,6 @@ class StaffID:
             "cat_resignation_tickets", 992191685415145542
         )
     )
-    cat_suggestions_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "cat_suggestions_tickets", 992191996947083275
-        )
-    )
     cat_complaint_tickets = int(
         ConfigCatClient.STAFF_ID_CC.get_value(
             "cat_complaint_tickets", 992191762611327029
@@ -664,15 +661,24 @@ class StaffID:
             "cat_cs_hours_tickets", 992191874309828658
         )
     )
-    cat_suggestion_tickets = int(
+    cat_suggestions_tickets = int(
         ConfigCatClient.STAFF_ID_CC.get_value(
-            "cat_suggestion_tickets", 992191996947083275
+            "cat_suggestions_tickets", 992191996947083275
         )
     )
-
     cat_recruiting_tickets = int(
         ConfigCatClient.STAFF_ID_CC.get_value(
             "cat_recruiting_tickets", 997646929553018920
+        )
+    )
+    cat_QnA_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "cat_qna_tickets", 956017871585169408
+        )
+    )
+    cat_design_tickets = int(
+        ConfigCatClient.STAFF_ID_CC.get_value(
+            "cat_design_tickets", 996164727745020085
         )
     )
 

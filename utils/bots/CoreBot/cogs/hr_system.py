@@ -1203,7 +1203,7 @@ class AdminAPI(commands.Cog):
             )
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
         ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_suggestion_tickets
+            mgm_server.categories, id=StaffID.cat_suggestions_tickets
         )
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
