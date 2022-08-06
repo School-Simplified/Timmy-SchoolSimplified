@@ -22,7 +22,7 @@ from core.common import (
     Colors,
     Others,
     MainID,
-    LeaderID, StaffID,
+    LeaderID, StaffID, ButtonHandler,
 )
 from core.common import access_secret
 
@@ -44,16 +44,66 @@ class DMForm(ui.Modal, title="Mass DM Announcement"):
     async def on_submit(self, interaction: discord.Interaction):
         # Send the message to everyone in the guild with that role.
         await interaction.response.send_message("Starting DM Announcement...")
-        for member in self.role.members:
-            await asyncio.sleep(0.2)
-            try:
-                await member.send(self.message_content.value)
-            except discord.Forbidden:
-                await interaction.response.send_message(
-                    f"{member.mention} is not accepting DMs from me."
-                )
+        await interaction.channel.send(f"**This is a preview of what you are about to send.**\n\n{self.message_content.value}")
+        await asyncio.sleep(3)
+        # Send a confirm button to the user.
+        view = ui.View(timeout=30)
+        button_confirm = ButtonHandler(
+            style=discord.ButtonStyle.green,
+            label="Confirm",
+            emoji="✅",
+            button_user=interaction.user,
+        )
+        button_cancel = ButtonHandler(
+            style=discord.ButtonStyle.red, label="Cancel", emoji="❌", button_user=interaction.user
+        )
+        view.add_item(button_confirm)
+        view.add_item(button_cancel)
 
-        await interaction.response.send_message("DM Announcement Complete!")
+        embed_confirm = discord.Embed(
+            color=Colors.yellow,
+            title="Mass DM Confirmation",
+            description=f"Are you sure you want to send this message to all members with the role, `{self.role.name}`?",
+        )
+        message_confirm = await interaction.followup.send(embed=embed_confirm, view=view)
+        timeout = await view.wait()
+        if not timeout:
+            if view.value == "Confirm":
+                embed_confirm = discord.Embed(
+                    color=Colors.yellow,
+                    title="Mass DM Queued",
+                    description=f"Starting Mass DM...\n**Role:** `{self.role.name}`",
+                )
+                await message_confirm.edit(embed=embed_confirm, view=None)
+                for member in self.role.members:
+                    await asyncio.sleep(0.2)
+                    try:
+                        await member.send(self.message_content.value)
+                    except:
+                        await interaction.channel.send(
+                            f"{member.mention} is not accepting DMs from me."
+                        )
+
+                embed_confirm = discord.Embed(
+                    color=Colors.green,
+                    title="Mass DM Complete",
+                    description=f"I've sent everyone with the role, `{self.role.name}`, your message and listed anyone who didn't accept DMs from me.",
+                )
+                await message_confirm.edit(embed=embed_confirm, view=None)
+            else:
+                embed_confirm = discord.Embed(
+                    color=Colors.red,
+                    title="Mass DM Canceled",
+                    description=f"Canceled sending message to all members with the role, `{self.role.name}`.",
+                )
+                await message_confirm.edit(embed=embed_confirm, view=None)
+        else:
+            embed_confirm = discord.Embed(
+                color=Colors.red,
+                title="Mass DM Canceled",
+                description=f"Canceled sending message to all members with the role, `{self.role.name}`.",
+            )
+            await message_confirm.edit(embed=embed_confirm, view=None)
 
 
 

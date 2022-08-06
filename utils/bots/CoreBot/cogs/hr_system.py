@@ -520,6 +520,7 @@ class AdminAPI(commands.Cog):
         interaction: discord.Interaction,
         user: discord.User,
         reason: str,
+        team: str,
         evidence_text: str = None,
         evidence_url: discord.Attachment = None,
     ):
@@ -609,6 +610,7 @@ class AdminAPI(commands.Cog):
             title="Firing Request",
             description=f"User: {user.mention}\n"
             f"**Reason:** {reason}\n"
+            f"**Team:** {team}\n"
             f"**Evidence:** {evidence_text}\n"
             f"**Evidence URL:** {evidence_url}",
             color=discord.Colour.gold(),
