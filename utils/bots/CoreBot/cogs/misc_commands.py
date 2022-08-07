@@ -17,13 +17,13 @@ from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3
 from core.common import (
     TechID,
     Emoji,
-    NitroConfirmFake,
     SelectMenuHandler,
     Colors,
     Others,
     MainID,
     LeaderID, StaffID, ButtonHandler,
 )
+from utils.bots.TicketSystem.view_models import NitroConfirmFake
 from core.common import access_secret
 
 
@@ -43,8 +43,10 @@ class DMForm(ui.Modal, title="Mass DM Announcement"):
 
     async def on_submit(self, interaction: discord.Interaction):
         # Send the message to everyone in the guild with that role.
+        mass_dm_message = self.message_content.value + "\n\n" + f"Sent by: {interaction.user.mention} | Report abuse " \
+                                                                f"to any bot developer. "
         await interaction.response.send_message("Starting DM Announcement...")
-        await interaction.channel.send(f"**This is a preview of what you are about to send.**\n\n{self.message_content.value}")
+        await interaction.channel.send(f"**This is a preview of what you are about to send.**\n\n{mass_dm_message}")
         await asyncio.sleep(3)
         # Send a confirm button to the user.
         view = ui.View(timeout=30)
@@ -78,7 +80,7 @@ class DMForm(ui.Modal, title="Mass DM Announcement"):
                 for member in self.role.members:
                     await asyncio.sleep(0.2)
                     try:
-                        await member.send(self.message_content.value)
+                        await member.send(mass_dm_message)
                     except:
                         await interaction.channel.send(
                             f"{member.mention} is not accepting DMs from me."

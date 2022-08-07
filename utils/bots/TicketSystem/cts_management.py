@@ -9,13 +9,11 @@ from core import database
 from core.checks import is_botAdmin
 from core.common import (
     Emoji,
-    MGMCommissionButton,
-    EmailDropdown,
-    create_ui_modal_class,
-    create_ticket_button,
     TechID,
     StaffID,
 )
+from utils.bots.TicketSystem.view_models import create_ui_modal_class, create_ticket_button, MGMCommissionButton, \
+    EmailDropdown, create_no_form_button
 
 
 def text_to_list(hashtags):
@@ -133,11 +131,16 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
             )
             query.save()
 
-            UIModal = create_ui_modal_class(query.id)
-            modal = UIModal(self.bot, self.title, query.questions, query.id)
+            if questions.count != 0:
+                UIModal = create_ui_modal_class(query.id)
+                modal = UIModal(self.bot, self.title, query.questions, query.id)
 
-            GlobalSubmitButton = create_ticket_button(query.id)
-            submit_button = GlobalSubmitButton(modal)
+                GlobalSubmitButton = create_ticket_button(query.id)
+                submit_button = GlobalSubmitButton(modal)
+            else:
+                no_form_button = create_no_form_button(query.id)
+                submit_button = no_form_button(query.id, self.bot)
+
 
             ticket_start_channel: discord.TextChannel = self.bot.get_channel(
                 query.channel_id
@@ -232,7 +235,7 @@ class MGMTickets(commands.Cog):
         category_id: str,
         start_channel: discord.TextChannel,
         transcript_channel: discord.TextChannel,
-        role_id: str,
+        role_id: str = None,
         limit: int = 0,
     ):
         """
@@ -528,6 +531,80 @@ class MGMTickets(commands.Cog):
         query.save()
 
         await interaction.response.send_message(f"Updated field {element} to {value}")
+
+    @CTS.command(
+        name="add",
+        description="Adds a user to your ticket.",
+    )
+    @app_commands.describe(
+        user="The person to add."
+    )
+    async def add_user(self, interaction: discord.Interaction, user: discord.Member):
+        channel: discord.TextChannel = interaction.channel
+        category = channel.category
+
+        query = database.TicketConfiguration.select().where(
+            database.TicketConfiguration.category_id == category.id
+        )
+        if not query.exists():
+            return await interaction.response.send_message("This channel does not seem to be a ticket.")
+
+        await channel.set_permissions(
+            user,
+            read_messages=True,
+            send_messages=True,
+        )
+        await interaction.response.send_message(
+            f"{interaction.user.mention}\n> **{user.mention}** has been added to the ticket!"
+        )
+
+    @CTS.command(
+        name="remove",
+        description="Removes a user to your ticket.",
+    )
+    @app_commands.describe(
+        user="The person to remove."
+    )
+    async def remove_user(self, interaction: discord.Interaction, user: discord.Member):
+        channel: discord.TextChannel = interaction.channel
+        category = channel.category
+
+        query = database.TicketConfiguration.select().where(
+            database.TicketConfiguration.category_id == category.id
+        )
+        if not query.exists():
+            return await interaction.response.send_message("This channel does not seem to be a ticket.")
+
+        await channel.set_permissions(
+            user,
+            read_messages=False,
+            send_messages=False,
+        )
+        await interaction.response.send_message(
+            f"{interaction.user.mention}\n> **{user.mention}** has been removed from the ticket!"
+        )
+
+    @CTS.command(
+        name="rename",
+        description="Rename a ticket channel.",
+    )
+    @app_commands.describe(
+        name="The new name for the ticket channel."
+    )
+    async def rename_channel(self, interaction: discord.Interaction, name: str):
+        channel: discord.TextChannel = interaction.channel
+        old_name = channel.name
+        category = channel.category
+
+        query = database.TicketConfiguration.select().where(
+            database.TicketConfiguration.category_id == category.id
+        )
+        if not query.exists():
+            return await interaction.response.send_message("This channel does not seem to be a ticket.")
+        await channel.edit(name=name, reason="Renamed by {}".format(interaction.user.name))
+        await interaction.response.send_message(f"{interaction.user.mention} **Renamed channel!**\n> `{old_name}` -> `{name}`")
+
+
 
 
 async def setup(bot: commands.Bot):

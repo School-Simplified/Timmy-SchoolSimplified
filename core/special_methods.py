@@ -4,7 +4,6 @@ import collections
 import json
 import os
 import subprocess
-import time
 import traceback
 from datetime import datetime
 from difflib import get_close_matches
@@ -17,27 +16,22 @@ import sentry_sdk
 from discord import app_commands
 from discord.ext import commands
 
-from utils.bots.CommissionSys.cogs.web_commissions import CommissionWebButton
-from utils.bots.CoreBot.cogs.hr_system import RecruitmentButton
+from utils.bots.TicketSystem.tickets.web_commissions import CommissionWebButton
 from core import database
 from core.common import (
     ConsoleColors,
-    GSuiteVerify,
     Colors,
-    LockButton,
     Others,
     MainID,
     TechID,
     CheckDB_CC,
     Emoji,
-    MGMCommissionButton,
-    HREmailConfirm,
-    EmailDropdown,
-    create_ui_modal_class,
-    create_ticket_button,
 )
+from utils.bots.TicketSystem.view_models import create_ui_modal_class, create_ticket_button, HREmailConfirm, \
+    MGMCommissionButton, \
+    EmailDropdown, LockButton, GSuiteVerify, RecruitmentButton, create_no_form_button
 from core.gh_modals import FeedbackButton
-from utils.bots.CommissionSys.cogs.tech_commissions import CommissionTechButton
+from utils.bots.TicketSystem.tickets.bot_dev_tickets import CommissionTechButton
 from utils.events.chat_helper_ticket_sys import TicketButton
 
 if TYPE_CHECKING:
@@ -126,11 +120,15 @@ async def on_ready_(bot: Timmy):
         ticket_sys = database.TicketConfiguration
         for ticket in ticket_sys:
             ticket: database.TicketConfiguration = ticket
-            UIModal = create_ui_modal_class(ticket.id)
-            modal = UIModal(bot, ticket.title, ticket.questions, ticket.id)
+            if ticket.questions != "[]":
+                UIModal = create_ui_modal_class(ticket.id)
+                modal = UIModal(bot, ticket.title, ticket.questions, ticket.id)
 
-            GlobalSubmitButton = create_ticket_button(ticket.id)
-            submit_button = GlobalSubmitButton(modal)
+                GlobalSubmitButton = create_ticket_button(ticket.id)
+                submit_button = GlobalSubmitButton(modal)
+            else:
+                no_form_button = create_no_form_button(ticket.id)
+                submit_button = no_form_button(ticket.id, bot)
             bot.add_view(view=submit_button)
 
         query.PersistantChange = True

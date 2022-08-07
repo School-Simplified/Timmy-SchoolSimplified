@@ -7,7 +7,8 @@ import pytz
 from discord.ext import commands
 
 from core.checks import is_botAdmin
-from core.common import ButtonHandler, Emoji, GSuiteVerify, access_secret
+from core.common import ButtonHandler, Emoji, access_secret
+from utils.bots.TicketSystem.view_models import GSuiteVerify
 
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
 

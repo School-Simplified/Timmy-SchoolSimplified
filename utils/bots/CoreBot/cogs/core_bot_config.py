@@ -170,8 +170,8 @@ class CoreBotConfig(commands.Cog):
     @cogs.command()
     @is_botAdmin2
     async def unload(self, ctx, ext):
-        if "cogs." not in ext:
-            ext = f"cogs.{ext}"
+        if "tickets." not in ext:
+            ext = f"tickets.{ext}"
         if ext in get_extensions():
             await self.bot.unload_extension(ext)
             embed = discord.Embed(
@@ -191,8 +191,8 @@ class CoreBotConfig(commands.Cog):
     @cogs.command()
     @is_botAdmin2
     async def load(self, ctx, ext):
-        if "cogs." not in ext:
-            ext = f"cogs.{ext}"
+        if "tickets." not in ext:
+            ext = f"tickets.{ext}"
         if ext in get_extensions():
             await self.bot.load_extension(ext)
             embed = discord.Embed(
@@ -215,7 +215,7 @@ class CoreBotConfig(commands.Cog):
         if ext == "all":
             embed = discord.Embed(
                 title="Cogs - Reload",
-                description="Reloaded all cogs",
+                description="Reloaded all tickets",
                 color=Colors.light_purple,
             )
             for extension in get_extensions():
@@ -223,8 +223,8 @@ class CoreBotConfig(commands.Cog):
             await ctx.send(embed=embed)
             return
 
-        if "cogs." not in ext:
-            ext = f"cogs.{ext}"
+        if "tickets." not in ext:
+            ext = f"tickets.{ext}"
 
         if ext in get_extensions():
             await self.bot.reload_extension(ext)
@@ -309,14 +309,14 @@ class CoreBotConfig(commands.Cog):
         if mode == "-a":
             embed.set_footer(text="Attempting to restart the bot...")
         elif mode == "-c":
-            embed.set_footer(text="Attempting to reloading cogs...")
+            embed.set_footer(text="Attempting to reloading tickets...")
 
         await ctx.send(embed=embed)
 
         if mode == "-a":
             await force_restart(ctx, directory)
         elif mode == "-c":
-            await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
+            await ctx.invoke(self.bot.get_command("tickets reload"), ext="all")
 
     @command()
     @slash_is_bot_admin_2()
@@ -379,7 +379,7 @@ class CoreBotConfig(commands.Cog):
         if mode == "-a":
             embed.set_footer(text="Attempting to restart the bot...")
         elif mode == "-c":
-            embed.set_footer(text="Attempting to reloading cogs...")
+            embed.set_footer(text="Attempting to reloading tickets...")
 
         await interaction.response.send_message(embed=embed)
 
@@ -389,7 +389,7 @@ class CoreBotConfig(commands.Cog):
             try:
                 embed = discord.Embed(
                     title="Cogs - Reload",
-                    description="Reloaded all cogs",
+                    description="Reloaded all tickets",
                     color=discord.Color.brand_green(),
                 )
                 for extension in get_extensions():
@@ -398,7 +398,7 @@ class CoreBotConfig(commands.Cog):
             except commands.ExtensionError:
                 embed = discord.Embed(
                     title="Cogs - Reload",
-                    description="Failed to reload cogs",
+                    description="Failed to reload tickets",
                     color=discord.Color.brand_red(),
                 )
                 return await interaction.channel.send(embed=embed)

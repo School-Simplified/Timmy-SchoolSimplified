@@ -16,8 +16,9 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
 
     titleTI = ui.TextInput(
         label="What is a descriptive title for your project?",
-        style=discord.TextStyle.long,
+        style=discord.TextStyle.short,
         max_length=1024,
+        placeholder="Do not explain the project in detail here: just a descriptive title.",
     )
 
     teamTI = ui.TextInput(
@@ -27,7 +28,7 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
     )
 
     descriptionTI = ui.TextInput(
-        label="Write a brief description of the project.",
+        label="Write a description of the project.",
         style=discord.TextStyle.long,
         max_length=1024,
     )
