@@ -533,7 +533,7 @@ class MGMTickets(commands.Cog):
         await interaction.response.send_message(f"Updated field {element} to {value}")
 
     @CTS.command(
-        name="add",
+        name="useradd",
         description="Adds a user to your ticket.",
     )
     @app_commands.describe(
@@ -559,7 +559,7 @@ class MGMTickets(commands.Cog):
         )
 
     @CTS.command(
-        name="remove",
+        name="userremove",
         description="Removes a user to your ticket.",
     )
     @app_commands.describe(
@@ -603,8 +603,6 @@ class MGMTickets(commands.Cog):
             return await interaction.response.send_message("This channel does not seem to be a ticket.")
         await channel.edit(name=name, reason="Renamed by {}".format(interaction.user.name))
         await interaction.response.send_message(f"{interaction.user.mention} **Renamed channel!**\n> `{old_name}` -> `{name}`")
-
-
 
 
 async def setup(bot: commands.Bot):

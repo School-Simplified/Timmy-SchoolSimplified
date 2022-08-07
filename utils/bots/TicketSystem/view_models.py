@@ -75,12 +75,9 @@ def create_ui_modal_class(conf_id):
                     style = discord.TextStyle.long
                     min_length = None
                     max_length = None
-                    print("am not here")
                 else:
-                    print("am here")
                     style, min_length, max_length = config.split(",")
                     style = self.config_to_TextStyle_dict[style]
-                    print(style, min_length, max_length)
 
                 text_input = ui.TextInput(
                     label=question_e,
@@ -241,8 +238,6 @@ def create_no_form_button(conf_id):
     query = database.TicketConfiguration.select().where(
         database.TicketConfiguration.id == conf_id
     )
-    print(conf_id)
-    print(f"Query: {query.exists()}")
     if query.exists():
         query: database.TicketConfiguration = query.get()
     else:
