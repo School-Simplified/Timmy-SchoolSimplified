@@ -142,17 +142,18 @@ def create_ui_modal_class(conf_id):
             )
 
             # make query.role_id into a list (comma seperated string) and add each role to the ticket channel
-            role_list = [
-                int(e) if e.strip().isdigit() else e for e in query.role_id.split(",")
-            ]
-            for role in role_list:
-                role = discord.utils.get(ticket_server.roles, id=int(role))
-                try:
-                    await ticket_channel.set_permissions(
-                        role, read_messages=True, send_messages=True
-                    )
-                except discord.NotFound:
-                    pass
+            if query.role_id != "[]":
+                role_list = [
+                    int(e) if e.strip().isdigit() else e for e in query.role_id.split(",")
+                ]
+                for role in role_list:
+                    role = discord.utils.get(ticket_server.roles, id=int(role))
+                    try:
+                        await ticket_channel.set_permissions(
+                            role, read_messages=True, send_messages=True
+                        )
+                    except discord.NotFound:
+                        pass
 
             await ticket_channel.set_permissions(
                 member,
@@ -307,17 +308,18 @@ def create_no_form_button(conf_id):
             )
 
             # make query.role_id into a list (comma seperated string) and add each role to the ticket channel
-            role_list = [
-                int(e) if e.strip().isdigit() else e for e in query.role_id.split(",")
-            ]
-            for role in role_list:
-                role = discord.utils.get(ticket_server.roles, id=int(role))
-                try:
-                    await ticket_channel.set_permissions(
-                        role, read_messages=True, send_messages=True
-                    )
-                except discord.NotFound:
-                    pass
+            if query.role_id != "[]":
+                role_list = [
+                    int(e) if e.strip().isdigit() else e for e in query.role_id.split(",")
+                ]
+                for role in role_list:
+                    role = discord.utils.get(ticket_server.roles, id=int(role))
+                    try:
+                        await ticket_channel.set_permissions(
+                            role, read_messages=True, send_messages=True
+                        )
+                    except discord.NotFound:
+                        pass
 
             await ticket_channel.set_permissions(
                 member,
@@ -1260,7 +1262,7 @@ class RecruitmentForm(ui.Modal, title="Recruitment Request"):
         )
         embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
-        await interaction.response.send(
+        await interaction.response.send_message(
             "Your ticket has been created!\nYou can view it here: <#{ticket_channel.id}>"
         )
 
