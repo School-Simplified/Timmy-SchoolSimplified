@@ -124,7 +124,7 @@ class CommandsManager(commands.Cog):
                     embed_processing = discord.Embed(
                         color=Colors.yellow,
                         title="Sync",
-                        description=f"Syncing slash commands globally..."
+                        description=f"Syncing all local guild slash commands ..."
                         f"\nThis may take a while.",
                     )
                     await message_confirm.edit(embed=embed_processing, view=None)
