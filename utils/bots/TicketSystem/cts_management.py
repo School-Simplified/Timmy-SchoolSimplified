@@ -187,6 +187,19 @@ class MGMTickets(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.__cog_name__ = "MGM Commissions"
+        self.whitelisted_cat = [
+            StaffID.cat_design_tickets,
+            StaffID.cat_recruiting_tickets,
+            StaffID.cat_cs_hours_tickets,
+            StaffID.cat_complaint_tickets,
+            StaffID.cat_suggestions_tickets,
+            StaffID.cat_resignation_tickets,
+            StaffID.cat_break_tickets,
+            StaffID.cat_announcements_tickets,
+            StaffID.cat_staffapps_tickets,
+            StaffID.cat_QnA_tickets,
+            StaffID.cat_hr_tickets,
+        ]
         # self.autoUnarchiveThread.start()
 
     @property
@@ -208,7 +221,7 @@ class MGMTickets(commands.Cog):
     CTS = app_commands.Group(
         name="cts",
         description="Custom Ticket System Commands",
-        guild_ids=[TechID.g_tech, StaffID.g_staff_resources],
+        guild_ids=[TechID.g_tech, StaffID.g_staff_resources, StaffID.g_staff_mgm],
     )
 
     @CTS.command(
@@ -272,8 +285,7 @@ class MGMTickets(commands.Cog):
     @app_commands.describe(
         configuration_id="The configuration ID that corresponds to the button.",
         channel="Where the button will be sent; leave blank to send it to the channel it was configured with.",
-        message_id="If you are providing a message ID, channel must be filled out too. This will edit the message to "
-        "include the button in the same message. ",
+        message_id="Edits the message to include button in same message. Channel must be filled out for this.",
     )
     @is_botAdmin
     async def send_button(
@@ -329,8 +341,7 @@ class MGMTickets(commands.Cog):
     )
     @app_commands.describe(
         configuration_id="The configuration ID that corresponds to the button.",
-        edit_mode="If you are editing the actual questions itself, select Edit Questions. If you would like to edit "
-        "attributes such as min length, max length, or field type, select Edit Attributes.",
+        edit_mode="Edit Questions: Edit the questions itself, Edit Attributes: Edit the attributes (e.g. min length)"
     )
     @is_botAdmin
     async def edit_modal(
@@ -461,8 +472,7 @@ class MGMTickets(commands.Cog):
     )
     @app_commands.describe(
         configuration_id="The configuration ID that corresponds to the button.",
-        element="The element to edit. Valid elements are: title, channel_identifier, button_label, category_id, "
-        "start_channel, transcript_channel, role_id, limit",
+        element="Edit the element. See here for more: https://ssimpl.org/cts-docs",
         value="The new value for the element.",
     )
     @is_botAdmin
@@ -546,7 +556,7 @@ class MGMTickets(commands.Cog):
         query = database.TicketConfiguration.select().where(
             database.TicketConfiguration.category_id == category.id
         )
-        if not query.exists():
+        if not query.exists() and channel.category.id not in self.whitelisted_cat:
             return await interaction.response.send_message("This channel does not seem to be a ticket.")
 
         await channel.set_permissions(
@@ -572,7 +582,7 @@ class MGMTickets(commands.Cog):
         query = database.TicketConfiguration.select().where(
             database.TicketConfiguration.category_id == category.id
         )
-        if not query.exists():
+        if not query.exists() and channel.category.id not in self.whitelisted_cat:
             return await interaction.response.send_message("This channel does not seem to be a ticket.")
 
         await channel.set_permissions(
