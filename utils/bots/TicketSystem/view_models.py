@@ -142,7 +142,7 @@ def create_ui_modal_class(conf_id):
             )
 
             # make query.role_id into a list (comma seperated string) and add each role to the ticket channel
-            if query.role_id != "[]":
+            if query.role_id is not None:
                 role_list = [
                     int(e) if e.strip().isdigit() else e for e in query.role_id.split(",")
                 ]
@@ -308,7 +308,7 @@ def create_no_form_button(conf_id):
             )
 
             # make query.role_id into a list (comma seperated string) and add each role to the ticket channel
-            if query.role_id != "[]":
+            if query.role_id is not None:
                 role_list = [
                     int(e) if e.strip().isdigit() else e for e in query.role_id.split(",")
                 ]
