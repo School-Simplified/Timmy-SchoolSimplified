@@ -17,7 +17,7 @@ def get_extensions():
 
     for file in Path("utils").glob("**/*.py"):
 
-        if any(dev_symbol in file.name for dev_symbol in ["!", "DEV"]):
+        if any(dev_symbol in file.name for dev_symbol in ["!", "DEV", "view_models"]):
             continue
         extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
     return extensions
