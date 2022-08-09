@@ -1263,7 +1263,8 @@ class RecruitmentForm(ui.Modal, title="Recruitment Request"):
         embed_information.set_footer(text=f"ID: {interaction.user.id}")
         await ticket_channel.send(embed=embed_information)
         await interaction.response.send_message(
-            "Your ticket has been created!\nYou can view it here: <#{ticket_channel.id}>"
+            f"Your ticket has been created!\nYou can view it here: <#{ticket_channel.id}>",
+            ephemeral=True,
         )
 
 
