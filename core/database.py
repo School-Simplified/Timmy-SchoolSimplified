@@ -928,5 +928,6 @@ however it does take a significant amount of time to run so this will be comment
 
 Uncomment when you need to update tables again, however it is recommended to create them manually/request them.
 """
-#iter_table(tables)
+if os.getenv("PyTestMODE"):
+    iter_table(tables)
 
