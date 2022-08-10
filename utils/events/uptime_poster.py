@@ -6,7 +6,9 @@ from discord.ext import tasks, commands
 import requests
 
 from core.common import get_host_dir
+from core.logging_module import get_log
 
+_log = get_log(__name__)
 
 class MetricPoster(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -25,7 +27,6 @@ class MetricPoster(commands.Cog):
         Thanks, GitHub copilot <3
         """
         host_dir = get_host_dir()
-        print(f"Host dir: {host_dir}")
         if host_dir == "/home/timmya" or host_dir == "/home/timmy-beta":
             ping_payload = {"value": round(self.bot.latency * 1000), "timestamp": time.time()}
             cpu_payload = {"value": psutil.cpu_percent(), "timestamp": time.time()}
@@ -56,7 +57,7 @@ class MetricPoster(commands.Cog):
                 headers=headers,
                 json=ram_payload,
             )
-            print("Posted metrics")
+            _log.info("Posted metrics")
 
 
     @instatus_metric_post.before_loop

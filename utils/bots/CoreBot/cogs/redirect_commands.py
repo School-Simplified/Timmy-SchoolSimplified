@@ -1,3 +1,5 @@
+import datetime
+from datetime import datetime
 import os
 from typing import Dict, List
 
@@ -66,13 +68,21 @@ class RedirectURL(commands.Cog):
                 )
                 embed.add_field(name="Unable to Add Redirect", value=errors)
                 embed.set_thumbnail(url=Others.timmy_dog_png)
+
                 return await interaction.response.send_message(
-                    embed=embed, ephemeral=True
+                    embed=embed, ephemeral=False
                 )
             else:
+                database.RedirectLogs.create(
+                    redirect_id=val.id,
+                    redirect_code=redirect_code,
+                    destination_url=destination_url,
+                    sub_domain=sub_domain,
+                    created_at=datetime.now(),
+                )
                 await interaction.response.send_message(
                     f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!\n\nAccess it at https://ssimpl.org/{redirect_code}",
-                    ephemeral=True,
+                    ephemeral=False,
                 )
         else:
             if not ".ssimpl.org" in sub_domain:
@@ -96,6 +106,13 @@ class RedirectURL(commands.Cog):
                         embed=embed, ephemeral=True
                     )
                 else:
+                    database.RedirectLogs.create(
+                        redirect_id=val.id,
+                        redirect_code=redirect_code,
+                        destination_url=destination_url,
+                        sub_domain=sub_domain,
+                        created_at=datetime.now(),
+                    )
                     await interaction.response.send_message(
                         f"Redirect added for {destination_url} with redirect path /{redirect_code}\nCreated with the ID: {val.id}. In order to delete this redirect, you'll need this ID!\n\nAccess it at https://{sub_domain}.ssimpl.org/{redirect_code}",
                         ephemeral=True,
@@ -116,6 +133,12 @@ class RedirectURL(commands.Cog):
         self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
     ):
         self.raOBJ.del_redirect(redirect_id, subdomain)
+        query = database.RedirectLogs.select().where(
+            database.RedirectLogs.redirect_id == redirect_id
+        )
+        if query.exists():
+            query = query.get()
+            query.delete_instance()
         await interaction.response.send_message(
             f"Redirect removed for {redirect_id}\nSubdomain: {subdomain}"
         )

@@ -15,7 +15,9 @@ import core.common
 from core import database
 from core.checks import slash_is_bot_admin_4
 from core.common import HRID, access_secret, Emoji, ButtonHandler, StaffID
+from core.logging_module import get_log
 
+_log = get_log(__name__)
 
 def get_random_string(length=13):
     # choose from all lowercase letter
@@ -1375,7 +1377,7 @@ class AdminAPI(commands.Cog):
                         try:
                             await member.edit(nick="name seized by anti-furry police")
                         except Exception as e:
-                            print(e, member)
+                            _log.error("FurryRaid: Unable to edit user: {}".format(e))
 
             await interaction.followup.send(
                 f"{interaction.user.mention} Successfully raided {user_count} users."

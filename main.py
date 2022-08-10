@@ -27,6 +27,7 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 
 from core import database
 from core.common import get_extensions
+from core.logging_module import get_log
 from core.special_methods import (
     before_invoke_,
     initializeDB,
@@ -45,8 +46,8 @@ faulthandler.enable()
 logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
 
-logger.warning("Started Timmy")
-print("Starting Timmy...")
+_log = get_log(__name__)
+_log.info("Started Timmy")
 
 
 class TimmyCommandTree(app_commands.CommandTree):

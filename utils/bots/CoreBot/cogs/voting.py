@@ -24,7 +24,9 @@ from core.common import (
     Colors,
 )
 from core.common import string_time_convert, ButtonHandler, search_custom_emoji
+from core.logging_module import get_log
 
+_log = get_log(__name__)
 
 class VotingBot(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -129,7 +131,7 @@ class VotingBot(commands.Cog):
         msgIDList = [msg.msgID for msg in query]
 
         interMsgID = interaction.message.id
-        print(f"interMsgID: {interMsgID}")
+        _log.info(f"Interaction Found: {interMsgID}")
         if interMsgID in msgIDList:
             componentsStr = (
                 database.Voting.select()
@@ -139,9 +141,6 @@ class VotingBot(commands.Cog):
             )
             componentsDict = ast.literal_eval(componentsStr)
             interactionData = interaction.data
-
-            print(componentsDict, type(componentsDict))
-            print(interactionData)
 
     @commands.group(invoke_without_command=True)
     @commands.has_any_role(
@@ -172,7 +171,7 @@ class VotingBot(commands.Cog):
             else:
                 noneChannels.append(channelID)
 
-        print(f"noneChannels: {noneChannels}")
+        _log.info(f"noneChannels: {noneChannels}")
 
         randomID = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
         tempVoteCHsPath = f"./TEMP_voteCHS_{randomID}.txt"
@@ -625,7 +624,7 @@ class VotingBot(commands.Cog):
                     )
                     await msgConfirm.edit(embed=embedSending)
 
-                    print("sending")  # TODO: Sending to original channel
+                    _log.info("Sending to original channel.")  # TODO: Sending to original channel
 
                     expLongDateTimeTP = discord.utils.format_dt(datetimeExpiration, "F")
                     expRelativeTimeTP = discord.utils.format_dt(datetimeExpiration, "R")

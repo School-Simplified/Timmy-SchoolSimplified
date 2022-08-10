@@ -8,6 +8,9 @@ from discord.ext import commands
 
 from core import database
 from core.common import Emoji, MainID, StaffID, TutID, TechID, SandboxConfig
+from core.logging_module import get_log
+
+_log = get_log(__name__)
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 EST = pytz.timezone("US/Eastern")
@@ -125,16 +128,15 @@ class TutorVCUpdate(commands.Cog):
     ):
         database.db.connect(reuse_if_open=True)
         try:
-            print(self.LobbyStartIDs[member.guild.id])
+            dummy_var = self.LobbyStartIDs[member.guild.id]
         except KeyError:
             return
-        lobbyStart = member.guild.get_channel(self.LobbyStartIDs[member.guild.id])
-        if lobbyStart == None:
+        lobby_start = member.guild.get_channel(self.LobbyStartIDs[member.guild.id])
+        if lobby_start is None:
             try:
-                lobbyStart = self.bot.get_channel(self.LobbyStartIDs[member.guild.id])
+                lobby_start = self.bot.get_channel(self.LobbyStartIDs[member.guild.id])
             except Exception as e:
-                return print(e)
-        print(lobbyStart)
+                return _log.error(f"Unable to identify lobby start channel: {e}")
 
         if (
             before.channel is not None
@@ -169,7 +171,7 @@ class TutorVCUpdate(commands.Cog):
                     .get()
                 )
                 iq.delete_instance()
-                return print("Ignore Channel")
+                return _log.ingo("Ignore Channel")
 
             if query.exists() and before.channel.category.id in self.categoryIDs:
                 query = (
@@ -216,7 +218,7 @@ class TutorVCUpdate(commands.Cog):
                     await asyncio.sleep(120)
 
                     if member in before.channel.members:
-                        return print("returned")
+                        return
 
                     else:
                         query = database.VCChannelInfo.select().where(
@@ -256,7 +258,7 @@ class TutorVCUpdate(commands.Cog):
                             try:
                                 await before.channel.delete()
                             except Exception as e:
-                                print(f"Error Deleting Channel:\n{e}")
+                                _log.error(f"Error Deleting Channel:\n{e}")
                             else:
                                 embed = discord.Embed(
                                     title=f"{Emoji.archive} {member.display_name} Total Voice Minutes",
@@ -327,9 +329,9 @@ class TutorVCUpdate(commands.Cog):
                                     except discord.HTTPException:
                                         pass
                         else:
-                            print("no query, moving on...")
+                            pass
                 else:
-                    print("no")
+                   pass
 
         if (
             after.channel is not None
@@ -337,7 +339,6 @@ class TutorVCUpdate(commands.Cog):
             and not member.bot
         ):
             acadChannel = self.bot.get_channel(self.LobbyStartIDs[member.guild.id])
-            print(acadChannel, after.channel.guild.id)
             SB = discord.utils.get(member.guild.roles, name=self.SB)
 
             legend = discord.utils.get(member.guild.roles, name=self.Legend)
@@ -495,7 +496,7 @@ class TutorVCUpdate(commands.Cog):
                     )
 
                 except Exception as e:
-                    print(f"Left VC before setup.\n{e}")
+                    _log.info(f"Left VC before setup.\n{e}")
                     query = database.VCChannelInfo.select().where(
                         (database.VCChannelInfo.authorID == member.id)
                         & (database.VCChannelInfo.ChannelID == channel.id)
@@ -520,7 +521,7 @@ class TutorVCUpdate(commands.Cog):
                         try:
                             await channel.delete()
                         except Exception as e:
-                            print(f"Error Deleting Channel:\n{e}")
+                            _log.error(f"Error Deleting Channel:\n{e}")
                         else:
                             embed = discord.Embed(
                                 title=f"{Emoji.archive} {member.display_name} Total Voice Minutes",
@@ -530,10 +531,6 @@ class TutorVCUpdate(commands.Cog):
                             )
                             embed.set_footer(text="The voice channel has been deleted!")
                             await acadChannel.send(content=member.mention, embed=embed)
-                            print("done")
-
-                    else:
-                        print("Already deleted, moving on...")
 
         database.db.close()
 

@@ -430,7 +430,6 @@ class MGMTickets(commands.Cog):
                     self.questions = cache_list"""
 
                     for question_e in self.questions:
-                        print(question_e)
                         text_input = ui.TextInput(
                             label=question_e,
                             required=True,
@@ -444,7 +443,6 @@ class MGMTickets(commands.Cog):
                 async def on_submit(self, interaction_i: discord.Interaction):
                     index = 1
                     for question in self.question_obj:
-                        print(index, question.value)
                         self.answers.append(question.value)
                         if index == 1:
                             query.q1_config = question.value

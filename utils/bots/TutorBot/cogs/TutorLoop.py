@@ -6,7 +6,9 @@ from discord.ext import commands, tasks
 
 from core import database
 from core.common import TutID
+from core.logging_module import get_log
 
+_log = get_log(__name__)
 
 class TutorBotLoop(commands.Cog):
     def __init__(self, bot):
@@ -26,7 +28,6 @@ class TutorBotLoop(commands.Cog):
             val = int((TutorSession - now).total_seconds())
 
             if 120 >= val >= 1:
-                print(entry.TutorID, entry.StudentID)
                 tutor = self.bot.get_user(entry.TutorID)
                 student = self.bot.get_user(entry.StudentID)
 
@@ -35,8 +36,7 @@ class TutorBotLoop(commands.Cog):
                 if student is None:
                     student = self.bot.get_user(entry.StudentID)
 
-                print(tutor, student)
-                botch = self.bot.get_channel(TutID.ch_botCommands)
+                botch = self.bot.get_channel(TutID.ch_bot_commands)
                 embed = discord.Embed(
                     title="ALERT: You have a Tutor Session Soon!",
                     description="Please make sure you both communicate and set up a private voice channel!",
@@ -60,7 +60,7 @@ class TutorBotLoop(commands.Cog):
                 try:
                     await student.send(embed=embed)
                 except:
-                    print(f"Unable to Send a Reminder DM to: {student.id}")
+                    _log.warning(f"TutorLoop: Unable to Send a Reminder DM to: {student.id}")
 
                 geten: database.TutorBot_Sessions = (
                     database.TutorBot_Sessions.select()
@@ -107,7 +107,6 @@ class TutorBotLoop(commands.Cog):
                     .where(database.TutorBot_Sessions.id == entry.id)
                     .get()
                 )
-                print(query.id, val, entry.Repeat)
                 old = query.Date
                 new = timedelta(days=7)
                 nextweek = old + new
@@ -125,7 +124,6 @@ class TutorBotLoop(commands.Cog):
             val = int((TutorSession - now).total_seconds())
 
             if 120 >= val >= 1:
-                print(val)
                 try:
                     geten: database.TutorBot_Sessions = (
                         database.TutorBot_Sessions.select()
@@ -133,7 +131,6 @@ class TutorBotLoop(commands.Cog):
                         .get()
                     )
                 except Exception as e:
-                    print(e)
                     entry.delete_instance()
                 else:
                     geten.delete_instance()

@@ -1,8 +1,7 @@
-import collections
 import os
 from datetime import datetime
 from distutils.util import strtobool
-from typing import Literal
+from core.logging_module import get_log
 
 from dotenv import load_dotenv
 from flask import Flask
@@ -20,6 +19,7 @@ from peewee import (
 )
 
 load_dotenv()
+_log = get_log(__name__)
 useDB = True
 
 if not os.getenv("PyTestMODE"):
@@ -35,8 +35,8 @@ If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove
 """
 
 if os.getenv("DATABASE_IP") is None:
-    print(f"Successfully connected to the SQLite Database")
     db = SqliteDatabase("data.db")
+    _log.info("No Database IP found in .env file, using SQLite!")
 
 elif os.getenv("DATABASE_IP") is not None:
     # useDB = bool(input(f"{bcolors.WARNING}Do you want to use MySQL? (y/n)\n    > This option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications.{bcolors.ENDC}"))
@@ -49,18 +49,18 @@ elif os.getenv("DATABASE_IP") is not None:
                 host=os.getenv("DATABASE_IP"),
                 port=int(os.getenv("DATABASE_PORT")),
             )
-            print("Successfully connected to the MySQL Database")
+            _log.info("Successfully connected to the MySQL Database")
         except Exception as e:
-            print(
+            _log.warning(
                 f"Unable to connect to the MySQL Database:\n    > {e}\n\nSwitching to SQLite..."
             )
             db = SqliteDatabase("data.db")
     else:
         db = SqliteDatabase("data.db")
         if not os.getenv("PyTestMODE"):
-            print(f"Successfully connected to the SQLite Database")
+            _log.info(f"Successfully connected to the SQLite Database")
         else:
-            print(f"Created a SQLite Database for testing...")
+            _log.info(f"Testing environment detected, using SQLite Database")
 
 
 def iter_table(model_dict: dict):
@@ -847,6 +847,40 @@ class TicketConfiguration(BaseModel):
     q4_config = TextField(default=None)
     q5_config = TextField(default=None)
     question_config = TextField(default=None)
+    created_at = DateTimeField()
+
+
+class RedirectLogs(BaseModel):
+    """
+    #RedirectLogs
+    `id`: AutoField()
+    Database Entry ID
+
+    `redirect_id`: BigIntegerField()
+    Redirect ID of the redirect. (Corresponds to the ID schema for Redirect.Pizza's API)
+
+    `from_url`: TextField()
+    The URL that was redirected from.
+
+    `to_url`: TextField()
+    The URL that was redirected to.
+
+    `subdomain`: TextField()
+    The subdomain the from_url uses.
+
+    `author_id`: BigIntegerField()
+    The author ID of the user that made the redirect.
+
+    `created_at`: DateTimeField()
+    The date when the redirect was made.
+    """
+
+    id = AutoField()
+    redirect_id = BigIntegerField(unique=False)
+    from_url = TextField(unique=False)
+    to_url = TextField(unique=False)
+    subdomain = TextField(default=None)
+    author_id = BigIntegerField(unique=False)
     created_at = DateTimeField()
 
 

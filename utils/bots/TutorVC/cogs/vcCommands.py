@@ -19,6 +19,9 @@ from core.common import (
     SelectMenuHandler,
     GameDict,
 )
+from core.logging_module import get_log
+
+_log = get_log(__name__)
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 EST = pytz.timezone("US/Eastern")
@@ -44,7 +47,6 @@ def showFutureTime(time):
 
     add = timedelta(seconds=int(output))
     now_plus_10 = now + add
-    print(now_plus_10)
 
     return now_plus_10.strftime(r"%I:%M %p")
 
@@ -299,7 +301,6 @@ class TutorVCCMD(commands.Cog):
                     SelectedGame = var.view_response
                 else:
                     return await ctx.send("Timed out, try again later.")
-                print(SelectedGame)
                 GameID = GameDict[SelectedGame]
                 code = str(await self._create_invite(ctx.author.voice, GameID))
                 await ctx.send(
@@ -570,7 +571,6 @@ class TutorVCCMD(commands.Cog):
                     )
                     .get()
                 )
-                print(f"T: {query.TutorBotSessionID}")
                 VCDatetime = pytz.timezone("America/New_York").localize(
                     query.datetimeObj
                 )
@@ -595,7 +595,6 @@ class TutorVCCMD(commands.Cog):
                 embed.set_footer(text="WARNING: Time displayed may not be accurate.")
                 await ctx.send(embed=embed)
 
-                print(query.TutorBotSessionID)
                 tutorSession = database.TutorBot_Sessions.select().where(
                     database.TutorBot_Sessions.SessionID == query.TutorBotSessionID
                 )
@@ -641,7 +640,7 @@ class TutorVCCMD(commands.Cog):
                 return
 
             else:
-                return print("Ignore VC Leave")
+                return _log.info("Ignore VC Leave")
 
         if voice_state.channel.id in self.presetChannels:
             embed = discord.Embed(
@@ -697,7 +696,6 @@ class TutorVCCMD(commands.Cog):
                 embed.set_footer(text="WARNING: Time displayed may not be accurate.")
                 await ctx.send(embed=embed)
 
-                print(q.TutorBotSessionID)
                 tutorSession = database.TutorBot_Sessions.select().where(
                     database.TutorBot_Sessions.SessionID == q.TutorBotSessionID
                 )
@@ -810,7 +808,6 @@ class TutorVCCMD(commands.Cog):
                     color=discord.Colour.brand_red(),
                 )
                 return await ctx.send(embed=embed)
-        print(channel)
 
         if channel.id in self.presetChannels:
             embed = discord.Embed(

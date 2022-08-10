@@ -16,6 +16,7 @@ import sentry_sdk
 from discord import app_commands
 from discord.ext import commands
 
+from core.logging_module import get_log
 from utils.bots.TicketSystem.tickets.web_commissions import CommissionWebButton
 from core import database
 from core.common import (
@@ -36,6 +37,8 @@ from utils.events.chat_helper_ticket_sys import TicketButton
 
 if TYPE_CHECKING:
     from main import Timmy
+
+_log = get_log(__name__)
 
 
 class VerifyButton(discord.ui.View):
@@ -350,7 +353,7 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
             j = json.loads(res.text)
             ID = j["id"]
             gisturl = f"https://gist.github.com/{ID}"
-            print(gisturl)
+            _log.info(f"Gist URL: {gisturl}")
 
             permitlist = []
             query = database.Administrators.select().where(
@@ -634,12 +637,12 @@ def initializeDB(bot):
             elseSituation=True,
             PersistantChange=False,
         )
-        print("Created CheckInformation Entry.")
+        _log.info("Created CheckInformation Entry.")
 
     if len(database.Administrators) == 0:
         for person in bot.owner_ids:
             database.Administrators.create(discordID=person, TierLevel=4)
-            print("Created Administrator Entry.")
+            _log.info("Created Administrator Entry.")
         database.Administrators.create(discordID=409152798609899530, TierLevel=4)
 
     query: database.CheckInformation = (

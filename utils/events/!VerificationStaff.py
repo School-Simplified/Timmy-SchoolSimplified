@@ -13,6 +13,9 @@ from core.common import (
     load_config,
 )
 from core.special_methods import VerifyButton
+from core.logging_module import get_log
+
+_log = get_log(__name__)
 
 config, _ = load_config("equelRoles")
 
@@ -58,21 +61,15 @@ class VerificationStaff(commands.Cog):
             interaction.guild_id in self.StaffServerIDs
             and interaction.channel.id in self.VerificationIDs
         ):
-            print(interaction.user.id)
-
             staffServer: discord.Guild = self.bot.get_guild(interaction.guild_id)
-            print(staffServer)
             StaffServerMember: discord.Member = staffServer.get_member(
                 interaction.user.id
             )
 
-            print(StaffServerMember)
             if StaffServerMember is None:
-                print("h")
                 StaffServerMember: discord.Member = staffServer.get_member(
                     interaction.user.id
                 )
-                print(StaffServerMember)
 
             if StaffServerMember is None:
                 try:
@@ -111,7 +108,7 @@ class VerificationStaff(commands.Cog):
                     )
 
                 except Exception as e:
-                    print("member not found")
+                    _log.error("member not found")
                     continue
 
                 else:
@@ -119,7 +116,7 @@ class VerificationStaff(commands.Cog):
 
                     for role in roleNames:
                         check = getEqualRank(role.name)
-                        print(f"CHECK: {check}")
+                        _log.info(f"CHECK: {check}")
 
                         if check is not None:
                             checkSTR = ", ".join(check)
@@ -136,10 +133,6 @@ class VerificationStaff(commands.Cog):
                                     jsonROLE = discord.utils.get(
                                         staffServer.roles, name=elem
                                     )
-                                    print(f"ELEM: {elem}")
-                                    print(f"JSONROLE: {jsonROLE}")
-                                    print(f"SubServer: {server}")
-                                    print(f"Member: {ServerMember}")
 
                                     await StaffServerMember.add_roles(
                                         jsonROLE, reason="Verification RoleSync"

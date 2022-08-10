@@ -23,8 +23,11 @@ from core.common import (
     MainID,
     LeaderID, StaffID, ButtonHandler,
 )
+from core.logging_module import get_log
 from utils.bots.TicketSystem.view_models import NitroConfirmFake
 from core.common import access_secret
+
+_log = get_log(__name__)
 
 
 class DMForm(ui.Modal, title="Mass DM Announcement"):
@@ -780,7 +783,7 @@ class MiscCMD(commands.Cog):
         try:
             vc.play(
                 discord.FFmpegPCMAudio("text.mp3"),
-                after=lambda e: print(f"Finished playing: {e}"),
+                after=lambda e: _log.info(f"Finished playing: {e}"),
             )
 
             vc.source = discord.PCMVolumeTransformer(vc.source)

@@ -40,6 +40,7 @@ from google_auth_oauthlib.flow import Flow
 from oauth2client.service_account import ServiceAccountCredentials
 
 from core import database
+from core.logging_module import get_log
 
 if TYPE_CHECKING:
     from main import Timmy
@@ -51,7 +52,7 @@ load_dotenv()
 # Module Variables
 CoroutineType = Callable[[Any, Any], Awaitable[Any]]
 g = Github(os.getenv("GH_TOKEN"))
-
+_log = get_log(__name__)
 
 class ConfigCatClient:
     PS_ID_CC = configcatclient.create_client(os.getenv("PS_ID_CC"))
@@ -369,7 +370,7 @@ def S3_upload_file(file_name, bucket, object_name=None):
         # s3_object.copy_from(CopySource={'Bucket':'ch-transcriptlogs', 'x-amz-meta-content-type':'binary/octet-stream'}, Metadata=s3_object.metadata, MetadataDirective='REPLACE')
 
     except ClientError as e:
-        print(e)
+        _log.error(f"Unable to upload file to S3: \n{e}")
 
 
 class MainID:
@@ -1262,7 +1263,7 @@ def config_patch(key, value):
         headers={"X-CONFIGCAT-SDKKEY": os.getenv("SANDBOX_CONFIG_CC")},
         json=json_payload,
     )
-    print(r.status_code)
+    _log.info(f"ConfigCat PATCH request to {url} returned {r.status_code}")
     return r
 
 

@@ -34,7 +34,6 @@ class MGMDropdownTickets(commands.Cog):
         query = database.TicketConfiguration.select().where(
             database.TicketConfiguration.guild_id == interaction.guild_id
         )
-        print(val)
 
         if (
             not query.exists()
@@ -258,7 +257,6 @@ class MGMDropdownTickets(commands.Cog):
                     self.response_channel_dict[interaction.guild_id]
                 )
             else:
-                print(val)
                 conf_id = val.split(":")[1]
                 query = (
                     database.TicketConfiguration.select()
@@ -294,7 +292,6 @@ class MGMDropdownTickets(commands.Cog):
                     self.response_channel_dict[interaction.guild_id]
                 )
             else:
-                print(val)
                 conf_id = val.split(":")[1]
                 query = (
                     database.TicketConfiguration.select()

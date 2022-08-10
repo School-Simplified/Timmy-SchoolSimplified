@@ -31,6 +31,9 @@ from core.common import (
     CHHelperRoles,
     access_secret,
 )
+from core.logging_module import get_log
+
+_log = get_log(__name__)
 
 load_dotenv()
 
@@ -341,7 +344,7 @@ class TicketBT(discord.ui.Button):
 
         bucket = self.view.cd_mapping.get_bucket(interaction.message)
         retry_after = bucket.update_rate_limit()
-        print(retry_after)
+        _log.warning(f"(CHTS) Internal Rate Limit: {retry_after}")
         if retry_after:
             return await interaction.response.send_message(
                 "Sorry, you are being rate limited.", ephemeral=True
@@ -713,7 +716,7 @@ class TicketBT(discord.ui.Button):
                 await channel.send(mentionRole.mention, embed=embed)
 
             except Exception as e:
-                print(f"{e.__class__.__name__}: {e}")
+                _log.error(f"(CHTS) {e.__class__.__name__}: {e}")
                 await channel.send(
                     f"**Ticket Information**\n\n{interaction.user.mention}\nQuestion: {answer1.content}"
                 )

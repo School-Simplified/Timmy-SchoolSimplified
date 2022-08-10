@@ -8,6 +8,9 @@ import pytz
 from discord.ext import commands, tasks
 
 from core.common import Colors, ScheduleView, SetID
+from core.logging_module import get_log
+
+_log = get_log(__name__)
 
 if TYPE_CHECKING:
     from main import Timmy
@@ -84,7 +87,7 @@ class SetScheduleCog(commands.Cog):
 
     @tasks.loop(time=[datetime.time(tzinfo=pytz.timezone("America/New_York"), hour=9)])
     async def _reminder_loop(self):
-        print("starting task")
+        _log.info("Start reminder loop!")
         """
         Handles daily reminders
         """
@@ -183,7 +186,7 @@ class SetScheduleCog(commands.Cog):
         server = self.bot.get_guild(SetID.g_set)
         member = server.get_member(user_id)
         await member.send(embed=embed, view=ScheduleView(self.bot, task=_type))
-        print(f"Sent {member} reminder dm")
+        _log.info(f"Sent {member} reminder DM.")
 
 
 async def setup(bot: Timmy):

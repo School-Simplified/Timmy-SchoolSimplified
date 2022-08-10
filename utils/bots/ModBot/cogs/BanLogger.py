@@ -10,6 +10,9 @@ from discord.ext import commands
 from oauth2client.service_account import ServiceAccountCredentials
 
 from core.common import MainID
+from core.logging_module import get_log
+
+_log = get_log(__name__)
 
 scope = [
     "https://spreadsheets.google.com/feeds",
@@ -24,7 +27,7 @@ try:
     client = gspread.authorize(creds)
     sheet = client.open("SchoolSimplifiedBans").sheet1
 except Exception as e:
-    print(f"ERROR: Could not authorize GSpreads: {e}")
+    _log.error(f"Could not authorize GSpreads: {e}")
 
 
 def next_available_row(worksheet):
