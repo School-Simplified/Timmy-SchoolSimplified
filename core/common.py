@@ -54,8 +54,9 @@ CoroutineType = Callable[[Any, Any], Awaitable[Any]]
 g = Github(os.getenv("GH_TOKEN"))
 _log = get_log(__name__)
 
+
 class ConfigCatClient:
-    PS_ID_CC = configcatclient.create_client(os.getenv("PS_ID_CC"))
+    """PS_ID_CC = configcatclient.create_client(os.getenv("PS_ID_CC"))
     SET_ID_CC = configcatclient.create_client(os.getenv("SET_ID_CC"))
     MAIN_ID_CC = configcatclient.create_client(os.getenv("MAINID_CC"))
     STAFF_ID_CC = configcatclient.create_client(os.getenv("STAFFID_CC"))
@@ -65,7 +66,7 @@ class ConfigCatClient:
     TUT_ID_CC = configcatclient.create_client(os.getenv("TUTID_CC"))
     CH_ID_CC = configcatclient.create_client(os.getenv("CHID_CC"))
     HR_ID_CC = configcatclient.create_client(os.getenv("HRID_CC"))
-    LEADER_ID_CC = configcatclient.create_client(os.getenv("LEADERID_CC"))
+    LEADER_ID_CC = configcatclient.create_client(os.getenv("LEADERID_CC"))"""
     CHECK_DB_CC = configcatclient.create_client(os.getenv("CHECKDB_CC"))
     SANDBOX_CONFIG_CC = configcatclient.create_client_with_auto_poll(
         os.getenv("SANDBOX_CONFIG_CC"), poll_interval_seconds=10
@@ -387,167 +388,66 @@ class MainID:
     """
 
     # *** Guilds ***
-    g_main = int(ConfigCatClient.MAIN_ID_CC.get_value("g_main", 763119924385939498))
+    g_main = 763119924385939498
 
-    ch_commands = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_commands", 763409002913595412)
-    )
-    ch_senior_mods = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_seniormods", 878792926266810418)
-    )
-    ch_moderators = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_moderators", 786068971048140820)
-    )
-    ch_muted_chat = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_mutedchat", 808919081469739008)
-    )
-    ch_mod_logs = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_modlogs", 863177000372666398)
-    )
-    ch_tutoring = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_tutoring", 865716647083507733)
-    )
-    ch_transcript_logs = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_transcriptlogs", 767434763337728030)
-    )
-    ch_action_logs = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_actionlogs", 767206398060396574)
-    )
-    ch_mod_commands = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_modcommands", 786057630383865858)
-    )
-    ch_control_panel = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_controlpanel", 843637802293788692)
-    )
-    ch_start_private_vc = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_startprivatevc", 784556875487248394)
-    )
-    ch_announcements = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_announcements", 763121175764926464)
-    )
-    ch_mod_announcements = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("ch_modannouncements", 887780215789617202)
-    )
-    ch_event_announcements = int(
-        ConfigCatClient.MAIN_ID_CC.get_value(
-            "ch_eventannouncements", 951302954965692436
-        )
-    )
+    # *** Text Channels ***
+    ch_commands = 763409002913595412
+    ch_senior_mods = 878792926266810418
+    ch_moderators = 786068971048140820
+    ch_muted_chat = 808919081469739008
+    ch_mod_logs = 863177000372666398
+    ch_tutoring = 865716647083507733
+    ch_transcript_logs = 767434763337728030
+    ch_action_logs = 767206398060396574
+    ch_mod_commands = 786057630383865858
+    ch_control_panel = 843637802293788692
+    ch_start_private_vc = 784556875487248394
+    ch_announcements = 763121175764926464
+    ch_mod_announcements = 887780215789617202
+    ch_event_announcements = 951302954965692436
 
     # *** Categories ***
-    cat_casual = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_casual", 763121170324783146)
-    )
-    cat_community = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_community", 800163651805773824)
-    )
-    cat_lounge = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_lounge", 774847738239385650)
-    )
-    cat_events = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_events", 805299289604620328)
-    )
-    cat_voice = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_voice", 763857608964046899)
-    )
-    cat_science_ticket = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_scienceticket", 800479815471333406)
-    )
-    cat_fine_arts_ticket = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_fineartsticket", 833210452758364210)
-    )
-    cat_math_ticket = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_mathticket", 800472371973980181)
-    )
-    cat_social_studies_ticket = int(
-        ConfigCatClient.MAIN_ID_CC.get_value(
-            "cat_socialstudiesticket", 800481237608824882
-        )
-    )
-    cat_english_ticket = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_englishticket", 800475854353596469)
-    )
-    cat_essay_ticket = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_essayticket", 854945037875806220)
-    )
-    cat_language_ticket = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_languageticket", 800477414361792562)
-    )
-    cat_other_ticket = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_otherticket", 825917349558747166)
-    )
-    cat_private_vc = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("cat_privatevc", 776988961087422515)
-    )
+    cat_casual = 763121170324783146
+    cat_community = 800163651805773824
+    cat_lounge = 774847738239385650
+    cat_events = 805299289604620328
+    cat_voice = 763857608964046899
+    cat_science_ticket = 800479815471333406
+    cat_fine_arts_ticket = 833210452758364210
+    cat_math_ticket = 800472371973980181
+    cat_social_studies_ticket = 800481237608824882
+    cat_english_ticket = 800475854353596469
+    cat_essay_ticket = 854945037875806220
+    cat_language_ticket = 800477414361792562
+    cat_other_ticket = 825917349558747166
+    cat_private_vc = 776988961087422515
 
     # *** Roles ***
-    r_coding_club = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_codingclub", 883169286665936996)
-    )
-    r_debate_club = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_debateclub", 883170141771272294)
-    )
-    r_music_club = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_musicclub", 883170072355561483)
-    )
-    r_cooking_club = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_cookingclub", 883162279904960562)
-    )
-    r_chess_club = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_chessclub", 883564455219306526)
-    )
-    r_book_club = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_bookclub", 883162511560560720)
-    )
-    r_advocacy_club = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_advocacyclub", 883169000866070539)
-    )
-    r_speech_club = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_speechclub", 883170166161149983)
-    )
-    r_club_president = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_clubpresident", 883160826180173895)
-    )
-    r_chat_helper = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_chathelper", 811416051144458250)
-    )
-    r_lead_helper = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_leadhelper", 810684359765393419)
-    )
-    r_essay_reviser = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_essayreviser", 854135371507171369)
-    )
-    r_moderator = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_moderator", 951302697263452240)
-    )
-    r_debate_ban = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_debateban", 951302659657334784)
-    )
-    r_ticket_ban = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_ticketban", 951302690011492452)
-    )
-    r_count_ban = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("r_countban", 951302821079318539)
-    )
+    r_coding_club = 883169286665936996
+    r_debate_club = 883170141771272294
+    r_music_club = 883170072355561483
+    r_cooking_club = 883162279904960562
+    r_chess_club = 883564455219306526
+    r_book_club = 883162511560560720
+    r_advocacy_club = 883169000866070539
+    r_speech_club = 883170166161149983
+    r_club_president = 883160826180173895
+    r_chat_helper = 811416051144458250
+    r_lead_helper = 810684359765393419
+    r_essay_reviser = 854135371507171369
+    r_moderator = 951302697263452240
+    r_debate_ban = 951302659657334784
+    r_ticket_ban = 951302690011492452
+    r_count_ban = 951302821079318539
 
     # *** Messages ***
-    msg_math = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_math", 866904767568543744))
-    msg_science = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("msg_science", 866904901174427678)
-    )
-    msg_english = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("msg_english", 866905061182930944)
-    )
-    msg_language = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("msg_language", 866905971519389787)
-    )
-    msg_art = int(ConfigCatClient.MAIN_ID_CC.get_value("msg_art", 866906016602652743))
-    msg_social_studies = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("msg_socialstudies", 866905205094481951)
-    )
-    msg_computer_science = int(
-        ConfigCatClient.MAIN_ID_CC.get_value("msg_computerscience", 867550791635566623)
-    )
+    msg_math = 866904767568543744
+    msg_science = 866904901174427678
+    msg_english = 866905061182930944
+    msg_language = 866905971519389787
+    msg_art = 866906016602652743
+    msg_social_studies = 866905205094481951
+    msg_computer_science = 867550791635566623
 
 
 class StaffID:
@@ -564,164 +464,58 @@ class StaffID:
     """
 
     # *** Guilds ***
-    g_staff = int(ConfigCatClient.STAFF_ID_CC.get_value("g_staff", 891521033700540457))
-    g_staff_resources = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("g_staff_resources", 955911166520082452)
-    )
-    g_staff_mgm = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("g_staff_mgm", 824421093015945216)
-    )
+    g_staff = 891521033700540457
+    g_staff_resources = 955911166520082452
+    g_staff_mgm = 824421093015945216
 
     # *** Channels ***
-    ch_verification_logs = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("ch_verificationlogs", 894241199433580614)
-    )
-    ch_verification = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("ch_verification", 894240578651443232)
-    )
-    ch_console = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("ch_console", 895041227123228703)
-    )
-    ch_start_private_vc = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("ch_startprivatevc", 895041070956675082)
-    )
-    ch_announcements = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("ch_announcements", 891920066550059028)
-    )
-    ch_leadership_announcements = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "ch_leadershipannouncements", 910357129972551710
-        )
-    )
+    ch_verification_logs = 894241199433580614
+    ch_verification = 894240578651443232
+    ch_console = 895041227123228703
+    ch_start_private_vc = 895041070956675082
+    ch_announcements = 891920066550059028
+    ch_leadership_announcements = 910357129972551710
 
     # *** Categories ***
-    cat_private_vc = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("cat_privatevc", 895041016057446411)
-    )
-    cat_staffapps_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "cat_staffapps_tickets", 979485444364468345
-        )
-    )
-    cat_announcements_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("cat_announcements", 979485569337946192)
-    )
-    cat_hr_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("cat_hr_tickets", 956297567346495568)
-    )
-    cat_promote_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("cat_promote_tickets", 956297567346495568)
-    )
-    cat_demote_tickers = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("cat_demote_tickets", 956297567346495568)
-    )
-    cat_fire_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("cat_fire_tickets", 956297567346495568)
-    )
+    cat_private_vc = 895041016057446411
+    cat_staffapps_tickets = 979485444364468345
+    cat_announcements_tickets = 979485569337946192
+    cat_hr_tickets = 956297567346495568
+    cat_promote_tickets = 956297567346495568
+    cat_demote_tickers = 956297567346495568
+    cat_fire_tickets = 956297567346495568
 
-    cat_censure_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("cat_censure_tickets", 956297567346495568)
-    )
-    cat_break_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("cat_break_tickets", 992191587281027144)
-    )
-    cat_resignation_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "cat_resignation_tickets", 992191685415145542
-        )
-    )
-    cat_complaint_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "cat_complaint_tickets", 992191762611327029
-        )
-    )
-    cat_cs_hours_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "cat_cs_hours_tickets", 992191874309828658
-        )
-    )
-    cat_suggestions_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "cat_suggestions_tickets", 992191996947083275
-        )
-    )
-    cat_recruiting_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "cat_recruiting_tickets", 997646929553018920
-        )
-    )
-    cat_QnA_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "cat_qna_tickets", 956017871585169408
-        )
-    )
-    cat_design_tickets = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "cat_design_tickets", 996164727745020085
-        )
-    )
+    cat_censure_tickets = 956297567346495568
+    cat_break_tickets = 992191587281027144
+    cat_resignation_tickets = 992191685415145542
+    cat_complaint_tickets = 992191762611327029
+    cat_cs_hours_tickets = 992191874309828658
+    cat_suggestions_tickets = 992191996947083275
+    cat_recruiting_tickets = 997646929553018920
+    cat_QnA_tickets = 956017871585169408
+    cat_design_tickets = 996164727745020085
 
     # *** Roles ***
-    r_director = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("r_director", 891521034333880416)
-    )
-    r_SS_digital_committee = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "r_ssdigitalcommittee", 898772246808637541
-        )
-    )
-    r_chairperson_SSD_committee = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "r_chairpersonssdcommittee", 934971902781431869
-        )
-    )
-    r_executive_assistant = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "r_executiveassistant", 892535575574372372
-        )
-    )
-    r_chapter_president = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("r_chapterpresident", 892532950019735602)
-    )
-    r_organization_president = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "r_organizationpresident", 892532907078475816
-        )
-    )
-    r_vice_president = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("r_vicepresident", 891521034371608671)
-    )
-    r_president = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("r_president", 932861531224428555)
-    )
-    r_editor_in_chief = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("r_editorinchief", 910269854592950352)
-    )
-    r_corporate_officer = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("r_corporateofficer", 932861485917540402)
-    )
-    r_CHRO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_chro", 892530791005978624))
-    r_CIO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cio", 892530239996059728))
-    r_CFO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cfo", 892530080029503608))
-    r_CMO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cmo", 892529974303686726))
-    r_CAO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_cao", 892530033430790165))
-    r_COO = int(ConfigCatClient.STAFF_ID_CC.get_value("r_coo", 892530902528307271))
-    r_CEO_and_president = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("r_ceoandpresident", 892529865247580160)
-    )
-    r_board_member = int(
-        ConfigCatClient.STAFF_ID_CC.get_value("r_boardmember", 891521034371608675)
-    )
-    r_administrative_executive = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "r_administrativeexecutive", 946873101956841473
-        )
-    )
-    r_information_technology = int(
-        ConfigCatClient.STAFF_ID_CC.get_value(
-            "r_informationtechnology", 891521034333880410
-        )
-    )
+    r_director = 891521034333880416
+    r_SS_digital_committee = 898772246808637541
+    r_chairperson_SSD_committee = 934971902781431869
+    r_executive_assistant = 892535575574372372
+    r_chapter_president = 892532950019735602
+    r_organization_president = 892532907078475816
+    r_vice_president = 891521034371608671
+    r_president = 932861531224428555
+    r_editor_in_chief = 910269854592950352
+    r_corporate_officer = 932861485917540402
+    r_CHRO = 892530791005978624
+    r_CIO = 892530239996059728
+    r_CFO = 892530080029503608
+    r_CMO = 892529974303686726
+    r_CAO = 892530033430790165
+    r_COO = 892530902528307271
+    r_CEO_and_president = 892529865247580160
+    r_board_member = 891521034371608675
+    r_administrative_executive = 946873101956841473
+    r_information_technology = 891521034333880410
 
 
 class TechID:
@@ -737,49 +531,23 @@ class TechID:
     """
 
     # *** Guilds ***
-    g_tech = int(ConfigCatClient.TECH_ID_CC.get_value("g_tech", 805593783684562965))
+    g_tech = 805593783684562965
 
     # *** Channels ***
-    ch_tracebacks = int(
-        ConfigCatClient.TECH_ID_CC.get_value("ch_tracebacks", 851949397533392936)
-    )
-    ch_commission_logs = int(
-        ConfigCatClient.TECH_ID_CC.get_value("ch_commissionlogs", 849722616880300061)
-    )
-    ch_ticket_log = int(
-        ConfigCatClient.TECH_ID_CC.get_value("ch_ticketlog", 872915565600182282)
-    )
-    ch_bot_requests = int(
-        ConfigCatClient.TECH_ID_CC.get_value("ch_botreq", 933181562885914724)
-    )
-    ch_announcements = int(
-        ConfigCatClient.TECH_ID_CC.get_value("ch_announcements", 934109939373314068)
-    )
-    ch_IT_announcements = int(
-        ConfigCatClient.TECH_ID_CC.get_value("ch_itannouncements", 932066545587327000)
-    )
-    ch_web_announcements = int(
-        ConfigCatClient.TECH_ID_CC.get_value("ch_webannouncements", 932487991958577152)
-    )
-    ch_bot_announcements = int(
-        ConfigCatClient.TECH_ID_CC.get_value("ch_botannouncements", 932725755115368478)
-    )
-    ch_snake_pit = int(
-        ConfigCatClient.TECH_ID_CC.get_value("ch_snakepit", 942076483290161203)
-    )
+    ch_tracebacks = 851949397533392936
+    ch_commission_logs = 849722616880300061
+    ch_ticket_log = 872915565600182282
+    ch_bot_requests = 933181562885914724
+    ch_announcements = 934109939373314068
+    ch_IT_announcements = 932066545587327000
+    ch_web_announcements = 932487991958577152
+    ch_bot_announcements = 932725755115368478
+    ch_snake_pit = 942076483290161203
 
     # *** Roles ***
-    r_developer_manager = int(
-        ConfigCatClient.TECH_ID_CC.get_value("r_developermanager", 805596419066822686)
-    )
-    r_assistant_bot_dev_manager = int(
-        ConfigCatClient.TECH_ID_CC.get_value(
-            "r_assistantbotdevmanager", 816498160880844802
-        )
-    )
-    r_bot_developer = int(
-        ConfigCatClient.TECH_ID_CC.get_value("r_botdeveloper", 997238819055222894)
-    )
+    r_developer_manager = 805596419066822686
+    r_assistant_bot_dev_manager = 816498160880844802
+    r_bot_developer = 997238819055222894
 
 
 class SandboxConfig:
@@ -865,11 +633,9 @@ class ChID:
     """
 
     # *** Guilds ***
-    g_ch = int(ConfigCatClient.CH_ID_CC.get_value("g_ch", 801974357395636254))
-    cat_essay = int(ConfigCatClient.CH_ID_CC.get_value("cat_essay", 854945037875806220))
-    cat_english = int(
-        ConfigCatClient.CH_ID_CC.get_value("cat_english", 800475854353596469)
-    )
+    g_ch = 801974357395636254
+    cat_essay = 854945037875806220
+    cat_english = 800475854353596469
 
 
 class MktID:
@@ -886,69 +652,29 @@ class MktID:
     """
 
     # *** Guilds ***
-    g_mkt = int(ConfigCatClient.MKT_ID_CC.get_value("g_mkt", 799855854182596618))
+    g_mkt = 799855854182596618
 
     # *** Channels ***
-    ch_commands = int(
-        ConfigCatClient.MKT_ID_CC.get_value("ch_commands", 799855856295608345)
-    )
-    ch_commission_transcripts = int(
-        ConfigCatClient.MKT_ID_CC.get_value(
-            "ch_commissiontranscripts", 820843692385632287
-        )
-    )
-    ch_announcements = int(
-        ConfigCatClient.MKT_ID_CC.get_value("ch_announcements", 799855854244855847)
-    )
-    ch_design_announcements = int(
-        ConfigCatClient.MKT_ID_CC.get_value(
-            "ch_designannouncements", 891926914258829323
-        )
-    )
-    ch_media_announcements = int(
-        ConfigCatClient.MKT_ID_CC.get_value("ch_mediaannouncements", 864050588023259196)
-    )
-    ch_bp_announcements = int(
-        ConfigCatClient.MKT_ID_CC.get_value("ch_bpannouncements", 852371717744885760)
-    )
-    ch_events_announcements = int(
-        ConfigCatClient.MKT_ID_CC.get_value(
-            "ch_eventsannouncements", 820508373791277067
-        )
-    )
-    ch_mod_announcements = int(
-        ConfigCatClient.MKT_ID_CC.get_value("ch_modannouncements", 820532007620575282)
-    )
+    ch_commands = 799855856295608345
+    ch_commission_transcripts = 820843692385632287
+    ch_announcements = 799855854244855847
+    ch_design_announcements = 891926914258829323
+    ch_media_announcements = 864050588023259196
+    ch_bp_announcements = 852371717744885760
+    ch_events_announcements = 820508373791277067
+    ch_mod_announcements = 820532007620575282
 
     # *** Categories ***
-    cat_design = int(
-        ConfigCatClient.MKT_ID_CC.get_value("cat_design", 820873176208375838)
-    )
-    cat_media = int(
-        ConfigCatClient.MKT_ID_CC.get_value("cat_media", 882031123541143632)
-    )
-    cat_discord = int(
-        ConfigCatClient.MKT_ID_CC.get_value("cat_discord", 888668259220615198)
-    )
+    cat_design = 820873176208375838
+    cat_media = 882031123541143632
+    cat_discord = 888668259220615198
 
     # *** Roles ***
-    r_discord_manager = int(
-        ConfigCatClient.MKT_ID_CC.get_value("r_discordmanager", 890778255655841833)
-    )
-    r_discord_team = int(
-        ConfigCatClient.MKT_ID_CC.get_value("r_discordteam", 805276710404489227)
-    )
-    r_design_manager = int(
-        ConfigCatClient.MKT_ID_CC.get_value("r_designmanager", 882755765910261760)
-    )
-    r_design_team = int(
-        ConfigCatClient.MKT_ID_CC.get_value("r_designteam", 864161064526020628)
-    )
-    r_content_creator_manager = int(
-        ConfigCatClient.MKT_ID_CC.get_value(
-            "r_contentcreatormanager", 864165192148189224
-        )
-    )
+    r_discord_manager = 890778255655841833
+    r_discord_team = 805276710404489227
+    r_design_manager = 882755765910261760
+    r_design_team = 864161064526020628
+    r_content_creator_manager = 864165192148189224
 
 
 class TutID:
@@ -965,45 +691,19 @@ class TutID:
     """
 
     # *** Guilds ***
-    g_tut = int(ConfigCatClient.TUT_ID_CC.get_value("g_tut", 860897711334621194))
+    g_tut = 860897711334621194
 
     # *** Channels ***
-    ch_bot_commands = int(
-        ConfigCatClient.TUT_ID_CC.get_value("ch_botcommands", 862480236965003275)
-    )
-    ch_hour_logs = int(
-        ConfigCatClient.TUT_ID_CC.get_value("ch_hourlogs", 953454389652226068)
-    )
-    ch_announcements = int(
-        ConfigCatClient.TUT_ID_CC.get_value("ch_announcements", 861711851330994247)
-    )
-    ch_leadership_announcements = int(
-        ConfigCatClient.TUT_ID_CC.get_value(
-            "ch_leadershipannouncements", 861712109757530112
-        )
-    )
-    ch_math_announcements = int(
-        ConfigCatClient.TUT_ID_CC.get_value("ch_mathannouncements", 860929479961739274)
-    )
-    ch_science_announcements = int(
-        ConfigCatClient.TUT_ID_CC.get_value(
-            "ch_scienceannouncements", 860929498782629948
-        )
-    )
-    ch_english_announcements = int(
-        ConfigCatClient.TUT_ID_CC.get_value(
-            "ch_englishannouncements", 860929517102039050
-        )
-    )
-    ch_SS_announcements = int(
-        ConfigCatClient.TUT_ID_CC.get_value("ch_ssannouncements", 860929548639797258)
-    )
-    ch_cs_announcements = int(
-        ConfigCatClient.TUT_ID_CC.get_value("ch_csannouncements", 860929585355948042)
-    )
-    ch_misc_announcements = int(
-        ConfigCatClient.TUT_ID_CC.get_value("ch_miscannouncements", 860929567132221481)
-    )
+    ch_bot_commands = 862480236965003275
+    ch_hour_logs = 953454389652226068
+    ch_announcements = 861711851330994247
+    ch_leadership_announcements = 861712109757530112
+    ch_math_announcements = 860929479961739274
+    ch_science_announcements = 860929498782629948
+    ch_english_announcements = 860929517102039050
+    ch_SS_announcements = 860929548639797258
+    ch_cs_announcements = 860929585355948042
+    ch_misc_announcements = 860929567132221481
 
 
 class HRID:
@@ -1020,34 +720,18 @@ class HRID:
     """
 
     # *** Guilds ***
-    g_hr = int(ConfigCatClient.HR_ID_CC.get_value("g_hr", 815753072742891532))
+    g_hr = 815753072742891532
 
     # *** Channels ***
-    ch_announcements = int(
-        ConfigCatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362)
-    )
-    ch_mkt_announcements = int(
-        ConfigCatClient.HR_ID_CC.get_value("ch_mktannouncements", 816733579660754944)
-    )
-    ch_acad_announcements = int(
-        ConfigCatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557)
-    )
-    ch_tech_announcements = int(
-        ConfigCatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421)
-    )
-    ch_leadership_announcements = int(
-        ConfigCatClient.HR_ID_CC.get_value(
-            "ch_leadershipannouncements", 819009569979629569
-        )
-    )
-    ch_email_requests = int(
-        ConfigCatClient.HR_ID_CC.get_value("ch_emailrequests", 968345000100384788)
-    )
+    ch_announcements = 816507730557796362
+    ch_mkt_announcements = 816733579660754944
+    ch_acad_announcements = 816733725244522557
+    ch_tech_announcements = 816733303629414421
+    ch_leadership_announcements = 819009569979629569
+    ch_email_requests = 968345000100384788
 
     # *** Roles ***
-    r_hr_staff = int(
-        ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033)
-    )
+    r_hr_staff = 861856418117845033
 
 
 class PSID:
@@ -1064,10 +748,10 @@ class PSID:
     """
 
     # *** Guilds ***
-    g_ps = int(ConfigCatClient.PS_ID_CC.get_value("g_ps", 952287046750310440))
+    g_ps = 952287046750310440
 
     # *** Roles ***
-    r_ps_tut = int(ConfigCatClient.PS_ID_CC.get_value("r_pstut", 952287047056511076))
+    r_ps_tut = 952287047056511076
 
 
 class LeaderID:
@@ -1084,103 +768,35 @@ class LeaderID:
     """
 
     # *** Guilds ***
-    g_leader = int(
-        ConfigCatClient.LEADER_ID_CC.get_value("g_leader", 888929996033368154)
-    )
-    g_staff_resources = int(
-        ConfigCatClient.LEADER_ID_CC.get_value("g_staffresources", 955911166520082452)
-    )
+    g_leader = 888929996033368154
+    g_staff_resources = 955911166520082452
 
     # *** Channels ***
-    ch_staff_announcements = int(
-        ConfigCatClient.LEADER_ID_CC.get_value(
-            "ch_staffannouncements", 936134263777148949
-        )
-    )
-    ch_env_announcements = int(
-        ConfigCatClient.LEADER_ID_CC.get_value(
-            "ch_envannouncements", 942572395640782909
-        )
-    )
-    ch_rebrand_announcements = int(
-        ConfigCatClient.LEADER_ID_CC.get_value(
-            "ch_rebrandannouncements", 946180039630782474
-        )
-    )
-    ch_workonly_announcements = int(
-        ConfigCatClient.LEADER_ID_CC.get_value(
-            "ch_workonlyannouncements", 890993285940789299
-        )
-    )
-    ch_finance_announcements = int(
-        ConfigCatClient.LEADER_ID_CC.get_value(
-            "ch_financeannouncements", 919341240280023060
-        )
-    )
-    ch_mkt_announcements = int(
-        ConfigCatClient.LEADER_ID_CC.get_value(
-            "ch_mktannouncements", 942792208841588837
-        )
-    )
-    ch_ssd_announcements = int(
-        ConfigCatClient.LEADER_ID_CC.get_value(
-            "ch_ssdannouncements", 947656507162525698
-        )
-    )
-    ch_main_announcements = int(
-        ConfigCatClient.LEADER_ID_CC.get_value(
-            "ch_mainannouncements", 936464173687259226
-        )
-    )
-    ch_announcements = int(
-        ConfigCatClient.HR_ID_CC.get_value("ch_announcements", 816507730557796362)
-    )
-    ch_acad_announcements = int(
-        ConfigCatClient.HR_ID_CC.get_value("ch_acadannouncements", 816733725244522557)
-    )
-    ch_tech_announcements = int(
-        ConfigCatClient.HR_ID_CC.get_value("ch_techannouncements", 816733303629414421)
-    )
-    ch_leadership_announcements = int(
-        ConfigCatClient.HR_ID_CC.get_value(
-            "ch_leadershipannouncements", 819009569979629569
-        )
-    )
-    ch_com_log = int(
-        ConfigCatClient.LEADER_ID_CC.get_value("ch_com_log", 955991586364334082)
-    )
+    ch_staff_announcements = 936134263777148949
+    ch_env_announcements = 942572395640782909
+    ch_rebrand_announcements = 946180039630782474
+    ch_workonly_announcements = 890993285940789299
+    ch_finance_announcements = 919341240280023060
+    ch_mkt_announcements = 942792208841588837
+    ch_ssd_announcements = 947656507162525698
+    ch_main_announcements = 936464173687259226
+    ch_announcements = 816507730557796362
+    ch_acad_announcements = 816733725244522557
+    ch_tech_announcements = 816733303629414421
+    ch_leadership_announcements = 819009569979629569
+    ch_com_log = 955991586364334082
 
     # *** Roles ***
-    r_corporate_officer = int(
-        ConfigCatClient.LEADER_ID_CC.get_value("r_corporateofficer", 900940957783056444)
-    )
-    r_president = int(
-        ConfigCatClient.LEADER_ID_CC.get_value("r_president", 900940957783056444)
-    )
-    r_vice_president = int(
-        ConfigCatClient.LEADER_ID_CC.get_value("r_vicepresident", 888929996175978508)
-    )
-    r_board_member = int(
-        ConfigCatClient.LEADER_ID_CC.get_value("r_boardmember", 888929996188549189)
-    )
-    r_director = int(
-        ConfigCatClient.LEADER_ID_CC.get_value("r_director", 892531463482900480)
-    )
-    r_SS_digital_committee = int(
-        ConfigCatClient.LEADER_ID_CC.get_value(
-            "r_ssdigitalcommittee", 912472488594771968
-        )
-    )
-    r_information_technology_manager = int(
-        ConfigCatClient.LEADER_ID_CC.get_value(
-            "r_informationtechnologymanager", 943942441357172758
-        )
-    )
+    r_corporate_officer = 900940957783056444
+    r_president = 900940957783056444
+    r_vice_president = 888929996175978508
+    r_board_member = 888929996188549189
+    r_director = 892531463482900480
+    r_SS_digital_committee = 912472488594771968
+    r_information_technology_manager = 943942441357172758
 
     # *** Roles **
-    r_hr_staff = int(
-        ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033)
-    )
+    r_hr_staff = 861856418117845033
 
 
 class SetID:
@@ -1197,26 +813,18 @@ class SetID:
     """
 
     # *** Guilds ***
-    g_set = int(ConfigCatClient.SET_ID_CC.get_value("g_set", 950799439625355294))
+    g_set = 950799439625355294
 
     # *** Channels ***
-    ch_suggestions = int(
-        ConfigCatClient.SET_ID_CC.get_value("ch_suggestions", 954190487026274344)
-    )
-    ch_puzzle = int(
-        ConfigCatClient.SET_ID_CC.get_value("ch_puzzle", 952402735167320084)
-    )
-    ch_college_acceptance = int(
-        ConfigCatClient.SET_ID_CC.get_value("ch_college_acceptance", 955960683785236540)
-    )
-    ch_may_day_guess = int(
-        ConfigCatClient.SET_ID_CC.get_value("ch_puzzle_guessv2", 966857151417028608)
-    )
-    ch_general = int(950799440766177297)  #  will replace later
-    ch_reminders = int(971215505828511744)
+    ch_suggestions = 954190487026274344
+    ch_puzzle = 952402735167320084
+    ch_college_acceptance = 955960683785236540
+    ch_may_day_guess = 966857151417028608
+    ch_general = 950799440766177297
+    ch_reminders = 971215505828511744
 
     # *** Roles ***
-    r_hrStaff = int(ConfigCatClient.HR_ID_CC.get_value("r_hrstaff", 861856418117845033))
+    r_hrStaff = 861856418117845033
 
 
 class CheckDB_CC:
