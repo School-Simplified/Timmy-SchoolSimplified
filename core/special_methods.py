@@ -544,6 +544,13 @@ async def on_app_command_error_(
     raise error
 
 
+async def on_command_(bot: Timmy, ctx: commands.Context):
+    if ctx.command.name == "sync":
+        return
+
+    await ctx.reply(f":x: This command usage is deprecated. Use the equivalent slash command by using `/{ctx.command.name}` instead.")
+
+
 class Me:
     publicCH = [
         MainID.cat_casual,

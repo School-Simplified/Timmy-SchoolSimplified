@@ -35,6 +35,7 @@ from core.special_methods import (
     on_app_command_error_,
     on_command_error_,
     on_ready_,
+    on_command_
 )
 from fastapi import FastAPI
 
@@ -95,6 +96,9 @@ class Timmy(commands.Bot):
 
     async def on_command_error(self, ctx: commands.Context, error: Exception):
         await on_command_error_(self, ctx, error)
+
+    async def on_command(self, ctx: commands.Context):
+        await on_command_(self, ctx)
 
     async def analytics_before_invoke(self, ctx: commands.Context):
         await before_invoke_(ctx)
