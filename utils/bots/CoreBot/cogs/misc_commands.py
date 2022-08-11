@@ -2,7 +2,7 @@ import asyncio
 import sys
 import time
 from datetime import timedelta
-from typing import List, Literal
+from typing import List, Literal, TYPE_CHECKING
 
 import discord
 import psutil
@@ -27,11 +27,14 @@ from core.logging_module import get_log
 from utils.bots.TicketSystem.view_models import NitroConfirmFake
 from core.common import access_secret
 
+if TYPE_CHECKING:
+    from main import Timmy
+
 _log = get_log(__name__)
 
 
 class DMForm(ui.Modal, title="Mass DM Announcement"):
-    def __init__(self, bot: commands.Bot, target_role: discord.Role) -> None:
+    def __init__(self, bot: Timmy, target_role: discord.Role) -> None:
         super().__init__(timeout=None)
         self.bot = bot
         self.role: discord.Role = target_role
@@ -244,9 +247,9 @@ load_dotenv()
 
 
 class MiscCMD(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: Timmy):
         self.__cog_name__ = "General"
-        self.bot = bot
+        self.bot: Timmy = bot
         self.interaction = []
 
         self.client = Hub.current.client

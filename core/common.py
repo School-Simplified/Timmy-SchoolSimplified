@@ -4,6 +4,7 @@ import asyncio
 import io
 import json
 import os
+import psutil
 import random
 import re
 import string
@@ -1326,6 +1327,18 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
             return ID
 
 
+def get_pid(port: int):
+    connections = psutil.net_connections()
+    for con in connections:
+        if con.raddr != tuple():
+            if con.raddr.port == port:
+                return con.pid, con.status
+        if con.laddr != tuple():
+            if con.laddr.port == port:
+                return con.pid, con.status
+    return -1
+
+
 async def force_restart(ctx, main_or_beta):
     p = subprocess.run(
         "git status -uno", shell=True, text=True, capture_output=True, check=True
@@ -1341,9 +1354,13 @@ async def force_restart(ctx, main_or_beta):
     )
 
     msg = await ctx.send(embed=embed)
+    true_dir = {
+        "TimmyBeta-SS": "timmy-beta",
+        "TimmyMain-SS": "timmya",
+    }
     try:
         result = subprocess.run(
-            f"cd && cd {main_or_beta}",
+            f"sudo /home/{true_dir[main_or_beta]}/timmystart.sh",
             shell=True,
             text=True,
             capture_output=True,
@@ -1374,7 +1391,13 @@ async def force_restart(ctx, main_or_beta):
             inline=False,
         )
         await msg.edit(embed=embed)
-        sys.exit(0)
+        pid = get_pid(80)
+        if pid != -1:
+            p = psutil.Process(pid[0])
+            p.terminate()
+        else:
+            await ctx.send("Port 80 not found...")
+
 
 
 def get_host_dir():

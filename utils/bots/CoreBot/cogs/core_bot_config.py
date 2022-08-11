@@ -316,7 +316,7 @@ class CoreBotConfig(commands.Cog):
         if mode == "-a":
             await force_restart(ctx, directory)
         elif mode == "-c":
-            await ctx.invoke(self.bot.get_command("tickets reload"), ext="all")
+            await ctx.invoke(self.bot.get_command("jsk reload"), ext="all")
 
     @command()
     @slash_is_bot_admin_2()

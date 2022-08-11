@@ -732,8 +732,8 @@ class TutorVCCMD(commands.Cog):
                     )
                     try:
                         await student.send(embed=embed)
-                    except discord.HTTPException:
-                        pass
+                    except Exception as e:
+                        _log.error(f"Error sending feedback to {student}", exc_info=e)
 
                     embed = discord.Embed(
                         title="Logged Hours",
@@ -744,8 +744,8 @@ class TutorVCCMD(commands.Cog):
                     )
                     try:
                         await tutor.send(embed=embed)
-                    except discord.HTTPException:
-                        pass
+                    except Exception as e:
+                        _log.error(f"Error sending feedback to {student}", exc_info=e)
 
                 q.delete_instance()
                 await voice_state.channel.delete()
