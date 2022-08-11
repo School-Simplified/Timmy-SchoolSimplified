@@ -34,7 +34,7 @@ _log = get_log(__name__)
 
 
 class DMForm(ui.Modal, title="Mass DM Announcement"):
-    def __init__(self, bot: Timmy, target_role: discord.Role) -> None:
+    def __init__(self, bot: 'Timmy', target_role: discord.Role) -> None:
         super().__init__(timeout=None)
         self.bot = bot
         self.role: discord.Role = target_role
@@ -247,9 +247,9 @@ load_dotenv()
 
 
 class MiscCMD(commands.Cog):
-    def __init__(self, bot: Timmy):
+    def __init__(self, bot: 'Timmy'):
         self.__cog_name__ = "General"
-        self.bot: Timmy = bot
+        self.bot: 'Timmy' = bot
         self.interaction = []
 
         self.client = Hub.current.client
