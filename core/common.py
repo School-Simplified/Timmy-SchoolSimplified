@@ -179,7 +179,7 @@ class CompletedButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction) -> None:
         self.value = "complete"
         await interaction.response.send_message("Great!")
-        channel = self.bot.get_channel(SetID.ch_reminders)
+        channel = self.bot.get_channel(DiscID.ch_reminders)
         await channel.send(f"✅ {self._task} has been completed for today!")
         await interaction.edit_original_message(view=None)
         self.view.stop()
@@ -211,7 +211,7 @@ class CannotComplete(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction) -> Any:
         self.value = "busy"
         await interaction.response.send_message("Notified the team!")
-        channel = self.bot.get_channel(SetID.ch_reminders)
+        channel = self.bot.get_channel(DiscID.ch_reminders)
         embed = discord.Embed(
             title=f"{self._task} needs to be filled!",
             description=f"{self._task} for today cannot be completed.",
@@ -800,9 +800,9 @@ class LeaderID:
     r_hr_staff = 861856418117845033
 
 
-class SetID:
+class DiscID:
     """
-    IDs of the SSD SET SERVER
+    IDs of the SS Discovery Multidivision Server
 
     NOTE: If you want to add IDs, please use the format as below.
     Format:
@@ -814,15 +814,15 @@ class SetID:
     """
 
     # *** Guilds ***
-    g_set = 950799439625355294
+    g_disc = 950799439625355294
 
     # *** Channels ***
-    ch_suggestions = 954190487026274344
-    ch_puzzle = 952402735167320084
-    ch_college_acceptance = 955960683785236540
+    ch_suggestions = 1006943806832255076
+    ch_puzzle = 1006943962143150130
+    # ch_college_acceptance = 955960683785236540        not needed
     ch_may_day_guess = 966857151417028608
-    ch_general = 950799440766177297
-    ch_reminders = 971215505828511744
+    ch_general = 1006806787292405782
+    ch_reminders = 1006806737170472980
 
     # *** Roles ***
     r_hrStaff = 861856418117845033
