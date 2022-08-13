@@ -392,20 +392,19 @@ class MainID:
     g_main = 763119924385939498
 
     # *** Text Channels ***
-    ch_commands = 763409002913595412
-    ch_senior_mods = 878792926266810418
+    ch_commands = 951302915103002634
+    ch_senior_mods = 972955451232772136
     ch_moderators = 786068971048140820
-    ch_muted_chat = 808919081469739008
-    ch_mod_logs = 863177000372666398
+    ch_mod_logs = 951303017720852532
     ch_tutoring = 865716647083507733
-    ch_transcript_logs = 767434763337728030
-    ch_action_logs = 767206398060396574
-    ch_mod_commands = 786057630383865858
-    ch_control_panel = 843637802293788692
-    ch_start_private_vc = 784556875487248394
-    ch_announcements = 763121175764926464
-    ch_mod_announcements = 887780215789617202
-    ch_event_announcements = 951302954965692436
+    ch_transcript_logs = 951302924414378005
+    ch_action_logs = 951302919364431912
+    ch_mod_commands = 951302940264632360
+    ch_control_panel = 951302995008688158
+    ch_start_private_vc = 951302939237040198
+    ch_announcements = 951302912896815215
+    ch_mod_announcements = None
+    ch_event_announcements = None
 
     # *** Categories ***
     cat_casual = 951302852616286268
@@ -538,7 +537,7 @@ class TechID:
     ch_tracebacks = 851949397533392936
     ch_commission_logs = 849722616880300061
     ch_ticket_log = 872915565600182282
-    ch_bot_requests = 933181562885914724
+    ch_bot_requests = 996081550112342076
     ch_announcements = 934109939373314068
     ch_IT_announcements = 932066545587327000
     ch_web_announcements = 932487991958577152
