@@ -408,20 +408,20 @@ class MainID:
     ch_event_announcements = 951302954965692436
 
     # *** Categories ***
-    cat_casual = 763121170324783146
-    cat_community = 800163651805773824
-    cat_lounge = 774847738239385650
-    cat_events = 805299289604620328
-    cat_voice = 763857608964046899
-    cat_science_ticket = 800479815471333406
-    cat_fine_arts_ticket = 833210452758364210
-    cat_math_ticket = 800472371973980181
-    cat_social_studies_ticket = 800481237608824882
-    cat_english_ticket = 800475854353596469
-    cat_essay_ticket = 854945037875806220
-    cat_language_ticket = 800477414361792562
-    cat_other_ticket = 825917349558747166
-    cat_private_vc = 776988961087422515
+    cat_casual = 951302852616286268
+    cat_community = 951302861730480169
+    cat_lounge = 951302857959804968
+    cat_events = 951302867619315772
+    cat_voice = 951302854503702588
+    cat_science_ticket = 951302865027203073
+    cat_fine_arts_ticket = 951302868487524443
+    cat_math_ticket = 951302862862950430
+    cat_social_studies_ticket = 951302866520391680
+    cat_english_ticket = 951302864066740264
+    cat_essay_ticket = 951302871356411914
+    cat_language_ticket = 951601792913924166
+    cat_other_ticket = 951302868487524443
+    cat_private_vc = 951302858865770566
 
     # *** Roles ***
     r_coding_club = 883169286665936996
