@@ -7,7 +7,7 @@ import discord.utils
 import pytz
 from discord.ext import commands, tasks
 
-from core.common import Colors, ScheduleView, SetID
+from core.common import Colors, ScheduleView, DiscID
 from core.logging_module import get_log
 
 _log = get_log(__name__)
@@ -183,7 +183,7 @@ class SetScheduleCog(commands.Cog):
     ) -> None:
         if user_id in ["rachel", "ignore"] or isinstance(user_id, str):
             return
-        server = self.bot.get_guild(SetID.g_set)
+        server = self.bot.get_guild(DiscID.g_set)
         member = server.get_member(user_id)
         await member.send(embed=embed, view=ScheduleView(self.bot, task=_type))
         _log.info(f"Sent {member} reminder DM.")

@@ -36,7 +36,7 @@ class TutorBotStaffCMD(commands.Cog):
     def display_emoji(self) -> str:
         return Emoji.timmyTutoring
 
-    @command(name="view")
+    @command(name="view", description="View a session")
     @guilds(MainID.g_main, TutID.g_tut, PSID.g_ps)
     async def view(self, interaction: discord.Interaction, session_id: str = None):
         if session_id is None:
@@ -175,15 +175,6 @@ class TutorBotStaffCMD(commands.Cog):
         )
         await interaction.response.send_message(embed=embed)
 
-    @commands.command()
-    async def ticketdropdown(self, ctx):
-        view = DropdownView()
-        await ctx.send("Select a ticket via the dropdown here!:", view=view)
-        await view.wait()
-
-        dropdownclass = view.InteractionClass.values
-        await ctx.send(dropdownclass)
-
     @command(
         name="schedule",
         description="Create a Tutor Session",
@@ -256,7 +247,7 @@ class TutorBotStaffCMD(commands.Cog):
             )
             await interaction.response.send_message(embed=embed)
 
-    @commands.command(name="schedule")
+    """@commands.command(name="schedule")
     @commands.has_any_role("Tutor")
     async def schedule(
         self,
@@ -315,7 +306,7 @@ class TutorBotStaffCMD(commands.Cog):
                 f"sessions.",
                 color=discord.Color.red(),
             )
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed)"""
 
     @command(
         name="schedule",

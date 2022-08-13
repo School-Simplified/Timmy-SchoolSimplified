@@ -57,14 +57,20 @@ class AdminAPI(commands.Cog):
     def display_emoji(self) -> str:
         return Emoji.human_resources
 
-    @app_commands.command(
-        name="gsuite-create",
+    GS = app_commands.Group(
+        name="gsuite",
+        description="G-Suite Commands",
+        guild_ids=[HRID.g_hr],
+    )
+
+    @GS.command(
+        name="create",
         description="Create a GSuite Account",
     )
-    @app_commands.guilds(HRID.g_hr)
     @app_commands.describe(
         organizationunit="Select the organization unit this user will be in."
     )
+    @app_commands.checks.has_role(HRID.r_hr_staff)
     async def create_gsuite(
         self,
         interaction: discord.Interaction,
@@ -72,12 +78,6 @@ class AdminAPI(commands.Cog):
         lastname: str,
         organizationunit: Literal["Personal Account", "Team Account"],
     ):
-        HR_Role = discord.utils.get(interaction.user.guild.roles, id=HRID.r_hr_staff)
-        if HR_Role not in interaction.user.roles:
-            return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the required permissions to use this command."
-            )
-
         temppass = get_random_string()
         user = {
             "name": {
@@ -116,18 +116,12 @@ class AdminAPI(commands.Cog):
                 ephemeral=True,
             )
 
-    @app_commands.command(
-        name="gsuite-delete",
+    @GS.command(
+        name="delete",
         description="Suspend/Delete a GSuite Account",
     )
-    @app_commands.guilds(HRID.g_hr)
+    @app_commands.checks.has_role(HRID.r_hr_staff)
     async def delete_gsuite(self, interaction: discord.Interaction, email: str):
-        HR_Role = discord.utils.get(interaction.guild.roles, id=HRID.r_hr_staff)
-        if HR_Role not in interaction.user.roles:
-            return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the required permissions to use this command."
-            )
-
         try:
             service.users().delete(userKey=email).execute()
         except:
@@ -137,23 +131,17 @@ class AdminAPI(commands.Cog):
         else:
             await interaction.response.send_message("Successfully deleted the account.")
 
-    @app_commands.command(
-        name="gsuite-suspend",
+    @GS.command(
+        name="suspend",
         description="Suspend a GSuite Account",
     )
-    @app_commands.guilds(HRID.g_hr)
     @app_commands.describe(
         suspend="Select whether to suspend or restore the account. This field is required."
     )
+    @app_commands.checks.has_role(HRID.r_hr_staff)
     async def suspend_gsuite(
         self, interaction: discord.Interaction, email: str, suspend: bool
     ):
-        HR_Role = discord.utils.get(interaction.guild.roles, id=HRID.r_hr_staff)
-        if HR_Role not in interaction.user.roles:
-            return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the required permissions to use this command."
-            )
-
         if suspend is None:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} Please specify whether you want to suspend or restore the account."

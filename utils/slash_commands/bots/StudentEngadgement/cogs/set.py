@@ -7,7 +7,7 @@ from discord.app_commands import command, describe, Group, guilds, check
 from discord.ext import commands
 
 from core import database
-from core.common import MainID, SetID, Emoji
+from core.common import MainID, DiscID, Emoji
 
 if TYPE_CHECKING:
     from main import Timmy
@@ -45,7 +45,7 @@ def reload_blacklist():
 
 class SetSuggestBlacklist(Group):
     def __init__(self, bot: Timmy):
-        super().__init__(name="set_blacklist", guild_ids=[MainID.g_main, SetID.g_set])
+        super().__init__(name="set_blacklist", guild_ids=[MainID.g_main, DiscID.g_set])
         self.bot = bot
 
     @property
@@ -186,7 +186,7 @@ class Suggest(Group):
         )
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
         embed.set_image(url=art.url)
-        channel = self.bot.get_channel(SetID.ch_suggestions)
+        channel = self.bot.get_channel(DiscID.ch_suggestions)
         await channel.send(embed=embed)
 
     @command(name="general")
@@ -392,7 +392,7 @@ class SuggestModal(discord.ui.Modal):
             )
 
         channel: discord.abc.MessageableChannel = self.bot.get_channel(
-            SetID.ch_suggestions
+            DiscID.ch_suggestions
         )
         await channel.send(embed=embed)
 
@@ -440,7 +440,7 @@ class Engagement(commands.Cog):
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
         embed.set_image(url=file.url)
         await interaction.response.send_message("Submitted! Congrats!!")
-        channel = self.bot.get_channel(SetID.ch_college_acceptance)
+        channel = self.bot.get_channel(DiscID.ch_college_acceptance)
         await channel.send(embed=embed)
 
     @command(name="puzzle-guess")
@@ -460,7 +460,7 @@ class Engagement(commands.Cog):
         await interaction.response.send_message(
             "Your guess has been submitted!", ephemeral=True
         )
-        guess_channel = self.bot.get_channel(SetID.ch_puzzle)
+        guess_channel = self.bot.get_channel(DiscID.ch_puzzle)
         await guess_channel.send(embed=embed)
 
 
