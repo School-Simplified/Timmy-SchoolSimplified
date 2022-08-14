@@ -531,12 +531,12 @@ class TechID:
     """
 
     # *** Guilds ***
-    g_tech = 805593783684562965
+    g_tech = 932066545117585428
 
     # *** Channels ***
-    ch_tracebacks = 851949397533392936
-    ch_commission_logs = 849722616880300061
-    ch_ticket_log = 872915565600182282
+    ch_tracebacks = 932500082362830899
+    ch_commission_logs = 932066546052911154
+    ch_ticket_log = 942243742449041529
     ch_bot_requests = 996081550112342076
     ch_announcements = 934109939373314068
     ch_IT_announcements = 932066545587327000
@@ -691,10 +691,10 @@ class TutID:
     """
 
     # *** Guilds ***
-    g_tut = 860897711334621194
+    g_tut = 950795656853876806
 
     # *** Channels ***
-    ch_bot_commands = 862480236965003275
+    ch_bot_commands = 950795657273294962
     ch_hour_logs = 953454389652226068
     ch_announcements = 861711851330994247
     ch_leadership_announcements = 861712109757530112
