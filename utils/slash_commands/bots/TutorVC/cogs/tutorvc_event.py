@@ -171,7 +171,7 @@ class TutorVCUpdate(commands.Cog):
                     .get()
                 )
                 iq.delete_instance()
-                return _log.ingo("Ignore Channel")
+                return _log.info("Ignore Channel")
 
             if query.exists() and before.channel.category.id in self.categoryIDs:
                 query = (
@@ -197,7 +197,7 @@ class TutorVCUpdate(commands.Cog):
                         color=discord.Colour.red(),
                     )
 
-                    if member in lobbyStart.members:
+                    if member in lobby_start.members:
                         try:
                             await member.move_to(
                                 tutorChannel, reason="Hogging the VC Start Channel."
@@ -331,7 +331,7 @@ class TutorVCUpdate(commands.Cog):
                         else:
                             pass
                 else:
-                   pass
+                    pass
 
         if (
             after.channel is not None
