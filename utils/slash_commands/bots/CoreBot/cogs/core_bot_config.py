@@ -5,6 +5,7 @@ from threading import Thread
 from typing import Literal
 
 import discord
+from discord import app_commands
 from discord.app_commands import command
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -15,7 +16,7 @@ from core.checks import (
     is_botAdmin2,
     is_botAdmin3,
     is_botAdmin4,
-    slash_is_bot_admin_2,
+    slash_is_bot_admin_2, slash_is_bot_admin_4, slash_is_bot_admin_3, slash_is_bot_admin,
 )
 from core.common import CheckDB_CC
 from core.common import Emoji, Colors
@@ -42,28 +43,49 @@ class CoreBotConfig(commands.Cog):
     def display_emoji(self) -> str:
         return "⚙️"
 
-    @commands.group(aliases=["f"])
-    async def filters(self, ctx):
-        pass
+    FL = app_commands.Group(
+        name="filter-config",
+        description="Configure the bots filter settings.",
+    )
 
-    @commands.command()
-    @is_botAdmin4
-    async def Fmodify(self, ctx, num: int, val: bool):
+    PM = app_commands.Group(
+        name="permit",
+        description="Configure the bots permit settings.",
+    )
+
+    PRE = app_commands.Group(
+        name="whitelisted-prefixes",
+        description="Configure the bots whitelisted prefixes.",
+    )
+
+    @FL.command(name="modify", description="Modify the filter settings.")
+    @app_commands.describe(filter="Filter to modify.", val="Value to set the filter to.")
+    @slash_is_bot_admin_4()
+    async def Fmodify(self, interaction: discord.Interaction, filter: Literal[
+            "CheckDB.MasterMaintenance",
+            "CheckDB.guildNone",
+            "CheckDB.externalGuild",
+            "CheckDB.ModRoleBypass",
+            "CheckDB.ruleBypass",
+            "CheckDB.publicCategories",
+            "CheckDB.elseSituation"],
+                      val: bool):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
             .where(database.CheckInformation.id == 1)
             .get()
         )
 
-        databaseValues = {
-            1: "CheckDB.MasterMaintenance",
-            2: "CheckDB.guildNone",
-            3: "CheckDB.externalGuild",
-            4: "CheckDB.ModRoleBypass",
-            5: "CheckDB.ruleBypass",
-            6: "CheckDB.publicCategories",
-            7: "CheckDB.elseSituation",
+        database_values = {
+            "CheckDB.MasterMaintenance": 1,
+            "CheckDB.guildNone": 2,
+            "CheckDB.externalGuild": 3,
+            "CheckDB.ModRoleBypass": 4,
+            "CheckDB.ruleBypass": 5,
+            "CheckDB.publicCategories": 6,
+            "CheckDB.elseSituation": 7,
         }
+        num=database_values[filter]
 
         if num == 1:
             CheckDB.MasterMaintenance = val
@@ -87,12 +109,13 @@ class CoreBotConfig(commands.Cog):
             CheckDB.elseSituation = val
             CheckDB.save()
         else:
-            return await ctx.send(f"Not a valid option\n```py\n{databaseValues}\n```")
+            return await interaction.response.send_message(f"Not a valid option\n```py\n{filter}\n```")
 
-        await ctx.send(f"Field: {databaseValues[num]} has been set to {str(val)}")
+        await interaction.response.send_message(f"Field: {filter} has been set to {str(val)}")
 
-    @filters.command()
-    async def list(self, ctx):
+    @FL.command(description="View the filter settings.")
+    @slash_is_bot_admin_3()
+    async def list(self, interaction: discord.Interaction):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
             .where(database.CheckInformation.id == 1)
@@ -114,34 +137,32 @@ class CoreBotConfig(commands.Cog):
             f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB_CC.public_categories}"
             f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB_CC.else_situation}",
         )
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-    @commands.group(aliases=["pre"])
-    async def prefix(self, ctx):
-        pass
-
-    @prefix.command()
-    @is_botAdmin3
-    async def delete(self, ctx, num: int):
+    @PRE.command(description="Delete a whitelisted prefix.")
+    @app_commands.describe(prefix="Prefix to delete.")
+    @slash_is_bot_admin_3()
+    async def delete(self, interaction: discord.Interaction, prefix: str):
         WhitelistedPrefix: database.WhitelistedPrefix = (
             database.WhitelistedPrefix.select()
-            .where(database.WhitelistedPrefix.id == num)
+            .where(database.WhitelistedPrefix.prefix == prefix)
             .get()
         )
         WhitelistedPrefix.delete_instance()
-        await ctx.send(f"Field: {WhitelistedPrefix.prefix} has been deleted")
+        await interaction.response.send_message(f"Field: {WhitelistedPrefix.prefix} has been deleted")
 
-    @prefix.command()
-    @is_botAdmin3
-    async def add(self, ctx, prefix):
+    @PRE.command(description="Add a whitelisted prefix.")
+    @app_commands.describe(prefix="Prefix to add.")
+    @slash_is_bot_admin_3()
+    async def add(self, interaction: discord.Interaction, prefix: str):
         WhitelistedPrefix = database.WhitelistedPrefix.create(
             prefix=prefix, status=True
         )
-        await ctx.send(f"Field: {WhitelistedPrefix.prefix} has been added!")
+        await interaction.response.send_message(f"Field: {WhitelistedPrefix.prefix} has been added!")
 
-    @prefix.command()
-    async def list(self, ctx):
-
+    @PRE.command(description="View the whitelisted prefixes.")
+    @slash_is_bot_admin_3()
+    async def list(self, interaction: discord.Interaction):
         PrefixDB = database.WhitelistedPrefix
         response = []
 
@@ -160,7 +181,7 @@ class CoreBotConfig(commands.Cog):
             color=discord.Colour.gold(),
         )
         embed.add_field(name="Prefix List", value="\n\n".join(response))
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.group(aliases=["cog"])
     @is_botAdmin2
@@ -316,7 +337,7 @@ class CoreBotConfig(commands.Cog):
         if mode == "-a":
             await force_restart(ctx, directory)
         elif mode == "-c":
-            await ctx.invoke(self.bot.get_command("tickets reload"), ext="all")
+            await ctx.invoke(self.bot.get_command("jsk reload"), ext="all")
 
     @command()
     @slash_is_bot_admin_2()
@@ -406,13 +427,9 @@ class CoreBotConfig(commands.Cog):
         if sync_commands:
             await self.bot.tree.sync()
 
-    @commands.group()
-    async def w(self, ctx):
-        pass
-
-    @w.command()
-    @is_botAdmin
-    async def list(self, ctx):
+    @PM.command(description="Lists all permit levels and users.")
+    @slash_is_bot_admin()
+    async def list(self, interaction: discord.Interaction):
         adminList = []
 
         query1 = database.Administrators.select().where(
@@ -491,15 +508,18 @@ class CoreBotConfig(commands.Cog):
             text="Only Owners/Permit 4's can modify Bot Administrators. | Permit 4 is the HIGHEST Authorization Level"
         )
 
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-    @w.command()
-    @is_botAdmin4
-    async def remove(self, ctx, ID: discord.User):
+    @PM.command(description="Remove a user from the Bot Administrators list.")
+    @app_commands.describe(
+        user="The user to remove from the Bot Administrators list.",
+    )
+    @slash_is_bot_admin_4()
+    async def remove(self, interaction: discord.Interaction, user: discord.User):
         database.db.connect(reuse_if_open=True)
 
         query = database.Administrators.select().where(
-            database.Administrators.discordID == ID.id
+            database.Administrators.discordID == user.id
         )
         if query.exists():
             query = query.get()
@@ -508,10 +528,10 @@ class CoreBotConfig(commands.Cog):
 
             embed = discord.Embed(
                 title="Successfully Removed User!",
-                description=f"{ID.name} has been removed from the database!",
+                description=f"{user.name} has been removed from the database!",
                 color=discord.Color.green(),
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         else:
             embed = discord.Embed(
@@ -519,26 +539,27 @@ class CoreBotConfig(commands.Cog):
                 description="Invalid Provided: (No Record Found)",
                 color=discord.Color.red(),
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         database.db.close()
 
-    @w.command()
-    @is_botAdmin4
-    async def add(self, ctx, ID: discord.User, level: int):
+    @PM.command(description="Add a user to the Bot Administrators list.")
+    @app_commands.describe(
+        user="The user to add to the Bot Administrators list.",
+    )
+    @slash_is_bot_admin_4()
+    async def add(self, interaction: discord.Interaction, user: discord.User, level: int):
         database.db.connect(reuse_if_open=True)
-
         q: database.Administrators = database.Administrators.create(
-            discordID=ID.id, TierLevel=level
+            discordID=user.id, TierLevel=level
         )
         q.save()
-
         embed = discord.Embed(
             title="Successfully Added User!",
-            description=f"{ID.name} has been added successfully with permit level `{str(level)}`.",
+            description=f"{user.name} has been added successfully with permit level `{str(level)}`.",
             color=discord.Color.gold(),
         )
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
         database.db.close()
 

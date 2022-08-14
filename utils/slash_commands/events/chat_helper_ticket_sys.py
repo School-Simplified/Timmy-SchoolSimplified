@@ -930,9 +930,10 @@ class DropdownTickets(commands.Cog):
                     f"{author.mention} Alright, canceling request.", delete_after=5.0
                 )
             except Exception:
-                await interaction.followup.send(
-                    f"{author.mention} Alright, canceling request.", delete_after=5.0
+                msg: discord.WebhookMessage = await interaction.followup.send(
+                    f"{author.mention} Alright, canceling request."
                 )
+                await msg.delete(delay=5.0)
             await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_R":

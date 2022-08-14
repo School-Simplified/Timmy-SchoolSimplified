@@ -139,10 +139,16 @@ class Timmy(commands.Bot):
 
     @property
     def version(self):
+        """
+        Returns the current version of the bot.
+        """
         return __version__
 
     @property
     def start_time(self):
+        """
+        Returns the time the bot was started.
+        """
         return self._start_time
 
 

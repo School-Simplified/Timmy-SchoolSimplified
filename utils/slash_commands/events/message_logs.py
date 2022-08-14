@@ -12,8 +12,7 @@ class MessageLogs(commands.Cog):
         self.bot = bot
         self.channels = [
             MainID.ch_senior_mods,
-            MainID.ch_moderators,
-            MainID.ch_muted_chat,
+            MainID.ch_moderators
         ]
 
     @commands.Cog.listener()

@@ -45,7 +45,7 @@ def reload_blacklist():
 
 class SetSuggestBlacklist(Group):
     def __init__(self, bot: Timmy):
-        super().__init__(name="set_blacklist", guild_ids=[MainID.g_main, DiscID.g_set])
+        super().__init__(name="set_blacklist", guild_ids=[MainID.g_main, DiscID.g_disc])
         self.bot = bot
 
     @property
@@ -426,7 +426,8 @@ class Engagement(commands.Cog):
             await self.bot.remove_cog("AnnoyRachel")
         await ctx.send(":thumbsup:")
 
-    @command(name="acceptance-letter")
+    # NOTE: Not used anymore.
+    """@command(name="acceptance-letter")
     @spammer_check()
     @guilds(MainID.g_main)
     async def _college_accept(
@@ -441,7 +442,7 @@ class Engagement(commands.Cog):
         embed.set_image(url=file.url)
         await interaction.response.send_message("Submitted! Congrats!!")
         channel = self.bot.get_channel(DiscID.ch_college_acceptance)
-        await channel.send(embed=embed)
+        await channel.send(embed=embed)"""
 
     @command(name="puzzle-guess")
     @spammer_check()

@@ -4,6 +4,7 @@ import asyncio
 import io
 import json
 import os
+import psutil
 import random
 import re
 import string
@@ -108,7 +109,7 @@ async def raw_export(channel, response, user: discord.User):
 
 async def paginate_embed(
     bot: discord.Client,
-    ctx: discord.Interaction,
+    ctx: commands.Context,
     embed: discord.Embed,
     population_func,
     end: int,
@@ -118,13 +119,13 @@ async def paginate_embed(
     emotes = ["◀️", "▶️"]
 
     def check_reaction(reaction, user):
-        return user == ctx.user and str(reaction.emoji) in emotes
+        return user == ctx.author and str(reaction.emoji) in emotes
 
     embed = await population_func(embed, page)
     if isinstance(embed, discord.Embed):
-        message = await ctx.channel.send(embed=embed)
+        message = await ctx.send(embed=embed)
     else:
-        await ctx.channel.send(str(type(embed)))
+        await ctx.send(str(type(embed)))
         return
 
     await message.add_reaction(emotes[0])
@@ -391,36 +392,35 @@ class MainID:
     g_main = 763119924385939498
 
     # *** Text Channels ***
-    ch_commands = 763409002913595412
-    ch_senior_mods = 878792926266810418
+    ch_commands = 951302915103002634
+    ch_senior_mods = 972955451232772136
     ch_moderators = 786068971048140820
-    ch_muted_chat = 808919081469739008
-    ch_mod_logs = 863177000372666398
+    ch_mod_logs = 951303017720852532
     ch_tutoring = 865716647083507733
-    ch_transcript_logs = 767434763337728030
-    ch_action_logs = 767206398060396574
-    ch_mod_commands = 786057630383865858
-    ch_control_panel = 843637802293788692
-    ch_start_private_vc = 784556875487248394
-    ch_announcements = 763121175764926464
-    ch_mod_announcements = 887780215789617202
-    ch_event_announcements = 951302954965692436
+    ch_transcript_logs = 951302924414378005
+    ch_action_logs = 951302919364431912
+    ch_mod_commands = 951302940264632360
+    ch_control_panel = 951302995008688158
+    ch_start_private_vc = 951302939237040198
+    ch_announcements = 951302912896815215
+    ch_mod_announcements = None
+    ch_event_announcements = None
 
     # *** Categories ***
-    cat_casual = 763121170324783146
-    cat_community = 800163651805773824
-    cat_lounge = 774847738239385650
-    cat_events = 805299289604620328
-    cat_voice = 763857608964046899
-    cat_science_ticket = 800479815471333406
-    cat_fine_arts_ticket = 833210452758364210
-    cat_math_ticket = 800472371973980181
-    cat_social_studies_ticket = 800481237608824882
-    cat_english_ticket = 800475854353596469
-    cat_essay_ticket = 854945037875806220
-    cat_language_ticket = 800477414361792562
-    cat_other_ticket = 825917349558747166
-    cat_private_vc = 776988961087422515
+    cat_casual = 951302852616286268
+    cat_community = 951302861730480169
+    cat_lounge = 951302857959804968
+    cat_events = 951302867619315772
+    cat_voice = 951302854503702588
+    cat_science_ticket = 951302865027203073
+    cat_fine_arts_ticket = 951302868487524443
+    cat_math_ticket = 951302862862950430
+    cat_social_studies_ticket = 951302866520391680
+    cat_english_ticket = 951302864066740264
+    cat_essay_ticket = 951302871356411914
+    cat_language_ticket = 951601792913924166
+    cat_other_ticket = 951302868487524443
+    cat_private_vc = 951302858865770566
 
     # *** Roles ***
     r_coding_club = 883169286665936996
@@ -537,7 +537,7 @@ class TechID:
     ch_tracebacks = 851949397533392936
     ch_commission_logs = 849722616880300061
     ch_ticket_log = 872915565600182282
-    ch_bot_requests = 933181562885914724
+    ch_bot_requests = 996081550112342076
     ch_announcements = 934109939373314068
     ch_IT_announcements = 932066545587327000
     ch_web_announcements = 932487991958577152
@@ -802,6 +802,7 @@ class LeaderID:
 class DiscID:
     """
     IDs of the SS Discovery Multidivision Server
+
     NOTE: If you want to add IDs, please use the format as below.
     Format:
         g: discord.Guild
@@ -1325,6 +1326,18 @@ async def id_generator(size=3, chars=string.ascii_uppercase):
             return ID
 
 
+def get_pid(port: int):
+    connections = psutil.net_connections()
+    for con in connections:
+        if con.raddr != tuple():
+            if con.raddr.port == port:
+                return con.pid, con.status
+        if con.laddr != tuple():
+            if con.laddr.port == port:
+                return con.pid, con.status
+    return -1
+
+
 async def force_restart(ctx, main_or_beta):
     p = subprocess.run(
         "git status -uno", shell=True, text=True, capture_output=True, check=True
@@ -1340,9 +1353,13 @@ async def force_restart(ctx, main_or_beta):
     )
 
     msg = await ctx.send(embed=embed)
+    true_dir = {
+        "TimmyBeta-SS": "timmy-beta",
+        "TimmyMain-SS": "timmya",
+    }
     try:
         result = subprocess.run(
-            f"cd && cd {main_or_beta}",
+            f"sudo /home/{true_dir[main_or_beta]}/timmystart.sh",
             shell=True,
             text=True,
             capture_output=True,
@@ -1373,7 +1390,13 @@ async def force_restart(ctx, main_or_beta):
             inline=False,
         )
         await msg.edit(embed=embed)
-        sys.exit(0)
+        pid = get_pid(80)
+        if pid != -1:
+            p = psutil.Process(pid[0])
+            p.terminate()
+        else:
+            await ctx.send("Port 80 not found...")
+
 
 
 def get_host_dir():

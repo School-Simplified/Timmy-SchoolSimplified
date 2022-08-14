@@ -183,7 +183,7 @@ class SetScheduleCog(commands.Cog):
     ) -> None:
         if user_id in ["rachel", "ignore"] or isinstance(user_id, str):
             return
-        server = self.bot.get_guild(DiscID.g_set)
+        server = self.bot.get_guild(DiscID.g_disc)
         member = server.get_member(user_id)
         await member.send(embed=embed, view=ScheduleView(self.bot, task=_type))
         _log.info(f"Sent {member} reminder DM.")
