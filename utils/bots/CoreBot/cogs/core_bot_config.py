@@ -12,10 +12,7 @@ from dotenv import load_dotenv
 
 from core import database
 from core.checks import (
-    is_botAdmin,
     is_botAdmin2,
-    is_botAdmin3,
-    is_botAdmin4,
     slash_is_bot_admin_2, slash_is_bot_admin_4, slash_is_bot_admin_3, slash_is_bot_admin,
 )
 from core.common import CheckDB_CC

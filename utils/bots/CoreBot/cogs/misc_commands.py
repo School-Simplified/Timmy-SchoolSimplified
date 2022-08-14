@@ -9,23 +9,19 @@ import psutil
 from discord import app_commands, ui
 from discord.ext import commands
 from dotenv import load_dotenv
-from google.cloud import texttospeech
 from sentry_sdk import Hub
 
 from core import database
-from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3, slash_is_bot_admin
+from core.checks import is_botAdmin, is_botAdmin2, slash_is_bot_admin
 from core.common import (
-    TechID,
     Emoji,
-    SelectMenuHandler,
     Colors,
     Others,
     MainID,
-    LeaderID, StaffID, ButtonHandler,
+    StaffID, ButtonHandler,
 )
 from core.logging_module import get_log
 from utils.bots.TicketSystem.view_models import NitroConfirmFake
-from core.common import access_secret
 
 if TYPE_CHECKING:
      from main import Timmy

@@ -2,8 +2,8 @@ import os
 import time
 
 import psutil
-from discord.ext import tasks, commands
 import requests
+from discord.ext import tasks, commands
 
 from core.common import get_host_dir
 from core.logging_module import get_log

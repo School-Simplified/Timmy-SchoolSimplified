@@ -16,8 +16,6 @@ import sentry_sdk
 from discord import app_commands
 from discord.ext import commands
 
-from core.logging_module import get_log
-from utils.bots.TicketSystem.tickets.web_commissions import CommissionWebButton
 from core import database
 from core.common import (
     ConsoleColors,
@@ -28,11 +26,13 @@ from core.common import (
     CheckDB_CC,
     Emoji,
 )
+from core.gh_modals import FeedbackButton
+from core.logging_module import get_log
+from utils.bots.TicketSystem.tickets.bot_dev_tickets import CommissionTechButton
+from utils.bots.TicketSystem.tickets.web_commissions import CommissionWebButton
 from utils.bots.TicketSystem.view_models import create_ui_modal_class, create_ticket_button, HREmailConfirm, \
     MGMCommissionButton, \
     EmailDropdown, LockButton, GSuiteVerify, RecruitmentButton, create_no_form_button
-from core.gh_modals import FeedbackButton
-from utils.bots.TicketSystem.tickets.bot_dev_tickets import CommissionTechButton
 from utils.events.chat_helper_ticket_sys import TicketButton
 
 if TYPE_CHECKING:

@@ -12,8 +12,8 @@ from core.common import (
     Others,
     load_config,
 )
-from core.special_methods import VerifyButton
 from core.logging_module import get_log
+from core.special_methods import VerifyButton
 
 _log = get_log(__name__)
 

@@ -4,7 +4,6 @@ import asyncio
 import io
 import json
 import os
-import psutil
 import random
 import re
 import string
@@ -28,6 +27,7 @@ import boto3
 import chat_exporter
 import configcatclient
 import discord
+import psutil
 import requests
 from botocore.exceptions import ClientError
 from discord import ButtonStyle, SelectOption, ui

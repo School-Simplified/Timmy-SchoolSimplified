@@ -1,13 +1,11 @@
-from typing import Literal
+from datetime import datetime
 
 import discord
-from discord import ui, app_commands
-from discord.ext import commands, tasks
+from discord import ui
+from discord.ext import commands
 
 from core import database
-from core.checks import is_botAdmin, slash_is_bot_admin_3
 from core.common import TechID, Emoji, StaffID, ButtonHandler
-from datetime import datetime
 
 
 class WebRequestModal(ui.Modal, title="Web Development Request"):

@@ -1,6 +1,8 @@
+import asyncio
+
 import discord
 from discord.ext import commands
-import asyncio
+
 from core.logging_module import get_log
 
 _log = get_log(__name__)

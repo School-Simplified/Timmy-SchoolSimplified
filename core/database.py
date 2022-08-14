@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 from distutils.util import strtobool
-from core.logging_module import get_log
 
 from dotenv import load_dotenv
 from flask import Flask
@@ -17,6 +16,8 @@ from peewee import (
     SqliteDatabase,
     TextField,
 )
+
+from core.logging_module import get_log
 
 load_dotenv()
 _log = get_log(__name__)

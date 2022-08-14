@@ -5,7 +5,7 @@ from discord import ui, app_commands
 from discord.ext import commands, tasks
 
 from core import database
-from core.checks import is_botAdmin, slash_is_bot_admin_3
+from core.checks import slash_is_bot_admin_3
 from core.common import TechID, Emoji, StaffID
 
 
