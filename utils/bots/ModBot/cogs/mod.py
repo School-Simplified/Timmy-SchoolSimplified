@@ -29,7 +29,7 @@ class PunishmentTag(commands.Cog):
 
     PT = app_commands.Group(
         name="punishment-tags",
-        description="",
+        description="Manage the punishment tags",
         guild_ids=[MainID.g_main, DiscID.g_disc],
     )
 
