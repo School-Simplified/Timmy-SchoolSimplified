@@ -185,6 +185,7 @@ class AdminAPI(commands.Cog):
         discord.Object(824421093015945216),
         discord.Object(815753072742891532),
         discord.Object(891521033700540457),
+        discord.Object(1006787368839286866)
     )
     @app_commands.describe(
         user="Select the user you want to promote.",
@@ -306,6 +307,7 @@ class AdminAPI(commands.Cog):
         discord.Object(824421093015945216),
         discord.Object(815753072742891532),
         discord.Object(891521033700540457),
+        discord.Object(1006787368839286866)
     )
     @app_commands.describe(
         user="Select the user you want to fire.",
@@ -446,6 +448,7 @@ class AdminAPI(commands.Cog):
         discord.Object(824421093015945216),
         discord.Object(815753072742891532),
         discord.Object(891521033700540457),
+        discord.Object(1006787368839286866)
     )
     @app_commands.describe(
         user="Select the user you want to censure.",
@@ -583,6 +586,7 @@ class AdminAPI(commands.Cog):
         discord.Object(824421093015945216),
         discord.Object(815753072742891532),
         discord.Object(891521033700540457),
+        discord.Object(1006787368839286866)
     )
     @app_commands.describe(
         user="Select the user you want to strike.",
@@ -737,6 +741,7 @@ class AdminAPI(commands.Cog):
         discord.Object(824421093015945216),
         discord.Object(815753072742891532),
         discord.Object(891521033700540457),
+        discord.Object(1006787368839286866)
     )
     @app_commands.describe(
         team="Identify the teams you are in/want to take a break from.",
@@ -864,6 +869,7 @@ class AdminAPI(commands.Cog):
         discord.Object(824421093015945216),
         discord.Object(815753072742891532),
         discord.Object(891521033700540457),
+        discord.Object(1006787368839286866)
     )
     @app_commands.describe(
         team="Identify the team(s) want to resign from.",
@@ -986,6 +992,7 @@ class AdminAPI(commands.Cog):
         discord.Object(824421093015945216),
         discord.Object(815753072742891532),
         discord.Object(891521033700540457),
+        discord.Object(1006787368839286866)
     )
     @app_commands.describe(
         suggestion="Enter the suggestion you want to make.",
@@ -1101,6 +1108,7 @@ class AdminAPI(commands.Cog):
         discord.Object(815753072742891532),
         discord.Object(891521033700540457),
         discord.Object(763119924385939498),
+        discord.Object(1006787368839286866)
     )
     @app_commands.describe(
         user="Who is the user you wish to submit a complaint about?",
@@ -1227,6 +1235,7 @@ class AdminAPI(commands.Cog):
         discord.Object(824421093015945216),
         discord.Object(815753072742891532),
         discord.Object(891521033700540457),
+        discord.Object(1006787368839286866)
     )
     @app_commands.describe(
         team="Enter the team(s) you want to request CS hours for.",
