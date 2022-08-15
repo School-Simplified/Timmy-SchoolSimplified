@@ -545,7 +545,7 @@ async def on_app_command_error_(
 
 
 async def on_command_(bot: Timmy, ctx: commands.Context):
-    if ctx.command.name == "sync":
+    if ctx.command.name in ["sync", "ping", "kill"]:
         return
 
     await ctx.reply(f":x: This command usage is deprecated. Use the equivalent slash command by using `/{ctx.command.name}` instead.")

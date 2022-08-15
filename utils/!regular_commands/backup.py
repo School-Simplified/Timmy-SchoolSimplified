@@ -205,7 +205,6 @@ class BackupRegularCommands(commands.Cog):
 
         database.db.close()
 
-    # BACKUP
     @commands.command()
     @is_botAdmin2
     async def kill(self, ctx):
