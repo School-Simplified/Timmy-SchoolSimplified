@@ -26,6 +26,9 @@ from utils.bots.TicketSystem.view_models import NitroConfirmFake
 if TYPE_CHECKING:
      from main import Timmy
 
+if TYPE_CHECKING:
+    from main import Timmy
+
 _log = get_log(__name__)
 
 

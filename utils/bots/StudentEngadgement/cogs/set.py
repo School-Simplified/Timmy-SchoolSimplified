@@ -426,23 +426,24 @@ class Engagement(commands.Cog):
             await self.bot.remove_cog("AnnoyRachel")
         await ctx.send(":thumbsup:")
 
-    # NOTE: Not used anymore.
-    """@command(name="acceptance-letter")
-    @spammer_check()
-    @guilds(MainID.g_main)
-    async def _college_accept(
-        self, interaction: discord.Interaction, file: discord.Attachment
-    ):
-        embed = discord.Embed(
-            title="College Acceptance Letter",
-            color=0xA4D1DE,
-            timestamp=discord.utils.utcnow(),
-        )
-        embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
-        embed.set_image(url=file.url)
-        await interaction.response.send_message("Submitted! Congrats!!")
-        channel = self.bot.get_channel(DiscID.ch_college_acceptance)
-        await channel.send(embed=embed)"""
+    # NOT NEEDED
+    #
+    # @command(name="acceptance-letter")
+    # @spammer_check()
+    # @guilds(MainID.g_main)
+    # async def _college_accept(
+    #     self, interaction: discord.Interaction, file: discord.Attachment
+    # ):
+    #     embed = discord.Embed(
+    #         title="College Acceptance Letter",
+    #         color=0xA4D1DE,
+    #         timestamp=discord.utils.utcnow(),
+    #     )
+    #     embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
+    #     embed.set_image(url=file.url)
+    #     await interaction.response.send_message("Submitted! Congrats!!")
+    #     channel = self.bot.get_channel(DiscID.ch_college_acceptance)
+    #     await channel.send(embed=embed)
 
     @command(name="puzzle-guess")
     @spammer_check()

@@ -4,6 +4,7 @@ import asyncio
 import io
 import json
 import os
+import psutil
 import random
 import re
 import string
