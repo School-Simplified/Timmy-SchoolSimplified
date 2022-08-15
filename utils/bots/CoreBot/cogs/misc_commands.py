@@ -370,7 +370,8 @@ class MiscCMD(commands.Cog):
                 f"{interaction.user.mention} {user.mention} has been unbanned from {roleName[1]}."
             )
 
-    @app_commands.command()
+    @app_commands.command(name="ping", description="Pong!")
+    @app_commands.guilds(MainID.g_main)
     async def ping(self, interaction: discord.Interaction):
         database.db.connect(reuse_if_open=True)
 

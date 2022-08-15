@@ -43,14 +43,6 @@ class DeprecatedRegularCommands(commands.Cog):
         return
 
     @commands.command()
-    async def pingmasa(self, ctx):
-        return
-
-    @commands.command()
-    async def join(self, ctx):
-        return
-
-    @commands.command()
     async def help(self, ctx):
         return
 
