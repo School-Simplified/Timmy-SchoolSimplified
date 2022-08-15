@@ -444,6 +444,10 @@ async def on_app_command_error_(
             "You cannot run this command!", ephemeral=True
         )
 
+
+    elif isinstance(error, app_commands.CommandNotFound):
+        await interaction.response.send_message(f"Command /{interaction.command.name} not found.")
+
     else:
         error_file = Path("error.txt")
         error_file.touch()
