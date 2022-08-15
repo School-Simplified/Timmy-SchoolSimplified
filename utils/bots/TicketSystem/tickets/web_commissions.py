@@ -66,7 +66,7 @@ class WebRequestModal(ui.Modal, title="Web Development Request"):
     async def on_submit(self, interaction: discord.Interaction):
         mgm_server = self.bot.get_guild(StaffID.g_staff_resources)
         ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_cs_hours_tickets
+            mgm_server.categories, id=StaffID.cat_web_requests
         )
         member = interaction.guild.get_member(interaction.user.id)
 

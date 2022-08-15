@@ -495,6 +495,8 @@ class StaffID:
     cat_QnA_tickets = 956017871585169408
     cat_design_tickets = 996164727745020085
 
+    cat_web_requests = 994409468202848257
+
     # *** Roles ***
     r_director = 891521034333880416
     r_SS_digital_committee = 898772246808637541
