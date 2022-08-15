@@ -18,7 +18,15 @@ from core.common import (
     Colors,
     Others,
     MainID,
-    StaffID, ButtonHandler,
+    StaffID,
+    TechID,
+    ChID,
+    TutID,
+    HRID,
+    MktID,
+    DiscID,
+    LeaderID,
+    ButtonHandler,
 )
 from core.logging_module import get_log
 from utils.bots.TicketSystem.view_models import NitroConfirmFake
@@ -371,7 +379,8 @@ class MiscCMD(commands.Cog):
             )
 
     @app_commands.command(name="ping", description="Pong!")
-    @app_commands.guilds(MainID.g_main)
+    @app_commands.guilds(MainID.g_main, TechID.g_tech, ChID.g_ch, TutID.g_tut, MktID.g_mkt,
+                         LeaderID.g_leader, LeaderID.g_staff_resources, DiscID.g_disc, HRID.g_hr)
     async def ping(self, interaction: discord.Interaction):
         database.db.connect(reuse_if_open=True)
 
