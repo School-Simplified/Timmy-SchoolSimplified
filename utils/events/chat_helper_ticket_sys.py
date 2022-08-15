@@ -7,15 +7,16 @@ from datetime import datetime, timedelta
 from io import BytesIO
 
 import chat_exporter
-import discord
 import gspread
 import pytz
+import discord
+from discord import app_commands
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from pytz import timezone
 
 from core import database
-from core.checks import is_botAdmin
+from core.checks import slash_is_bot_admin
 from core.common import (
     ChID,
     TutID,
@@ -1133,10 +1134,11 @@ class DropdownTickets(commands.Cog):
             await channel.delete()
             query.delete_instance()
 
-    @commands.command()
-    async def close(self, ctx: commands.Context):
+    @app_commands.command(name="close", description="Close a chat helper ticket")
+    @app_commands.guilds(MainID.g_main)
+    async def close(self, interaction: discord.Interaction):
         query = database.TicketInfo.select().where(
-            database.TicketInfo.ChannelID == ctx.channel.id
+            database.TicketInfo.ChannelID == interaction.channel_id
         )
         if query.exists():
             query = query.get()
@@ -1152,7 +1154,7 @@ class DropdownTickets(commands.Cog):
                     label="Confirm",
                     custom_id="ch_lock_CONFIRM",
                     emoji="✅",
-                    button_user=ctx.author,
+                    button_user=interaction.user,
                 )
             )
             ButtonViews.add_item(
@@ -1161,12 +1163,12 @@ class DropdownTickets(commands.Cog):
                     label="Cancel",
                     custom_id="ch_lock_CANCEL",
                     emoji="❌",
-                    button_user=ctx.author,
+                    button_user=interaction.user,
                 )
             )
-            await ctx.send(f"{ctx.author.mention}\n", embed=embed, view=ButtonViews)
+            await interaction.response.send_message(f"{interaction.user.mention}\n", embed=embed, view=ButtonViews)
         else:
-            await ctx.send("Not a ticket.")
+            await interaction.response.send_message("Not a ticket.", ephemeral=True)
 
     @tasks.loop(minutes=1.0)
     async def TicketInactive(self):
@@ -1266,9 +1268,10 @@ class DropdownTickets(commands.Cog):
     async def before_loop_(self):
         await self.bot.wait_until_ready()
 
-    @commands.command()
-    @is_botAdmin
-    async def sendCHTKTView(self, ctx):
+    @app_commands.command(name="send-chticket-view", description="Send chat helper ticket view")
+    @app_commands.guilds(MainID.g_main)
+    @slash_is_bot_admin()
+    async def sendCHTKTView(self, interaction: discord.Interaction):
         MasterSubjectView = discord.ui.View()
         MasterSubjectView.add_item(
             SelectMenuHandler(
@@ -1281,7 +1284,7 @@ class DropdownTickets(commands.Cog):
                 ephemeral=True,
             )
         )
-        await ctx.send(
+        await interaction.response.send_message(
             f"""**Note:** *Make sure to allow direct messages from server members!*\n
         {Emoji.schoolsimplified} **__How to Get School Help:__**
             > {Emoji.ss_arrow} Click on the button to start the process.

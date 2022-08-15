@@ -69,7 +69,7 @@ class PunishmentTag(commands.Cog):
         title="The title of the embed.",
         text="The text of the embed.",
     )
-    async def pmod(self, interaction: discord.Interaction, name, title, *, text):
+    async def pmod(self, interaction: discord.Interaction, name: str, title: str, *, text: str):
         """Modify a tag, or create a new one if it doesn't exist."""
         try:
             database.db.connect(reuse_if_open=True)
@@ -102,7 +102,7 @@ class PunishmentTag(commands.Cog):
     @app_commands.describe(
         name="The name of the punishment tag to delete.",
     )
-    async def deletep(self, interaction: discord.Interaction, name):
+    async def deletep(self, interaction: discord.Interaction, name: str):
         """Delete a tag"""
         try:
             database.db.connect(reuse_if_open=True)
@@ -122,9 +122,9 @@ class PunishmentTag(commands.Cog):
         finally:
             database.db.close()
 
-    @commands.command(name="list", description="List all punishment tags.")
-    @app_commands.describe(pages="Page index to start at.")
-    async def listtag(self, interaction: discord.Interaction, page=1):
+    @app_commands.command(name="list", description="List all punishment tags.")
+    @app_commands.describe(page="Page index to start at.")
+    async def listtag(self, interaction: discord.Interaction, page: int = 1):
         """List all tags in the database"""
         msg = await interaction.response.send_message("Loading...", ephermal=True)
         await asyncio.sleep(1.2)

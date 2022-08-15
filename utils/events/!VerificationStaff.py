@@ -217,22 +217,22 @@ class VerificationStaff(commands.Cog):
                             delete_after=10.0,
                         )
 
-    @commands.command()
-    async def pasteVerificationButton(self, ctx):
-        button = VerifyButton()
-        await ctx.send("Click here to verify", view=button)
-
-    @commands.command()
-    async def pasteVerificationEmbed(self, ctx: commands.Context):
-        embed = discord.Embed(
-            title="Verification",
-            description=f"To get your staff roles, go to <#{DIGITAL_ID.ch_waitingRoom}> and say what teams you are part of!",
-            color=discord.Colour.blurple(),
-        )
-        embed.set_footer(
-            text="School Simplified • 08/26/2021", icon_url=Others.ss_logo_png
-        )
-        await ctx.send(embed=embed)
+    # @commands.command()
+    # async def pasteVerificationButton(self, ctx):
+    #     button = VerifyButton()
+    #     await ctx.send("Click here to verify", view=button)
+    #
+    # @commands.command()
+    # async def pasteVerificationEmbed(self, ctx: commands.Context):
+    #     embed = discord.Embed(
+    #         title="Verification",
+    #         description=f"To get your staff roles, go to <#{DIGITAL_ID.ch_waitingRoom}> and say what teams you are part of!",
+    #         color=discord.Colour.blurple(),
+    #     )
+    #     embed.set_footer(
+    #         text="School Simplified • 08/26/2021", icon_url=Others.ss_logo_png
+    #     )
+    #     await ctx.send(embed=embed)
 
 
 async def setup(bot):

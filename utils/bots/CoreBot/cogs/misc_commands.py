@@ -306,23 +306,18 @@ class MiscCMD(commands.Cog):
     def display_emoji(self) -> str:
         return Emoji.schoolsimplified
 
-    @commands.command(aliases=["ttc", "tictactoe"])
-    async def tic(self, ctx: commands.Context, user: discord.User = None):
+    @app_commands.command(name="tictactoe", description="Play tictactoe with someone.")
+    @app_commands.guilds(MainID.g_main)
+    async def tictactoe(self, interaction: discord.Interaction, user: discord.User = None):
         if user is None:
-            return await ctx.send(
-                "lonely :(, sorry but you need a person to play against!"
-            )
+            await interaction.response.send_message("lonely :(, sorry but you need a person to play against!", ephemeral=True)
         elif user == self.bot.user:
-            return await ctx.send("i'm good")
-        elif user == ctx.author:
-            return await ctx.send(
-                "lonely :(, sorry but you need an actual person to play against, not yourself!"
-            )
-
-        await ctx.send(
-            f"Tic Tac Toe: {ctx.author.mention} goes first",
-            view=TicTacToe(ctx.author, user),
-        )
+            await interaction.response.send_message("i'm good", ephemeral=True)
+        elif user == interaction.user:
+            await interaction.response.send_message("lonely :(, sorry but you need an actual person to play against, not yourself!",
+                                                    ephemeral=True)
+        else:
+            await interaction.response.send_message(f"Tic Tac Toe: {interaction.user.mention} goes first",)
 
     @app_commands.command(description="Send a message to everyone who has a specific role. | President+ use only.")
     @app_commands.guilds(StaffID.g_staff_resources, StaffID.g_staff_mgm)
@@ -375,17 +370,6 @@ class MiscCMD(commands.Cog):
                 f"{interaction.user.mention} {user.mention} has been unbanned from {roleName[1]}."
             )
 
-    @commands.command()
-    async def join(self, ctx, *, vc: discord.VoiceChannel):
-        await vc.connect()
-        await ctx.send("ok i did join")
-
-    @commands.command()
-    @is_botAdmin
-    async def error_test(self, ctx):
-        """This command is used to test error handling"""
-        raise discord.DiscordException
-
     @app_commands.command()
     async def ping(self, interaction: discord.Interaction):
         database.db.connect(reuse_if_open=True)
@@ -420,106 +404,6 @@ class MiscCMD(commands.Cog):
         await interaction.response.send_message(embed=pingembed)
         database.db.close()
 
-    @commands.command()
-    async def help(self, ctx):
-        # view = discord.ui.View()
-        # emoji = Emoji.timmyBook
-        # view.add_item(
-        #     ButtonHandler(
-        #         style=discord.ButtonStyle.green,
-        #         url="https://timmy.schoolsimplified.org",
-        #         disabled=False,
-        #         label="Click Here to Visit the Documentation!",
-        #         emoji=emoji,
-        #     )
-        # )
-        #
-        # embed = discord.Embed(title="Help Command", color=discord.Colour.gold())
-        # embed.add_field(
-        #     name="Documentation Page",
-        #     value="Click the button below to visit the documentation!",
-        # )
-        # embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
-        # embed.set_thumbnail(url=Others.timmyBook_png)
-        await ctx.send("The help command is now a slash command! Use `/help` for help.")
-
-    @app_commands.command(description="Sends a fake nitro embed rickroll.")
-    @app_commands.checks.has_permissions(administrator=True)
-    async def nitro_prank(self, ctx: commands.Context):
-        await ctx.message.delete()
-
-        embed = discord.Embed(
-            title="A WILD GIFT APPEARS!",
-            description="**Nitro:**\nExpires in 48 hours.",
-            color=Colors.dark_gray,
-        )
-        embed.set_thumbnail(url=Others.nitro_png)
-        await ctx.send(embed=embed, view=NitroConfirmFake())
-
-    @commands.command()
-    @is_botAdmin2
-    async def kill(self, ctx):
-        embed = discord.Embed(
-            title="Confirm System Abortion",
-            description="Please react with the appropriate emoji to confirm your choice!",
-            color=discord.Colour.dark_orange(),
-        )
-        embed.add_field(
-            name="WARNING",
-            value="Please not that this will kill the bot immediately and it will not be online unless a "
-            "developer manually starts the proccess again!"
-            "\nIf you don't respond in 5 seconds, the process will automatically abort.",
-        )
-        embed.set_footer(
-            text="Abusing this system will subject your authorization removal, so choose wisely you fucking pig."
-        )
-
-        message = await ctx.send(embed=embed)
-
-        reactions = ["✅", "❌"]
-        for emoji in reactions:
-            await message.add_reaction(emoji)
-
-        def check2(reaction, user):
-            return user == ctx.author and (
-                str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
-            )
-
-        try:
-            reaction, user = await self.bot.wait_for(
-                "reaction_add", timeout=5.0, check=check2
-            )
-            if str(reaction.emoji) == "❌":
-                await ctx.send("Aborted Exit Process")
-                await message.delete()
-                return
-
-            else:
-                await message.delete()
-                database.db.connect(reuse_if_open=True)
-                NE = database.AdminLogging.create(
-                    discordID=ctx.author.id, action="KILL"
-                )
-                NE.save()
-                database.db.close()
-
-                if self.client is not None:
-                    self.client.close(timeout=2.0)
-
-                embed = discord.Embed(
-                    title="Initiating System Exit...",
-                    description="Goodbye!",
-                    color=discord.Colour.dark_orange(),
-                )
-                message = await ctx.send(embed=embed)
-
-                sys.exit(0)
-
-        except asyncio.TimeoutError:
-            await ctx.send(
-                "Looks like you didn't react in time, automatically aborted system exit!"
-            )
-            await message.delete()
 
     @app_commands.command(description="Play a game of TicTacToe with someone!")
     @app_commands.describe(user="The user you want to play with.")
@@ -542,7 +426,7 @@ class MiscCMD(commands.Cog):
 
     @app_commands.command()
     @slash_is_bot_admin()
-    async def say(self, interaction: discord.Interaction, message):
+    async def say(self, interaction: discord.Interaction, message: str):
         NE = database.AdminLogging.create(
             discordID=interaction.user.id, action="SAY", content=message
         )

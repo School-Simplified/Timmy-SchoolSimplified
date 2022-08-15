@@ -209,14 +209,15 @@ class MGMTickets(commands.Cog):
     """async def cog_unload(self):
         self.autoUnarchiveThread.cancel()"""
 
-    @commands.command()
-    @is_botAdmin
-    async def send_mgm_embed(self, ctx, param: int):
+    @app_commands.command(name="send_mgm_embed")
+    @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources, StaffID.g_staff_mgm)
+    @slash_is_bot_admin()
+    async def send_mgm_embed(self, interaction: discord.Interaction, param: int):
         if param == 1:
-            await ctx.send("Testing Mode", view=MGMCommissionButton(self.bot))
+            await interaction.response.send_message("Testing Mode", view=MGMCommissionButton(self.bot))
         elif param == 2:
             view = EmailDropdown(self.bot)
-            await ctx.send("Testing Mode", view=view)
+            await interaction.response.send_message("Testing Mode", view=view)
 
     CTS = app_commands.Group(
         name="cts",
