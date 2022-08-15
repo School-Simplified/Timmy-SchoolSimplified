@@ -380,10 +380,10 @@ class TicketBT(discord.ui.Button):
                     view=MSV,
                 )
             except Exception as e:
-                await interaction.followup.send(
-                    f"{interaction.user.mention} I can't send you messages, please check you're privacy settings!",
-                    delete_after=5.0,
+                msg = await interaction.followup.send(
+                    f"{interaction.user.mention} I can't send you messages, please check your privacy settings!",
                 )
+                await msg.delete(delay=3)
             timeout = await MSV.wait()
             if not timeout:
                 MasterSubjectView = var.view_response

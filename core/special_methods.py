@@ -523,7 +523,7 @@ async def on_app_command_error_(
             embed2 = discord.Embed(
                 title="Traceback Detected!",
                 description=f"**Information**\n"
-                f"**Server:** {interaction.message.guild.name}\n"
+                f"**Server:** {interaction.guild.name}\n"
                 f"**User:** {interaction.user.mention}\n"
                 f"**Command:** {interaction.command.name}",
                 color=Colors.red,
@@ -549,7 +549,16 @@ async def on_app_command_error_(
 
 
 async def on_command_(bot: Timmy, ctx: commands.Context):
-    if ctx.command.name in ["sync", "ping", "kill"]:
+    # If User is permit 4, just return.
+    permit_list = []
+
+    query = database.Administrators.select().where(
+        database.Administrators.TierLevel >= 4
+    )
+    for user in query:
+        if ctx.author.id == user.discordID:
+            return
+    if ctx.command.name in ["sync", "ping", "kill", "jsk", "py"]:
         return
 
     await ctx.reply(f":x: This command usage is deprecated. Use the equivalent slash command by using `/{ctx.command.name}` instead.")

@@ -210,7 +210,7 @@ class RedirectClient:
             raise UnprocessableEntity(
                 r.status_code, r.json()["message"], r.json()["errors"]
             )
-        pprint.pprint(r.json())
+        #pprint.pprint(r.json())
 
         full_url = r.json()["data"]["sources"][0]["url"]
         parsed_domain = urlparse(full_url)

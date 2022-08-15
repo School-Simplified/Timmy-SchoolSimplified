@@ -7,6 +7,7 @@ from core.logging_module import get_log
 
 _log = get_log(__name__)
 
+
 class EthanMoo(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot

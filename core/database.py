@@ -706,10 +706,14 @@ class AuthorizedGuilds(BaseModel):
 
     `guildID`: BigIntegerField()
     Guild ID of the guild.
+
+    `authorizedUserID`: BigIntegerField()
+    User ID of the user who authorized the guild.
     """
 
     id = AutoField()
     guildID = BigIntegerField()
+    authorizedUserID = BigIntegerField()
 
 
 class SetPuzzleSchedule(BaseModel):
