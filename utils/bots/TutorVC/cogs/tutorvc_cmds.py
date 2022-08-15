@@ -327,7 +327,7 @@ class TutorVCCMD(commands.Cog):
     @PV.command(description='Rename the voice channel to a custom name.')
     @app_commands.describe(name="The channel name you want to use.")
     @commands.cooldown(1, 15, commands.BucketType.user)
-    async def rename(self, interaction: discord.Interaction, *, name=None):
+    async def rename(self, interaction: discord.Interaction, *, name: str=None):
         database.db.connect(reuse_if_open=True)
         SB = discord.utils.get(interaction.guild.roles, name=self.SB)
         legend = discord.utils.get(interaction.guild.roles, name=self.Legend)
