@@ -9,23 +9,30 @@ import psutil
 from discord import app_commands, ui
 from discord.ext import commands
 from dotenv import load_dotenv
-from google.cloud import texttospeech
 from sentry_sdk import Hub
 
 from core import database
-from core.checks import is_botAdmin, is_botAdmin2, is_botAdmin3
+from core.checks import is_botAdmin, is_botAdmin2, slash_is_bot_admin
 from core.common import (
-    TechID,
     Emoji,
-    SelectMenuHandler,
     Colors,
     Others,
     MainID,
-    LeaderID, StaffID, ButtonHandler,
+    StaffID,
+    TechID,
+    ChID,
+    TutID,
+    HRID,
+    MktID,
+    DiscID,
+    LeaderID,
+    ButtonHandler,
 )
 from core.logging_module import get_log
 from utils.bots.TicketSystem.view_models import NitroConfirmFake
-from core.common import access_secret
+
+if TYPE_CHECKING:
+     from main import Timmy
 
 if TYPE_CHECKING:
     from main import Timmy
@@ -307,23 +314,18 @@ class MiscCMD(commands.Cog):
     def display_emoji(self) -> str:
         return Emoji.schoolsimplified
 
-    @commands.command(aliases=["ttc", "tictactoe"])
-    async def tic(self, ctx: commands.Context, user: discord.User = None):
+    @app_commands.command(name="tictactoe", description="Play tictactoe with someone.")
+    @app_commands.guilds(MainID.g_main)
+    async def tictactoe(self, interaction: discord.Interaction, user: discord.User = None):
         if user is None:
-            return await ctx.send(
-                "lonely :(, sorry but you need a person to play against!"
-            )
+            await interaction.response.send_message("lonely :(, sorry but you need a person to play against!", ephemeral=True)
         elif user == self.bot.user:
-            return await ctx.send("i'm good")
-        elif user == ctx.author:
-            return await ctx.send(
-                "lonely :(, sorry but you need an actual person to play against, not yourself!"
-            )
-
-        await ctx.send(
-            f"Tic Tac Toe: {ctx.author.mention} goes first",
-            view=TicTacToe(ctx.author, user),
-        )
+            await interaction.response.send_message("i'm good", ephemeral=True)
+        elif user == interaction.user:
+            await interaction.response.send_message("lonely :(, sorry but you need an actual person to play against, not yourself!",
+                                                    ephemeral=True)
+        else:
+            await interaction.response.send_message(f"Tic Tac Toe: {interaction.user.mention} goes first",)
 
     @app_commands.command(description="Send a message to everyone who has a specific role. | President+ use only.")
     @app_commands.guilds(StaffID.g_staff_resources, StaffID.g_staff_mgm)
@@ -340,101 +342,6 @@ class MiscCMD(commands.Cog):
                 "You do not have the required permissions to use this command."
             )
 
-    @commands.command()
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def suggest(self, ctx, suggestion):
-        embed = discord.Embed(
-            title="Confirmation",
-            description="Are you sure you want to submit this suggestion? Creating irrelevant "
-            "suggestions will warrant a blacklist and you will be subject to a "
-            "warning/mute.",
-            color=discord.Colour.blurple(),
-        )
-        embed.add_field(name="Suggestion Collected", value=suggestion)
-        embed.set_footer(
-            text="Double check this suggestion || MAKE SURE THIS SUGGESTION IS RELATED TO THE BOT, NOT THE DISCORD "
-            "SERVER! "
-        )
-
-        message = await ctx.send(embed=embed)
-        reactions = ["✅", "❌"]
-        for emoji in reactions:
-            await message.add_reaction(emoji)
-
-        def check2(reaction, user):
-            return user == ctx.author and (
-                str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
-            )
-
-        try:
-            reaction, user = await self.bot.wait_for(
-                "reaction_add", timeout=150.0, check=check2
-            )
-            if str(reaction.emoji) == "❌":
-                await ctx.send("Okay, I won't send this.")
-                await message.delete()
-                return
-            else:
-                await message.delete()
-                guild = self.bot.get_guild(TechID.g_tech)
-                channel = guild.get_channel(TechID.ch_tracebacks)
-
-                embed = discord.Embed(
-                    title="New Suggestion!",
-                    description=f"User: {ctx.author.mention}\nChannel: {ctx.channel.mention}",
-                    color=discord.Colour.blurple(),
-                )
-                embed.add_field(name="Suggestion", value=suggestion)
-
-                await channel.send(embed=embed)
-                await ctx.send(
-                    "I have sent in the suggestion! You will get a DM back depending on its status!"
-                )
-
-        except asyncio.TimeoutError:
-            await ctx.send(
-                "Looks like you didn't react in time, please try again later!"
-            )
-
-    @suggest.error
-    async def suggest_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            m, s = divmod(error.retry_after, 60)
-            msg = "You can't suggest for: `{} minutes and {} seconds`".format(
-                round(m), round(s)
-            )
-            await ctx.send(msg)
-
-        else:
-            raise error
-
-    @commands.command(aliases=["donation"])
-    @commands.cooldown(1, 10, commands.BucketType.guild)
-    async def donate(self, ctx: commands.Context):
-        timmyDonation_png = discord.File(
-            Others.timmy_donation_path, filename=Others.timmy_donation_png
-        )
-
-        embedDonate = discord.Embed(
-            color=Colors.ss_blurple,
-            title=f"Donate",
-            description=f"Thank you for your generosity in donating to School Simplified. "
-            f"We do not charge anything for our services, and your support helps to further our mission "
-            f"to *empower the next generation to revolutionize the future through learning*."
-            f"\n\n**Donate here: https://schoolsimplified.org/donate**",
-        )
-        embedDonate.set_footer(text="Great thanks to all our donors!")
-        embedDonate.set_thumbnail(url=f"attachment://{Others.timmy_donation_png}")
-        await ctx.send(embed=embedDonate, file=timmyDonation_png)
-
-    @commands.command()
-    @is_botAdmin
-    async def pingmasa(self, ctx, *, msg=None):
-        masa = self.bot.get_user(736765405728735232)
-        if msg is not None:
-            await ctx.send(masa.mention + f" {msg}")
-        else:
-            await ctx.send(masa.mention)
 
     @app_commands.command(description="Ban a user from a specific server feature.")
     @app_commands.describe(
@@ -443,6 +350,7 @@ class MiscCMD(commands.Cog):
         reason="Why is the user being banned?",
     )
     @app_commands.guilds(MainID.g_main)
+    @app_commands.checks.has_role(MainID.r_moderator)
     async def miscban(
         self,
         interaction: discord.Interaction,
@@ -450,12 +358,6 @@ class MiscCMD(commands.Cog):
         role: Literal["debate", "count", "ticket"],
         reason: str,
     ):
-        modRole = discord.utils.get(interaction.user.guild.roles, id=MainID.r_moderator)
-        if modRole not in interaction.user.roles:
-            return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the required permissions to use this command.",
-                ephemeral=True,
-            )
         roleName = {
             "debate": [MainID.r_debate_ban, "Debate"],
             "count": [MainID.r_count_ban, "Count"],
@@ -476,19 +378,10 @@ class MiscCMD(commands.Cog):
                 f"{interaction.user.mention} {user.mention} has been unbanned from {roleName[1]}."
             )
 
-    @commands.command()
-    async def join(self, ctx, *, vc: discord.VoiceChannel):
-        await vc.connect()
-        await ctx.send("ok i did join")
-
-    @commands.command()
-    @is_botAdmin
-    async def error_test(self, ctx):
-        """This command is used to test error handling"""
-        raise discord.DiscordException
-
-    @commands.command()
-    async def ping(self, ctx):
+    @app_commands.command(name="ping", description="Pong!")
+    @app_commands.guilds(MainID.g_main, TechID.g_tech, ChID.g_ch, TutID.g_tut, MktID.g_mkt,
+                         LeaderID.g_leader, LeaderID.g_staff_resources, DiscID.g_disc, HRID.g_hr)
+    async def ping(self, interaction: discord.Interaction):
         database.db.connect(reuse_if_open=True)
 
         current_time = float(time.time())
@@ -515,200 +408,12 @@ class MiscCMD(commands.Cog):
         )
         pingembed.add_field(name="Status Page", value="[Click here](https://status.timmy.ssimpl.org/)")
         pingembed.set_footer(
-            text=f"TimmyOS Version: {self.bot.version}", icon_url=ctx.author.avatar.url
+            text=f"TimmyOS Version: {self.bot.version}", icon_url=interaction.user.avatar.url
         )
 
-        await ctx.send(embed=pingembed)
-
+        await interaction.response.send_message(embed=pingembed)
         database.db.close()
 
-    @commands.command()
-    async def help(self, ctx):
-        # view = discord.ui.View()
-        # emoji = Emoji.timmyBook
-        # view.add_item(
-        #     ButtonHandler(
-        #         style=discord.ButtonStyle.green,
-        #         url="https://timmy.schoolsimplified.org",
-        #         disabled=False,
-        #         label="Click Here to Visit the Documentation!",
-        #         emoji=emoji,
-        #     )
-        # )
-        #
-        # embed = discord.Embed(title="Help Command", color=discord.Colour.gold())
-        # embed.add_field(
-        #     name="Documentation Page",
-        #     value="Click the button below to visit the documentation!",
-        # )
-        # embed.set_footer(text="DM SpaceTurtle#0001 for any questions or concerns!")
-        # embed.set_thumbnail(url=Others.timmyBook_png)
-        await ctx.send("The help command is now a slash command! Use `/help` for help.")
-
-    @commands.command()
-    async def nitro(self, ctx: commands.Context):
-        await ctx.message.delete()
-
-        embed = discord.Embed(
-            title="A WILD GIFT APPEARS!",
-            description="**Nitro:**\nExpires in 48 hours.",
-            color=Colors.dark_gray,
-        )
-        embed.set_thumbnail(url=Others.nitro_png)
-        await ctx.send(embed=embed, view=NitroConfirmFake())
-
-    @commands.command()
-    @is_botAdmin2
-    async def kill(self, ctx):
-        embed = discord.Embed(
-            title="Confirm System Abortion",
-            description="Please react with the appropriate emoji to confirm your choice!",
-            color=discord.Colour.dark_orange(),
-        )
-        embed.add_field(
-            name="WARNING",
-            value="Please not that this will kill the bot immediately and it will not be online unless a "
-            "developer manually starts the proccess again!"
-            "\nIf you don't respond in 5 seconds, the process will automatically abort.",
-        )
-        embed.set_footer(
-            text="Abusing this system will subject your authorization removal, so choose wisely you fucking pig."
-        )
-
-        message = await ctx.send(embed=embed)
-
-        reactions = ["✅", "❌"]
-        for emoji in reactions:
-            await message.add_reaction(emoji)
-
-        def check2(reaction, user):
-            return user == ctx.author and (
-                str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
-            )
-
-        try:
-            reaction, user = await self.bot.wait_for(
-                "reaction_add", timeout=5.0, check=check2
-            )
-            if str(reaction.emoji) == "❌":
-                await ctx.send("Aborted Exit Process")
-                await message.delete()
-                return
-
-            else:
-                await message.delete()
-                database.db.connect(reuse_if_open=True)
-                NE = database.AdminLogging.create(
-                    discordID=ctx.author.id, action="KILL"
-                )
-                NE.save()
-                database.db.close()
-
-                if self.client is not None:
-                    self.client.close(timeout=2.0)
-
-                embed = discord.Embed(
-                    title="Initiating System Exit...",
-                    description="Goodbye!",
-                    color=discord.Colour.dark_orange(),
-                )
-                message = await ctx.send(embed=embed)
-
-                sys.exit(0)
-
-        except asyncio.TimeoutError:
-            await ctx.send(
-                "Looks like you didn't react in time, automatically aborted system exit!"
-            )
-            await message.delete()
-
-    @commands.command()
-    @commands.has_role(MainID.r_club_president)
-    async def role(
-        self,
-        ctx: commands.Context,
-        users: commands.Greedy[discord.Member],
-        roles: commands.Greedy[discord.Role],
-    ):
-        """
-        Gives an authorized role to every user provided.
-
-        Requires:
-            Club President Role to be present on the user.
-
-        Args:
-            ctx (commands.Context): Context
-            users (commands.Greedy[discord.User]): List of Users
-            roles (commands.Greedy[discord.Role]): List of Roles
-        """
-
-        embed = discord.Embed(
-            title="Starting Mass Role Function",
-            description="Please wait until I finish the role operation, you'll see this message update when I am "
-            "finished!",
-            color=discord.Color.gold(),
-        )
-
-        msg = await ctx.send(embed=embed)
-
-        for role in roles:
-            if role.id not in self.whitelistedRoles:
-                await ctx.send(
-                    f"Role: `{role}` is not whitelisted for this command, removing `{role}`."
-                )
-
-                roles = [value for value in roles if value != role]
-                break
-
-        for user in users:
-            for role in roles:
-                await user.add_roles(
-                    role, reason=f"Mass Role Operation requested by {ctx.author.name}."
-                )
-
-        embed = discord.Embed(
-            title="Mass Role Operation Complete",
-            description=f"I have given `{str(len(users))}` users `{str(len(roles))}` roles.",
-            color=discord.Color.green(),
-        )
-
-        UserList = []
-        RoleList = []
-
-        for user in users:
-            UserList.append(user.mention)
-        for role in roles:
-            RoleList.append(role.mention)
-
-        UserList = ", ".join(UserList)
-        RoleList = ", ".join(RoleList)
-
-        embed.add_field(
-            name="Detailed Results",
-            value=f"{Emoji.person}: {UserList}\n\n{Emoji.activity}: {RoleList}\n\n**Status:**  {Emoji.confirm}",
-        )
-        embed.set_footer(text="Completed Operation")
-
-        await msg.edit(embed=embed)
-
-    @commands.command()
-    @commands.cooldown(1, 300, commands.BucketType.role)
-    async def clubping(self, ctx: commands.Context, *, message=""):
-        view = discord.ui.View()
-        view.add_item(
-            SelectMenuHandler(
-                self.options,
-                place_holder="Select a club to ping!",
-                select_user=ctx.author,
-            )
-        )
-
-        msg = await ctx.send("Select a role you want to ping!", view=view)
-        await view.wait()
-        await msg.delete()
-        ViewResponse = str(view.children[0].values)
-        RoleID = self.decodeDict[ViewResponse]
-        await ctx.send(f"<@&{RoleID}>\n{message}")
 
     @app_commands.command(description="Play a game of TicTacToe with someone!")
     @app_commands.describe(user="The user you want to play with.")
@@ -729,18 +434,17 @@ class MiscCMD(commands.Cog):
             view=TicTacToe(interaction.user, user),
         )
 
-    @commands.command()
-    @is_botAdmin
-    async def say(self, ctx, *, message):
+    @app_commands.command()
+    @slash_is_bot_admin()
+    async def say(self, interaction: discord.Interaction, message: str):
         NE = database.AdminLogging.create(
-            discordID=ctx.author.id, action="SAY", content=message
+            discordID=interaction.user.id, action="SAY", content=message
         )
         NE.save()
+        await interaction.response.send_message("Sent!", epheremal=True)
+        await interaction.channel.send(message)
 
-        await ctx.message.delete()
-        await ctx.send(message)
-
-    @commands.command()
+    """@commands.command()
     @is_botAdmin
     async def sayvc(self, ctx, *, text=None):
         await ctx.message.delete()
@@ -796,7 +500,7 @@ class MiscCMD(commands.Cog):
             await ctx.send(f"A client exception occurred:\n`{e}`")
 
         except TypeError as e:
-            await ctx.send(f"TypeError exception:\n`{e}`")
+            await ctx.send(f"TypeError exception:\n`{e}`")"""
 
 
 async def setup(bot: commands.Bot):

@@ -7,6 +7,7 @@ from typing import Literal
 
 import discord
 from discord import app_commands
+#from discord.app_commands import locale_str as _
 from discord.ext import commands
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -57,14 +58,29 @@ class AdminAPI(commands.Cog):
     def display_emoji(self) -> str:
         return Emoji.human_resources
 
-    @app_commands.command(
-        name="gsuite-create",
+    GS = app_commands.Group(
+        name="gsuite",
+        description="G-Suite Commands",
+        guild_ids=[HRID.g_hr],
+    )
+
+    HRCS = app_commands.Group(
+        name="hr-request",
+        description="Request something from HR!",
+        guild_ids=[954104500388511784, 932066545117585428, 950799439625355294, 953433561178968104, 950813235588780122,
+                   952294235028201572, 952287046750310440, 950799370855518268, 950799485901107270, 951595352090374185,
+                   950795656853876806, 955911166520082452, 824421093015945216, 815753072742891532, 891521033700540457,
+                   1006787368839286866, 1007766456584372325],
+    )
+
+    @GS.command(
+        name="create",
         description="Create a GSuite Account",
     )
-    @app_commands.guilds(HRID.g_hr)
     @app_commands.describe(
         organizationunit="Select the organization unit this user will be in."
     )
+    @app_commands.checks.has_role(HRID.r_hr_staff)
     async def create_gsuite(
         self,
         interaction: discord.Interaction,
@@ -72,12 +88,6 @@ class AdminAPI(commands.Cog):
         lastname: str,
         organizationunit: Literal["Personal Account", "Team Account"],
     ):
-        HR_Role = discord.utils.get(interaction.user.guild.roles, id=HRID.r_hr_staff)
-        if HR_Role not in interaction.user.roles:
-            return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the required permissions to use this command."
-            )
-
         temppass = get_random_string()
         user = {
             "name": {
@@ -116,18 +126,12 @@ class AdminAPI(commands.Cog):
                 ephemeral=True,
             )
 
-    @app_commands.command(
-        name="gsuite-delete",
+    @GS.command(
+        name="delete",
         description="Suspend/Delete a GSuite Account",
     )
-    @app_commands.guilds(HRID.g_hr)
+    @app_commands.checks.has_role(HRID.r_hr_staff)
     async def delete_gsuite(self, interaction: discord.Interaction, email: str):
-        HR_Role = discord.utils.get(interaction.guild.roles, id=HRID.r_hr_staff)
-        if HR_Role not in interaction.user.roles:
-            return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the required permissions to use this command."
-            )
-
         try:
             service.users().delete(userKey=email).execute()
         except:
@@ -137,23 +141,17 @@ class AdminAPI(commands.Cog):
         else:
             await interaction.response.send_message("Successfully deleted the account.")
 
-    @app_commands.command(
-        name="gsuite-suspend",
+    @GS.command(
+        name="suspend",
         description="Suspend a GSuite Account",
     )
-    @app_commands.guilds(HRID.g_hr)
     @app_commands.describe(
         suspend="Select whether to suspend or restore the account. This field is required."
     )
+    @app_commands.checks.has_role(HRID.r_hr_staff)
     async def suspend_gsuite(
         self, interaction: discord.Interaction, email: str, suspend: bool
     ):
-        HR_Role = discord.utils.get(interaction.guild.roles, id=HRID.r_hr_staff)
-        if HR_Role not in interaction.user.roles:
-            return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the required permissions to use this command."
-            )
-
         if suspend is None:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} Please specify whether you want to suspend or restore the account."
@@ -177,26 +175,9 @@ class AdminAPI(commands.Cog):
                     "Successfully restored the account."
                 )
 
-    @app_commands.command(
+    @HRCS.command(
         name="promote",
         description="Create a promotion request to HR.",
-    )
-    @app_commands.guilds(
-        discord.Object(954104500388511784),
-        discord.Object(932066545117585428),
-        discord.Object(950799439625355294),
-        discord.Object(953433561178968104),
-        discord.Object(950813235588780122),
-        discord.Object(952294235028201572),
-        discord.Object(952287046750310440),
-        discord.Object(950799370855518268),
-        discord.Object(950799485901107270),
-        discord.Object(951595352090374185),
-        discord.Object(950795656853876806),
-        discord.Object(955911166520082452),
-        discord.Object(824421093015945216),
-        discord.Object(815753072742891532),
-        discord.Object(891521033700540457),
     )
     @app_commands.describe(
         user="Select the user you want to promote.",
@@ -298,26 +279,9 @@ class AdminAPI(commands.Cog):
             ephemeral=True,
         )
 
-    @app_commands.command(
+    @HRCS.command(
         name="fire",
         description="Create a firing request to HR.",
-    )
-    @app_commands.guilds(
-        discord.Object(954104500388511784),
-        discord.Object(932066545117585428),
-        discord.Object(950799439625355294),
-        discord.Object(953433561178968104),
-        discord.Object(950813235588780122),
-        discord.Object(952294235028201572),
-        discord.Object(952287046750310440),
-        discord.Object(950799370855518268),
-        discord.Object(950799485901107270),
-        discord.Object(951595352090374185),
-        discord.Object(950795656853876806),
-        discord.Object(955911166520082452),
-        discord.Object(824421093015945216),
-        discord.Object(815753072742891532),
-        discord.Object(891521033700540457),
     )
     @app_commands.describe(
         user="Select the user you want to fire.",
@@ -438,26 +402,9 @@ class AdminAPI(commands.Cog):
             ephemeral=True,
         )
 
-    @app_commands.command(
+    @HRCS.command(
         name="censure",
         description="Create a censure request to HR.",
-    )
-    @app_commands.guilds(
-        discord.Object(954104500388511784),
-        discord.Object(932066545117585428),
-        discord.Object(950799439625355294),
-        discord.Object(953433561178968104),
-        discord.Object(950813235588780122),
-        discord.Object(952294235028201572),
-        discord.Object(952287046750310440),
-        discord.Object(950799370855518268),
-        discord.Object(950799485901107270),
-        discord.Object(951595352090374185),
-        discord.Object(950795656853876806),
-        discord.Object(955911166520082452),
-        discord.Object(824421093015945216),
-        discord.Object(815753072742891532),
-        discord.Object(891521033700540457),
     )
     @app_commands.describe(
         user="Select the user you want to censure.",
@@ -575,26 +522,9 @@ class AdminAPI(commands.Cog):
             ephemeral=True,
         )
 
-    @app_commands.command(
+    @HRCS.command(
         name="strike",
         description="Create a strike request to HR.",
-    )
-    @app_commands.guilds(
-        discord.Object(954104500388511784),
-        discord.Object(932066545117585428),
-        discord.Object(950799439625355294),
-        discord.Object(953433561178968104),
-        discord.Object(950813235588780122),
-        discord.Object(952294235028201572),
-        discord.Object(952287046750310440),
-        discord.Object(950799370855518268),
-        discord.Object(950799485901107270),
-        discord.Object(951595352090374185),
-        discord.Object(950795656853876806),
-        discord.Object(955911166520082452),
-        discord.Object(824421093015945216),
-        discord.Object(815753072742891532),
-        discord.Object(891521033700540457),
     )
     @app_commands.describe(
         user="Select the user you want to strike.",
@@ -729,26 +659,9 @@ class AdminAPI(commands.Cog):
             ephemeral=True,
         )
 
-    @app_commands.command(
+    @HRCS.command(
         name="break",
         description="Create a break request to HR.",
-    )
-    @app_commands.guilds(
-        discord.Object(954104500388511784),
-        discord.Object(932066545117585428),
-        discord.Object(950799439625355294),
-        discord.Object(953433561178968104),
-        discord.Object(950813235588780122),
-        discord.Object(952294235028201572),
-        discord.Object(952287046750310440),
-        discord.Object(950799370855518268),
-        discord.Object(950799485901107270),
-        discord.Object(951595352090374185),
-        discord.Object(950795656853876806),
-        discord.Object(955911166520082452),
-        discord.Object(824421093015945216),
-        discord.Object(815753072742891532),
-        discord.Object(891521033700540457),
     )
     @app_commands.describe(
         team="Identify the teams you are in/want to take a break from.",
@@ -856,26 +769,9 @@ class AdminAPI(commands.Cog):
             ephemeral=True,
         )
 
-    @app_commands.command(
+    @HRCS.command(
         name="resignations",
         description="Create a resignation request to HR.",
-    )
-    @app_commands.guilds(
-        discord.Object(954104500388511784),
-        discord.Object(932066545117585428),
-        discord.Object(950799439625355294),
-        discord.Object(953433561178968104),
-        discord.Object(950813235588780122),
-        discord.Object(952294235028201572),
-        discord.Object(952287046750310440),
-        discord.Object(950799370855518268),
-        discord.Object(950799485901107270),
-        discord.Object(951595352090374185),
-        discord.Object(950795656853876806),
-        discord.Object(955911166520082452),
-        discord.Object(824421093015945216),
-        discord.Object(815753072742891532),
-        discord.Object(891521033700540457),
     )
     @app_commands.describe(
         team="Identify the team(s) want to resign from.",
@@ -978,26 +874,9 @@ class AdminAPI(commands.Cog):
             ephemeral=True,
         )
 
-    @app_commands.command(
+    @HRCS.command(
         name="suggestions",
         description="Create a suggestion request to HR.",
-    )
-    @app_commands.guilds(
-        discord.Object(954104500388511784),
-        discord.Object(932066545117585428),
-        discord.Object(950799439625355294),
-        discord.Object(953433561178968104),
-        discord.Object(950813235588780122),
-        discord.Object(952294235028201572),
-        discord.Object(952287046750310440),
-        discord.Object(950799370855518268),
-        discord.Object(950799485901107270),
-        discord.Object(951595352090374185),
-        discord.Object(950795656853876806),
-        discord.Object(955911166520082452),
-        discord.Object(824421093015945216),
-        discord.Object(815753072742891532),
-        discord.Object(891521033700540457),
     )
     @app_commands.describe(
         suggestion="Enter the suggestion you want to make.",
@@ -1092,27 +971,9 @@ class AdminAPI(commands.Cog):
             ephemeral=True,
         )
 
-    @app_commands.command(
+    @HRCS.command(
         name="complaint",
         description="Create a complaint request to HR.",
-    )
-    @app_commands.guilds(
-        discord.Object(954104500388511784),
-        discord.Object(932066545117585428),
-        discord.Object(950799439625355294),
-        discord.Object(953433561178968104),
-        discord.Object(950813235588780122),
-        discord.Object(952294235028201572),
-        discord.Object(952287046750310440),
-        discord.Object(950799370855518268),
-        discord.Object(950799485901107270),
-        discord.Object(951595352090374185),
-        discord.Object(950795656853876806),
-        discord.Object(955911166520082452),
-        discord.Object(824421093015945216),
-        discord.Object(815753072742891532),
-        discord.Object(891521033700540457),
-        discord.Object(763119924385939498),
     )
     @app_commands.describe(
         user="Who is the user you wish to submit a complaint about?",
@@ -1219,26 +1080,9 @@ class AdminAPI(commands.Cog):
             ephemeral=True,
         )
 
-    @app_commands.command(
+    @HRCS.command(
         name="cs-hours",
         description="Request CS hours.",
-    )
-    @app_commands.guilds(
-        discord.Object(954104500388511784),
-        discord.Object(932066545117585428),
-        discord.Object(950799439625355294),
-        discord.Object(953433561178968104),
-        discord.Object(950813235588780122),
-        discord.Object(952294235028201572),
-        discord.Object(952287046750310440),
-        discord.Object(950799370855518268),
-        discord.Object(950799485901107270),
-        discord.Object(951595352090374185),
-        discord.Object(950795656853876806),
-        discord.Object(955911166520082452),
-        discord.Object(824421093015945216),
-        discord.Object(815753072742891532),
-        discord.Object(891521033700540457),
     )
     @app_commands.describe(
         team="Enter the team(s) you want to request CS hours for.",

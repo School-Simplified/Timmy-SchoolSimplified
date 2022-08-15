@@ -1,9 +1,12 @@
+import asyncio
+
 import discord
 from discord.ext import commands
-import asyncio
+
 from core.logging_module import get_log
 
 _log = get_log(__name__)
+
 
 class EthanMoo(commands.Cog):
     def __init__(self, bot):

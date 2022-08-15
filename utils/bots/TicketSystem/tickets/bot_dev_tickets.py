@@ -5,7 +5,7 @@ from discord import ui, app_commands
 from discord.ext import commands, tasks
 
 from core import database
-from core.checks import is_botAdmin, slash_is_bot_admin_3
+from core.checks import slash_is_bot_admin_3
 from core.common import TechID, Emoji, StaffID
 
 
@@ -311,23 +311,6 @@ class TechProjectCMD(commands.Cog):
 
                 await message.reply(content="Commission re-opened!")
 
-    @commands.command()
-    async def leadershipPost(self, ctx: commands.Context):
-        """
-        Post the Bot Development Commission Process in the leadership server.
-        """
-        await ctx.send(
-            "https://cdn.discordapp.com/attachments/956619270899499028/956625228371492885/4.png\n\n"
-        )
-        await ctx.send(
-            "** **\n\n**Bot Development Commission Process**\n"
-            "Information Technology is able to help automate and improve School Simplified through technology. If you "
-            "have an idea that could improve your team's or School Simplified's operation, feel free to make a "
-            "commission!\n\n"
-            "*Join the IT server (https://discord.gg/WugSf4a74a) and click the button to create a Developer"
-            "Commission (bot creation, bot changes).*",
-            view=CommissionTechButton(self.bot),
-        )
 
     @tasks.loop(seconds=60.0)
     async def autoUnarchiveThread(self):

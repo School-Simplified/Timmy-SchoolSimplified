@@ -1,13 +1,11 @@
-from typing import Literal
+from datetime import datetime
 
 import discord
 from discord import ui, app_commands
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 from core import database
-from core.checks import is_botAdmin, slash_is_bot_admin_3
 from core.common import TechID, Emoji, StaffID, ButtonHandler
-from datetime import datetime
 
 
 class WebRequestModal(ui.Modal, title="Web Development Request"):
@@ -68,7 +66,7 @@ class WebRequestModal(ui.Modal, title="Web Development Request"):
     async def on_submit(self, interaction: discord.Interaction):
         mgm_server = self.bot.get_guild(StaffID.g_staff_resources)
         ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_cs_hours_tickets
+            mgm_server.categories, id=StaffID.cat_web_requests
         )
         member = interaction.guild.get_member(interaction.user.id)
 
@@ -180,37 +178,39 @@ class WebCommissionCode(commands.Cog):
     def display_emoji(self) -> str:
         return Emoji.pythonLogo
 
-    @commands.command(name="webcommission", aliases=["wc"])
-    @commands.has_permissions(administrator=True)
-    async def webcommission(self, ctx: commands.Context):
-        """
-        Start a bot commission
-        """
-        button = CommissionWebButton(self.bot)
-        await ctx.send(view=button)
+    @app_commands.command(name="webcommission", description="Start a web commission")
+    @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
+    async def webcommission(self, interaction: discord.Interaction):
+        if interaction.user.guild_permissions.administrator:
+            button = CommissionWebButton(self.bot)
+            await interaction.response.send_message(view=button)
+        else:
+            await interaction.response.send_message("You're not allowed to do that.", ephemeral=True)
 
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def webcommission_list(self, ctx: commands.Context):
-        """
-        List all bot commissions
-        """
-        query = database.MGMTickets.select()
-        tickets = []
-        for ticket in query:
-            tickets.append(ticket)
-        embed = discord.Embed(
-            title="Bot Commission List",
-            description="All bot commissions",
-            color=discord.Colour.gold(),
-        )
-        for ticket in tickets:
-            embed.add_field(
-                name=f"{ticket.authorID}",
-                value=f"{ticket.ChannelID}",
-                inline=False,
+    @app_commands.command(name="webcommission-list", description="List all web commissions")
+    @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
+    async def webcommission_list(self, interaction: discord.Interaction):
+        if interaction.user.guild_permissions.administrator:
+            query = database.MGMTickets.select()
+            tickets = []
+            for ticket in query:
+                tickets.append(ticket)
+            embed = discord.Embed(
+                title="Bot Commission List",
+                description="All bot commissions",
+                color=discord.Colour.gold(),
             )
-        await ctx.send(embed=embed)
+            for ticket in tickets:
+                embed.add_field(
+                    name=f"{ticket.authorID}",
+                    value=f"{ticket.ChannelID}",
+                    inline=False,
+                )
+            await interaction.response.send_message(embed=embed)
+
+        else:
+            await interaction.response.send_message("You're not allowed to do that.", ephemeral=True)
+
 
 
 async def setup(bot: commands.Bot):

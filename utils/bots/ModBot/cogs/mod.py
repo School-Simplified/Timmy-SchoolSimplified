@@ -1,11 +1,13 @@
+import asyncio
 import math
 
 import discord
 import peewee
+from discord import app_commands
 from discord.ext import commands
 
 from core import common, database
-from core.common import Colors, Emoji
+from core.common import Colors, Emoji, MainID, DiscID
 
 
 class PunishmentTag(commands.Cog):
@@ -25,8 +27,17 @@ class PunishmentTag(commands.Cog):
             if i + 1 == index:
                 return t
 
-    @commands.command(aliases=["punishment"])
-    async def p(self, ctx, tag_name):
+    PT = app_commands.Group(
+        name="punishment-tags",
+        description="Manage the punishment tags",
+        guild_ids=[MainID.g_main, DiscID.g_disc],
+    )
+
+    @PT.command(name="activate", description="Activate a punishment tag")
+    @app_commands.describe(
+        tag_name="The name of the punishment tag to send.",
+    )
+    async def p(self, interaction: discord.Interaction, tag_name: str):
         """Activate a tag"""
         try:
             database.db.connect(reuse_if_open=True)
@@ -42,18 +53,23 @@ class PunishmentTag(commands.Cog):
             embed = discord.Embed(
                 title=tag.embed_title, description=tag.text, color=Colors.mod_blurple
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
         except peewee.DoesNotExist:
-            await ctx.send("Tag not found, please try again.")
+            await interaction.response.send_message("Tag not found, please try again.")
         finally:
             database.db.close()
 
-    @commands.command(aliases=["newp"])
-    @commands.has_any_role(
+    # TODO: Make text a more better interface to edit.
+    @PT.command(name="new-or-edit", description="Create or edit a punishment tag")
+    @app_commands.checks.has_any_role(
         844013914609680384, "Head Moderator", "Senior Mod", "Moderator"
     )
-    # don't let this recognize tag number, name is a required field for new tags. - Fire
-    async def pmod(self, ctx, name, title, *, text):
+    @app_commands.describe(
+        name="The name of the punishment tag to create or edit.",
+        title="The title of the embed.",
+        text="The text of the embed.",
+    )
+    async def pmod(self, interaction: discord.Interaction, name: str, title: str, *, text: str):
         """Modify a tag, or create a new one if it doesn't exist."""
         try:
             database.db.connect(reuse_if_open=True)
@@ -65,7 +81,7 @@ class PunishmentTag(commands.Cog):
             tag.text = text
             tag.embed_title = title
             tag.save()
-            await ctx.send(f"Tag {tag.tag_name} has been modified successfully.")
+            await interaction.response.send_message(f"Tag {tag.tag_name} has been modified successfully.")
         except peewee.DoesNotExist:
             try:
                 database.db.connect(reuse_if_open=True)
@@ -73,17 +89,20 @@ class PunishmentTag(commands.Cog):
                     tag_name=name, embed_title=title, text=text
                 )
                 tag.save()
-                await ctx.send(f"Tag {tag.tag_name} has been created successfully.")
+                await interaction.response.send_message(f"Tag {tag.tag_name} has been created successfully.")
             except peewee.IntegrityError:
-                await ctx.send("That tag name is already taken!")
+                await interaction.response.send_message("That tag name is already taken!")
         finally:
             database.db.close()
 
-    @commands.command(aliases=["delp", "dp"])
+    @PT.command(name="delete", description="Delete a punishment tag")
     @commands.has_any_role(
         844013914609680384, "Head Moderator", "Senior Mod", "Moderator"
     )
-    async def deletep(self, ctx, name):
+    @app_commands.describe(
+        name="The name of the punishment tag to delete.",
+    )
+    async def deletep(self, interaction: discord.Interaction, name: str):
         """Delete a tag"""
         try:
             database.db.connect(reuse_if_open=True)
@@ -97,15 +116,19 @@ class PunishmentTag(commands.Cog):
                     .get()
                 )
             tag.delete_instance()
-            await ctx.send(f"{tag.tag_name} has been deleted.")
+            await interaction.response.send_message(f"{tag.tag_name} has been deleted.")
         except peewee.DoesNotExist:
-            await ctx.send("Tag not found, please try again.")
+            await interaction.response.send_message("Tag not found, please try again.")
         finally:
             database.db.close()
 
-    @commands.command(aliases=["ltag"])
-    async def listtag(self, ctx, page=1):
+    @app_commands.command(name="list", description="List all punishment tags.")
+    @app_commands.describe(page="Page index to start at.")
+    async def listtag(self, interaction: discord.Interaction, page: int = 1):
         """List all tags in the database"""
+        msg = await interaction.response.send_message("Loading...", ephermal=True)
+        await asyncio.sleep(1.2)
+        await msg.delete()
 
         def get_end(page_size: int):
             database.db.connect(reuse_if_open=True)
@@ -127,106 +150,8 @@ class PunishmentTag(commands.Cog):
 
         embed = discord.Embed(title="Tag List")
         embed = await common.paginate_embed(
-            self.bot, ctx, embed, populate_embed, get_end(10), page=page
+            self.bot, interaction, embed, populate_embed, get_end(10), page=page
         )
-
-    @commands.command(aliases=["find"])
-    @commands.has_any_role(
-        "Moderator", "Mod", "Senior Mod", "Head Mod", 844013914609680384, "HR"
-    )
-    async def info(
-        self, ctx: commands.Context, user: commands.Greedy[discord.User] = []
-    ):
-        embed = discord.Embed(
-            title="Queued Query",
-            description=f"I have started a new query for {user.display_name}",
-            color=discord.Color.gold(),
-        )
-        embed.set_footer(text="This may take a moment.")
-        msg = await ctx.send(embed=embed)
-
-        for user in user:
-            user: discord.User = user
-
-            value = None
-            typeval = None
-            banreason = None
-
-            try:
-                member = await ctx.guild.fetch_member(user.id)
-            except discord.NotFound:
-                embed = discord.Embed(
-                    title="Query Results",
-                    description=f"{user.display_name} is not in this server.",
-                    color=discord.Color.brand_red(),
-                )
-                return await msg.edit(embed=embed)
-
-            if member is None:
-                banEntry = await ctx.guild.fetch_ban(user)
-
-                if banEntry is not None:
-                    value = Emoji.deny
-                    typeval = "Banned"
-                    banreason = banEntry.reason
-
-                else:
-                    value = Emoji.question
-                    typeval = "Not in the Server"
-
-            else:
-                value = Emoji.confirm
-                typeval = "In the Server"
-
-            if banreason is None:
-                embed = discord.Embed(
-                    description=f"`ID: {user.id}` | {user.mention} found with the nickname: **{user.display_name}**\u0020",
-                    color=discord.Color.green(),
-                )
-                embed.set_author(
-                    name={user.name}, icon_url=user.avatar.url, url=user.avatar.url
-                )
-                embed.add_field(
-                    name="Membership Status", value=f"\u0020{value} `{typeval}`"
-                )
-
-            else:
-                embed = discord.Embed(
-                    description=f"`ID: {user.id}` | {user.mention} found with the nickname: {user.display_name}\u0020",
-                    color=discord.Color.green(),
-                )
-                embed.set_author(
-                    name={user.name}, icon_url=user.avatar.url, url=user.avatar.url
-                )
-                embed.add_field(
-                    name="Membership Status",
-                    value=f"\u0020{value} `{typeval}`\n{Emoji.space}{Emoji.barrow}**Ban Reason:** {banreason}",
-                )
-
-            await msg.edit(embed=embed)
-
-    @info.error
-    async def info_error(self, ctx, error):
-        if isinstance(error, (commands.UserNotFound, commands.errors.UserNotFound)):
-            embed = discord.Embed(
-                title="User Not Found",
-                description="Try using an actual user next time? :(",
-                color=discord.Color.red(),
-            )
-            await ctx.send(embed=embed)
-
-        elif isinstance(
-            error,
-            (commands.MissingRequiredArgument, commands.errors.MissingRequiredArgument),
-        ):
-            embed = discord.Embed(
-                title="User Not Found",
-                description="Try using an actual user next time? :(",
-                color=discord.Color.red(),
-            )
-            await ctx.send(embed=embed)
-        else:
-            raise error
 
 
 async def setup(bot):

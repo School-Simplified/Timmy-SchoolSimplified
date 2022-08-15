@@ -6,7 +6,7 @@ from discord import ui, app_commands
 from discord.ext import commands
 
 from core import database
-from core.checks import is_botAdmin
+from core.checks import is_botAdmin, slash_is_bot_admin
 from core.common import (
     Emoji,
     TechID,
@@ -209,14 +209,15 @@ class MGMTickets(commands.Cog):
     """async def cog_unload(self):
         self.autoUnarchiveThread.cancel()"""
 
-    @commands.command()
-    @is_botAdmin
-    async def send_mgm_embed(self, ctx, param: int):
+    @app_commands.command(name="send_mgm_embed")
+    @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources, StaffID.g_staff_mgm)
+    @slash_is_bot_admin()
+    async def send_mgm_embed(self, interaction: discord.Interaction, param: int):
         if param == 1:
-            await ctx.send("Testing Mode", view=MGMCommissionButton(self.bot))
+            await interaction.response.send_message("Testing Mode", view=MGMCommissionButton(self.bot))
         elif param == 2:
             view = EmailDropdown(self.bot)
-            await ctx.send("Testing Mode", view=view)
+            await interaction.response.send_message("Testing Mode", view=view)
 
     CTS = app_commands.Group(
         name="cts",
@@ -238,7 +239,7 @@ class MGMTickets(commands.Cog):
         role_id="Role IDs (seperated by commas) that will be able to view tickets",
         limit="The limit of tickets that can be created per person, leave blank for no limit",
     )
-    @is_botAdmin
+    @slash_is_bot_admin()
     async def setup(
         self,
         interaction: discord.Interaction,
@@ -287,7 +288,7 @@ class MGMTickets(commands.Cog):
         channel="Where the button will be sent; leave blank to send it to the channel it was configured with.",
         message_id="Edits the message to include button in same message. Channel must be filled out for this.",
     )
-    @is_botAdmin
+    @slash_is_bot_admin()
     async def send_button(
         self,
         interaction: discord.Interaction,
@@ -343,7 +344,7 @@ class MGMTickets(commands.Cog):
         configuration_id="The configuration ID that corresponds to the button.",
         edit_mode="Edit Questions: Edit the questions itself, Edit Attributes: Edit the attributes (e.g. min length)"
     )
-    @is_botAdmin
+    @slash_is_bot_admin()
     async def edit_modal(
         self,
         interaction: discord.Interaction,
@@ -473,7 +474,7 @@ class MGMTickets(commands.Cog):
         element="Edit the element. See here for more: https://ssimpl.org/cts-docs",
         value="The new value for the element.",
     )
-    @is_botAdmin
+    @slash_is_bot_admin()
     async def edit_modal(
         self,
         interaction: discord.Interaction,

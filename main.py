@@ -4,24 +4,26 @@ Copyright (C) School Simplified - All Rights Reserved
  * Written by School Simplified, IT Dept. <timmy@schoolsimplified.org>, March 2022
 """
 
-__version__ = "beta3.1.1"
+__version__ = "beta4.0.0"
 __author__ = "School Simplified, IT Dept."
 __author_email__ = "timmy@schoolsimplified.org"
 
+import asyncio
 import faulthandler
 import logging
 import os
 import time
 from datetime import datetime, timedelta
 
-import uvicorn
-import asyncio
 import discord
+import uvicorn
 from alive_progress import alive_bar
 from discord import app_commands
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
+from fastapi import FastAPI
+#from googletrans import Translator
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -35,8 +37,8 @@ from core.special_methods import (
     on_app_command_error_,
     on_command_error_,
     on_ready_,
+    on_command_
 )
-from fastapi import FastAPI
 
 app = FastAPI()
 
@@ -48,6 +50,29 @@ logger.setLevel(logging.INFO)
 
 _log = get_log(__name__)
 _log.info("Started Timmy")
+
+
+"""class TimmyTranslator(app_commands.Translator):
+    async def load(self) -> None:
+        _log.info('Translator loaded')
+
+    async def unload(self) -> None:
+        _log.info('Translator unloaded')
+
+    async def translate(self, string: app_commands.locale_str, locale: discord.Locale, context: app_commands.TranslationContext):
+        translator = Translator()
+        locale = str(locale)
+        #reg_local = None
+        if "-" in locale:
+            #locale = locale.split("-")[1]
+            locale = locale.split("-")[0]
+        _log.info(locale)
+
+        try:
+            translated_text = translator.translate(string, dest=locale).text
+        except Exception as e:
+            return None
+        return translated_text"""
 
 
 class TimmyCommandTree(app_commands.CommandTree):
@@ -96,6 +121,9 @@ class Timmy(commands.Bot):
     async def on_command_error(self, ctx: commands.Context, error: Exception):
         await on_command_error_(self, ctx, error)
 
+    async def on_command(self, ctx: commands.Context):
+        await on_command_(self, ctx)
+
     async def analytics_before_invoke(self, ctx: commands.Context):
         await before_invoke_(ctx)
 
@@ -119,6 +147,7 @@ class Timmy(commands.Bot):
                 except commands.ExtensionNotFound:
                     raise commands.ExtensionNotFound(ext)
                 bar()
+        #await bot.tree.set_translator(TimmyTranslator())
 
     async def is_owner(self, user: discord.User):
         admin_ids = []
@@ -149,7 +178,6 @@ class Timmy(commands.Bot):
 
 
 bot = Timmy(time.time())
-
 
 @bot.event
 async def on_interaction(interaction: discord.Interaction):

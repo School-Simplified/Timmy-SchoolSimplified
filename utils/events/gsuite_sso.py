@@ -2,12 +2,13 @@ import asyncio
 import os
 from datetime import datetime
 
-import discord
 import pytz
+import discord
+from discord import app_commands
 from discord.ext import commands
 
-from core.checks import is_botAdmin
-from core.common import ButtonHandler, Emoji, access_secret
+from core.checks import slash_is_bot_admin
+from core.common import ButtonHandler, Emoji, access_secret, TechID
 from utils.bots.TicketSystem.view_models import GSuiteVerify
 
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
@@ -188,9 +189,10 @@ class GSuiteLogin(commands.Cog):
                     "Looks like you didn't respond in time, please try again later!"
                 )
 
-    @commands.command()
-    @is_botAdmin
-    async def pasteGSuiteButton(self, ctx):
+    @app_commands.command(name="paste-gsuite-button", description="Send the gsuite button")
+    @app_commands.guilds(TechID.g_tech)
+    @slash_is_bot_admin()
+    async def pasteGSuiteButton(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title="Alternate Verification Method",
             description="If you have a @schoolsimplified.org Google Account, choose this method to "
@@ -198,7 +200,7 @@ class GSuiteLogin(commands.Cog):
             color=discord.Color.green(),
         )
         GSuiteButton = GSuiteVerify()
-        await ctx.send(embed=embed, view=GSuiteButton)
+        await interaction.response.send_message(embed=embed, view=GSuiteButton)
 
 
 async def setup(bot):

@@ -16,8 +16,6 @@ import sentry_sdk
 from discord import app_commands
 from discord.ext import commands
 
-from core.logging_module import get_log
-from utils.bots.TicketSystem.tickets.web_commissions import CommissionWebButton
 from core import database
 from core.common import (
     ConsoleColors,
@@ -28,11 +26,13 @@ from core.common import (
     CheckDB_CC,
     Emoji,
 )
+from core.gh_modals import FeedbackButton
+from core.logging_module import get_log
+from utils.bots.TicketSystem.tickets.bot_dev_tickets import CommissionTechButton
+from utils.bots.TicketSystem.tickets.web_commissions import CommissionWebButton
 from utils.bots.TicketSystem.view_models import create_ui_modal_class, create_ticket_button, HREmailConfirm, \
     MGMCommissionButton, \
     EmailDropdown, LockButton, GSuiteVerify, RecruitmentButton, create_no_form_button
-from core.gh_modals import FeedbackButton
-from utils.bots.TicketSystem.tickets.bot_dev_tickets import CommissionTechButton
 from utils.events.chat_helper_ticket_sys import TicketButton
 
 if TYPE_CHECKING:
@@ -444,6 +444,10 @@ async def on_app_command_error_(
             "You cannot run this command!", ephemeral=True
         )
 
+
+    elif isinstance(error, app_commands.CommandNotFound):
+        await interaction.response.send_message(f"Command /{interaction.command.name} not found.")
+
     else:
         error_file = Path("error.txt")
         error_file.touch()
@@ -519,7 +523,7 @@ async def on_app_command_error_(
             embed2 = discord.Embed(
                 title="Traceback Detected!",
                 description=f"**Information**\n"
-                f"**Server:** {interaction.user.guild.name}\n"
+                f"**Server:** {interaction.guild.name}\n"
                 f"**User:** {interaction.user.mention}\n"
                 f"**Command:** {interaction.command.name}",
                 color=Colors.red,
@@ -542,6 +546,22 @@ async def on_app_command_error_(
                 )
 
     raise error
+
+
+async def on_command_(bot: Timmy, ctx: commands.Context):
+    # If User is permit 4, just return.
+    permit_list = []
+
+    query = database.Administrators.select().where(
+        database.Administrators.TierLevel >= 4
+    )
+    for user in query:
+        if ctx.author.id == user.discordID:
+            return
+    if ctx.command.name in ["sync", "ping", "kill", "jsk", "py"]:
+        return
+
+    await ctx.reply(f":x: This command usage is deprecated. Use the equivalent slash command by using `/{ctx.command.name}` instead.")
 
 
 class Me:

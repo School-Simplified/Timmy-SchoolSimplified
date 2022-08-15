@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Dict, List, Literal, Union, TYPE_CHECKING
 
 import discord
-from discord.app_commands import command, describe, Group, guilds, check
+from discord import app_commands
 from discord.ext import commands
 
 from core import database
@@ -34,7 +34,7 @@ def spammer_check():
     def predicate(interaction: discord.Interaction) -> bool:
         return interaction.user.id not in blacklist
 
-    return check(predicate)
+    return app_commands.check(predicate)
 
 
 def reload_blacklist():
@@ -43,7 +43,7 @@ def reload_blacklist():
         blacklist.append(entry.discordID)
 
 
-class SetSuggestBlacklist(Group):
+class SetSuggestBlacklist(app_commands.Group):
     def __init__(self, bot: Timmy):
         super().__init__(name="set_blacklist", guild_ids=[MainID.g_main, DiscID.g_disc])
         self.bot = bot
@@ -55,8 +55,8 @@ class SetSuggestBlacklist(Group):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         return interaction.user.id in [752984497259151370, 747126643587416174]
 
-    @command(name="add")
-    @describe(user="User ID or mention")
+    @app_commands.command(name="add")
+    @app_commands.describe(user="User ID or mention")
     async def __add(self, interaction: discord.Interaction, user: discord.User):
         """Blacklist a user from suggesting and submitting puzzle guesses"""
 
@@ -72,8 +72,8 @@ class SetSuggestBlacklist(Group):
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @command(name="remove")
-    @describe(user="User ID or mention")
+    @app_commands.command(name="remove")
+    @app_commands.describe(user="User ID or mention")
     async def __remove(self, interaction: discord.Interaction, user: discord.User):
         """Unblacklist a user from suggesting and submitting puzzle guesses"""
 
@@ -100,14 +100,14 @@ class SetSuggestBlacklist(Group):
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @command(name="reload")
+    @app_commands.command(name="reload")
     async def __reload(self, interaction: discord.Interaction):
         """Force reload the blacklist"""
         reload_blacklist()
         await interaction.response.send_message("Complete!")
 
 
-class Suggest(Group):
+class Suggest(app_commands.Group):
     def __init__(self, bot: Timmy):
         super().__init__(
             name="suggest",
@@ -120,61 +120,61 @@ class Suggest(Group):
     def cog(self) -> commands.Cog:
         return self.bot.get_cog("Student Engagement")
 
-    @command(name="book")
+    @app_commands.command(name="book")
     @spammer_check()
     async def __book(self, interaction: discord.Interaction):
         """Make a book suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Book"))
 
-    @command(name="movie")
+    @app_commands.command(name="movie")
     @spammer_check()
     async def __movie(self, interaction: discord.Interaction):
         """Make a movie suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Movie"))
 
-    @command(name="tv_show")
+    @app_commands.command(name="tv_show")
     @spammer_check()
     async def __tv_show(self, interaction: discord.Interaction):
         """Make a TV show suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "TV Show"))
 
-    @command(name="meme")
+    @app_commands.command(name="meme")
     @spammer_check()
     async def __meme(self, interaction: discord.Interaction):
         """Make a meme suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Meme"))
 
-    @command(name="pickup_line")
+    @app_commands.command(name="pickup_line")
     @spammer_check()
     async def __pickup_line(self, interaction: discord.Interaction):
         """Make a pickup line suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Pickup Line"))
 
-    @command(name="puzzle")
+    @app_commands.command(name="puzzle")
     @spammer_check()
     async def __puzzle(self, interaction: discord.Interaction):
         """Make a suggestion for the weekly puzzle!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Puzzle"))
 
-    @command(name="daily_question")
+    @app_commands.command(name="daily_question")
     @spammer_check()
     async def __daily_question(self, interaction: discord.Interaction):
         """Make a suggestion for the daily question!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Daily Question"))
 
-    @command(name="motivation")
+    @app_commands.command(name="motivation")
     @spammer_check()
     async def __motivation(self, interaction: discord.Interaction):
         """Make a motivation suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Motivation"))
 
-    @command(name="music")
+    @app_commands.command(name="music")
     @spammer_check()
     async def __music(self, interaction: discord.Interaction):
         """Make a music suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "Music"))
 
-    @command(name="art")
+    @app_commands.command(name="art")
     @spammer_check()
     async def __art(self, interaction: discord.Interaction, art: discord.Attachment):
         """Make an art appreciation suggestion!"""
@@ -189,7 +189,7 @@ class Suggest(Group):
         channel = self.bot.get_channel(DiscID.ch_suggestions)
         await channel.send(embed=embed)
 
-    @command(name="general")
+    @app_commands.command(name="general")
     @spammer_check()
     async def __general(self, interaction: discord.Interaction):
         """Make a general suggestion!"""
@@ -416,16 +416,6 @@ class Engagement(commands.Cog):
         for item in database.ResponseSpamBlacklist:
             blacklist.append(item.discordID)
 
-    @commands.command(name="annoy-rachel")
-    async def __annoy(self, ctx: commands.Context, on_or_off: bool):
-        if ctx.author.id != 747126643587416174:
-            return
-        if on_or_off:
-            await self.bot.add_cog(AnnoyRachel(self.bot))
-        else:
-            await self.bot.remove_cog("AnnoyRachel")
-        await ctx.send(":thumbsup:")
-
     # NOT NEEDED
     #
     # @command(name="acceptance-letter")
@@ -445,9 +435,9 @@ class Engagement(commands.Cog):
     #     channel = self.bot.get_channel(DiscID.ch_college_acceptance)
     #     await channel.send(embed=embed)
 
-    @command(name="puzzle-guess")
+    @app_commands.command(name="puzzle-guess")
     @spammer_check()
-    @guilds(MainID.g_main)
+    @app_commands.guilds(MainID.g_main)
     async def _guess(self, interaction: discord.Interaction, guess: str):
         """
         Make a guess for the weekly puzzle
@@ -465,16 +455,6 @@ class Engagement(commands.Cog):
         guess_channel = self.bot.get_channel(DiscID.ch_puzzle)
         await guess_channel.send(embed=embed)
 
-
-class AnnoyRachel(commands.Cog):
-    def __init__(self, bot: Timmy):
-        self.bot = bot
-
-    @commands.Cog.listener("on_message")
-    async def on_message_(self, message: discord.Message):
-        if message.author.id != 752984497259151370:
-            return
-        await message.add_reaction(Emoji.turtle_smirk)
 
 
 async def setup(bot: Timmy):
