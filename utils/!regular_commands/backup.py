@@ -1,23 +1,40 @@
+import asyncio
+import sys
+import time
+from datetime import timedelta
 from typing import Union, Literal
 
 import discord
-from discord import ui, ButtonStyle
+import psutil
 from discord.ext import commands
+from discord import ui, ButtonStyle
+from dotenv import load_dotenv
+from sentry_sdk import Hub
 
+from core import database
+from core.checks import is_botAdmin2
+from core.common import Emoji, Others, MainID
+from core.logging_module import get_log
 from core.checks import is_botAdmin3
 from core.common import Colors, ButtonHandler
 
+_log = get_log(__name__)
+load_dotenv()
 
-class CommandsManager(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+
+class BackupRegularCommands(commands.Cog):
+
+    def __init__(self, bot):
         self.bot = bot
+        self.client = Hub.current.client
+
 
     @commands.command()
     @is_botAdmin3
     async def sync(
-        self,
-        ctx: commands.Context,
-        action: Union[Literal["global"], Literal["all"], discord.Guild],
+            self,
+            ctx: commands.Context,
+            action: Union[Literal["global"], Literal["all"], discord.Guild],
     ):
         if isinstance(action, discord.Guild):
             guild = action
@@ -68,7 +85,7 @@ class CommandsManager(commands.Cog):
                         color=Colors.yellow,
                         title="Sync",
                         description=f"Syncing slash commands globally..."
-                        f"\nThis may take a while.",
+                                    f"\nThis may take a while.",
                     )
                     await message_confirm.edit(embed=embed_processing, view=None)
 
@@ -125,7 +142,7 @@ class CommandsManager(commands.Cog):
                         color=Colors.yellow,
                         title="Sync",
                         description=f"Syncing all local guild slash commands ..."
-                        f"\nThis may take a while.",
+                                    f"\nThis may take a while.",
                     )
                     await message_confirm.edit(embed=embed_processing, view=None)
 
@@ -153,6 +170,106 @@ class CommandsManager(commands.Cog):
                 )
                 await message_confirm.edit(embed=embed_timeout, view=None)
 
+    @commands.command()
+    async def ping(self, ctx):
+        database.db.connect(reuse_if_open=True)
+
+        current_time = float(time.time())
+        difference = int(round(current_time - float(self.bot.start_time)))
+        text = str(timedelta(seconds=difference))
+
+        pingembed = discord.Embed(
+            title="Pong! ⌛",
+            color=discord.Colour.gold(),
+            description="Current Discord API Latency",
+        )
+        pingembed.set_author(
+            name="Timmy", url=Others.timmy_laptop_png, icon_url=Others.timmy_happy_png
+        )
+        pingembed.add_field(
+            name="Ping & Uptime:",
+            value=f"```diff\n+ Ping: {round(self.bot.latency * 1000)}ms\n+ Uptime: {text}\n```",
+        )
+
+        pingembed.add_field(
+            name="System Resource Usage",
+            value=f"```diff\n- CPU Usage: {psutil.cpu_percent()}%\n- Memory Usage: {psutil.virtual_memory().percent}%\n```",
+            inline=False,
+        )
+        pingembed.add_field(name="Status Page", value="[Click here](https://status.timmy.ssimpl.org/)")
+        pingembed.set_footer(
+            text=f"TimmyOS Version: {self.bot.version}", icon_url=ctx.author.avatar.url
+        )
+
+        await ctx.send(embed=pingembed)
+
+        database.db.close()
+
+    # BACKUP
+    @commands.command()
+    @is_botAdmin2
+    async def kill(self, ctx):
+        embed = discord.Embed(
+            title="Confirm System Abortion",
+            description="Please react with the appropriate emoji to confirm your choice!",
+            color=discord.Colour.dark_orange(),
+        )
+        embed.add_field(
+            name="WARNING",
+            value="Please not that this will kill the bot immediately and it will not be online unless a "
+                  "developer manually starts the proccess again!"
+                  "\nIf you don't respond in 5 seconds, the process will automatically abort.",
+        )
+        embed.set_footer(
+            text="Abusing this system will subject your authorization removal, so choose wisely you fucking pig."
+        )
+
+        message = await ctx.send(embed=embed)
+
+        reactions = ["✅", "❌"]
+        for emoji in reactions:
+            await message.add_reaction(emoji)
+
+        def check2(reaction, user):
+            return user == ctx.author and (
+                    str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
+            )
+
+        try:
+            reaction, user = await self.bot.wait_for(
+                "reaction_add", timeout=5.0, check=check2
+            )
+            if str(reaction.emoji) == "❌":
+                await ctx.send("Aborted Exit Process")
+                await message.delete()
+                return
+
+            else:
+                await message.delete()
+                database.db.connect(reuse_if_open=True)
+                NE = database.AdminLogging.create(
+                    discordID=ctx.author.id, action="KILL"
+                )
+                NE.save()
+                database.db.close()
+
+                if self.client is not None:
+                    self.client.close(timeout=2.0)
+
+                embed = discord.Embed(
+                    title="Initiating System Exit...",
+                    description="Goodbye!",
+                    color=discord.Colour.dark_orange(),
+                )
+                message = await ctx.send(embed=embed)
+
+                sys.exit(0)
+
+        except asyncio.TimeoutError:
+            await ctx.send(
+                "Looks like you didn't react in time, automatically aborted system exit!"
+            )
+            await message.delete()
 
 async def setup(bot):
-    await bot.add_cog(CommandsManager(bot))
+    await bot.add_cog(BackupRegularCommands(bot))
