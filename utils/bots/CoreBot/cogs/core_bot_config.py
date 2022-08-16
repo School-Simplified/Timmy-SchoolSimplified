@@ -242,7 +242,7 @@ class CoreBotConfig(commands.Cog):
         if mode == "-a":
             embed.set_footer(text="Attempting to restart the bot...")
         elif mode == "-c":
-            embed.set_footer(text="Attempting to reloading tickets...")
+            embed.set_footer(text="Attempting to reload cogs...")
 
         await interaction.response.send_message(embed=embed)
 
@@ -252,7 +252,7 @@ class CoreBotConfig(commands.Cog):
             try:
                 embed = discord.Embed(
                     title="Cogs - Reload",
-                    description="Reloaded all tickets",
+                    description="Reloaded all cogs.",
                     color=discord.Color.brand_green(),
                 )
                 for extension in get_extensions():
@@ -261,7 +261,7 @@ class CoreBotConfig(commands.Cog):
             except commands.ExtensionError:
                 embed = discord.Embed(
                     title="Cogs - Reload",
-                    description="Failed to reload tickets",
+                    description="Failed to reload cogs.",
                     color=discord.Color.brand_red(),
                 )
                 return await interaction.channel.send(embed=embed)

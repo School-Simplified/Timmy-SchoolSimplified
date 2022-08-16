@@ -817,6 +817,13 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
         LCM = await channel.send(
             interaction.user.mention, embed=controlTicket, view=LockControlButton
         )
+        await channel.send("Thank you for creating an announcement ticket! Please use the link below to schedule a "
+                           "time for the announcement to be sent out. When scheduling, keep the following in "
+                           "mind:\n\n> <:barrow:967579494833618954> You may only schedule a date that is at least "
+                           "**two weeks** AFTER the creation of this ticket.\n> <:barrow:967579494833618954> The "
+                           "scheduled date is NOT final; Corporate Officers reserve the right to change the date if "
+                           "the announcement is not "
+                           "ready.\n\n<:barrow2:967579638207500398>https://ssimpl.org/AnnouncementScheduling")
         await LCM.pin()
 
         tz = pytz.timezone("EST")
