@@ -182,9 +182,11 @@ class AdminAPI(commands.Cog):
     @app_commands.describe(
         user="Select the user you want to promote.",
         reason="Enter the reason for the promotion.",
+        team="Select the team the user is in.",
+        additional_info="Enter any additional information you want to include.",
     )
     async def promote(
-        self, interaction: discord.Interaction, user: discord.User, reason: str
+        self, interaction: discord.Interaction, user: discord.User, reason: str, team: str, additional_info: str
     ):
         if user.bot:
             return await interaction.response.send_message(
@@ -262,7 +264,8 @@ class AdminAPI(commands.Cog):
         await LCM.pin()
         embed_information = discord.Embed(
             title="Promotion Request",
-            description=f"User: {user.mention}\n" f"**Reason:** {reason}",
+            description=f"User: {user.mention}\n" f"**Reason:** {reason}" f"**Team:** {team}" f"\n**Additional "
+                        f"Information:** {additional_info}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(
@@ -286,6 +289,7 @@ class AdminAPI(commands.Cog):
     @app_commands.describe(
         user="Select the user you want to fire.",
         reason="Enter the reason for the firing.",
+        additional_info="Enter any additional information you want to include.",
         evidence_text="Enter any *textual* evidence* for the firing.",
         evidence_url="Upload any attachment relating to the firing.",
     )
@@ -295,6 +299,7 @@ class AdminAPI(commands.Cog):
         user: discord.User,
         reason: str,
         team: str,
+        additional_info: str,
         evidence_text: str = None,
         evidence_url: discord.Attachment = None,
     ):
@@ -385,6 +390,7 @@ class AdminAPI(commands.Cog):
             description=f"User: {user.mention}\n"
             f"**Reason:** {reason}\n"
             f"**Team:** {team}\n"
+            f"**Additional Information:** {additional_info}\n"
             f"**Evidence:** {evidence_text}\n"
             f"**Evidence URL:** {evidence_url}",
             color=discord.Colour.gold(),
