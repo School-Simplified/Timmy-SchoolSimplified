@@ -441,7 +441,7 @@ class MiscCMD(commands.Cog):
             discordID=interaction.user.id, action="SAY", content=message
         )
         NE.save()
-        await interaction.response.send_message("Sent!", epheremal=True)
+        await interaction.response.send_message("Sent!", ephemeral=True)
         await interaction.channel.send(message)
 
     """@commands.command()
