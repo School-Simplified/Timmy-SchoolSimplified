@@ -31,6 +31,29 @@ async def redirect_autocomplete(
         if current.lower() in redirect.lower()
     ]
 
+RM = app_commands.Group(
+    name="redirect",
+    description="Manage ssimpl.org redirects",
+    guild_ids=[
+        954104500388511784,
+        932066545117585428,
+        950799439625355294,
+        953433561178968104,
+        950813235588780122,
+        952294235028201572,
+        952287046750310440,
+        950799370855518268,
+        950799485901107270,
+        951595352090374185,
+        950795656853876806,
+        955911166520082452,
+        824421093015945216,
+        815753072742891532,
+        891521033700540457,
+        1006787368839286866,
+        1007766456584372325
+    ]
+)
 
 class RedirectURL(commands.Cog):
     def __init__(self, bot):
@@ -45,12 +68,11 @@ class RedirectURL(commands.Cog):
     def display_emoji(self) -> str:
         return "🖇️"
 
-    @app_commands.command(name="redirect-add", description="Add a redirect URL")
+    @RM.command(name="add", description="Add a redirect URL")
     @app_commands.describe(
         redirect_code="The URL path you want to use.",
         destination_url="The destination URL to redirect to.",
     )
-    @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
     async def ra(
         self,
         interaction: discord.Interaction,
@@ -60,10 +82,15 @@ class RedirectURL(commands.Cog):
     ):
 
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
+        staff_resources_member = staff_resources_guild.get_member(interaction.user.id)
+        if staff_resources_member is None:
+            return await interaction.response.send_message(
+                "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
+            )
         hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
         if hr_role not in interaction.user.roles:
             return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the permission to use this command."
+                f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
 
         if sub_domain is None:
@@ -156,20 +183,24 @@ class RedirectURL(commands.Cog):
                     ephemeral=True,
                 )
 
-    @app_commands.command(name="redirect-remove", description="Remove a redirect.")
+    @RM.command(name="remove", description="Remove a redirect.")
     @app_commands.describe(
         redirect_id="Specify an ID or URL PATH to remove a redirect.",
         subdomain="Specify the subdomain if using URL Path to remove a redirect.",
     )
-    @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
     async def rr(
         self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
     ):
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
+        staff_resources_member = staff_resources_guild.get_member(interaction.user.id)
+        if staff_resources_member is None:
+            return await interaction.response.send_message(
+                "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
+            )
         hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
         if hr_role not in interaction.user.roles:
             return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the permission to use this command."
+                f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
 
         self.raOBJ.del_redirect(redirect_id, subdomain)
@@ -195,14 +226,18 @@ class RedirectURL(commands.Cog):
         )
         await interaction.response.send_message(embed=embed, ephemeral=False)
 
-    @app_commands.command(name="redirect-list", description="List all redirects.")
-    @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
+    @RM.command(name="list", description="List all redirects.")
     async def rl(self, interaction: discord.Interaction):
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
+        staff_resources_member = staff_resources_guild.get_member(interaction.user.id)
+        if staff_resources_member is None:
+            return await interaction.response.send_message(
+                "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
+            )
         hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
         if hr_role not in interaction.user.roles:
             return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the permission to use this command."
+                f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
 
         await interaction.response.defer(thinking=True)
@@ -228,22 +263,26 @@ class RedirectURL(commands.Cog):
             source, bot=self.bot, interaction=interaction, compact=True
         ).start()
 
-    @app_commands.command(
-        name="redirect-info", description="Get information about a specific redirect."
+    @RM.command(
+        name="info", description="Get information about a specific redirect."
     )
     @app_commands.describe(
         redirect_id="Specify an ID or URL PATH to get info about a redirect.",
         subdomain="Specify the subdomain if using URL Path to get info about a redirect.",
     )
-    @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
     async def ri(
         self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
     ):
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
+        staff_resources_member = staff_resources_guild.get_member(interaction.user.id)
+        if staff_resources_member is None:
+            return await interaction.response.send_message(
+                "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
+            )
         hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
         if hr_role not in interaction.user.roles:
             return await interaction.response.send_message(
-                f"{interaction.user.mention} You do not have the permission to use this command."
+                f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
 
         await interaction.response.defer(thinking=True)
