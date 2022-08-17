@@ -255,6 +255,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
+            manage_channel=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -287,7 +288,7 @@ class AdminAPI(commands.Cog):
             title="Promotion Request",
             description=f"User: {user.mention}\n"
             f"**Reason:** {reason}"
-            f"**Team:** {team}"
+            f"\n**Team:** {team}"
             f"\n**Additional "
             f"Information:** {additional_info}",
             color=discord.Colour.gold(),
@@ -373,6 +374,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
+            manage_channel=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -496,6 +498,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
+            manage_channel=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -632,6 +635,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
+            manage_channel=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -750,6 +754,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
+            manage_channel=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -854,6 +859,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
+            manage_channel=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -953,6 +959,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
+            manage_channel=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -1059,6 +1066,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
+            manage_channel=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -1167,6 +1175,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
+            manage_channel=True,
         )
         await ticket_channel.set_permissions(
             member,

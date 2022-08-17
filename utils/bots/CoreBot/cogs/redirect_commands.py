@@ -58,6 +58,14 @@ class RedirectURL(commands.Cog):
         destination_url: str,
         sub_domain: str = None,
     ):
+
+        staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
+        hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
+        if hr_role not in interaction.user.roles:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You do not have the permission to use this command."
+            )
+
         if sub_domain is None:
             try:
                 val = self.raOBJ.add_redirect(redirect_code, destination_url)
@@ -157,6 +165,13 @@ class RedirectURL(commands.Cog):
     async def rr(
         self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
     ):
+        staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
+        hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
+        if hr_role not in interaction.user.roles:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You do not have the permission to use this command."
+            )
+
         self.raOBJ.del_redirect(redirect_id, subdomain)
         query = database.RedirectLogs.select().where(
             database.RedirectLogs.redirect_id == redirect_id
@@ -183,6 +198,13 @@ class RedirectURL(commands.Cog):
     @app_commands.command(name="redirect-list", description="List all redirects.")
     @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
     async def rl(self, interaction: discord.Interaction):
+        staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
+        hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
+        if hr_role not in interaction.user.roles:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You do not have the permission to use this command."
+            )
+
         await interaction.response.defer(thinking=True)
         obj_list = self.raOBJ.get_redirects()
         entries: List[Dict[str, str]] = []
@@ -217,6 +239,13 @@ class RedirectURL(commands.Cog):
     async def ri(
         self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
     ):
+        staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
+        hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
+        if hr_role not in interaction.user.roles:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You do not have the permission to use this command."
+            )
+
         await interaction.response.defer(thinking=True)
         obj = self.raOBJ.fetch_redirect(redirect_id, subdomain)
         if obj is None:
