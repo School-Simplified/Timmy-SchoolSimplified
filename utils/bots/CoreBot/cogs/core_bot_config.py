@@ -12,12 +12,14 @@ from dotenv import load_dotenv
 
 from core import database
 from core.checks import (
-    is_botAdmin2,
-    slash_is_bot_admin_2, slash_is_bot_admin_4, slash_is_bot_admin_3, slash_is_bot_admin,
+    slash_is_bot_admin_2,
+    slash_is_bot_admin_4,
+    slash_is_bot_admin_3,
+    slash_is_bot_admin,
 )
 from core.common import CheckDB_CC
-from core.common import Emoji, Colors
-from core.common import get_host_dir, force_restart
+from core.common import Emoji
+from core.common import get_host_dir
 
 load_dotenv()
 
@@ -56,17 +58,24 @@ class CoreBotConfig(commands.Cog):
     )
 
     @FL.command(name="modify", description="Modify the filter settings.")
-    @app_commands.describe(filter="Filter to modify.", val="Value to set the filter to.")
+    @app_commands.describe(
+        filter="Filter to modify.", val="Value to set the filter to."
+    )
     @slash_is_bot_admin_4()
-    async def Fmodify(self, interaction: discord.Interaction, filter: Literal[
+    async def Fmodify(
+        self,
+        interaction: discord.Interaction,
+        filter: Literal[
             "CheckDB.MasterMaintenance",
             "CheckDB.guildNone",
             "CheckDB.externalGuild",
             "CheckDB.ModRoleBypass",
             "CheckDB.ruleBypass",
             "CheckDB.publicCategories",
-            "CheckDB.elseSituation"],
-                      val: bool):
+            "CheckDB.elseSituation",
+        ],
+        val: bool,
+    ):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
             .where(database.CheckInformation.id == 1)
@@ -82,7 +91,7 @@ class CoreBotConfig(commands.Cog):
             "CheckDB.publicCategories": 6,
             "CheckDB.elseSituation": 7,
         }
-        num=database_values[filter]
+        num = database_values[filter]
 
         if num == 1:
             CheckDB.MasterMaintenance = val
@@ -106,9 +115,13 @@ class CoreBotConfig(commands.Cog):
             CheckDB.elseSituation = val
             CheckDB.save()
         else:
-            return await interaction.response.send_message(f"Not a valid option\n```py\n{filter}\n```")
+            return await interaction.response.send_message(
+                f"Not a valid option\n```py\n{filter}\n```"
+            )
 
-        await interaction.response.send_message(f"Field: {filter} has been set to {str(val)}")
+        await interaction.response.send_message(
+            f"Field: {filter} has been set to {str(val)}"
+        )
 
     @FL.command(description="View the filter settings.")
     @slash_is_bot_admin_3()
@@ -146,7 +159,9 @@ class CoreBotConfig(commands.Cog):
             .get()
         )
         WhitelistedPrefix.delete_instance()
-        await interaction.response.send_message(f"Field: {WhitelistedPrefix.prefix} has been deleted")
+        await interaction.response.send_message(
+            f"Field: {WhitelistedPrefix.prefix} has been deleted"
+        )
 
     @PRE.command(description="Add a whitelisted prefix.")
     @app_commands.describe(prefix="Prefix to add.")
@@ -155,7 +170,9 @@ class CoreBotConfig(commands.Cog):
         WhitelistedPrefix = database.WhitelistedPrefix.create(
             prefix=prefix, status=True
         )
-        await interaction.response.send_message(f"Field: {WhitelistedPrefix.prefix} has been added!")
+        await interaction.response.send_message(
+            f"Field: {WhitelistedPrefix.prefix} has been added!"
+        )
 
     @PRE.command(description="View the whitelisted prefixes.")
     @slash_is_bot_admin_3()
@@ -179,7 +196,6 @@ class CoreBotConfig(commands.Cog):
         )
         embed.add_field(name="Prefix List", value="\n\n".join(response))
         await interaction.response.send_message(embed=embed)
-
 
     @command()
     @slash_is_bot_admin_2()
@@ -390,7 +406,9 @@ class CoreBotConfig(commands.Cog):
         user="The user to add to the Bot Administrators list.",
     )
     @slash_is_bot_admin_4()
-    async def add(self, interaction: discord.Interaction, user: discord.User, level: int):
+    async def add(
+        self, interaction: discord.Interaction, user: discord.User, level: int
+    ):
         database.db.connect(reuse_if_open=True)
         q: database.Administrators = database.Administrators.create(
             discordID=user.id, TierLevel=level

@@ -969,4 +969,3 @@ Uncomment when you need to update tables again, however it is recommended to cre
 """
 if os.getenv("PyTestMODE"):
     iter_table(tables)
-

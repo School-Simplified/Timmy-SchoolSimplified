@@ -2,8 +2,8 @@ import asyncio
 import os
 from datetime import datetime
 
-import pytz
 import discord
+import pytz
 from discord import app_commands
 from discord.ext import commands
 
@@ -189,7 +189,9 @@ class GSuiteLogin(commands.Cog):
                     "Looks like you didn't respond in time, please try again later!"
                 )
 
-    @app_commands.command(name="paste-gsuite-button", description="Send the gsuite button")
+    @app_commands.command(
+        name="paste-gsuite-button", description="Send the gsuite button"
+    )
     @app_commands.guilds(TechID.g_tech)
     @slash_is_bot_admin()
     async def pasteGSuiteButton(self, interaction: discord.Interaction):

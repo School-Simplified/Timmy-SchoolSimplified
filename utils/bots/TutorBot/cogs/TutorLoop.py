@@ -10,6 +10,7 @@ from core.logging_module import get_log
 
 _log = get_log(__name__)
 
+
 class TutorBotLoop(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -60,7 +61,9 @@ class TutorBotLoop(commands.Cog):
                 try:
                     await student.send(embed=embed)
                 except:
-                    _log.warning(f"TutorLoop: Unable to Send a Reminder DM to: {student.id}")
+                    _log.warning(
+                        f"TutorLoop: Unable to Send a Reminder DM to: {student.id}"
+                    )
 
                 geten: database.TutorBot_Sessions = (
                     database.TutorBot_Sessions.select()

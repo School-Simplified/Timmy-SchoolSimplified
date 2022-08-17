@@ -69,6 +69,7 @@ class ConfigCatClient:
     CH_ID_CC = configcatclient.create_client(os.getenv("CHID_CC"))
     HR_ID_CC = configcatclient.create_client(os.getenv("HRID_CC"))
     LEADER_ID_CC = configcatclient.create_client(os.getenv("LEADERID_CC"))"""
+
     CHECK_DB_CC = configcatclient.create_client(os.getenv("CHECKDB_CC"))
     SANDBOX_CONFIG_CC = configcatclient.create_client_with_auto_poll(
         os.getenv("SANDBOX_CONFIG_CC"), poll_interval_seconds=10
@@ -1399,7 +1400,6 @@ async def force_restart(ctx, main_or_beta):
             p.terminate()
         else:
             await ctx.send("Port 80 not found...")
-
 
 
 def get_host_dir():

@@ -84,21 +84,30 @@ class RedirectURL(commands.Cog):
                 embed = discord.Embed(
                     title="Redirect Added", color=discord.Color.brand_green()
                 )
+                embed.add_field(name="Redirect Code", value=redirect_code)
                 embed.add_field(
-                    name="Redirect Code", value=redirect_code
+                    name="Redirect ID",
+                    value=f"`{val.id}`\n\nUse this ID to modify/delete this redirect.",
                 )
                 embed.add_field(
-                    name="Redirect ID", value=f"`{val.id}`\n\nUse this ID to modify/delete this redirect."
+                    name="Destination URL", value=destination_url, inline=False
                 )
-                embed.add_field(name="Destination URL", value=destination_url, inline=False)
                 embed.add_field(name="Subdomain", value=sub_domain)
-                embed.add_field(name="Test it out?", value="[https://ssimpl.org/{}](https://ssimpl.org/{})".format(redirect_code, redirect_code), inline=False)
-                embed.set_thumbnail(url=Others.timmy_happy_png)
-                embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar.url, url=interaction.user.avatar.url)
-
-                await interaction.response.send_message(
-                    embed=embed, ephemeral=False
+                embed.add_field(
+                    name="Test it out?",
+                    value="[https://ssimpl.org/{}](https://ssimpl.org/{})".format(
+                        redirect_code, redirect_code
+                    ),
+                    inline=False,
                 )
+                embed.set_thumbnail(url=Others.timmy_happy_png)
+                embed.set_author(
+                    name=interaction.user.name,
+                    icon_url=interaction.user.avatar.url,
+                    url=interaction.user.avatar.url,
+                )
+
+                await interaction.response.send_message(embed=embed, ephemeral=False)
         else:
             if not ".ssimpl.org" in sub_domain:
                 sub_domain += ".ssimpl.org"
@@ -158,18 +167,18 @@ class RedirectURL(commands.Cog):
 
         if query.exists():
             query = query.get()
-            embed.add_field(
-                name="Redirect Code", value=query.from_url
-            )
+            embed.add_field(name="Redirect Code", value=query.from_url)
             embed.add_field(name="Destination URL", value=query.to_url)
             query.delete_instance()
 
         embed.add_field(name="Redirect ID", value=redirect_id)
         embed.add_field(name="Subdomain", value=subdomain)
-        embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar.url, url=interaction.user.avatar.url)
-        await interaction.response.send_message(
-            embed=embed, ephemeral=False
+        embed.set_author(
+            name=interaction.user.name,
+            icon_url=interaction.user.avatar.url,
+            url=interaction.user.avatar.url,
         )
+        await interaction.response.send_message(embed=embed, ephemeral=False)
 
     @app_commands.command(name="redirect-list", description="List all redirects.")
     @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
@@ -187,8 +196,11 @@ class RedirectURL(commands.Cog):
         embed = discord.Embed(
             title=f"Redirects for {self.raOBJ.domain}", color=discord.Color.blue()
         )
-        embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar.url,
-                         url=interaction.user.avatar.url)
+        embed.set_author(
+            name=interaction.user.name,
+            icon_url=interaction.user.avatar.url,
+            url=interaction.user.avatar.url,
+        )
         source = RedirectPageSource(entries, per_page=6, embed=embed)
         await RoboPages(
             source, bot=self.bot, interaction=interaction, compact=True

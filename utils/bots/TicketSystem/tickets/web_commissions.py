@@ -185,9 +185,13 @@ class WebCommissionCode(commands.Cog):
             button = CommissionWebButton(self.bot)
             await interaction.response.send_message(view=button)
         else:
-            await interaction.response.send_message("You're not allowed to do that.", ephemeral=True)
+            await interaction.response.send_message(
+                "You're not allowed to do that.", ephemeral=True
+            )
 
-    @app_commands.command(name="webcommission-list", description="List all web commissions")
+    @app_commands.command(
+        name="webcommission-list", description="List all web commissions"
+    )
     @app_commands.guilds(TechID.g_tech, StaffID.g_staff_resources)
     async def webcommission_list(self, interaction: discord.Interaction):
         if interaction.user.guild_permissions.administrator:
@@ -209,8 +213,9 @@ class WebCommissionCode(commands.Cog):
             await interaction.response.send_message(embed=embed)
 
         else:
-            await interaction.response.send_message("You're not allowed to do that.", ephemeral=True)
-
+            await interaction.response.send_message(
+                "You're not allowed to do that.", ephemeral=True
+            )
 
 
 async def setup(bot: commands.Bot):

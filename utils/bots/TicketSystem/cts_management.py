@@ -6,14 +6,19 @@ from discord import ui, app_commands
 from discord.ext import commands
 
 from core import database
-from core.checks import is_botAdmin, slash_is_bot_admin
+from core.checks import slash_is_bot_admin
 from core.common import (
     Emoji,
     TechID,
     StaffID,
 )
-from utils.bots.TicketSystem.view_models import create_ui_modal_class, create_ticket_button, MGMCommissionButton, \
-    EmailDropdown, create_no_form_button
+from utils.bots.TicketSystem.view_models import (
+    create_ui_modal_class,
+    create_ticket_button,
+    MGMCommissionButton,
+    EmailDropdown,
+    create_no_form_button,
+)
 
 
 def text_to_list(hashtags):
@@ -141,7 +146,6 @@ class QuestionInput(ui.Modal, title="Submit Questions here!"):
                 no_form_button = create_no_form_button(query.id)
                 submit_button = no_form_button(query.id, self.bot)
 
-
             ticket_start_channel: discord.TextChannel = self.bot.get_channel(
                 query.channel_id
             )
@@ -214,7 +218,9 @@ class MGMTickets(commands.Cog):
     @slash_is_bot_admin()
     async def send_mgm_embed(self, interaction: discord.Interaction, param: int):
         if param == 1:
-            await interaction.response.send_message("Testing Mode", view=MGMCommissionButton(self.bot))
+            await interaction.response.send_message(
+                "Testing Mode", view=MGMCommissionButton(self.bot)
+            )
         elif param == 2:
             view = EmailDropdown(self.bot)
             await interaction.response.send_message("Testing Mode", view=view)
@@ -342,7 +348,7 @@ class MGMTickets(commands.Cog):
     )
     @app_commands.describe(
         configuration_id="The configuration ID that corresponds to the button.",
-        edit_mode="Edit Questions: Edit the questions itself, Edit Attributes: Edit the attributes (e.g. min length)"
+        edit_mode="Edit Questions: Edit the questions itself, Edit Attributes: Edit the attributes (e.g. min length)",
     )
     @slash_is_bot_admin()
     async def edit_modal(
@@ -545,9 +551,7 @@ class MGMTickets(commands.Cog):
         name="useradd",
         description="Adds a user to your ticket.",
     )
-    @app_commands.describe(
-        user="The person to add."
-    )
+    @app_commands.describe(user="The person to add.")
     async def add_user(self, interaction: discord.Interaction, user: discord.Member):
         channel: discord.TextChannel = interaction.channel
         category = channel.category
@@ -556,7 +560,9 @@ class MGMTickets(commands.Cog):
             database.TicketConfiguration.category_id == category.id
         )
         if not query.exists() and channel.category.id not in self.whitelisted_cat:
-            return await interaction.response.send_message("This channel does not seem to be a ticket.")
+            return await interaction.response.send_message(
+                "This channel does not seem to be a ticket."
+            )
 
         await channel.set_permissions(
             user,
@@ -571,9 +577,7 @@ class MGMTickets(commands.Cog):
         name="userremove",
         description="Removes a user to your ticket.",
     )
-    @app_commands.describe(
-        user="The person to remove."
-    )
+    @app_commands.describe(user="The person to remove.")
     async def remove_user(self, interaction: discord.Interaction, user: discord.Member):
         channel: discord.TextChannel = interaction.channel
         category = channel.category
@@ -582,7 +586,9 @@ class MGMTickets(commands.Cog):
             database.TicketConfiguration.category_id == category.id
         )
         if not query.exists() and channel.category.id not in self.whitelisted_cat:
-            return await interaction.response.send_message("This channel does not seem to be a ticket.")
+            return await interaction.response.send_message(
+                "This channel does not seem to be a ticket."
+            )
 
         await channel.set_permissions(
             user,
@@ -597,9 +603,7 @@ class MGMTickets(commands.Cog):
         name="rename",
         description="Rename a ticket channel.",
     )
-    @app_commands.describe(
-        name="The new name for the ticket channel."
-    )
+    @app_commands.describe(name="The new name for the ticket channel.")
     async def rename_channel(self, interaction: discord.Interaction, name: str):
         channel: discord.TextChannel = interaction.channel
         old_name = channel.name
@@ -609,9 +613,15 @@ class MGMTickets(commands.Cog):
             database.TicketConfiguration.category_id == category.id
         )
         if not query.exists():
-            return await interaction.response.send_message("This channel does not seem to be a ticket.")
-        await channel.edit(name=name, reason="Renamed by {}".format(interaction.user.name))
-        await interaction.response.send_message(f"{interaction.user.mention} **Renamed channel!**\n> `{old_name}` -> `{name}`")
+            return await interaction.response.send_message(
+                "This channel does not seem to be a ticket."
+            )
+        await channel.edit(
+            name=name, reason="Renamed by {}".format(interaction.user.name)
+        )
+        await interaction.response.send_message(
+            f"{interaction.user.mention} **Renamed channel!**\n> `{old_name}` -> `{name}`"
+        )
 
 
 async def setup(bot: commands.Bot):

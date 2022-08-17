@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import time
 from datetime import timedelta
 from typing import List, Literal, TYPE_CHECKING
@@ -12,7 +11,7 @@ from dotenv import load_dotenv
 from sentry_sdk import Hub
 
 from core import database
-from core.checks import is_botAdmin, is_botAdmin2, slash_is_bot_admin
+from core.checks import slash_is_bot_admin
 from core.common import (
     Emoji,
     Colors,
@@ -29,10 +28,9 @@ from core.common import (
     ButtonHandler,
 )
 from core.logging_module import get_log
-from utils.bots.TicketSystem.view_models import NitroConfirmFake
 
 if TYPE_CHECKING:
-     from main import Timmy
+    from main import Timmy
 
 if TYPE_CHECKING:
     from main import Timmy
@@ -41,7 +39,7 @@ _log = get_log(__name__)
 
 
 class DMForm(ui.Modal, title="Mass DM Announcement"):
-    def __init__(self, bot: 'Timmy', target_role: discord.Role) -> None:
+    def __init__(self, bot: "Timmy", target_role: discord.Role) -> None:
         super().__init__(timeout=None)
         self.bot = bot
         self.role: discord.Role = target_role
@@ -51,15 +49,21 @@ class DMForm(ui.Modal, title="Mass DM Announcement"):
         placeholder="Markdown is supported!",
         max_length=2000,
         required=True,
-        style=discord.TextStyle.long
+        style=discord.TextStyle.long,
     )
 
     async def on_submit(self, interaction: discord.Interaction):
         # Send the message to everyone in the guild with that role.
-        mass_dm_message = self.message_content.value + "\n\n" + f"Sent by: {interaction.user.mention} | Report abuse " \
-                                                                f"to any bot developer. "
+        mass_dm_message = (
+            self.message_content.value
+            + "\n\n"
+            + f"Sent by: {interaction.user.mention} | Report abuse "
+            f"to any bot developer. "
+        )
         await interaction.response.send_message("Starting DM Announcement...")
-        await interaction.channel.send(f"**This is a preview of what you are about to send.**\n\n{mass_dm_message}")
+        await interaction.channel.send(
+            f"**This is a preview of what you are about to send.**\n\n{mass_dm_message}"
+        )
         await asyncio.sleep(3)
         # Send a confirm button to the user.
         view = ui.View(timeout=30)
@@ -70,7 +74,10 @@ class DMForm(ui.Modal, title="Mass DM Announcement"):
             button_user=interaction.user,
         )
         button_cancel = ButtonHandler(
-            style=discord.ButtonStyle.red, label="Cancel", emoji="❌", button_user=interaction.user
+            style=discord.ButtonStyle.red,
+            label="Cancel",
+            emoji="❌",
+            button_user=interaction.user,
         )
         view.add_item(button_confirm)
         view.add_item(button_cancel)
@@ -80,7 +87,9 @@ class DMForm(ui.Modal, title="Mass DM Announcement"):
             title="Mass DM Confirmation",
             description=f"Are you sure you want to send this message to all members with the role, `{self.role.name}`?",
         )
-        message_confirm = await interaction.followup.send(embed=embed_confirm, view=view)
+        message_confirm = await interaction.followup.send(
+            embed=embed_confirm, view=view
+        )
         timeout = await view.wait()
         if not timeout:
             if view.value == "Confirm":
@@ -119,8 +128,6 @@ class DMForm(ui.Modal, title="Mass DM Announcement"):
                 description=f"Canceled sending message to all members with the role, `{self.role.name}`.",
             )
             await message_confirm.edit(embed=embed_confirm, view=None)
-
-
 
 
 class TicTacToeButton(discord.ui.Button["TicTacToe"]):
@@ -254,9 +261,9 @@ load_dotenv()
 
 
 class MiscCMD(commands.Cog):
-    def __init__(self, bot: 'Timmy'):
+    def __init__(self, bot: "Timmy"):
         self.__cog_name__ = "General"
-        self.bot: 'Timmy' = bot
+        self.bot: "Timmy" = bot
         self.interaction = []
 
         self.client = Hub.current.client
@@ -316,32 +323,42 @@ class MiscCMD(commands.Cog):
 
     @app_commands.command(name="tictactoe", description="Play tictactoe with someone.")
     @app_commands.guilds(MainID.g_main)
-    async def tictactoe(self, interaction: discord.Interaction, user: discord.User = None):
+    async def tictactoe(
+        self, interaction: discord.Interaction, user: discord.User = None
+    ):
         if user is None:
-            await interaction.response.send_message("lonely :(, sorry but you need a person to play against!", ephemeral=True)
+            await interaction.response.send_message(
+                "lonely :(, sorry but you need a person to play against!",
+                ephemeral=True,
+            )
         elif user == self.bot.user:
             await interaction.response.send_message("i'm good", ephemeral=True)
         elif user == interaction.user:
-            await interaction.response.send_message("lonely :(, sorry but you need an actual person to play against, not yourself!",
-                                                    ephemeral=True)
+            await interaction.response.send_message(
+                "lonely :(, sorry but you need an actual person to play against, not yourself!",
+                ephemeral=True,
+            )
         else:
-            await interaction.response.send_message(f"Tic Tac Toe: {interaction.user.mention} goes first",)
+            await interaction.response.send_message(
+                f"Tic Tac Toe: {interaction.user.mention} goes first",
+            )
 
-    @app_commands.command(description="Send a message to everyone who has a specific role. | President+ use only.")
+    @app_commands.command(
+        description="Send a message to everyone who has a specific role. | President+ use only."
+    )
     @app_commands.guilds(StaffID.g_staff_resources, StaffID.g_staff_mgm)
-    async def mass_dm(self, interaction: discord.Interaction, target_role: discord.Role):
+    async def mass_dm(
+        self, interaction: discord.Interaction, target_role: discord.Role
+    ):
         # Check if they the role "President" or higher, otherwise don't allow them to use.
         member: discord.Member = interaction.user
         role = discord.utils.get(member.guild.roles, name="President")
         if member.top_role.position >= role.position:
-            await interaction.response.send_modal(
-                DMForm(self.bot, target_role)
-            )
+            await interaction.response.send_modal(DMForm(self.bot, target_role))
         else:
             await interaction.response.send_message(
                 "You do not have the required permissions to use this command."
             )
-
 
     @app_commands.command(description="Ban a user from a specific server feature.")
     @app_commands.describe(
@@ -379,8 +396,17 @@ class MiscCMD(commands.Cog):
             )
 
     @app_commands.command(name="ping", description="Pong!")
-    @app_commands.guilds(MainID.g_main, TechID.g_tech, ChID.g_ch, TutID.g_tut, MktID.g_mkt,
-                         LeaderID.g_leader, LeaderID.g_staff_resources, DiscID.g_disc, HRID.g_hr)
+    @app_commands.guilds(
+        MainID.g_main,
+        TechID.g_tech,
+        ChID.g_ch,
+        TutID.g_tut,
+        MktID.g_mkt,
+        LeaderID.g_leader,
+        LeaderID.g_staff_resources,
+        DiscID.g_disc,
+        HRID.g_hr,
+    )
     async def ping(self, interaction: discord.Interaction):
         database.db.connect(reuse_if_open=True)
 
@@ -406,14 +432,16 @@ class MiscCMD(commands.Cog):
             value=f"```diff\n- CPU Usage: {psutil.cpu_percent()}%\n- Memory Usage: {psutil.virtual_memory().percent}%\n```",
             inline=False,
         )
-        pingembed.add_field(name="Status Page", value="[Click here](https://status.timmy.ssimpl.org/)")
+        pingembed.add_field(
+            name="Status Page", value="[Click here](https://status.timmy.ssimpl.org/)"
+        )
         pingembed.set_footer(
-            text=f"TimmyOS Version: {self.bot.version}", icon_url=interaction.user.avatar.url
+            text=f"TimmyOS Version: {self.bot.version}",
+            icon_url=interaction.user.avatar.url,
         )
 
         await interaction.response.send_message(embed=pingembed)
         database.db.close()
-
 
     @app_commands.command(description="Play a game of TicTacToe with someone!")
     @app_commands.describe(user="The user you want to play with.")

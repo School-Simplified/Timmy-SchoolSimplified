@@ -23,7 +23,8 @@ class EthanMoo(commands.Cog):
                     discord.FFmpegPCMAudio("./ethan_moo.mp3")
                 )
                 voice_client.play(
-                    source, after=lambda e: _log.error(f"Player error: {e}") if e else None
+                    source,
+                    after=lambda e: _log.error(f"Player error: {e}") if e else None,
                 )
                 await asyncio.sleep(80)
                 await voice_client.disconnect()

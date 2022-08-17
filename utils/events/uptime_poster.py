@@ -10,6 +10,7 @@ from core.logging_module import get_log
 
 _log = get_log(__name__)
 
+
 class MetricPoster(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -28,9 +29,15 @@ class MetricPoster(commands.Cog):
         """
         host_dir = get_host_dir()
         if host_dir == "/home/timmya" or host_dir == "/home/timmy-beta":
-            ping_payload = {"value": round(self.bot.latency * 1000), "timestamp": time.time()}
+            ping_payload = {
+                "value": round(self.bot.latency * 1000),
+                "timestamp": time.time(),
+            }
             cpu_payload = {"value": psutil.cpu_percent(), "timestamp": time.time()}
-            ram_payload = {"value": psutil.virtual_memory().percent, "timestamp": time.time()}
+            ram_payload = {
+                "value": psutil.virtual_memory().percent,
+                "timestamp": time.time(),
+            }
 
             headers = {
                 "Content-Type": "application/json",
@@ -58,7 +65,6 @@ class MetricPoster(commands.Cog):
                 json=ram_payload,
             )
             _log.info("Posted metrics")
-
 
     @instatus_metric_post.before_loop
     async def before_loop_(self):

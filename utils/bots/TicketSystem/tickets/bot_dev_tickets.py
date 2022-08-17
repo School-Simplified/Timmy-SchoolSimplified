@@ -311,7 +311,6 @@ class TechProjectCMD(commands.Cog):
 
                 await message.reply(content="Commission re-opened!")
 
-
     @tasks.loop(seconds=60.0)
     async def autoUnarchiveThread(self):
         """

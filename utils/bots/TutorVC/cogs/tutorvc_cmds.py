@@ -6,6 +6,7 @@ import discord
 import pytz
 from discord import app_commands
 from discord.ext import commands
+
 # global variables
 from discord.http import Route
 
@@ -205,9 +206,13 @@ class TutorVCCMD(commands.Cog):
     async def start_music(self, interaction: discord.Interaction):
         voice_state = interaction.user.voice
         if voice_state is None:
-            return await interaction.response.send_message("You are not in a voice channel.")
+            return await interaction.response.send_message(
+                "You are not in a voice channel."
+            )
         code = await self._create_invite(voice_state, app_id=880218394199220334)
-        await interaction.response.send_message(f"**Click the link to get started!**\nhttps://discord.gg/{code}")
+        await interaction.response.send_message(
+            f"**Click the link to get started!**\nhttps://discord.gg/{code}"
+        )
 
     @PV.command(description="Start an embedded game for your voice channel.")
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -246,7 +251,9 @@ class TutorVCCMD(commands.Cog):
                 if not timeout:
                     SelectedGame = var.view_response
                 else:
-                    return await interaction.followup.send("Timed out, try again later.")
+                    return await interaction.followup.send(
+                        "Timed out, try again later."
+                    )
                 GameID = GameDict[SelectedGame]
                 code = str(await self._create_invite(interaction.user.voice, GameID))
                 await interaction.followup.send("Loading...")
@@ -258,7 +265,7 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.deny} Ownership Check Failed",
                     description=f"You are not the owner of this voice channel, "
-                                f"please ask the original owner to start a game!",
+                    f"please ask the original owner to start a game!",
                     color=discord.Colour.brand_red(),
                 )
                 return await interaction.response.send_message(embed=embed)
@@ -267,8 +274,8 @@ class TutorVCCMD(commands.Cog):
             embed = discord.Embed(
                 title=f"{Emoji.invalid_channel} UnAuthorized Channel Edit",
                 description="You are not allowed to delete these channels!"
-                            "\n\n**Error Detection:**"
-                            "\n**1)** Detected Static Channels",
+                "\n\n**Error Detection:**"
+                "\n**1)** Detected Static Channels",
                 color=discord.Colour.brand_red(),
             )
             return await interaction.response.send_message(embed=embed)
@@ -307,7 +314,9 @@ class TutorVCCMD(commands.Cog):
                 if not timeout:
                     SelectedGame = var.view_response
                 else:
-                    return await interaction.followup.send("Timed out, try again later.")
+                    return await interaction.followup.send(
+                        "Timed out, try again later."
+                    )
                 GameID = GameDict[SelectedGame]
                 code = str(await self._create_invite(interaction.user.voice, GameID))
                 await interaction.followup.send(
@@ -318,16 +327,16 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.deny} Ownership Check Failed",
                     description=f"You are not the owner of this voice channel, "
-                                f"please ask the original owner to start a game!",
+                    f"please ask the original owner to start a game!",
                     color=discord.Colour.brand_red(),
                 )
                 return await interaction.response.send_message(embed=embed)
         database.db.close()
 
-    @PV.command(description='Rename the voice channel to a custom name.')
+    @PV.command(description="Rename the voice channel to a custom name.")
     @app_commands.describe(name="The channel name you want to use.")
     @commands.cooldown(1, 15, commands.BucketType.user)
-    async def rename(self, interaction: discord.Interaction, *, name: str=None):
+    async def rename(self, interaction: discord.Interaction, *, name: str = None):
         database.db.connect(reuse_if_open=True)
         SB = discord.utils.get(interaction.guild.roles, name=self.SB)
         legend = discord.utils.get(interaction.guild.roles, name=self.Legend)
@@ -372,20 +381,20 @@ class TutorVCCMD(commands.Cog):
         member: discord.Member = interaction.user
 
         if (
-                not any(role in interaction.user.roles for role in roleList)
-                and interaction.guild.id == 763119924385939498
+            not any(role in interaction.user.roles for role in roleList)
+            and interaction.guild.id == 763119924385939498
         ):
             embed = discord.Embed(
                 title=f"{Emoji.deny} Insufficient Rank",
                 description="Sorry! But only the following people who have these roles can rename their channel!"
-                            "\n\n- **Moderators**"
-                            "\n- **Marketing Team**"
-                            "\n- **Technical Team**"
-                            "\n- **Academics Team**"
-                            "\n- **VP**\n- **CO**"
-                            "\n- **Legends**"
-                            "\n- **Simplified Boosters**"
-                            "\n- **Level 40+**",
+                "\n\n- **Moderators**"
+                "\n- **Marketing Team**"
+                "\n- **Technical Team**"
+                "\n- **Academics Team**"
+                "\n- **VP**\n- **CO**"
+                "\n- **Legends**"
+                "\n- **Simplified Boosters**"
+                "\n- **Level 40+**",
                 color=discord.Colour.blurple(),
             )
             return await interaction.response.send_message(embed=embed)
@@ -419,7 +428,7 @@ class TutorVCCMD(commands.Cog):
                             embed = discord.Embed(
                                 title=f"{Emoji.cycle} ReNamed Channel",
                                 description=f"I have changed the channel's name to:"
-                                            f"\n**{name}**",
+                                f"\n**{name}**",
                                 color=discord.Colour.green(),
                             )
 
@@ -432,7 +441,7 @@ class TutorVCCMD(commands.Cog):
                             embed = discord.Embed(
                                 title=f"{Emoji.cycle} ReNamed Channel",
                                 description=f"I have changed the channel's name to:"
-                                            f"\n**{name}**",
+                                f"\n**{name}**",
                                 color=discord.Colour.green(),
                             )
 
@@ -447,7 +456,7 @@ class TutorVCCMD(commands.Cog):
                         embed = discord.Embed(
                             title=f"{Emoji.deny} Ownership Check Failed",
                             description=f"You are not the owner of this voice channel, "
-                                        f"please ask the original owner <@{q.authorID}>, to rename it!",
+                            f"please ask the original owner <@{q.authorID}>, to rename it!",
                             color=discord.Colour.red(),
                         )
 
@@ -461,7 +470,7 @@ class TutorVCCMD(commands.Cog):
                     embed = discord.Embed(
                         title=f"{Emoji.deny} Ownership Check Failed",
                         description=f"You are not the owner of this voice channel, please ask the original owner <@{q.authorID}>, "
-                                    f"to rename it!",
+                        f"to rename it!",
                         color=discord.Colour.dark_red(),
                     )
 
@@ -470,7 +479,7 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.invalid_channel} Unknown Channel",
                     description="You are not the owner of this voice channel nor is this a "
-                                "valid channel. Please execute the command under a channel you own!",
+                    "valid channel. Please execute the command under a channel you own!",
                     color=discord.Colour.red(),
                 )
 
@@ -519,7 +528,7 @@ class TutorVCCMD(commands.Cog):
                 embed.add_field(
                     name="Time Spent",
                     value=f"{member.mention} you have spent a total of {Emoji.calender} "
-                          f"`{day} minutes` in voice channel, **{query.name}**.",
+                    f"`{day} minutes` in voice channel, **{query.name}**.",
                 )
                 embed.set_footer(text="WARNING: Time displayed may not be accurate.")
                 await interaction.response.send_message(embed=embed)
@@ -548,10 +557,10 @@ class TutorVCCMD(commands.Cog):
                     hourlog.add_field(
                         name="Information",
                         value=f"**Tutor:** {tutor.mention}"
-                              f"\n**Student:** {student.mention}"
-                              f"\n**Time Started:** <t:{daySTR}:t>"
-                              f"\n**Time Ended:** <t:{nowSTR}:t>"
-                              f"\n\n**Total Time:** {day}",
+                        f"\n**Student:** {student.mention}"
+                        f"\n**Time Started:** <t:{daySTR}:t>"
+                        f"\n**Time Ended:** <t:{nowSTR}:t>"
+                        f"\n\n**Total Time:** {day}",
                     )
                     hourlog.set_footer(text=f"Session ID: {tutorSession.SessionID}")
                     await HOURCH.send(embed=hourlog)
@@ -559,8 +568,8 @@ class TutorVCCMD(commands.Cog):
                     embed = discord.Embed(
                         title="Feedback!",
                         description="Hey it looks like you're tutor session just ended, "
-                                    "if you'd like to let us know how we did please fill out the form "
-                                    "below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8",
+                        "if you'd like to let us know how we did please fill out the form "
+                        "below!\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8",
                         color=discord.Colour.green(),
                     )
                     await student.send(embed=embed)
@@ -575,8 +584,8 @@ class TutorVCCMD(commands.Cog):
             embed = discord.Embed(
                 title=f"{Emoji.invalid_channel} UnAuthorized Channel Deletion",
                 description="You are not allowed to delete these channels!"
-                            "\n\n**Error Detection:**"
-                            "\n**1)** Detected Static Channels",
+                "\n\n**Error Detection:**"
+                "\n**1)** Detected Static Channels",
                 color=discord.Colour.dark_red(),
             )
             return await interaction.response.send_message(embed=embed)
@@ -620,7 +629,7 @@ class TutorVCCMD(commands.Cog):
                 embed.add_field(
                     name="Time Spent",
                     value=f"{member.mention} you have spent a total of {Emoji.calender} "
-                          f"`{day} minutes` in voice channel, **{q.name}**.",
+                    f"`{day} minutes` in voice channel, **{q.name}**.",
                 )
                 embed.set_footer(text="WARNING: Time displayed may not be accurate.")
                 await interaction.response.send_message(embed=embed)
@@ -644,10 +653,10 @@ class TutorVCCMD(commands.Cog):
                     hourlog.add_field(
                         name="Information",
                         value=f"**Tutor:** {tutor.mention}"
-                              f"\n**Student:** {student.mention}"
-                              f"\n**Time Started:** <t:{daySTR}:t>"
-                              f"\n**Time Ended:** <t:{nowSTR}:t>"
-                              f"\n\n**Total Time:** {day} minutes",
+                        f"\n**Student:** {student.mention}"
+                        f"\n**Time Started:** <t:{daySTR}:t>"
+                        f"\n**Time Ended:** <t:{nowSTR}:t>"
+                        f"\n\n**Total Time:** {day} minutes",
                     )
                     hourlog.set_footer(text=f"Session ID: {tutorSession.SessionID}")
                     await HOURCH.send(embed=hourlog)
@@ -655,8 +664,8 @@ class TutorVCCMD(commands.Cog):
                     embed = discord.Embed(
                         title="Feedback!",
                         description="Hey it looks like you're tutor session "
-                                    "just ended, if you'd like to let us know how we did please fill out the form below!"
-                                    "\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8",
+                        "just ended, if you'd like to let us know how we did please fill out the form below!"
+                        "\n\nhttps://forms.gle/Y1oobNFEBf7vpfMM8",
                         color=discord.Colour.green(),
                     )
                     try:
@@ -667,8 +676,8 @@ class TutorVCCMD(commands.Cog):
                     embed = discord.Embed(
                         title="Logged Hours",
                         description="Hey! It looks like you've finished your tutor session, "
-                                    f"I've already went ahead and sent your session legnth in <#{TutID.ch_hour_logs}>."
-                                    "\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.",
+                        f"I've already went ahead and sent your session legnth in <#{TutID.ch_hour_logs}>."
+                        "\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.",
                         color=discord.Color.green(),
                     )
                     try:
@@ -693,14 +702,14 @@ class TutorVCCMD(commands.Cog):
                     embed = discord.Embed(
                         title=f"{Emoji.invalid_channel} Ownership Check Failed",
                         description="This isn't a valid channel! Please use the command on an actual "
-                                    "voice channel thats inside the correct category!",
+                        "voice channel thats inside the correct category!",
                         color=discord.Colour.red(),
                     )
                 else:
                     embed = discord.Embed(
                         title=f"{Emoji.deny} Ownership Check Failed",
                         description=f"You are not the owner of this voice channel, please ask the "
-                                    f"original owner <@{q.authorID}>, to end it!",
+                        f"original owner <@{q.authorID}>, to end it!",
                         color=discord.Colour.red(),
                     )
                 finally:
@@ -709,14 +718,16 @@ class TutorVCCMD(commands.Cog):
             embed = discord.Embed(
                 title=f"{Emoji.invalid_channel} Unknown Channel",
                 description="You are not the owner of this voice channel nor is this a valid channel. "
-                            "Please execute the command under a channel you own!",
+                "Please execute the command under a channel you own!",
                 color=discord.Colour.red(),
             )
 
             await interaction.response.send_message(embed=embed)
         database.db.close()
 
-    @PV.command(description="Should be used to forcefully end a session. Limited to Moderator+")
+    @PV.command(
+        description="Should be used to forcefully end a session. Limited to Moderator+"
+    )
     @app_commands.describe(
         channel="The channel you want to force end.",
     )
@@ -727,15 +738,17 @@ class TutorVCCMD(commands.Cog):
         "Mod Trainee",
         844013914609680384,
     )
-    async def force_end(self, interaction: discord.Interaction, channel: discord.VoiceChannel):
+    async def force_end(
+        self, interaction: discord.Interaction, channel: discord.VoiceChannel
+    ):
         database.db.connect(reuse_if_open=True)
 
         if channel.id in self.presetChannels:
             embed = discord.Embed(
                 title=f"{Emoji.invalid_channel} UnAuthorized Channel Deletion",
                 description="You are not allowed to delete these channels!"
-                            "\n\n**Error Detection:**"
-                            "\n**1)** Detected Static Channels",
+                "\n\n**Error Detection:**"
+                "\n**1)** Detected Static Channels",
                 color=discord.Colour.dark_red(),
             )
             return await interaction.response.send_message(embed=embed)
@@ -778,7 +791,7 @@ class TutorVCCMD(commands.Cog):
                 embed.add_field(
                     name="Time Spent",
                     value=f"<@{q.authorID}> you have spent a total of {Emoji.calender} "
-                          f"`{day} minutes` in voice channel, **{q.name}**.",
+                    f"`{day} minutes` in voice channel, **{q.name}**.",
                 )
                 embed.set_footer(text="WARNING: Time displayed may not be accurate.")
                 await interaction.response.send_message(embed=embed)
@@ -788,7 +801,7 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.warn} Partial Completion",
                     description="The database indicates there is no owner or data related to this "
-                                "voice channel but I have still deleted the channel!",
+                    "voice channel but I have still deleted the channel!",
                     color=discord.Colour.gold(),
                 )
 
@@ -798,14 +811,16 @@ class TutorVCCMD(commands.Cog):
             embed = discord.Embed(
                 title=f"{Emoji.warn} Unknown Channel",
                 description="You are not the owner of this voice channel nor is this a valid channel. "
-                            "Please execute the command under a valid voice channel!",
+                "Please execute the command under a valid voice channel!",
                 color=discord.Colour.red(),
             )
             await interaction.response.send_message(embed=embed)
 
         database.db.close()
 
-    @PV.command(description="Locks your voice channel so it becomes private to everyone else.")
+    @PV.command(
+        description="Locks your voice channel so it becomes private to everyone else."
+    )
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def lock(self, interaction: discord.Interaction):
         database.db.connect(reuse_if_open=True)
@@ -840,8 +855,8 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.deny} UnAuthorized Channel Modification",
                     description="You are not allowed to modify these channels!"
-                                "\n\n**Error Detection:**"
-                                "\n**1)** Detected Static Channels",
+                    "\n\n**Error Detection:**"
+                    "\n**1)** Detected Static Channels",
                     color=discord.Colour.dark_red(),
                 )
                 return await interaction.response.send_message(embed=embed)
@@ -859,8 +874,8 @@ class TutorVCCMD(commands.Cog):
                         .where(
                             (database.VCChannelInfo.authorID == interaction.user.id)
                             & (
-                                    database.VCChannelInfo.ChannelID
-                                    == voice_state.channel.id
+                                database.VCChannelInfo.ChannelID
+                                == voice_state.channel.id
                             )
                             & (database.VCChannelInfo.GuildID == interaction.guild.id)
                         )
@@ -870,7 +885,9 @@ class TutorVCCMD(commands.Cog):
                     LOCK.save()
 
                     await member.voice.channel.set_permissions(
-                        interaction.guild.default_role, connect=False, view_channel=False
+                        interaction.guild.default_role,
+                        connect=False,
+                        view_channel=False,
                     )
                     for role in roles:
                         if role is not None:
@@ -885,7 +902,7 @@ class TutorVCCMD(commands.Cog):
                     embed = discord.Embed(
                         title=f"{Emoji.lock} Locked Voice Channel",
                         description="Your voice channel has been locked and now only authorized users can join it!"
-                                    "\n\n**NOTE:** Moderators and other Administrators will always be allowed into your voice channels!",
+                        "\n\n**NOTE:** Moderators and other Administrators will always be allowed into your voice channels!",
                         color=discord.Colour.green(),
                     )
                     await interaction.response.send_message(embed=embed)
@@ -896,8 +913,8 @@ class TutorVCCMD(commands.Cog):
                             database.VCChannelInfo.select()
                             .where(
                                 (
-                                        database.VCChannelInfo.ChannelID
-                                        == voice_state.channel.id
+                                    database.VCChannelInfo.ChannelID
+                                    == voice_state.channel.id
                                 )
                                 & (database.VCChannelInfo.GuildID == ctx.guild.id)
                             )
@@ -907,14 +924,14 @@ class TutorVCCMD(commands.Cog):
                         embed = discord.Embed(
                             title=f"{Emoji.deny} Ownership Check Failed",
                             description="This isn't a valid voice channel! "
-                                        "Please use the command on an actual voice channel thats under the correct category!",
+                            "Please use the command on an actual voice channel thats under the correct category!",
                             color=discord.Colour.red(),
                         )
                     else:
                         embed = discord.Embed(
                             title=f"{Emoji.deny} Ownership Check Failed",
                             description=f"You are not the owner of this voice channel, "
-                                        f"please ask the original owner <@{q.authorID}>, to use this command!",
+                            f"please ask the original owner <@{q.authorID}>, to use this command!",
                             color=discord.Colour.red(),
                         )
                     finally:
@@ -923,7 +940,7 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.warn} Unknown Channel",
                     description="You are not the owner of this voice channel nor is this a valid channel. "
-                                "Please execute the command under a channel you own!",
+                    "Please execute the command under a channel you own!",
                     color=discord.Colour.red(),
                 )
 
@@ -932,8 +949,10 @@ class TutorVCCMD(commands.Cog):
         database.db.close()
 
     @PV.command(description="Associates a private voice channel with a Tutor Code.")
-    @app_commands.describe(tutor_code="The Tutor Code/ID from TutorBot that is your Tutor Session. (Normally a 3 "
-                                      "digit string")
+    @app_commands.describe(
+        tutor_code="The Tutor Code/ID from TutorBot that is your Tutor Session. (Normally a 3 "
+        "digit string"
+    )
     async def set_tutor(self, interaction: discord.Interaction, tutor_code: str):
         TR = discord.utils.get(interaction.guild.roles, name=self.TutorRole)
 
@@ -976,14 +995,14 @@ class TutorVCCMD(commands.Cog):
                         hourlog = discord.Embed(
                             title="Tutor Session Convert Complete",
                             description=f"I have successfully converted this voice session into a tutor session, "
-                                        f"when you end this session I will log this session for you.",
+                            f"when you end this session I will log this session for you.",
                             color=discord.Colour.blue(),
                         )
                         hourlog.add_field(
                             name="Information",
                             value=f"**Tutor:** {tutor.mention}"
-                                  f"\n**Student:** {student.mention}"
-                                  f"\n**Date:** <t:{ts}:R>",
+                            f"\n**Student:** {student.mention}"
+                            f"\n**Date:** <t:{ts}:R>",
                         )
                         await interaction.response.send_message(embed=hourlog)
 
@@ -1030,8 +1049,8 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.deny} UnAuthorized Channel Modification",
                     description="You are not allowed to modify these channels!"
-                                "\n\n**Error Detection:**"
-                                "\n**1)** Detected Static Channels",
+                    "\n\n**Error Detection:**"
+                    "\n**1)** Detected Static Channels",
                     color=discord.Colour.dark_red(),
                 )
                 return await interaction.response.send_message(embed=embed)
@@ -1049,8 +1068,8 @@ class TutorVCCMD(commands.Cog):
                         .where(
                             (database.VCChannelInfo.authorID == interaction.user.id)
                             & (
-                                    database.VCChannelInfo.ChannelID
-                                    == voice_state.channel.id
+                                database.VCChannelInfo.ChannelID
+                                == voice_state.channel.id
                             )
                             & (database.VCChannelInfo.GuildID == interaction.guild.id)
                         )
@@ -1064,8 +1083,8 @@ class TutorVCCMD(commands.Cog):
                         .where(
                             (database.VCChannelInfo.authorID == interaction.user.id)
                             & (
-                                    database.VCChannelInfo.ChannelID
-                                    == voice_state.channel.id
+                                database.VCChannelInfo.ChannelID
+                                == voice_state.channel.id
                             )
                             & (database.VCChannelInfo.GuildID == interaction.guild.id)
                         )
@@ -1086,10 +1105,13 @@ class TutorVCCMD(commands.Cog):
                             database.VCChannelInfo.select()
                             .where(
                                 (
-                                        database.VCChannelInfo.ChannelID
-                                        == voice_state.channel.id
+                                    database.VCChannelInfo.ChannelID
+                                    == voice_state.channel.id
                                 )
-                                & (database.VCChannelInfo.GuildID == interaction.guild.id)
+                                & (
+                                    database.VCChannelInfo.GuildID
+                                    == interaction.guild.id
+                                )
                             )
                             .get()
                         )
@@ -1097,14 +1119,14 @@ class TutorVCCMD(commands.Cog):
                         embed = discord.Embed(
                             title=f"{Emoji.deny} Ownership Check Failed",
                             description="This isn't a valid voice channel! Please use the command on "
-                                        "an actual voice channel thats under the correct category!",
+                            "an actual voice channel thats under the correct category!",
                             color=discord.Colour.red(),
                         )
                     else:
                         embed = discord.Embed(
                             title=f"{Emoji.deny} Ownership Check Failed",
                             description=f"You are not the owner of this voice channel, "
-                                        f"please ask the original owner <@{q.authorID}>, to unlock it!",
+                            f"please ask the original owner <@{q.authorID}>, to unlock it!",
                             color=discord.Colour.red(),
                         )
                     finally:
@@ -1114,7 +1136,7 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.warn} Unknown Channel",
                     description="You are not the owner of this voice channel nor is this a valid channel. "
-                                "Please execute the command under a channel you own!",
+                    "Please execute the command under a channel you own!",
                     color=discord.Colour.red(),
                 )
 
@@ -1122,12 +1144,20 @@ class TutorVCCMD(commands.Cog):
 
         database.db.close()
 
-    @PV.command(description="Once a voice channel is locked, this command will allow you permit others to join.")
-    @app_commands.describe(type_action="Action to execute against the user. | User is not required when using LIST.",
-                           user="The user to execute the action against.")
+    @PV.command(
+        description="Once a voice channel is locked, this command will allow you permit others to join."
+    )
+    @app_commands.describe(
+        type_action="Action to execute against the user. | User is not required when using LIST.",
+        user="The user to execute the action against.",
+    )
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def permit(self, interaction: discord.Interaction, type_action: Literal["ADD", "REMOVE", "LIST"],
-                     user: discord.Member = None):
+    async def permit(
+        self,
+        interaction: discord.Interaction,
+        type_action: Literal["ADD", "REMOVE", "LIST"],
+        user: discord.Member = None,
+    ):
         database.db.connect(reuse_if_open=True)
         member = interaction.guild.get_member(interaction.user.id)
         typeAction = type_action
@@ -1147,8 +1177,8 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.deny} UnAuthorized Channel Modification",
                     description="You are not allowed to modify these channels!"
-                                "\n\n**Error Detection:**"
-                                "\n**1)** Detected Static Channels",
+                    "\n\n**Error Detection:**"
+                    "\n**1)** Detected Static Channels",
                     color=discord.Colour.dark_red(),
                 )
                 return await interaction.response.send_message(embed=embed)
@@ -1166,8 +1196,8 @@ class TutorVCCMD(commands.Cog):
                         .where(
                             (database.VCChannelInfo.authorID == interaction.user.id)
                             & (
-                                    database.VCChannelInfo.ChannelID
-                                    == voice_state.channel.id
+                                database.VCChannelInfo.ChannelID
+                                == voice_state.channel.id
                             )
                             & (database.VCChannelInfo.GuildID == interaction.guild.id)
                         )
@@ -1178,8 +1208,8 @@ class TutorVCCMD(commands.Cog):
                         embed = discord.Embed(
                             title=f"{Emoji.deny} Invalid Setup",
                             description="Hey there! This voice channel is already open to the public, "
-                                        "if you want to limit its access to certain people. "
-                                        "Then consider using `+lock` and then come back this command!",
+                            "if you want to limit its access to certain people. "
+                            "Then consider using `+lock` and then come back this command!",
                             color=discord.Colour.blurple(),
                         )
                         return await interaction.response.send_message(embed=embed)
@@ -1246,16 +1276,16 @@ class TutorVCCMD(commands.Cog):
                             embed.add_field(
                                 name="Documentation",
                                 value="Hey there, it looks you didn't specify a valid operation type to this user. "
-                                      "Take a look at this documentation!"
-                                      "\n\n**PERMIT:**"
-                                      "\n\nUsage: `+permit <operation> <user>`"
-                                      "\n**Description:** Modifies your voice channel's permissions."
-                                      "\n**NOTE:** The argument `operation` supports `+`/add, `-`/remove, `=`/list. "
-                                      "If you are using `=` or `list`, you do not need to specify a user."
-                                      "\n\n**Examples:**"
-                                      "\n\nAdding Members -> `+permit add @Space#0001`"
-                                      "\nRemoving Members -> `+permit remove @Space#0001`"
-                                      "\nListing Members -> `+permit =`",
+                                "Take a look at this documentation!"
+                                "\n\n**PERMIT:**"
+                                "\n\nUsage: `+permit <operation> <user>`"
+                                "\n**Description:** Modifies your voice channel's permissions."
+                                "\n**NOTE:** The argument `operation` supports `+`/add, `-`/remove, `=`/list. "
+                                "If you are using `=` or `list`, you do not need to specify a user."
+                                "\n\n**Examples:**"
+                                "\n\nAdding Members -> `+permit add @Space#0001`"
+                                "\nRemoving Members -> `+permit remove @Space#0001`"
+                                "\nListing Members -> `+permit =`",
                             )
                             return await interaction.response.send_message(embed=embed)
 
@@ -1265,8 +1295,8 @@ class TutorVCCMD(commands.Cog):
                             database.VCChannelInfo.select()
                             .where(
                                 (
-                                        database.VCChannelInfo.ChannelID
-                                        == voice_state.channel.id
+                                    database.VCChannelInfo.ChannelID
+                                    == voice_state.channel.id
                                 )
                                 & (database.VCChannelInfo.GuildID == ctx.guild.id)
                             )
@@ -1276,14 +1306,14 @@ class TutorVCCMD(commands.Cog):
                         embed = discord.Embed(
                             title=f"{Emoji.invalid_channel} Ownership Check Failed",
                             description="This isn't a valid channel! "
-                                        "Please use the command on an actual private voice channel!",
+                            "Please use the command on an actual private voice channel!",
                             color=discord.Colour.red(),
                         )
                     else:
                         embed = discord.Embed(
                             title=f"{Emoji.deny} Ownership Check Failed",
                             description=f"You are not the owner of this voice channel, "
-                                        f"please ask the original owner <@{q.authorID}>, to use this command!",
+                            f"please ask the original owner <@{q.authorID}>, to use this command!",
                             color=discord.Colour.red(),
                         )
                     finally:
@@ -1292,7 +1322,7 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.warn} Unknown Channel",
                     description="You are not the owner of this voice channel nor is this a valid channel. "
-                                "Please execute the command under a channel you own!",
+                    "Please execute the command under a channel you own!",
                     color=discord.Colour.red(),
                 )
 
@@ -1330,8 +1360,8 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.deny} UnAuthorized Channel Modification",
                     description="You are not allowed to modify these channels!"
-                                "\n\n**Error Detection:**"
-                                "\n**1)** Detected Static Channels",
+                    "\n\n**Error Detection:**"
+                    "\n**1)** Detected Static Channels",
                     color=discord.Colour.dark_red(),
                 )
                 return await interaction.response.send_message(embed=embed)
@@ -1347,7 +1377,9 @@ class TutorVCCMD(commands.Cog):
                     try:
                         voiceLIMIT = int(new_voice_limit)
                     except:
-                        return await interaction.response.send_message(f"{Emoji.deny} Not a valid number!")
+                        return await interaction.response.send_message(
+                            f"{Emoji.deny} Not a valid number!"
+                        )
                     else:
                         if voiceLIMIT == 0:
                             return await interaction.response.send_message(
@@ -1395,10 +1427,13 @@ class TutorVCCMD(commands.Cog):
                             database.VCChannelInfo.select()
                             .where(
                                 (
-                                        database.VCChannelInfo.ChannelID
-                                        == voice_state.channel.id
+                                    database.VCChannelInfo.ChannelID
+                                    == voice_state.channel.id
                                 )
-                                & (database.VCChannelInfo.GuildID == interaction.guild.id)
+                                & (
+                                    database.VCChannelInfo.GuildID
+                                    == interaction.guild.id
+                                )
                             )
                             .get()
                         )
@@ -1412,7 +1447,7 @@ class TutorVCCMD(commands.Cog):
                         embed = discord.Embed(
                             title=f"{Emoji.deny} Ownership Check Failed",
                             description=f"You are not the owner of this voice channel, "
-                                        f"please ask the original owner <@{q.authorID}>, to use this command!",
+                            f"please ask the original owner <@{q.authorID}>, to use this command!",
                             color=discord.Colour.red(),
                         )
                     finally:
@@ -1421,7 +1456,7 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.warn} Unknown Channel",
                     description="You are not the owner of this voice channel nor is this a valid channel. "
-                                "Please execute the command under a channel you own!",
+                    "Please execute the command under a channel you own!",
                     color=discord.Colour.red(),
                 )
                 await interaction.response.send_message(embed=embed)
@@ -1450,8 +1485,8 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.deny} UnAuthorized Channel Modification",
                     description="You are not allowed to modify these channels!"
-                                "\n\n**Error Detection:**"
-                                "\n**1)** Detected Static Channels",
+                    "\n\n**Error Detection:**"
+                    "\n**1)** Detected Static Channels",
                     color=discord.Colour.dark_red(),
                 )
                 return await interaction.response.send_message(embed=embed)
@@ -1478,10 +1513,13 @@ class TutorVCCMD(commands.Cog):
                             database.VCChannelInfo.select()
                             .where(
                                 (
-                                        database.VCChannelInfo.ChannelID
-                                        == voice_state.channel.id
+                                    database.VCChannelInfo.ChannelID
+                                    == voice_state.channel.id
                                 )
-                                & (database.VCChannelInfo.GuildID == interaction.guild.id)
+                                & (
+                                    database.VCChannelInfo.GuildID
+                                    == interaction.guild.id
+                                )
                             )
                             .get()
                         )
@@ -1489,14 +1527,14 @@ class TutorVCCMD(commands.Cog):
                         embed = discord.Embed(
                             title=f"{Emoji.deny} Ownership Check Failed",
                             description="This isn't a valid voice channel! "
-                                        "Please use the command on an actual voice channel thats under the correct category!",
+                            "Please use the command on an actual voice channel thats under the correct category!",
                             color=discord.Colour.red(),
                         )
                     else:
                         embed = discord.Embed(
                             title=f"{Emoji.deny} Ownership Check Failed",
                             description=f"You are not the owner of this voice channel, "
-                                        f"please ask the original owner <@{q.authorID}>, to disconnect them!",
+                            f"please ask the original owner <@{q.authorID}>, to disconnect them!",
                             color=discord.Colour.red(),
                         )
                     finally:
@@ -1505,7 +1543,7 @@ class TutorVCCMD(commands.Cog):
                 embed = discord.Embed(
                     title=f"{Emoji.warn} Unknown Channel",
                     description="You are not the owner of this voice channel nor is this a valid channel. "
-                                "Please execute the command under a channel you own!",
+                    "Please execute the command under a channel you own!",
                     color=discord.Colour.red(),
                 )
 

@@ -44,5 +44,6 @@ class GuildCheck(commands.Cog):
                     await channel.send(embed=embed)
                     break
 
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(GuildCheck(bot))

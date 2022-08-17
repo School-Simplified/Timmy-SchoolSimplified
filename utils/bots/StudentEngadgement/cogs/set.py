@@ -24,7 +24,7 @@ MediaLiteralType = Literal[
     "Motivation",
     "Music",
     "Opportunities",
-    "General"
+    "General",
 ]
 
 blacklist = []
@@ -195,6 +195,7 @@ class Suggest(app_commands.Group):
         """Make a general suggestion!"""
         await interaction.response.send_modal(SuggestModal(self.bot, "General"))
 
+
 class SuggestModal(discord.ui.Modal):
     def __init__(self, bot: Timmy, suggest_type: MediaLiteralType):
         super().__init__(timeout=None, title=suggest_type + " Suggestion")
@@ -335,7 +336,7 @@ class SuggestModal(discord.ui.Modal):
             {
                 "question": "What do you want to suggest?",
                 "placeholder": "Suggestion should be as detailed as possible.",
-                "required": True
+                "required": True,
             }
         ]
 
@@ -363,7 +364,7 @@ class SuggestModal(discord.ui.Modal):
             "Daily Question": self.daily_q_question_list,
             "Motivation": self.motivation_question_list,
             "Music": self.music_question_list,
-            "General": self.general_question_list
+            "General": self.general_question_list,
         }
         return transform_dict[type_]
 
@@ -454,7 +455,6 @@ class Engagement(commands.Cog):
         )
         guess_channel = self.bot.get_channel(DiscID.ch_puzzle)
         await guess_channel.send(embed=embed)
-
 
 
 async def setup(bot: Timmy):

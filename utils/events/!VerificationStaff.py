@@ -9,11 +9,9 @@ from core.common import (
     StaffID,
     TechID,
     TutID,
-    Others,
     load_config,
 )
 from core.logging_module import get_log
-from core.special_methods import VerifyButton
 
 _log = get_log(__name__)
 

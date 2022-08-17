@@ -11,7 +11,16 @@ from googleapiclient.errors import HttpError
 
 import core.common
 from core import database
-from core.common import ButtonHandler, get_random_string, service, HRID, StaffID, TechID, raw_export, Emoji
+from core.common import (
+    ButtonHandler,
+    get_random_string,
+    service,
+    HRID,
+    StaffID,
+    TechID,
+    raw_export,
+    Emoji,
+)
 
 EmailSelectOptions = [
     discord.SelectOption(
@@ -144,7 +153,8 @@ def create_ui_modal_class(conf_id):
             # make query.role_id into a list (comma seperated string) and add each role to the ticket channel
             if query.role_id is not None:
                 role_list = [
-                    int(e) if e.strip().isdigit() else e for e in query.role_id.split(",")
+                    int(e) if e.strip().isdigit() else e
+                    for e in query.role_id.split(",")
                 ]
                 for role in role_list:
                     role = discord.utils.get(ticket_server.roles, id=int(role))
@@ -258,7 +268,7 @@ def create_no_form_button(conf_id):
             custom_id=f"cts_pers:{query.id}",
         )
         async def starts_commission(
-                self, interaction: discord.Interaction, button: discord.ui.Button
+            self, interaction: discord.Interaction, button: discord.ui.Button
         ):
             query = database.TicketConfiguration.select().where(
                 database.TicketConfiguration.id == self.conf_id
@@ -310,7 +320,8 @@ def create_no_form_button(conf_id):
             # make query.role_id into a list (comma seperated string) and add each role to the ticket channel
             if query.role_id is not None:
                 role_list = [
-                    int(e) if e.strip().isdigit() else e for e in query.role_id.split(",")
+                    int(e) if e.strip().isdigit() else e
+                    for e in query.role_id.split(",")
                 ]
                 for role in role_list:
                     role = discord.utils.get(ticket_server.roles, id=int(role))
@@ -356,7 +367,9 @@ def create_no_form_button(conf_id):
                 name=interaction.user.name,
                 icon_url=interaction.user.avatar.url,
             )
-            embed.set_footer(text=f"ID: {interaction.user.id} | This ticket config has no form setup!")
+            embed.set_footer(
+                text=f"ID: {interaction.user.id} | This ticket config has no form setup!"
+            )
             await ticket_channel.send(embed=embed)
 
             await interaction.response.send_message(
@@ -817,13 +830,15 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
         LCM = await channel.send(
             interaction.user.mention, embed=controlTicket, view=LockControlButton
         )
-        await channel.send("Thank you for creating an announcement ticket! Please use the link below to schedule a "
-                           "time for the announcement to be sent out. When scheduling, keep the following in "
-                           "mind:\n\n> <:barrow:967579494833618954> You may only schedule a date that is at least "
-                           "**two weeks** AFTER the creation of this ticket.\n> <:barrow:967579494833618954> The "
-                           "scheduled date is NOT final; Corporate Officers reserve the right to change the date if "
-                           "the announcement is not "
-                           "ready.\n\n<:barrow2:967579638207500398>https://ssimpl.org/AnnouncementScheduling")
+        await channel.send(
+            "Thank you for creating an announcement ticket! Please use the link below to schedule a "
+            "time for the announcement to be sent out. When scheduling, keep the following in "
+            "mind:\n\n> <:barrow:967579494833618954> You may only schedule a date that is at least "
+            "**two weeks** AFTER the creation of this ticket.\n> <:barrow:967579494833618954> The "
+            "scheduled date is NOT final; Corporate Officers reserve the right to change the date if "
+            "the announcement is not "
+            "ready.\n\n<:barrow2:967579638207500398>https://ssimpl.org/AnnouncementScheduling"
+        )
         await LCM.pin()
 
         tz = pytz.timezone("EST")

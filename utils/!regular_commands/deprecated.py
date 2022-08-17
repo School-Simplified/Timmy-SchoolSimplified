@@ -2,7 +2,6 @@ from discord.ext import commands
 
 
 class DeprecatedRegularCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -169,6 +168,7 @@ class DeprecatedRegularCommands(commands.Cog):
     @commands.command()
     async def pasteGSuiteButton(self, ctx):
         return
+
 
 async def setup(bot):
     await bot.add_cog(DeprecatedRegularCommands(bot))

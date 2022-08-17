@@ -23,7 +23,8 @@ from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
 from fastapi import FastAPI
-#from googletrans import Translator
+
+# from googletrans import Translator
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -37,7 +38,7 @@ from core.special_methods import (
     on_app_command_error_,
     on_command_error_,
     on_ready_,
-    on_command_
+    on_command_,
 )
 
 app = FastAPI()
@@ -147,7 +148,7 @@ class Timmy(commands.Bot):
                 except commands.ExtensionNotFound:
                     raise commands.ExtensionNotFound(ext)
                 bar()
-        #await bot.tree.set_translator(TimmyTranslator())
+        # await bot.tree.set_translator(TimmyTranslator())
 
     async def is_owner(self, user: discord.User):
         admin_ids = []
@@ -178,6 +179,7 @@ class Timmy(commands.Bot):
 
 
 bot = Timmy(time.time())
+
 
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
@@ -237,4 +239,3 @@ if __name__ == "__main__":
         uvicorn.run(app, host="0.0.0.0", port=80)
     else:
         bot.run(os.getenv("TOKEN"))
-

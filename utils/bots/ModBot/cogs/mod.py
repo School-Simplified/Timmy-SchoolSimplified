@@ -69,7 +69,9 @@ class PunishmentTag(commands.Cog):
         title="The title of the embed.",
         text="The text of the embed.",
     )
-    async def pmod(self, interaction: discord.Interaction, name: str, title: str, *, text: str):
+    async def pmod(
+        self, interaction: discord.Interaction, name: str, title: str, *, text: str
+    ):
         """Modify a tag, or create a new one if it doesn't exist."""
         try:
             database.db.connect(reuse_if_open=True)
@@ -81,7 +83,9 @@ class PunishmentTag(commands.Cog):
             tag.text = text
             tag.embed_title = title
             tag.save()
-            await interaction.response.send_message(f"Tag {tag.tag_name} has been modified successfully.")
+            await interaction.response.send_message(
+                f"Tag {tag.tag_name} has been modified successfully."
+            )
         except peewee.DoesNotExist:
             try:
                 database.db.connect(reuse_if_open=True)
@@ -89,9 +93,13 @@ class PunishmentTag(commands.Cog):
                     tag_name=name, embed_title=title, text=text
                 )
                 tag.save()
-                await interaction.response.send_message(f"Tag {tag.tag_name} has been created successfully.")
+                await interaction.response.send_message(
+                    f"Tag {tag.tag_name} has been created successfully."
+                )
             except peewee.IntegrityError:
-                await interaction.response.send_message("That tag name is already taken!")
+                await interaction.response.send_message(
+                    "That tag name is already taken!"
+                )
         finally:
             database.db.close()
 
@@ -143,7 +151,7 @@ class PunishmentTag(commands.Cog):
             if database.PunishmentTag.select().count() == 0:
                 tag_list = "No tags found"
             for i, tag in enumerate(database.PunishmentTag.select().paginate(page, 10)):
-                tag_list += f"{i+1+(10*(page-1))}. {tag.tag_name}\n"
+                tag_list += f"{i + 1 + (10 * (page - 1))}. {tag.tag_name}\n"
             embed.add_field(name=f"Page {page}", value=tag_list)
             database.db.close()
             return embed

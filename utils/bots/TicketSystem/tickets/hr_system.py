@@ -7,7 +7,8 @@ from typing import Literal
 
 import discord
 from discord import app_commands
-#from discord.app_commands import locale_str as _
+
+# from discord.app_commands import locale_str as _
 from discord.ext import commands
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -19,6 +20,7 @@ from core.common import HRID, access_secret, Emoji, ButtonHandler, StaffID
 from core.logging_module import get_log
 
 _log = get_log(__name__)
+
 
 def get_random_string(length=13):
     # choose from all lowercase letter
@@ -39,7 +41,6 @@ orgUnit = {
     "Personal Account": "/School Simplified Personal Acc.",
     "Team Account": "/School Simplified Team Acc.",
 }
-
 
 creds = access_secret("adm_t", True, 0, SCOPES)
 service = build("admin", "directory_v1", credentials=creds)
@@ -67,10 +68,25 @@ class AdminAPI(commands.Cog):
     HRCS = app_commands.Group(
         name="hr-request",
         description="Request something from HR!",
-        guild_ids=[954104500388511784, 932066545117585428, 950799439625355294, 953433561178968104, 950813235588780122,
-                   952294235028201572, 952287046750310440, 950799370855518268, 950799485901107270, 951595352090374185,
-                   950795656853876806, 955911166520082452, 824421093015945216, 815753072742891532, 891521033700540457,
-                   1006787368839286866, 1007766456584372325],
+        guild_ids=[
+            954104500388511784,
+            932066545117585428,
+            950799439625355294,
+            953433561178968104,
+            950813235588780122,
+            952294235028201572,
+            952287046750310440,
+            950799370855518268,
+            950799485901107270,
+            951595352090374185,
+            950795656853876806,
+            955911166520082452,
+            824421093015945216,
+            815753072742891532,
+            891521033700540457,
+            1006787368839286866,
+            1007766456584372325,
+        ],
     )
 
     @GS.command(
@@ -186,7 +202,12 @@ class AdminAPI(commands.Cog):
         additional_info="Enter any additional information you want to include.",
     )
     async def promote(
-        self, interaction: discord.Interaction, user: discord.User, reason: str, team: str, additional_info: str
+        self,
+        interaction: discord.Interaction,
+        user: discord.User,
+        reason: str,
+        team: str,
+        additional_info: str,
     ):
         if user.bot:
             return await interaction.response.send_message(
@@ -264,8 +285,11 @@ class AdminAPI(commands.Cog):
         await LCM.pin()
         embed_information = discord.Embed(
             title="Promotion Request",
-            description=f"User: {user.mention}\n" f"**Reason:** {reason}" f"**Team:** {team}" f"\n**Additional "
-                        f"Information:** {additional_info}",
+            description=f"User: {user.mention}\n"
+            f"**Reason:** {reason}"
+            f"**Team:** {team}"
+            f"\n**Additional "
+            f"Information:** {additional_info}",
             color=discord.Colour.gold(),
         )
         embed_information.set_author(

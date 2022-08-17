@@ -490,7 +490,6 @@ async def setup(bot: commands.Bot):
 
 class Dropdown(discord.ui.Select):
     def __init__(self):
-
         options = [
             discord.SelectOption(
                 label="Math Helpers",

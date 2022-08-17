@@ -7,9 +7,9 @@ from datetime import datetime, timedelta
 from io import BytesIO
 
 import chat_exporter
+import discord
 import gspread
 import pytz
-import discord
 from discord import app_commands
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
@@ -48,7 +48,6 @@ essayTicketLog_key = "1pB5xpsBGKIES5vmEY4hjluFg7-FYolOmN_w3s20yzr0"
 
 creds = access_secret("gsheets_c", True, 3, scope)
 gspread_client = gspread.authorize(creds)
-
 
 """
 if not (RoleOBJ.id == MainID.r_chatHelper or RoleOBJ.id == MainID.r_leadHelper) and not channel.category.id == MainID.cat_essayTicket:
@@ -1166,7 +1165,9 @@ class DropdownTickets(commands.Cog):
                     button_user=interaction.user,
                 )
             )
-            await interaction.response.send_message(f"{interaction.user.mention}\n", embed=embed, view=ButtonViews)
+            await interaction.response.send_message(
+                f"{interaction.user.mention}\n", embed=embed, view=ButtonViews
+            )
         else:
             await interaction.response.send_message("Not a ticket.", ephemeral=True)
 
@@ -1268,7 +1269,9 @@ class DropdownTickets(commands.Cog):
     async def before_loop_(self):
         await self.bot.wait_until_ready()
 
-    @app_commands.command(name="send-chticket-view", description="Send chat helper ticket view")
+    @app_commands.command(
+        name="send-chticket-view", description="Send chat helper ticket view"
+    )
     @app_commands.guilds(MainID.g_main)
     @slash_is_bot_admin()
     async def sendCHTKTView(self, interaction: discord.Interaction):

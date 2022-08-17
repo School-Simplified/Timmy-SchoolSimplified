@@ -10,10 +10,7 @@ from core.common import MainID
 class MessageLogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channels = [
-            MainID.ch_senior_mods,
-            MainID.ch_moderators
-        ]
+        self.channels = [MainID.ch_senior_mods, MainID.ch_moderators]
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):

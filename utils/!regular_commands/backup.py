@@ -6,35 +6,33 @@ from typing import Union, Literal
 
 import discord
 import psutil
-from discord.ext import commands
 from discord import ui, ButtonStyle
+from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk import Hub
 
 from core import database
 from core.checks import is_botAdmin2
-from core.common import Emoji, Others, MainID
-from core.logging_module import get_log
 from core.checks import is_botAdmin3
 from core.common import Colors, ButtonHandler
+from core.common import Others
+from core.logging_module import get_log
 
 _log = get_log(__name__)
 load_dotenv()
 
 
 class BackupRegularCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.client = Hub.current.client
 
-
     @commands.command()
     @is_botAdmin3
     async def sync(
-            self,
-            ctx: commands.Context,
-            action: Union[Literal["global"], Literal["all"], discord.Guild],
+        self,
+        ctx: commands.Context,
+        action: Union[Literal["global"], Literal["all"], discord.Guild],
     ):
         if isinstance(action, discord.Guild):
             guild = action
@@ -85,7 +83,7 @@ class BackupRegularCommands(commands.Cog):
                         color=Colors.yellow,
                         title="Sync",
                         description=f"Syncing slash commands globally..."
-                                    f"\nThis may take a while.",
+                        f"\nThis may take a while.",
                     )
                     await message_confirm.edit(embed=embed_processing, view=None)
 
@@ -142,7 +140,7 @@ class BackupRegularCommands(commands.Cog):
                         color=Colors.yellow,
                         title="Sync",
                         description=f"Syncing all local guild slash commands ..."
-                                    f"\nThis may take a while.",
+                        f"\nThis may take a while.",
                     )
                     await message_confirm.edit(embed=embed_processing, view=None)
 
@@ -196,7 +194,9 @@ class BackupRegularCommands(commands.Cog):
             value=f"```diff\n- CPU Usage: {psutil.cpu_percent()}%\n- Memory Usage: {psutil.virtual_memory().percent}%\n```",
             inline=False,
         )
-        pingembed.add_field(name="Status Page", value="[Click here](https://status.timmy.ssimpl.org/)")
+        pingembed.add_field(
+            name="Status Page", value="[Click here](https://status.timmy.ssimpl.org/)"
+        )
         pingembed.set_footer(
             text=f"TimmyOS Version: {self.bot.version}", icon_url=ctx.author.avatar.url
         )
@@ -216,8 +216,8 @@ class BackupRegularCommands(commands.Cog):
         embed.add_field(
             name="WARNING",
             value="Please not that this will kill the bot immediately and it will not be online unless a "
-                  "developer manually starts the proccess again!"
-                  "\nIf you don't respond in 5 seconds, the process will automatically abort.",
+            "developer manually starts the proccess again!"
+            "\nIf you don't respond in 5 seconds, the process will automatically abort.",
         )
         embed.set_footer(
             text="Abusing this system will subject your authorization removal, so choose wisely you fucking pig."
@@ -231,7 +231,7 @@ class BackupRegularCommands(commands.Cog):
 
         def check2(reaction, user):
             return user == ctx.author and (
-                    str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
+                str(reaction.emoji) == "✅" or str(reaction.emoji) == "❌"
             )
 
         try:
@@ -269,6 +269,7 @@ class BackupRegularCommands(commands.Cog):
                 "Looks like you didn't react in time, automatically aborted system exit!"
             )
             await message.delete()
+
 
 async def setup(bot):
     await bot.add_cog(BackupRegularCommands(bot))
