@@ -31,29 +31,6 @@ async def redirect_autocomplete(
         if current.lower() in redirect.lower()
     ]
 
-RM = app_commands.Group(
-    name="redirect",
-    description="Manage ssimpl.org redirects",
-    guild_ids=[
-        954104500388511784,
-        932066545117585428,
-        950799439625355294,
-        953433561178968104,
-        950813235588780122,
-        952294235028201572,
-        952287046750310440,
-        950799370855518268,
-        950799485901107270,
-        951595352090374185,
-        950795656853876806,
-        955911166520082452,
-        824421093015945216,
-        815753072742891532,
-        891521033700540457,
-        1006787368839286866,
-        1007766456584372325
-    ]
-)
 
 class RedirectURL(commands.Cog):
     def __init__(self, bot):
@@ -67,6 +44,30 @@ class RedirectURL(commands.Cog):
     @property
     def display_emoji(self) -> str:
         return "🖇️"
+
+    RM = app_commands.Group(
+        name="redirect",
+        description="Manage ssimpl.org redirects",
+        guild_ids=[
+            954104500388511784,
+            932066545117585428,
+            950799439625355294,
+            953433561178968104,
+            950813235588780122,
+            952294235028201572,
+            952287046750310440,
+            950799370855518268,
+            950799485901107270,
+            951595352090374185,
+            950795656853876806,
+            955911166520082452,
+            824421093015945216,
+            815753072742891532,
+            891521033700540457,
+            1006787368839286866,
+            1007766456584372325
+        ]
+    )
 
     @RM.command(name="add", description="Add a redirect URL")
     @app_commands.describe(
