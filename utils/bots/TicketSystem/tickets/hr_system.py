@@ -255,7 +255,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
-            manage_channel=True,
+            manage_channels=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -374,7 +374,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
-            manage_channel=True,
+            manage_channels=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -498,7 +498,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
-            manage_channel=True,
+            manage_channels=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -635,7 +635,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
-            manage_channel=True,
+            manage_channels=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -754,7 +754,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
-            manage_channel=True,
+            manage_channels=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -859,7 +859,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
-            manage_channel=True,
+            manage_channels=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -959,7 +959,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
-            manage_channel=True,
+            manage_channels=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -1066,7 +1066,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
-            manage_channel=True,
+            manage_channels=True,
         )
         await ticket_channel.set_permissions(
             member,
@@ -1175,7 +1175,7 @@ class AdminAPI(commands.Cog):
             read_messages=True,
             send_messages=True,
             manage_messages=True,
-            manage_channel=True,
+            manage_channels=True,
         )
         await ticket_channel.set_permissions(
             member,
