@@ -134,9 +134,7 @@ class PunishmentTag(commands.Cog):
     @app_commands.describe(page="Page index to start at.")
     async def listtag(self, interaction: discord.Interaction, page: int = 1):
         """List all tags in the database"""
-        msg = await interaction.response.send_message("Loading...", ephemeral=True)
-        await asyncio.sleep(1.2)
-        await msg.delete()
+        await interaction.response.send_message("Loading...", ephemeral=True)
 
         def get_end(page_size: int):
             database.db.connect(reuse_if_open=True)

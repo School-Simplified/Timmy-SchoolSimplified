@@ -111,7 +111,7 @@ async def raw_export(channel, response, user: discord.User):
 
 async def paginate_embed(
     bot: discord.Client,
-    ctx: commands.Context,
+    ctx: discord.Interaction,
     embed: discord.Embed,
     population_func,
     end: int,
@@ -121,13 +121,13 @@ async def paginate_embed(
     emotes = ["◀️", "▶️"]
 
     def check_reaction(reaction, user):
-        return user == ctx.author and str(reaction.emoji) in emotes
+        return user == ctx.user and str(reaction.emoji) in emotes
 
     embed = await population_func(embed, page)
     if isinstance(embed, discord.Embed):
-        message = await ctx.send(embed=embed)
+        message = await ctx.followup.send(embed=embed)
     else:
-        await ctx.send(str(type(embed)))
+        await ctx.followup.send(str(type(embed)))
         return
 
     await message.add_reaction(emotes[0])
@@ -483,11 +483,11 @@ class StaffID:
     cat_staffapps_tickets = 979485444364468345
     cat_announcements_tickets = 979485569337946192
     cat_hr_tickets = 956297567346495568
-    cat_promote_tickets = 956297567346495568
+    cat_promote_tickets = 1009547178810806423
     cat_demote_tickers = 956297567346495568
-    cat_fire_tickets = 956297567346495568
+    cat_fire_tickets = 1009547178810806423
 
-    cat_censure_tickets = 956297567346495568
+    cat_censure_tickets = 1009547178810806423
     cat_break_tickets = 992191587281027144
     cat_resignation_tickets = 992191685415145542
     cat_complaint_tickets = 992191762611327029
