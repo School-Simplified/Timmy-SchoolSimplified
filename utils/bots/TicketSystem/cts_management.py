@@ -416,7 +416,7 @@ class MGMTickets(commands.Cog):
             modal = QuestionEdit(self.bot)
             await interaction.response.send_modal(modal)
 
-        elif edit_mode == "Edit Question Attributes":
+        elif edit_mode == "Edit Attributes":
 
             class QuestionAttributesEdit(ui.Modal, title=query.title):
                 def __init__(self, bot: commands.Bot):
@@ -481,7 +481,7 @@ class MGMTickets(commands.Cog):
         value="The new value for the element.",
     )
     @slash_is_bot_admin()
-    async def edit_modal(
+    async def edit_config(
         self,
         interaction: discord.Interaction,
         configuration_id: int,

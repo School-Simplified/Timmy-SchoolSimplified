@@ -83,13 +83,14 @@ class RedirectURL(commands.Cog):
     ):
 
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
-        staff_resources_member = staff_resources_guild.get_member(interaction.user.id)
-        if staff_resources_member is None:
+        try:
+            staff_resources_member = await staff_resources_guild.fetch_member(interaction.user.id)
+        except:
             return await interaction.response.send_message(
                 "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
             )
-        hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
-        if hr_role not in interaction.user.roles:
+        leader_role = discord.utils.get(staff_resources_guild.roles, name="Leadership")
+        if leader_role not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
@@ -193,13 +194,14 @@ class RedirectURL(commands.Cog):
         self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
     ):
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
-        staff_resources_member = staff_resources_guild.get_member(interaction.user.id)
-        if staff_resources_member is None:
+        try:
+            staff_resources_member = await staff_resources_guild.fetch_member(interaction.user.id)
+        except:
             return await interaction.response.send_message(
                 "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
             )
-        hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
-        if hr_role not in interaction.user.roles:
+        leader_role = discord.utils.get(staff_resources_guild.roles, name="Leadership")
+        if leader_role not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
@@ -230,13 +232,14 @@ class RedirectURL(commands.Cog):
     @RM.command(name="list", description="List all redirects.")
     async def rl(self, interaction: discord.Interaction):
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
-        staff_resources_member = staff_resources_guild.get_member(interaction.user.id)
-        if staff_resources_member is None:
+        try:
+            staff_resources_member = await staff_resources_guild.fetch_member(interaction.user.id)
+        except:
             return await interaction.response.send_message(
                 "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
             )
-        hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
-        if hr_role not in interaction.user.roles:
+        leader_role = discord.utils.get(staff_resources_guild.roles, name="Leadership")
+        if leader_role not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
@@ -275,13 +278,14 @@ class RedirectURL(commands.Cog):
         self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
     ):
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
-        staff_resources_member = staff_resources_guild.get_member(interaction.user.id)
-        if staff_resources_member is None:
+        try:
+            staff_resources_member = await staff_resources_guild.fetch_member(interaction.user.id)
+        except:
             return await interaction.response.send_message(
                 "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
             )
-        hr_role = discord.utils.get(staff_resources_guild.roles, name="Human Resources")
-        if hr_role not in interaction.user.roles:
+        leader_role = discord.utils.get(staff_resources_guild.roles, name="Leadership")
+        if leader_role not in interaction.user.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
