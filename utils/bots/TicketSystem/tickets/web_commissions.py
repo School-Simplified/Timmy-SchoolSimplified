@@ -13,36 +13,19 @@ class WebRequestModal(ui.Modal, title="Web Development Request"):
         super().__init__(timeout=None)
         self.bot = bot
 
-        self.add_item(
-            discord.ui.Select(
-                placeholder="Priority",
-                options=[
-                    discord.SelectOption(label="MISC", value="MISC"),
-                    discord.SelectOption(label="LOW", value="LOW"),
-                    discord.SelectOption(label="MED", value="MED"),
-                    discord.SelectOption(label="HIGH", value="HIGH"),
-                    discord.SelectOption(label="CRIT", value="CRIT"),
-                ],
-            )
-        )
+    priority = ui.TextInput(
+        label="Priority of the request.",
+        style=discord.TextStyle.short,
+        max_length=1024,
+        placeholder="MISC, LOW, MED, HIGH, or CRIT",
+    )
 
-        self.add_item(
-            discord.ui.Select(
-                placeholder="Select Request Type",
-                options=[
-                    discord.SelectOption(
-                        label="Content Changes", value="Content Changes"
-                    ),
-                    discord.SelectOption(label="Typo Fixes", value="hello"),
-                    discord.SelectOption(
-                        label="Page Redesign ", value="Page Redesign "
-                    ),
-                    discord.SelectOption(
-                        label="Build New Page", value="Build New Page"
-                    ),
-                ],
-            )
-        )
+    request_type = ui.TextInput(
+        label="Request Type",
+        style=discord.TextStyle.short,
+        max_length=1024,
+        placeholder="Content Changes, Typo Fixes, Page Redesign, or Build New Page",
+    )
 
     deadline = ui.TextInput(
         label="Provide a reasonable deadline if available.",
@@ -116,8 +99,8 @@ class WebRequestModal(ui.Modal, title="Web Development Request"):
         embed_information = discord.Embed(
             title="Web Development Request",
             description=f"User: {member.mention}\n"
-            f"Priority: {self.children[0].value}\n"
-            f"Request Type: {self.children[1].value}\n"
+            f"Priority: {self.priority.value}\n"
+            f"Request Type: {self.request_type.value}\n"
             f"Deadline: {self.deadline.value}\n"
             f"Title: {self.title_commission.value}\n"
             f"Information: {self.information.value}",

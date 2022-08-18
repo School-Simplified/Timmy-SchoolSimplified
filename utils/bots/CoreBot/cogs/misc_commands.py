@@ -437,7 +437,7 @@ class MiscCMD(commands.Cog):
         )
         pingembed.set_footer(
             text=f"TimmyOS Version: {self.bot.version}",
-            icon_url=interaction.user.avatar.url,
+            icon_url=interaction.user.display_avatar.url,
         )
 
         await interaction.response.send_message(embed=pingembed)

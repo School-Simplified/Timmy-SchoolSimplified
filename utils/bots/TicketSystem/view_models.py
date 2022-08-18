@@ -585,15 +585,13 @@ class TEmailForm(ui.Modal, title="Email Address Requests"):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__(timeout=None)
         self.bot = bot
-        self.add_item(
-            discord.ui.Select(
-                placeholder="Email Type",
-                options=[
-                    discord.SelectOption(label="Group Email", value="G"),
-                    discord.SelectOption(label="Team Email", value="T"),
-                ],
-            )
-        )
+
+    email_type = ui.TextInput(
+        label="Purpose of Email",
+        style=discord.TextStyle.short,
+        placeholder="G for Group Email and T for Team Email",
+        max_length=1,
+    )
 
     email_purpose = ui.TextInput(
         label="Purpose of Email",
@@ -617,7 +615,7 @@ class TEmailForm(ui.Modal, title="Email Address Requests"):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        email_type = self.children[3].values[0]
+        email_type = self.email_type.value
         await interaction.response.send_message(
             "Thank you for your submission, forwarding your request to HR!",
             ephemeral=True,
@@ -743,15 +741,13 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__(timeout=None)
         self.bot = bot
-        self.add_item(
-            discord.ui.Select(
-                placeholder="Where will this be published?",
-                options=[
-                    discord.SelectOption(label="For Staff", value="Staff"),
-                    discord.SelectOption(label="For the Public", value="Public"),
-                ],
-            )
-        )
+
+    publish_location = ui.TextInput(
+        label="Where will this be published?:",
+        style=discord.TextStyle.short,
+        max_length=1024,
+        placeholder="For Staff or Public?",
+    )
 
     app_title = ui.TextInput(
         label="Subject:",
@@ -859,7 +855,7 @@ class StaffAnnouncements(ui.Modal, title="Staff Announcements"):
         embed.add_field(name="Subject", value=self.app_title.value, inline=False)
         embed.add_field(name="Team Name", value=self.team_name.value, inline=False)
         embed.add_field(
-            name="Target Publication", value=self.children[3].values[0], inline=False
+            name="Target Publication", value=self.publish_location.value, inline=False
         )
         embed.add_field(name="Approved By", value=self.approval.value, inline=False)
         await channel.send(embed=embed)
@@ -1185,27 +1181,26 @@ class RecruitmentForm(ui.Modal, title="Recruitment Request"):
     def __init__(self, bot: commands.Bot) -> None:
         super().__init__(timeout=None)
         self.bot = bot
-        self.add_item(
-            discord.ui.Select(
-                placeholder="How urgent is your request?",
-                options=[
-                    discord.SelectOption(label="LOW", value="LOW"),
-                    discord.SelectOption(label="MED", value="MED"),
-                    discord.SelectOption(label="HIGH", value="HIGH"),
-                    discord.SelectOption(label="CRIT", value="CRIT"),
-                ],
-            )
-        )
 
-        self.add_item(
-            discord.ui.Select(
-                placeholder="What rank is this position?",
-                options=[
-                    discord.SelectOption(label="Leadership", value="Leadership"),
-                    discord.SelectOption(label="Associate", value="Associate"),
-                ],
-            )
-        )
+    urgency = ui.TextInput(
+        label="How urgent is your request?",
+        style=discord.TextStyle.short,
+        max_length=100,
+        placeholder="LOW, MED, HIGH, or CRIT",
+    )
+
+    rank = ui.TextInput(
+        label="What rank is this position?",
+        style=discord.TextStyle.short,
+        max_length=100,
+        placeholder="Leadership, Associate",
+    )
+
+    position_title = ui.TextInput(
+        label="What is the position title?",
+        style=discord.TextStyle.short,
+        max_length=100,
+    )
 
     position_title = ui.TextInput(
         label="What is the position title?",
