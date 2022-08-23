@@ -94,28 +94,41 @@ class AdminAPI(commands.Cog):
         description="Create a GSuite Account",
     )
     @app_commands.describe(
-        organizationunit="Select the organization unit this user will be in."
+        organization_unit="Select the organization unit this user will be in."
     )
     @app_commands.checks.has_role(HRID.r_hr_staff)
     async def create_gsuite(
         self,
         interaction: discord.Interaction,
+        organization_unit: Literal["Personal Account", "Team Account"],
         firstname: str,
-        lastname: str,
-        organizationunit: Literal["Personal Account", "Team Account"],
+        lastname: str = None,
     ):
         temppass = get_random_string()
-        user = {
-            "name": {
-                "givenName": firstname,
-                "fullName": firstname + " " + lastname,
-                "familyName": lastname,
-            },
-            "password": temppass,
-            "primaryEmail": f"{firstname}.{lastname}@schoolsimplified.org",
-            "changePasswordAtNextLogin": True,
-            "orgUnitPath": orgUnit[organizationunit],
-        }
+        if lastname is not None:
+            user = {
+                "name": {
+                    "givenName": firstname,
+                    "fullName": firstname + " " + lastname,
+                    "familyName": lastname,
+                },
+                "password": temppass,
+                "primaryEmail": f"{firstname}.{lastname}@schoolsimplified.org",
+                "changePasswordAtNextLogin": True,
+                "orgUnitPath": orgUnit[organization_unit],
+            }
+        else:
+            user = {
+                "name": {
+                    "givenName": firstname,
+                    "fullName": firstname,
+                    "familyName": "null",
+                },
+                "password": temppass,
+                "primaryEmail": f"{firstname}@schoolsimplified.org",
+                "changePasswordAtNextLogin": True,
+                "orgUnitPath": orgUnit[organization_unit],
+            }
         try:
             service.users().insert(body=user).execute()
         except HttpError as e:
@@ -130,12 +143,20 @@ class AdminAPI(commands.Cog):
                 )
 
         else:
-            await interaction.response.send_message(
-                f"{interaction.user.mention} Successfully created **{firstname} {lastname}'s** account.\n"
-                f"**Username:** {firstname}.{lastname}@schoolsimplified.org\n"
-                f"**Organization Unit:** {orgUnit[organizationunit]}",
-                ephemeral=False,
-            )
+            if lastname is not None:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention} Successfully created **{firstname} {lastname}'s** account.\n"
+                    f"**Username:** {firstname}.{lastname}@schoolsimplified.org\n"
+                    f"**Organization Unit:** {orgUnit[organization_unit]}",
+                    ephemeral=False,
+                )
+            else:
+                await interaction.response.send_message(
+                    f"{interaction.user.mention} Successfully created **{firstname}'s** account.\n"
+                    f"**Username:** {firstname}@schoolsimplified.org\n"
+                    f"**Organization Unit:** {orgUnit[organization_unit]}",
+                    ephemeral=False,
+                )
             await interaction.followup.send(
                 f"**Temporary Password:**\n||{temppass}||\n\n**Instructions:**\nGive the Username and the Temporary "
                 f"Password to the user and let them know they have **1 week** to setup 2FA before they get locked out. ",

@@ -111,6 +111,7 @@ class RedirectURL(commands.Cog):
                 )
             else:
                 query = database.RedirectLogs.create(
+                    author_id=interaction.user.id,
                     redirect_id=val.id,
                     from_url=redirect_code,
                     to_url=destination_url,
@@ -168,6 +169,7 @@ class RedirectURL(commands.Cog):
                     )
                 else:
                     query = database.RedirectLogs.create(
+                        author_id=interaction.user.id,
                         redirect_id=val.id,
                         from_url=redirect_code,
                         to_url=destination_url,
