@@ -1342,7 +1342,7 @@ def get_pid(port: int):
     return -1
 
 
-async def force_restart(ctx, main_or_beta):
+async def force_restart(ctx, host_dir):
     p = subprocess.run(
         "git status -uno", shell=True, text=True, capture_output=True, check=True
     )
@@ -1358,12 +1358,11 @@ async def force_restart(ctx, main_or_beta):
 
     msg = await ctx.send(embed=embed)
     true_dir = {
-        "TimmyBeta-SS": "timmy-beta",
         "TimmyMain-SS": "timmya",
     }
     try:
         result = subprocess.run(
-            f"sudo /home/{true_dir[main_or_beta]}/timmystart.sh",
+            f"sudo /home/{true_dir[host_dir]}/timmystart.sh",
             shell=True,
             text=True,
             capture_output=True,

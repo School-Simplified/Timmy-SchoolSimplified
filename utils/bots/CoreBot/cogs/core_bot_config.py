@@ -202,25 +202,25 @@ class CoreBotConfig(commands.Cog):
     async def gitpull(
         self,
         interaction: discord.Interaction,
+        version: str,
         mode: Literal["-a", "-c"] = "-a",
         sync_commands: bool = False,
     ) -> None:
+        """
+        This should only be used on 'main' (development).
+        Using this command will checkout directly on 'main' and won't be stable anymore.
+        """
         output = ""
 
         hostDir = get_host_dir()
-        if hostDir == "/home/timmya":
-            branch = "origin/main"
-            directory = "TimmyMain-SS"
-
-        elif hostDir == "/home/timmy-beta":
-            branch = "origin/beta"
-            directory = "TimmyBeta-SS"
-
-        else:
+        if not hostDir == "/home/timmya":
             return await interaction.response.send_message(
-                "Host directory is neither 'timmya' nor "
-                "'timmy-beta'.\nSomeone else is currently hosting the bot."
+                "Host directory is not 'timmya'."
+                "\nSomeone else is currently hosting the bot."
             )
+
+        branch = "origin/main"
+        directory = "TimmyMain-SS"
 
         try:
             p = subprocess.run(
@@ -424,7 +424,7 @@ class CoreBotConfig(commands.Cog):
         database.db.close()
 
     @staticmethod
-    async def _force_restart(interaction: discord.Interaction, main_or_beta):
+    async def _force_restart(interaction: discord.Interaction, host_dir):
         p = subprocess.run(
             "git status -uno", shell=True, text=True, capture_output=True, check=True
         )
@@ -443,7 +443,7 @@ class CoreBotConfig(commands.Cog):
         try:
 
             result = subprocess.run(
-                f"cd && cd {main_or_beta}",
+                f"cd && cd {host_dir}",
                 shell=True,
                 text=True,
                 capture_output=True,

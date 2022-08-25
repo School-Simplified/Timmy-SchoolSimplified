@@ -135,17 +135,3 @@ def slash_is_bot_admin_4():
 
     return app_commands.check(predicate)
 
-
-def timmy_beta_host(ctx):
-    runPath = os.path.realpath(__file__)
-    runDir = re.search("/home/[^/]*", runPath)
-
-    if runDir is not None:
-        runDir = runDir.group(0)
-    else:
-        runDir = None
-
-    return runDir == "/home/timmy-beta"
-
-
-is_host_timmy_beta = commands.check(timmy_beta_host)
