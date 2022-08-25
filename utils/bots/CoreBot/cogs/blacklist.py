@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-import discord
-from core import database
-from core.checks import slash_is_bot_admin_4, slash_is_bot_admin_3
-from discord.ext import commands
-from dotenv import load_dotenv
-from discord.app_commands import Group, command
 from typing import TYPE_CHECKING
 
+import discord
+from discord.app_commands import Group, command
+from discord.ext import commands
+from dotenv import load_dotenv
+
+from core import database
+from core.checks import slash_is_bot_admin_4, slash_is_bot_admin_3
 
 if TYPE_CHECKING:
     from main import Timmy
@@ -15,11 +16,15 @@ if TYPE_CHECKING:
 load_dotenv()
 
 
-class BlacklistCMD(commands.Cog, Group):
+class Blacklist(commands.Cog):
+    def __init__(self, bot: Timmy):
+        self.__cog_app_commands__.append(BlacklistCMD(bot))
+
+
+class BlacklistCMD(Group):
     def __init__(self, bot: Timmy):
         super().__init__(name="blacklist", description="Manage the bot's blacklist")
         self.bot = bot
-        self.__cog_name__ = "Blacklist"
 
     @property
     def display_emoji(self) -> str:
@@ -95,5 +100,5 @@ class BlacklistCMD(commands.Cog, Group):
         await interaction.followup.send(embed=embed)
 
 
-async def setup(bot):
-    await bot.add_cog(BlacklistCMD(bot))
+async def setup(bot: Timmy) -> None:
+    await bot.add_cog(Blacklist(bot))

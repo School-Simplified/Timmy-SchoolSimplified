@@ -8,7 +8,11 @@ import discord
 import gspread
 from discord.ext import commands
 from oauth2client.service_account import ServiceAccountCredentials
-from core.common import MAIN_ID
+
+from core.common import MainID
+from core.logging_module import get_log
+
+_log = get_log(__name__)
 
 scope = [
     "https://spreadsheets.google.com/feeds",
@@ -23,7 +27,7 @@ try:
     client = gspread.authorize(creds)
     sheet = client.open("SchoolSimplifiedBans").sheet1
 except Exception as e:
-    print(f"ERROR: Could not authorize GSpreads: {e}")
+    _log.error(f"Could not authorize GSpreads: {e}")
 
 
 def next_available_row(worksheet):
@@ -34,7 +38,7 @@ def next_available_row(worksheet):
 class BanUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.ModLogID = MAIN_ID.ch_actionLogs
+        self.ModLogID = MainID.ch_action_logs
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild: discord.Guild, user):
@@ -44,7 +48,7 @@ class BanUpdate(commands.Cog):
 
         now = datetime.now()
 
-        if guild.id != MAIN_ID.g_main:
+        if guild.id != MainID.g_main:
             return
 
         await asyncio.sleep(15)

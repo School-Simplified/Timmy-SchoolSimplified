@@ -1,7 +1,7 @@
-import pytz
 import datetime
+
+import pytz
 from dateutil import parser
-import discord
 from discord.ext import tasks, commands
 
 from core.database import StudyVCLeaderboard

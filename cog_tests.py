@@ -3,9 +3,9 @@ import sys
 
 import discord
 import discord.ext.test as dpytest
+import pytest
 from discord.ext import commands
 from pathlib import Path
-import pytest
 
 
 def get_extensions():
@@ -17,7 +17,7 @@ def get_extensions():
 
     for file in Path("utils").glob("**/*.py"):
 
-        if any(dev_symbol in file.name for dev_symbol in ["!", "DEV"]):
+        if any(dev_symbol in file.name for dev_symbol in ["!", "DEV", "view_models"]):
             continue
         extensions.append(str(file).replace(dirpath, ".").replace(".py", ""))
     return extensions
@@ -25,9 +25,9 @@ def get_extensions():
 
 @pytest.fixture
 def bot(event_loop):
-    bot = commands.Bot(command_prefix="/",
-                       event_loop=event_loop,
-                       intents=discord.Intents.all())
+    bot = commands.Bot(
+        command_prefix="/", event_loop=event_loop, intents=discord.Intents.all()
+    )
     bot.remove_command("help")
     dpytest.configure(bot)
     return bot

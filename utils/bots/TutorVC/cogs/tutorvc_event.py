@@ -3,10 +3,14 @@ import datetime
 from datetime import datetime, timedelta
 
 import discord
-from core import database
-from core.common import Emoji, MAIN_ID, STAFF_ID, TUT_ID, TECH_ID, SandboxConfig
-from discord.ext import commands
 import pytz
+from discord.ext import commands
+
+from core import database
+from core.common import Emoji, MainID, StaffID, TutID, TechID, SandboxConfig
+from core.logging_module import get_log
+
+_log = get_log(__name__)
 
 time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
 EST = pytz.timezone("US/Eastern")
@@ -61,25 +65,25 @@ class TutorVCUpdate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channel_id = {
-            MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
-            STAFF_ID.g_staff: STAFF_ID.ch_console,
-            TECH_ID.g_tech: getConsoleCH(0),
+            MainID.g_main: MainID.ch_control_panel,
+            StaffID.g_staff: StaffID.ch_console,
+            TechID.g_tech: getConsoleCH(0),
         }
         self.staticChannels = [
-            MAIN_ID.ch_startPrivateVC,
-            STAFF_ID.ch_startPrivateVC,
+            MainID.ch_start_private_vc,
+            StaffID.ch_start_private_vc,
             getConsoleCH(0),
         ]
         self.presetChannels = [
-            MAIN_ID.ch_controlPanel,
-            MAIN_ID.ch_startPrivateVC,
-            STAFF_ID.ch_console,
-            STAFF_ID.ch_startPrivateVC,
+            MainID.ch_control_panel,
+            MainID.ch_start_private_vc,
+            StaffID.ch_console,
+            StaffID.ch_start_private_vc,
             getConsoleCH(0),
             getConsoleCH(1),
         ]
 
-        self.TutorLogID = TUT_ID.ch_hourLogs
+        self.TutorLogID = TutID.ch_hour_logs
 
         self.AT = "Academics Team"
         self.SB = "Simplified Booster"
@@ -96,19 +100,19 @@ class TutorVCUpdate(commands.Cog):
 
         self.TutorRole = "Tutor"
         self.categoryIDs = [
-            MAIN_ID.cat_privateVC,
-            STAFF_ID.cat_privateVC,
+            MainID.cat_private_vc,
+            StaffID.cat_private_vc,
             SandboxConfig.cat_sandbox,
         ]
         self.CcategoryIDs = {
-            MAIN_ID.g_main: MAIN_ID.cat_privateVC,
-            STAFF_ID.g_staff: STAFF_ID.cat_privateVC,
-            TECH_ID.g_tech: SandboxConfig.cat_sandbox,
+            MainID.g_main: MainID.cat_private_vc,
+            StaffID.g_staff: StaffID.cat_private_vc,
+            TechID.g_tech: SandboxConfig.cat_sandbox,
         }
         self.LobbyStartIDs = {
-            MAIN_ID.g_main: MAIN_ID.ch_controlPanel,
-            STAFF_ID.g_staff: STAFF_ID.ch_console,
-            TECH_ID.g_tech: getConsoleCH(0),
+            MainID.g_main: MainID.ch_control_panel,
+            StaffID.g_staff: StaffID.ch_console,
+            TechID.g_tech: getConsoleCH(0),
         }
         # self.PRIVVC_DELETION_QUEUE.start()
 
@@ -123,14 +127,16 @@ class TutorVCUpdate(commands.Cog):
         after: discord.VoiceState,
     ):
         database.db.connect(reuse_if_open=True)
-        print(self.LobbyStartIDs[member.guild.id])
-        lobbyStart = member.guild.get_channel(self.LobbyStartIDs[member.guild.id])
-        if lobbyStart == None:
+        try:
+            dummy_var = self.LobbyStartIDs[member.guild.id]
+        except KeyError:
+            return
+        lobby_start = member.guild.get_channel(self.LobbyStartIDs[member.guild.id])
+        if lobby_start is None:
             try:
-                lobbyStart = self.bot.get_channel(self.LobbyStartIDs[member.guild.id])
+                lobby_start = self.bot.get_channel(self.LobbyStartIDs[member.guild.id])
             except Exception as e:
-                return print(e)
-        print(lobbyStart)
+                return _log.error(f"Unable to identify lobby start channel: {e}")
 
         if (
             before.channel is not None
@@ -165,7 +171,7 @@ class TutorVCUpdate(commands.Cog):
                     .get()
                 )
                 iq.delete_instance()
-                return print("Ignore Channel")
+                return _log.info("Ignore Channel")
 
             if query.exists() and before.channel.category.id in self.categoryIDs:
                 query = (
@@ -191,7 +197,7 @@ class TutorVCUpdate(commands.Cog):
                         color=discord.Colour.red(),
                     )
 
-                    if member in lobbyStart.members:
+                    if member in lobby_start.members:
                         try:
                             await member.move_to(
                                 tutorChannel, reason="Hogging the VC Start Channel."
@@ -212,7 +218,7 @@ class TutorVCUpdate(commands.Cog):
                     await asyncio.sleep(120)
 
                     if member in before.channel.members:
-                        return print("returned")
+                        return
 
                     else:
                         query = database.VCChannelInfo.select().where(
@@ -252,7 +258,7 @@ class TutorVCUpdate(commands.Cog):
                             try:
                                 await before.channel.delete()
                             except Exception as e:
-                                print(f"Error Deleting Channel:\n{e}")
+                                _log.error(f"Error Deleting Channel:\n{e}")
                             else:
                                 embed = discord.Embed(
                                     title=f"{Emoji.archive} {member.display_name} Total Voice Minutes",
@@ -312,7 +318,7 @@ class TutorVCUpdate(commands.Cog):
                                         title="Logged Hours",
                                         description="Hey! It looks like you've finished your tutor session, "
                                         "I've already went ahead and sent your session legnth "
-                                        f"in <#{TUT_ID.ch_hourLogs}>."
+                                        f"in <#{TutID.ch_hour_logs}>."
                                         "\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.",
                                         color=discord.Color.green(),
                                     )
@@ -323,9 +329,9 @@ class TutorVCUpdate(commands.Cog):
                                     except discord.HTTPException:
                                         pass
                         else:
-                            print("no query, moving on...")
+                            pass
                 else:
-                    print("no")
+                    pass
 
         if (
             after.channel is not None
@@ -333,7 +339,6 @@ class TutorVCUpdate(commands.Cog):
             and not member.bot
         ):
             acadChannel = self.bot.get_channel(self.LobbyStartIDs[member.guild.id])
-            print(acadChannel, after.channel.guild.id)
             SB = discord.utils.get(member.guild.roles, name=self.SB)
 
             legend = discord.utils.get(member.guild.roles, name=self.Legend)
@@ -491,7 +496,7 @@ class TutorVCUpdate(commands.Cog):
                     )
 
                 except Exception as e:
-                    print(f"Left VC before setup.\n{e}")
+                    _log.info(f"Left VC before setup.\n{e}")
                     query = database.VCChannelInfo.select().where(
                         (database.VCChannelInfo.authorID == member.id)
                         & (database.VCChannelInfo.ChannelID == channel.id)
@@ -516,7 +521,7 @@ class TutorVCUpdate(commands.Cog):
                         try:
                             await channel.delete()
                         except Exception as e:
-                            print(f"Error Deleting Channel:\n{e}")
+                            _log.error(f"Error Deleting Channel:\n{e}")
                         else:
                             embed = discord.Embed(
                                 title=f"{Emoji.archive} {member.display_name} Total Voice Minutes",
@@ -526,10 +531,6 @@ class TutorVCUpdate(commands.Cog):
                             )
                             embed.set_footer(text="The voice channel has been deleted!")
                             await acadChannel.send(content=member.mention, embed=embed)
-                            print("done")
-
-                    else:
-                        print("Already deleted, moving on...")
 
         database.db.close()
 
@@ -652,7 +653,7 @@ class TutorVCUpdate(commands.Cog):
                                     title="Logged Hours",
                                     description="Hey! It looks like you've finished your tutor session, "
                                     "I've already went ahead and sent your session legnth "
-                                    f"in <#{TUT_ID.ch_hourLogs}>."
+                                    f"in <#{TutID.ch_hourLogs}>."
                                     "\n**NOTE:** You'll still need to fill in your hours on the hour log spreadsheet.",
                                     color=discord.Color.green(),
                                 )

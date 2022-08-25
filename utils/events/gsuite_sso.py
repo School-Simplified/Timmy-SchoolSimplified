@@ -1,13 +1,15 @@
 import asyncio
-from datetime import datetime
 import os
+from datetime import datetime
 
 import discord
 import pytz
-from core.checks import is_botAdmin
-from core.common import ButtonHandler, Emoji, GSuiteVerify, access_secret
+from discord import app_commands
 from discord.ext import commands
-from google_auth_oauthlib.flow import Flow
+
+from core.checks import slash_is_bot_admin
+from core.common import ButtonHandler, Emoji, access_secret, TechID
+from utils.bots.TicketSystem.view_models import GSuiteVerify
 
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
 
@@ -31,8 +33,14 @@ class GSuiteLogin(commands.Cog):
                     'https://www.googleapis.com/auth/userinfo.profile'],
             redirect_uri='urn:ietf:wg:oauth:2.0:oob'
         )"""
-        self.staffrole = 932066545117585430
-        self.logchannel = 932066545885134904
+        self.staffrole = {
+            932066545117585428: 932066545117585430,
+            955911166520082452: 955990675160199189,
+        }
+        self.logchannel = {
+            932066545117585428: 932066545885134904,
+            955911166520082452: 955991444483608606,
+        }
         self.est = pytz.timezone("US/Eastern")
 
     @commands.Cog.listener("on_interaction")
@@ -59,6 +67,13 @@ class GSuiteLogin(commands.Cog):
             guild = interaction.message.guild
             author = interaction.user
             dm_channel = await author.create_dm()
+
+            try:
+                await interaction.response.send_message(
+                    "Check your DMs!", ephemeral=True
+                )
+            except Exception:
+                await interaction.followup.send("Check your DMs!", ephemeral=True)
 
             auth_url, _ = self.flow.authorization_url(prompt="consent")
             auth_url = auth_url + "&hb=schoolsimplified.org"
@@ -132,7 +147,7 @@ class GSuiteLogin(commands.Cog):
                             await dm_channel.send(embed=embed)
 
                             member: discord.Member = guild.get_member(author.id)
-                            role = guild.get_role(self.staffrole)
+                            role = guild.get_role(self.staffrole[guild.id])
                             await member.add_roles(
                                 role,
                                 reason="Passed Verification: {}".format(
@@ -145,7 +160,7 @@ class GSuiteLogin(commands.Cog):
                                 "%m/%d/%Y %I:%-M %p"
                             )
                             logchannel: discord.TextChannel = self.bot.get_channel(
-                                self.logchannel
+                                self.logchannel[guild.id]
                             )
 
                             embed = discord.Embed(
@@ -174,17 +189,20 @@ class GSuiteLogin(commands.Cog):
                     "Looks like you didn't respond in time, please try again later!"
                 )
 
-    @commands.command()
-    @is_botAdmin
-    async def pasteGSuiteButton(self, ctx):
+    @app_commands.command(
+        name="paste-gsuite-button", description="Send the gsuite button"
+    )
+    @app_commands.guilds(TechID.g_tech)
+    @slash_is_bot_admin()
+    async def pasteGSuiteButton(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title="Alternate Verification Method",
             description="If you have a @schoolsimplified.org Google Account, choose this method to "
-            "get immediately verified.",
+            "immediately get verified.",
             color=discord.Color.green(),
         )
         GSuiteButton = GSuiteVerify()
-        await ctx.send(embed=embed, view=GSuiteButton)
+        await interaction.response.send_message(embed=embed, view=GSuiteButton)
 
 
 async def setup(bot):

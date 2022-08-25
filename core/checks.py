@@ -1,20 +1,19 @@
 """
 SETUP:
+If you require a specific command to be protected, you can use the @is_botAdmin check or create your own one here!
 
-If you require a specific command to be protected, you can use the built in @is_botAdmin check or create your own one here!
-
-If you wish to use the @is_botAdmin check, DM Space.".
-
-Otherwise, use the same format to make your own check. 
+If you wish to use the @is_botAdmin check, DM Space.
+Otherwise, use the same format to make your own check.
 """
 
 import os
 import re
 
 import discord
+from discord import app_commands
 from discord.ext import commands
+
 from core import database
-from core.common import MKT_ID
 
 
 def predicate_LV1(ctx) -> bool:
@@ -89,7 +88,7 @@ def slash_is_bot_admin():
 
         return interaction.user.id in admin_ids
 
-    return discord.app_commands.check(predicate)
+    return app_commands.check(predicate)
 
 
 def slash_is_bot_admin_2():
@@ -104,7 +103,7 @@ def slash_is_bot_admin_2():
 
         return interaction.user.id in admin_ids
 
-    return discord.app_commands.check(predicate)
+    return app_commands.check(predicate)
 
 
 def slash_is_bot_admin_3():
@@ -119,7 +118,7 @@ def slash_is_bot_admin_3():
 
         return interaction.user.id in admin_ids
 
-    return discord.app_commands.check(predicate)
+    return app_commands.check(predicate)
 
 
 def slash_is_bot_admin_4():
@@ -134,25 +133,10 @@ def slash_is_bot_admin_4():
 
         return interaction.user.id in admin_ids
 
-    return discord.app_commands.check(predicate)
+    return app_commands.check(predicate)
 
 
-def mktCommissionAdd(ctx):
-    rolesID = [
-        MKT_ID.r_designManager,
-        MKT_ID.r_designTeam,
-        MKT_ID.r_discordManager,
-        MKT_ID.r_discordTeam,
-        MKT_ID.r_contentCreatorManager,
-    ]
-
-    return any(role.id in rolesID for role in ctx.author.roles)
-
-
-is_mktCommissionAuthorized = commands.check(mktCommissionAdd)
-
-
-def TimmyBetaHost(ctx):
+def timmy_beta_host(ctx):
     runPath = os.path.realpath(__file__)
     runDir = re.search("/home/[^/]*", runPath)
 
@@ -164,4 +148,4 @@ def TimmyBetaHost(ctx):
     return runDir == "/home/timmy-beta"
 
 
-is_hostTimmyBeta = commands.check(TimmyBetaHost)
+is_host_timmy_beta = commands.check(timmy_beta_host)

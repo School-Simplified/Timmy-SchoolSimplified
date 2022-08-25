@@ -1,24 +1,29 @@
 import asyncio
 import io
 import os
+import re
 import typing
 from datetime import datetime, timedelta
-from pytz import timezone
 from io import BytesIO
-import gspread
-import re
 
 import chat_exporter
 import discord
+import gspread
 import pytz
+from discord import app_commands
+from discord.ext import commands, tasks
+from dotenv import load_dotenv
+from pytz import timezone
+
 from core import database
+from core.checks import slash_is_bot_admin
 from core.common import (
-    CH_ID,
-    TUT_ID,
-    HR_ID,
-    MAIN_ID,
-    MKT_ID,
-    TECH_ID,
+    ChID,
+    TutID,
+    HRID,
+    MainID,
+    MktID,
+    TechID,
     ButtonHandler,
     Emoji,
     Others,
@@ -27,9 +32,9 @@ from core.common import (
     CHHelperRoles,
     access_secret,
 )
-from discord.ext import commands, tasks
-from dotenv import load_dotenv
-from core.checks import is_botAdmin
+from core.logging_module import get_log
+
+_log = get_log(__name__)
 
 load_dotenv()
 
@@ -44,11 +49,10 @@ essayTicketLog_key = "1pB5xpsBGKIES5vmEY4hjluFg7-FYolOmN_w3s20yzr0"
 creds = access_secret("gsheets_c", True, 3, scope)
 gspread_client = gspread.authorize(creds)
 
-
 """
-if not (RoleOBJ.id == MAIN_ID.r_chatHelper or RoleOBJ.id == MAIN_ID.r_leadHelper) and not channel.category.id == MAIN_ID.cat_essayTicket:
-                    if RoleOBJ.id == MAIN_ID.r_essayReviser:
-                        if channel.category.id == MAIN_ID.cat_essayTicket or channel.category.id == MAIN_ID.cat_englishTicket:
+if not (RoleOBJ.id == MainID.r_chatHelper or RoleOBJ.id == MainID.r_leadHelper) and not channel.category.id == MainID.cat_essayTicket:
+                    if RoleOBJ.id == MainID.r_essayReviser:
+                        if channel.category.id == MainID.cat_essayTicket or channel.category.id == MainID.cat_englishTicket:
 """
 MasterSubjectOptions = [
     discord.SelectOption(
@@ -98,11 +102,18 @@ async def TicketExport(
     directTranscript: bool = False,
 ):
     transcript = await chat_exporter.export(channel, None)
-    query = (
-        database.TicketInfo.select()
-        .where(database.TicketInfo.ChannelID == channel.id)
-        .get()
-    )
+    if channel.guild.id == MainID.g_main:
+        query = (
+            database.TicketInfo.select()
+            .where(database.TicketInfo.ChannelID == channel.id)
+            .get()
+        )
+    else:
+        query = (
+            database.MGMTickets.select()
+            .where(database.MGMTickets.ChannelID == channel.id)
+            .get()
+        )
     TicketOwner = self.bot.get_user(query.authorID)
     if TicketOwner is None:
         TicketOwner = await self.bot.fetch_user(query.authorID)
@@ -132,7 +143,7 @@ async def TicketExport(
         f.write(myIO.getbuffer())
 
     S3_upload_file(f"transcript-{channel.name}.html", "ch-transcriptlogs")
-    S3_URL = f"[Direct Transcript Link](https://acad-transcripts.schoolsimplified.org/transcript-{channel.name}.html)"
+    S3_URL = f"[Direct Transcript Link](https://transcripts.schoolsimplified.org/transcript-{channel.name}.html)"
     embed.add_field(name="Transcript Link", value=S3_URL)
 
     if response != None:
@@ -256,13 +267,13 @@ def decodeDict(self, value: str, sandbox: bool = False) -> typing.Union[str, int
         }
     else:
         decodeID = {
-            "['Math Helpers']": MAIN_ID.cat_mathTicket,
-            "['Science Helpers']": MAIN_ID.cat_scienceTicket,
-            "['Social Studies Helpers']": MAIN_ID.cat_socialStudiesTicket,
-            "['English Helpers']": MAIN_ID.cat_englishTicket,
-            "['Essay Helpers']": MAIN_ID.cat_essayTicket,
-            "['Language Helpers']": MAIN_ID.cat_otherTicket,
-            "['Other Helpers']": MAIN_ID.cat_otherTicket,
+            "['Math Helpers']": MainID.cat_math_ticket,
+            "['Science Helpers']": MainID.cat_science_ticket,
+            "['Social Studies Helpers']": MainID.cat_social_studies_ticket,
+            "['English Helpers']": MainID.cat_english_ticket,
+            "['Essay Helpers']": MainID.cat_essay_ticket,
+            "['Language Helpers']": MainID.cat_other_ticket,
+            "['Other Helpers']": MainID.cat_other_ticket,
         }
 
     name = decodeName[value]
@@ -306,17 +317,17 @@ class TicketBT(discord.ui.Button):
         A button for one role. `custom_id` is needed for persistent views.
         """
         self.bot = bot
-        self.mainserver = MAIN_ID.g_main
+        self.mainserver = MainID.g_main
         self.ServerIDs = [
-            TECH_ID.g_tech,
-            CH_ID.g_ch,
-            TUT_ID.g_tut,
-            MKT_ID.g_mkt,
-            HR_ID.g_hr,
+            TechID.g_tech,
+            ChID.g_ch,
+            TutID.g_tut,
+            MktID.g_mkt,
+            HRID.g_hr,
         ]
-        self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
-        self.CHID_DEFAULT = Others.CHID_DEFAULT
-        self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
+        self.TICKET_INACTIVE_TIME = Others.ticket_inactive_time
+        self.CHID_DEFAULT = Others.CHID_default
+        self.EssayCategory = [ChID.cat_essay, ChID.cat_essay]
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
 
         super().__init__(
@@ -328,12 +339,12 @@ class TicketBT(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         Sandbox = False
-        if interaction.message.guild.id == TECH_ID.g_tech:
+        if interaction.message.guild.id == TechID.g_tech:
             Sandbox = True
 
         bucket = self.view.cd_mapping.get_bucket(interaction.message)
         retry_after = bucket.update_rate_limit()
-        print(retry_after)
+        _log.warning(f"(CHTS) Internal Rate Limit: {retry_after}")
         if retry_after:
             return await interaction.response.send_message(
                 "Sorry, you are being rate limited.", ephemeral=True
@@ -368,10 +379,10 @@ class TicketBT(discord.ui.Button):
                     view=MSV,
                 )
             except Exception as e:
-                await interaction.followup.send(
-                    f"{interaction.user.mention} I can't send you messages, please check you're privacy settings!",
-                    delete_after=5.0,
+                msg = await interaction.followup.send(
+                    f"{interaction.user.mention} I can't send you messages, please check your privacy settings!",
                 )
+                await msg.delete(delay=3)
             timeout = await MSV.wait()
             if not timeout:
                 MasterSubjectView = var.view_response
@@ -562,6 +573,7 @@ class TicketBT(discord.ui.Button):
                     "Chat Helper",
                     "Bot: TeXit",
                     "Academics Management",
+                    "Helper",
                 ]
                 for role in roles:
                     RoleOBJ = discord.utils.get(
@@ -578,15 +590,15 @@ class TicketBT(discord.ui.Button):
                         RoleOBJ = discord.utils.get(guild.roles, name=role)
                         if (
                             not (
-                                RoleOBJ.id == MAIN_ID.r_chatHelper
-                                or RoleOBJ.id == MAIN_ID.r_leadHelper
+                                RoleOBJ.id == MainID.r_chat_helper
+                                or RoleOBJ.id == MainID.r_lead_helper
                             )
-                            and not channel.category.id == MAIN_ID.cat_essayTicket
+                            and not channel.category.id == MainID.cat_essay_ticket
                         ):
-                            if RoleOBJ.id == MAIN_ID.r_essayReviser:
+                            if RoleOBJ.id == MainID.r_essay_reviser:
                                 if (
-                                    channel.category.id == MAIN_ID.cat_essayTicket
-                                    or channel.category.id == MAIN_ID.cat_englishTicket
+                                    channel.category.id == MainID.cat_essay_ticket
+                                    or channel.category.id == MainID.cat_english_ticket
                                 ):
                                     await channel.set_permissions(
                                         RoleOBJ,
@@ -704,13 +716,15 @@ class TicketBT(discord.ui.Button):
                 await channel.send(mentionRole.mention, embed=embed)
 
             except Exception as e:
-                print(f"{e.__class__.__name__}: {e}")
+                _log.error(f"(CHTS) {e.__class__.__name__}: {e}")
                 await channel.send(
                     f"**Ticket Information**\n\n{interaction.user.mention}\nQuestion: {answer1.content}"
                 )
             await channel.send(f"Attachment URL: {str(attachmentlist)}")
 
-            await LDC.edit(f"Ticket Created!\nYou can view it here: {channel.mention}")
+            await LDC.edit(
+                content=f"Ticket Created!\nYou can view it here: {channel.mention}"
+            )
 
 
 class TicketButton(discord.ui.View):
@@ -741,17 +755,17 @@ class TicketButton(discord.ui.View):
 class DropdownTickets(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.mainserver = MAIN_ID.g_main
+        self.mainserver = MainID.g_main
         self.ServerIDs = [
-            TECH_ID.g_tech,
-            CH_ID.g_ch,
-            TUT_ID.g_tut,
-            MKT_ID.g_mkt,
-            HR_ID.g_hr,
+            TechID.g_tech,
+            ChID.g_ch,
+            TutID.g_tut,
+            MktID.g_mkt,
+            HRID.g_hr,
         ]
-        self.TICKET_INACTIVE_TIME = Others.TICKET_INACTIVE_TIME
-        self.CHID_DEFAULT = Others.CHID_DEFAULT
-        self.EssayCategory = [CH_ID.cat_essay, CH_ID.cat_essay]
+        self.TICKET_INACTIVE_TIME = Others.ticket_inactive_time
+        self.CHID_DEFAULT = Others.CHID_default
+        self.EssayCategory = [ChID.cat_essay, ChID.cat_essay]
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
         self.TicketInactive.start()
 
@@ -815,8 +829,9 @@ class DropdownTickets(commands.Cog):
                     f"{author.mention}\n", embed=embed, view=ButtonViews
                 )
             except Exception:
-                await interaction.followup.send(f"{author.mention}\n", embed=embed, view=ButtonViews)
-
+                await interaction.followup.send(
+                    f"{author.mention}\n", embed=embed, view=ButtonViews
+                )
 
         elif InteractionResponse["custom_id"] == "ch_lock_CONFIRM":
             channel = interaction.message.channel
@@ -836,7 +851,9 @@ class DropdownTickets(commands.Cog):
                         f"{author.mention} The ticket owner has left the server."
                     )
                 except Exception:
-                    await interaction.followup.send(f"{author.mention} The ticket owner has left the server.")
+                    await interaction.followup.send(
+                        f"{author.mention} The ticket owner has left the server."
+                    )
             else:
                 await channel.set_permissions(
                     TicketOwner, read_messages=False, reason="Ticket Perms Close(User)"
@@ -887,17 +904,21 @@ class DropdownTickets(commands.Cog):
                     author.mention, embed=embed, view=ButtonViews2
                 )
             except Exception:
-                await interaction.followup.send(author.mention, embed=embed, view=ButtonViews2)
+                await interaction.followup.send(
+                    author.mention, embed=embed, view=ButtonViews2
+                )
 
         elif InteractionResponse["custom_id"] == "ch_lock_CANCEL":
             channel = interaction.message.channel
             author = interaction.user
             try:
                 await interaction.response.send_message(
-                    f"{author.mention} Alright, canceling request.", delete_after=5.0
+                    f"{author.mention} Alright, canceling request.", ephemeral=True
                 )
             except Exception:
-                await interaction.followup.send(f"{author.mention} Alright, canceling request.", delete_after=5.0)
+                await interaction.followup.send(
+                    f"{author.mention} Alright, canceling request.", ephemeral=True
+                )
             await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_C":
@@ -909,9 +930,10 @@ class DropdownTickets(commands.Cog):
                     f"{author.mention} Alright, canceling request.", delete_after=5.0
                 )
             except Exception:
-                await interaction.followup.send(
-                    f"{author.mention} Alright, canceling request.", delete_after=5.0
+                msg: discord.WebhookMessage = await interaction.followup.send(
+                    f"{author.mention} Alright, canceling request."
                 )
+                await msg.delete(delay=5.0)
             await interaction.message.delete()
 
         elif InteractionResponse["custom_id"] == "ch_lock_R":
@@ -957,13 +979,13 @@ class DropdownTickets(commands.Cog):
 
         elif InteractionResponse["custom_id"] == "ch_lock_T":
             channel: discord.TextChannel = interaction.channel
-            if interaction.guild.id == MAIN_ID.g_main:
+            if interaction.guild.id == MainID.g_main:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
-                    MAIN_ID.ch_transcriptLogs
+                    MainID.ch_transcript_logs
                 )
             else:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
-                    TECH_ID.ch_ticketLog
+                    TechID.ch_ticket_log
                 )
             author = interaction.user
             msg = await interaction.channel.send(
@@ -974,7 +996,7 @@ class DropdownTickets(commands.Cog):
                     self, channel, ResponseLogChannel, author, None, True
                 )
 
-                if channel.category_id == MAIN_ID.cat_essayTicket:
+                if channel.category_id == MainID.cat_essay_ticket:
                     raw_url = S3_URL.split("](")[1].strip(")")
                     values = self.sheet.col_values(1)
 
@@ -1025,13 +1047,13 @@ class DropdownTickets(commands.Cog):
         elif InteractionResponse["custom_id"] == "ch_lock_C&D":
             channel = self.bot.get_channel(interaction.channel_id)
             author = interaction.user
-            if interaction.guild.id == MAIN_ID.g_main:
+            if interaction.guild.id == MainID.g_main:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
-                    MAIN_ID.ch_transcriptLogs
+                    MainID.ch_transcript_logs
                 )
             else:
                 ResponseLogChannel: discord.TextChannel = self.bot.get_channel(
-                    TECH_ID.ch_ticketLog
+                    TechID.ch_ticket_log
                 )
             query = (
                 database.TicketInfo.select()
@@ -1058,7 +1080,7 @@ class DropdownTickets(commands.Cog):
                 # S3_upload_file(transcript_file.filename, "ch-transcriptlogs")
                 # print(transcript_file.filename)
 
-                if channel.category_id == MAIN_ID.cat_essayTicket:
+                if channel.category_id == MainID.cat_essay_ticket:
                     raw_url = url.split("](")[1].strip(")")
                     values = self.sheet.col_values(1)
 
@@ -1095,26 +1117,27 @@ class DropdownTickets(commands.Cog):
 
             try:
                 await msgO.edit(
-                    f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                    content=f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                 )
             except Exception:
                 try:
                     await msgO.edit(
-                        f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                        content=f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                     )
                 except Exception:
                     await msgO.edit(
-                        f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
+                        content=f"{author.mention}\nTranscript Created!\n>>> `Jump Link:` {msg.jump_url}\n`Transcript Link:` {url}"
                     )
             await asyncio.sleep(5)
             await channel.send(f"{author.mention} Alright, closing ticket.")
             await channel.delete()
             query.delete_instance()
 
-    @commands.command()
-    async def close(self, ctx: commands.Context):
+    @app_commands.command(name="close", description="Close a chat helper ticket")
+    @app_commands.guilds(MainID.g_main)
+    async def close(self, interaction: discord.Interaction):
         query = database.TicketInfo.select().where(
-            database.TicketInfo.ChannelID == ctx.channel.id
+            database.TicketInfo.ChannelID == interaction.channel_id
         )
         if query.exists():
             query = query.get()
@@ -1130,7 +1153,7 @@ class DropdownTickets(commands.Cog):
                     label="Confirm",
                     custom_id="ch_lock_CONFIRM",
                     emoji="✅",
-                    button_user=ctx.author,
+                    button_user=interaction.user,
                 )
             )
             ButtonViews.add_item(
@@ -1139,17 +1162,19 @@ class DropdownTickets(commands.Cog):
                     label="Cancel",
                     custom_id="ch_lock_CANCEL",
                     emoji="❌",
-                    button_user=ctx.author,
+                    button_user=interaction.user,
                 )
             )
-            await ctx.send(f"{ctx.author.mention}\n", embed=embed, view=ButtonViews)
+            await interaction.response.send_message(
+                f"{interaction.user.mention}\n", embed=embed, view=ButtonViews
+            )
         else:
-            await ctx.send("Not a ticket.")
+            await interaction.response.send_message("Not a ticket.", ephemeral=True)
 
     @tasks.loop(minutes=1.0)
     async def TicketInactive(self):
         TicketInfoTB = database.TicketInfo
-        guild = self.bot.get_guild(MAIN_ID.g_main)
+        guild = self.bot.get_guild(MainID.g_main)
         for entry in TicketInfoTB:
             channel: discord.TextChannel = self.bot.get_channel(entry.ChannelID)
             if channel is None:
@@ -1158,7 +1183,7 @@ class DropdownTickets(commands.Cog):
             fetchMessage = [message async for message in channel.history(limit=1)]
             TicketOwner = guild.get_member(entry.authorID)
             messages = [message async for message in channel.history(limit=None)]
-            LogCH = self.bot.get_channel(MAIN_ID.ch_transcriptLogs)
+            LogCH = self.bot.get_channel(MainID.ch_transcript_logs)
             authorList = []
             if len(messages) == 0:
                 continue
@@ -1244,9 +1269,12 @@ class DropdownTickets(commands.Cog):
     async def before_loop_(self):
         await self.bot.wait_until_ready()
 
-    @commands.command()
-    @is_botAdmin
-    async def sendCHTKTView(self, ctx):
+    @app_commands.command(
+        name="send-chticket-view", description="Send chat helper ticket view"
+    )
+    @app_commands.guilds(MainID.g_main)
+    @slash_is_bot_admin()
+    async def sendCHTKTView(self, interaction: discord.Interaction):
         MasterSubjectView = discord.ui.View()
         MasterSubjectView.add_item(
             SelectMenuHandler(
@@ -1259,13 +1287,13 @@ class DropdownTickets(commands.Cog):
                 ephemeral=True,
             )
         )
-        await ctx.send(
+        await interaction.response.send_message(
             f"""**Note:** *Make sure to allow direct messages from server members!*\n
         {Emoji.schoolsimplified} **__How to Get School Help:__**
-            > {Emoji.ssarrow} Click on the button to start the process.
-            > {Emoji.ssarrow} In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
-            > {Emoji.ssarrow}Send the question in your direct messages as per the bot instructions.
-            > {Emoji.ssarrow} Send a picture of your assignment title in your direct messages as per the bot instructions.""",
+            > {Emoji.ss_arrow} Click on the button to start the process.
+            > {Emoji.ss_arrow} In your direct messages with <@852251896130699325>, select the sub-topic you need help with.
+            > {Emoji.ss_arrow}Send the question in your direct messages as per the bot instructions.
+            > {Emoji.ss_arrow} Send a picture of your assignment title in your direct messages as per the bot instructions.""",
             view=TicketButton(self.bot),
         )
 

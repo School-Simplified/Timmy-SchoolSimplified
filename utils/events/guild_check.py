@@ -1,5 +1,6 @@
-from discord.ext import commands
 import discord
+from discord.ext import commands
+
 from core import database
 from core.common import Others
 
@@ -22,13 +23,26 @@ class GuildCheck(commands.Cog):
                 description="This guild is not authorized to use Timmy!",
                 color=discord.Color.brand_red(),
             )
-            embed.set_thumbnail(url=Others.timmyDog_png)
+            embed.set_thumbnail(url=Others.timmy_dog_png)
             embed.set_footer(text="Please contact an IT administrator for help.")
             for channel in guild.text_channels:
                 if channel.permissions_for(guild.me).send_messages:
                     await channel.send(embed=embed)
                     break
             await guild.leave()
+        else:
+            query = query.get()
+            embed = discord.Embed(
+                title="Guild Authorized!",
+                description=f"This guild was authorized by <@{query.authorizedUserID}>.",
+                color=discord.Color.brand_green(),
+            )
+            embed.set_thumbnail(url=Others.timmy_dog_png)
+            embed.set_footer(text="Contact an IT administrator for any questions.")
+            for channel in guild.text_channels:
+                if channel.permissions_for(guild.me).send_messages:
+                    await channel.send(embed=embed)
+                    break
 
 
 async def setup(bot: commands.Bot):

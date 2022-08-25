@@ -1,16 +1,19 @@
 import discord
+from discord.ext import commands
+
 from core.common import (
-    CH_ID,
+    ChID,
     DIGITAL_ID,
-    HR_ID,
-    MKT_ID,
-    STAFF_ID,
-    TECH_ID,
-    TUT_ID,
-    Others,
+    HRID,
+    MktID,
+    StaffID,
+    TechID,
+    TutID,
     load_config,
 )
-from discord.ext import commands
+from core.logging_module import get_log
+
+_log = get_log(__name__)
 
 config, _ = load_config("equelRoles")
 
@@ -34,15 +37,15 @@ async def roleNameCheck(self, name: str, guild: discord.Guild, user: discord.Mem
 class VerificationStaff(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.staffServer = {STAFF_ID.g_staff: STAFF_ID.ch_verificationLogs}
-        self.StaffServerIDs = [STAFF_ID.g_staff]
-        self.VerificationIDs = [DIGITAL_ID.ch_verification, STAFF_ID.ch_verification]
+        self.staffServer = {StaffID.g_staff: StaffID.ch_verification_logs}
+        self.StaffServerIDs = [StaffID.g_staff]
+        self.VerificationIDs = [DIGITAL_ID.ch_verification, StaffID.ch_verification]
         self.ServerIDs = [
-            TECH_ID.g_tech,
-            CH_ID.g_ch,
-            TUT_ID.g_tut,
-            MKT_ID.g_mkt,
-            HR_ID.g_hr,
+            TechID.g_tech,
+            ChID.g_ch,
+            TutID.g_tut,
+            MktID.g_mkt,
+            HRID.g_hr,
         ]
 
     @commands.Cog.listener("on_interaction")
@@ -56,21 +59,15 @@ class VerificationStaff(commands.Cog):
             interaction.guild_id in self.StaffServerIDs
             and interaction.channel.id in self.VerificationIDs
         ):
-            print(interaction.user.id)
-
             staffServer: discord.Guild = self.bot.get_guild(interaction.guild_id)
-            print(staffServer)
             StaffServerMember: discord.Member = staffServer.get_member(
                 interaction.user.id
             )
 
-            print(StaffServerMember)
             if StaffServerMember is None:
-                print("h")
                 StaffServerMember: discord.Member = staffServer.get_member(
                     interaction.user.id
                 )
-                print(StaffServerMember)
 
             if StaffServerMember is None:
                 try:
@@ -109,7 +106,7 @@ class VerificationStaff(commands.Cog):
                     )
 
                 except Exception as e:
-                    print("member not found")
+                    _log.error("member not found")
                     continue
 
                 else:
@@ -117,7 +114,7 @@ class VerificationStaff(commands.Cog):
 
                     for role in roleNames:
                         check = getEqualRank(role.name)
-                        print(f"CHECK: {check}")
+                        _log.info(f"CHECK: {check}")
 
                         if check is not None:
                             checkSTR = ", ".join(check)
@@ -134,10 +131,6 @@ class VerificationStaff(commands.Cog):
                                     jsonROLE = discord.utils.get(
                                         staffServer.roles, name=elem
                                     )
-                                    print(f"ELEM: {elem}")
-                                    print(f"JSONROLE: {jsonROLE}")
-                                    print(f"SubServer: {server}")
-                                    print(f"Member: {ServerMember}")
 
                                     await StaffServerMember.add_roles(
                                         jsonROLE, reason="Verification RoleSync"
@@ -222,22 +215,22 @@ class VerificationStaff(commands.Cog):
                             delete_after=10.0,
                         )
 
-    @commands.command()
-    async def pasteVerificationButton(self, ctx):
-        button = VerifyButton()
-        await ctx.send("Click here to verify", view=button)
-
-    @commands.command()
-    async def pasteVerificationEmbed(self, ctx: commands.Context):
-        embed = discord.Embed(
-            title="Verification",
-            description=f"To get your staff roles, go to <#{DIGITAL_ID.ch_waitingRoom}> and say what teams you are part of!",
-            color=discord.Colour.blurple(),
-        )
-        embed.set_footer(
-            text="School Simplified • 08/26/2021", icon_url=Others.ssLogo_png
-        )
-        await ctx.send(embed=embed)
+    # @commands.command()
+    # async def pasteVerificationButton(self, ctx):
+    #     button = VerifyButton()
+    #     await ctx.send("Click here to verify", view=button)
+    #
+    # @commands.command()
+    # async def pasteVerificationEmbed(self, ctx: commands.Context):
+    #     embed = discord.Embed(
+    #         title="Verification",
+    #         description=f"To get your staff roles, go to <#{DIGITAL_ID.ch_waitingRoom}> and say what teams you are part of!",
+    #         color=discord.Colour.blurple(),
+    #     )
+    #     embed.set_footer(
+    #         text="School Simplified • 08/26/2021", icon_url=Others.ss_logo_png
+    #     )
+    #     await ctx.send(embed=embed)
 
 
 async def setup(bot):

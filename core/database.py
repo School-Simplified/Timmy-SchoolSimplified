@@ -1,4 +1,3 @@
-import collections
 import os
 from datetime import datetime
 from distutils.util import strtobool
@@ -18,7 +17,10 @@ from peewee import (
     TextField,
 )
 
+from core.logging_module import get_log
+
 load_dotenv()
+_log = get_log(__name__)
 useDB = True
 
 if not os.getenv("PyTestMODE"):
@@ -33,33 +35,33 @@ Change to a SqliteDatabase if you don't have any MySQL Credentials.
 If you do switch, comment/remove the MySQLDatabase variable and uncomment/remove the # from the SqliteDatabase instance. 
 """
 
-if os.getenv("IP") is None:
-    print(f"Successfully connected to the SQLite Database")
+if os.getenv("DATABASE_IP") is None:
     db = SqliteDatabase("data.db")
+    _log.info("No Database IP found in .env file, using SQLite!")
 
-elif os.getenv("IP") is not None:
+elif os.getenv("DATABASE_IP") is not None:
     # useDB = bool(input(f"{bcolors.WARNING}Do you want to use MySQL? (y/n)\n    > This option should be avoided if you are testing new database structures, do not use MySQL Production if you are testing table modifications.{bcolors.ENDC}"))
     if useDB:
         try:
             db = MySQLDatabase(
-                os.getenv("DatabaseName"),
-                user=os.getenv("Username"),
-                password=os.getenv("Password"),
-                host=os.getenv("IP"),
-                port=int(os.getenv("PORT")),
+                os.getenv("DATABASE_COLLECTION"),
+                user=os.getenv("DATABASE_USERNAME"),
+                password=os.getenv("DATABASE_PASSWORD"),
+                host=os.getenv("DATABASE_IP"),
+                port=int(os.getenv("DATABASE_PORT")),
             )
-            print("Successfully connected to the MySQL Database")
+            _log.info("Successfully connected to the MySQL Database")
         except Exception as e:
-            print(
+            _log.warning(
                 f"Unable to connect to the MySQL Database:\n    > {e}\n\nSwitching to SQLite..."
             )
             db = SqliteDatabase("data.db")
     else:
         db = SqliteDatabase("data.db")
         if not os.getenv("PyTestMODE"):
-            print(f"Successfully connected to the SQLite Database")
+            _log.info(f"Successfully connected to the SQLite Database")
         else:
-            print(f"Created a SQLite Database for testing...")
+            _log.info(f"Testing environment detected, using SQLite Database")
 
 
 def iter_table(model_dict: dict):
@@ -484,21 +486,6 @@ class TutorBot_Sessions(BaseModel):
     GracePeriod_Status = BooleanField(default=False)
 
 
-class Uptime(BaseModel):
-    """
-    #Uptime
-
-    `id`: AutoField()
-    Database Entry
-
-    `UpStart`: TextField()
-    Time Object of Bot being started.
-    """
-
-    id = AutoField()
-    UpStart = TextField()
-
-
 class TicketInfo(BaseModel):
     """
     #TicketInfo
@@ -709,6 +696,7 @@ class StudyVCLeaderboard(BaseModel):
     xp = BigIntegerField(default=0)
     totalXP = BigIntegerField(default=0)
 
+
 class AuthorizedGuilds(BaseModel):
     """
     #AuthorizedGuilds
@@ -718,10 +706,207 @@ class AuthorizedGuilds(BaseModel):
 
     `guildID`: BigIntegerField()
     Guild ID of the guild.
+
+    `authorizedUserID`: BigIntegerField()
+    User ID of the user who authorized the guild.
     """
 
     id = AutoField()
     guildID = BigIntegerField()
+    authorizedUserID = BigIntegerField()
+
+
+class SetPuzzleSchedule(BaseModel):
+    id = AutoField()
+
+
+class CommandAnalytics(BaseModel):
+    """
+    #CommandAnalytics
+
+    `id`: AutoField()
+    Database Entry ID
+
+    `command`: TextField()
+    The command that was used.
+
+    `user`: IntegerField()
+    The user that used the command.
+
+    `date`: DateTimeField()
+    The date when the command was used.
+
+    `command_type`: TextField()
+    The type of command that was used.
+
+    `guild_id`: BigIntegerField()
+    The guild ID of the guild that the command was used in.
+    """
+
+    id = AutoField()
+    command = TextField()
+    date = DateTimeField()
+    command_type = TextField()
+    guild_id = BigIntegerField()
+    user = BigIntegerField()
+
+
+class MGMTickets(BaseModel):
+    """
+    #MGMTickets
+
+    `id`: AutoField()
+    Database Entry
+
+    `ChannelID`: BigIntegerField()
+    Channel ID of the Ticket.
+
+    `authorID`: BigIntegerField()
+    Author ID of the Ticket Owner.
+
+    `createdAt`: DateTimeField()
+    A datetime object when the ticket opened.
+
+    `configuration_id`: TextField()
+    The related configuration ID of the ticket.
+    """
+
+    id = AutoField()
+    ChannelID = BigIntegerField()
+    authorID = BigIntegerField()
+    createdAt = DateTimeField()
+    configuration_id = TextField(default=None)
+
+
+class TicketConfiguration(BaseModel):
+    """
+    #Tickets
+
+    `id`: AutoField()
+    Database Entry
+
+    `guild_id` = BigIntegerField()
+    Guild ID of the guild the ticket config is in.
+
+    `channel_id`: BigIntegerField()
+    Channel ID of where tickets originated.
+
+    `category_id`: BigIntegerField()
+    Category ID of where tickets go.
+
+    `transcript_channel_id`: BigIntegerField()
+    Channel ID of where transcripts go.
+
+    `title`: TextField()
+    Title of the form.
+
+    `channel_identifier`: TextField()
+    The channel identifier of the ticket.
+
+    `button_label`: TextField()
+    The label of the button.
+
+    `role_id`: TextField()
+    Role ID of the role that can view the ticket.
+
+    `author_id`: BigIntegerField()
+    Owner of ticket configuration
+
+    `limit`: IntegerField()
+    Limit of tickets per user.
+
+    `questions`: TextField()
+    Questions that are asked in the ticket. | Default to None if not set.
+
+    `question_config` = TextField(default=None)
+    Question configuration. | Default to None if not set.
+
+    `q1_config` = TextField(default=None)
+    `q2_config` = TextField(default=None)
+    `q3_config` = TextField(default=None)
+    `q4_config` = TextField(default=None)
+    `q5_config` = TextField(default=None)
+    Question configuration. | Default to None if not set.
+    > Format: S/L , Char. Limit Min, Char. Limit Max
+
+
+    `created_at`: DateTimeField()
+    DateTime object when ticket configuration was created.
+    """
+
+    id = AutoField()
+    guild_id = BigIntegerField()
+    channel_id = BigIntegerField()
+    category_id = BigIntegerField()
+    transcript_channel_id = BigIntegerField()
+    title = TextField()
+    channel_identifier = TextField()
+    button_label = TextField()
+    role_id = TextField()
+    author_id = BigIntegerField()
+    limit = IntegerField()
+    questions = TextField(default=None)
+    q1_config = TextField(default=None)
+    q2_config = TextField(default=None)
+    q3_config = TextField(default=None)
+    q4_config = TextField(default=None)
+    q5_config = TextField(default=None)
+    question_config = TextField(default=None)
+    created_at = DateTimeField()
+
+
+class RedirectLogs(BaseModel):
+    """
+    #RedirectLogs
+    `id`: AutoField()
+    Database Entry ID
+
+    `redirect_id`: BigIntegerField()
+    Redirect ID of the redirect. (Corresponds to the ID schema for Redirect.Pizza's API)
+
+    `from_url`: TextField()
+    The URL that was redirected from.
+
+    `to_url`: TextField()
+    The URL that was redirected to.
+
+    `subdomain`: TextField()
+    The subdomain the from_url uses.
+
+    `author_id`: BigIntegerField()
+    The author ID of the user that made the redirect.
+
+    `created_at`: DateTimeField()
+    The date when the redirect was made.
+    """
+
+    id = AutoField()
+    redirect_id = BigIntegerField(unique=False)
+    from_url = TextField(unique=False)
+    to_url = TextField(unique=False)
+    subdomain = TextField(default=None)
+    author_id = BigIntegerField(unique=False)
+    created_at = DateTimeField()
+
+
+class ApprovedSubDomains(BaseModel):
+    """
+    #ApprovedSubDomains
+
+    `id`: AutoField()
+    Database Entry
+
+    `sub_domain`: TextField()
+    Domain that is approved.
+
+    `author_id`: BigIntegerField()
+    Author ID of the user that requested the domain.
+    """
+
+    id = AutoField()
+    sub_domain = TextField()
+    author_id = BigIntegerField()
+
 
 app = Flask(__name__)
 
@@ -756,7 +941,6 @@ tables = {
     "StudyToDo": StudyToDo,
     "WhitelistedPrefix": WhitelistedPrefix,
     "TutorBot_Sessions": TutorBot_Sessions,
-    "Uptime": Uptime,
     "TicketInfo": TicketInfo,
     "PunishmentTag": PunishmentTag,
     "CTag:": CTag,
@@ -770,7 +954,18 @@ tables = {
     "StudyVCDB": StudyVCDB,
     "StudyVCLeaderboard": StudyVCLeaderboard,
     "ResponseSpamBlacklist": ResponseSpamBlacklist,
-    "AuthorizedGuilds": AuthorizedGuilds
+    "AuthorizedGuilds": AuthorizedGuilds,
+    # "SetPuzzleSchedule": SetPuzzleSchedule,
+    "CommandAnalytics": CommandAnalytics,
+    "MGMTickets": MGMTickets,
+    "Ticket_Configuration": TicketConfiguration,
 }
 
-iter_table(tables)
+"""
+This function automatically adds tables to the database if they do not exist,
+however it does take a significant amount of time to run so this will be commented out. 
+
+Uncomment when you need to update tables again, however it is recommended to create them manually/request them.
+"""
+if os.getenv("PyTestMODE"):
+    iter_table(tables)

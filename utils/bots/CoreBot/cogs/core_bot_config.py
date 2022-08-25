@@ -5,20 +5,21 @@ from threading import Thread
 from typing import Literal
 
 import discord
-from core import database
-from core.common import CheckDB_CC, TECH_ID
-from core.checks import (
-    is_botAdmin,
-    is_botAdmin2,
-    is_botAdmin3,
-    is_botAdmin4,
-    slash_is_bot_admin_2,
-)
-from core.common import Emoji, Colors
-from discord.app_commands import command, guilds
+from discord import app_commands
+from discord.app_commands import command
 from discord.ext import commands
 from dotenv import load_dotenv
-from core.common import getHostDir, force_restart
+
+from core import database
+from core.checks import (
+    slash_is_bot_admin_2,
+    slash_is_bot_admin_4,
+    slash_is_bot_admin_3,
+    slash_is_bot_admin,
+)
+from core.common import CheckDB_CC
+from core.common import Emoji
+from core.common import get_host_dir
 
 load_dotenv()
 
@@ -41,28 +42,56 @@ class CoreBotConfig(commands.Cog):
     def display_emoji(self) -> str:
         return "⚙️"
 
-    @commands.group(aliases=["f"])
-    async def filters(self, ctx):
-        pass
+    FL = app_commands.Group(
+        name="filter-config",
+        description="Configure the bots filter settings.",
+    )
 
-    @commands.command()
-    @is_botAdmin4
-    async def Fmodify(self, ctx, num: int, val: bool):
+    PM = app_commands.Group(
+        name="permit",
+        description="Configure the bots permit settings.",
+    )
+
+    PRE = app_commands.Group(
+        name="whitelisted-prefixes",
+        description="Configure the bots whitelisted prefixes.",
+    )
+
+    @FL.command(name="modify", description="Modify the filter settings.")
+    @app_commands.describe(
+        filter="Filter to modify.", val="Value to set the filter to."
+    )
+    @slash_is_bot_admin_4()
+    async def Fmodify(
+        self,
+        interaction: discord.Interaction,
+        filter: Literal[
+            "CheckDB.MasterMaintenance",
+            "CheckDB.guildNone",
+            "CheckDB.externalGuild",
+            "CheckDB.ModRoleBypass",
+            "CheckDB.ruleBypass",
+            "CheckDB.publicCategories",
+            "CheckDB.elseSituation",
+        ],
+        val: bool,
+    ):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
             .where(database.CheckInformation.id == 1)
             .get()
         )
 
-        databaseValues = {
-            1: "CheckDB.MasterMaintenance",
-            2: "CheckDB.guildNone",
-            3: "CheckDB.externalGuild",
-            4: "CheckDB.ModRoleBypass",
-            5: "CheckDB.ruleBypass",
-            6: "CheckDB.publicCategories",
-            7: "CheckDB.elseSituation",
+        database_values = {
+            "CheckDB.MasterMaintenance": 1,
+            "CheckDB.guildNone": 2,
+            "CheckDB.externalGuild": 3,
+            "CheckDB.ModRoleBypass": 4,
+            "CheckDB.ruleBypass": 5,
+            "CheckDB.publicCategories": 6,
+            "CheckDB.elseSituation": 7,
         }
+        num = database_values[filter]
 
         if num == 1:
             CheckDB.MasterMaintenance = val
@@ -86,12 +115,17 @@ class CoreBotConfig(commands.Cog):
             CheckDB.elseSituation = val
             CheckDB.save()
         else:
-            return await ctx.send(f"Not a valid option\n```py\n{databaseValues}\n```")
+            return await interaction.response.send_message(
+                f"Not a valid option\n```py\n{filter}\n```"
+            )
 
-        await ctx.send(f"Field: {databaseValues[num]} has been set to {str(val)}")
+        await interaction.response.send_message(
+            f"Field: {filter} has been set to {str(val)}"
+        )
 
-    @filters.command()
-    async def list(self, ctx):
+    @FL.command(description="View the filter settings.")
+    @slash_is_bot_admin_3()
+    async def list(self, interaction: discord.Interaction):
         CheckDB: database.CheckInformation = (
             database.CheckInformation.select()
             .where(database.CheckInformation.id == 1)
@@ -106,41 +140,43 @@ class CoreBotConfig(commands.Cog):
         embed.add_field(
             name="Checks",
             value=f"1) `Maintenance Mode`\n{Emoji.barrow} {CheckDB_CC.MasterMaintenance}"
-            f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB_CC.guildNone}"
-            f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB_CC.externalGuild}"
-            f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB_CC.ModRoleBypass}"
-            f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB_CC.ruleBypass}"
-            f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB_CC.publicCategories}"
-            f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB_CC.elseSituation}",
+            f"\n\n2) `NoGuild`\n{Emoji.barrow} {CheckDB_CC.guild_None}"
+            f"\n\n3) `External Guilds`\n{Emoji.barrow} {CheckDB_CC.external_guild}"
+            f"\n\n4) `ModBypass`\n{Emoji.barrow} {CheckDB_CC.mod_role_bypass}"
+            f"\n\n5) `Rule Command Bypass`\n{Emoji.barrow} {CheckDB_CC.rule_bypass}"
+            f"\n\n6) `Public Category Lock`\n{Emoji.barrow} {CheckDB_CC.public_categories}"
+            f"\n\n7) `Else Conditions`\n{Emoji.barrow} {CheckDB_CC.else_situation}",
         )
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-    @commands.group(aliases=["pre"])
-    async def prefix(self, ctx):
-        pass
-
-    @prefix.command()
-    @is_botAdmin3
-    async def delete(self, ctx, num: int):
+    @PRE.command(description="Delete a whitelisted prefix.")
+    @app_commands.describe(prefix="Prefix to delete.")
+    @slash_is_bot_admin_3()
+    async def delete(self, interaction: discord.Interaction, prefix: str):
         WhitelistedPrefix: database.WhitelistedPrefix = (
             database.WhitelistedPrefix.select()
-            .where(database.WhitelistedPrefix.id == num)
+            .where(database.WhitelistedPrefix.prefix == prefix)
             .get()
         )
         WhitelistedPrefix.delete_instance()
-        await ctx.send(f"Field: {WhitelistedPrefix.prefix} has been deleted")
+        await interaction.response.send_message(
+            f"Field: {WhitelistedPrefix.prefix} has been deleted"
+        )
 
-    @prefix.command()
-    @is_botAdmin3
-    async def add(self, ctx, prefix):
+    @PRE.command(description="Add a whitelisted prefix.")
+    @app_commands.describe(prefix="Prefix to add.")
+    @slash_is_bot_admin_3()
+    async def add(self, interaction: discord.Interaction, prefix: str):
         WhitelistedPrefix = database.WhitelistedPrefix.create(
             prefix=prefix, status=True
         )
-        await ctx.send(f"Field: {WhitelistedPrefix.prefix} has been added!")
+        await interaction.response.send_message(
+            f"Field: {WhitelistedPrefix.prefix} has been added!"
+        )
 
-    @prefix.command()
-    async def list(self, ctx):
-
+    @PRE.command(description="View the whitelisted prefixes.")
+    @slash_is_bot_admin_3()
+    async def list(self, interaction: discord.Interaction):
         PrefixDB = database.WhitelistedPrefix
         response = []
 
@@ -159,163 +195,7 @@ class CoreBotConfig(commands.Cog):
             color=discord.Colour.gold(),
         )
         embed.add_field(name="Prefix List", value="\n\n".join(response))
-        await ctx.send(embed=embed)
-
-    @commands.group(aliases=["cog"])
-    @is_botAdmin2
-    async def cogs(self, ctx):
-        pass
-
-    @cogs.command()
-    @is_botAdmin2
-    async def unload(self, ctx, ext):
-        if "cogs." not in ext:
-            ext = f"cogs.{ext}"
-        if ext in get_extensions():
-            await self.bot.unload_extension(ext)
-            embed = discord.Embed(
-                title="Cogs - Unload",
-                description=f"Unloaded cog: {ext}",
-                color=Colors.light_purple,
-            )
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(
-                title="Cogs Reloaded",
-                description=f"Cog '{ext}' not found",
-                color=Colors.light_purple,
-            )
-            await ctx.send(embed=embed)
-
-    @cogs.command()
-    @is_botAdmin2
-    async def load(self, ctx, ext):
-        if "cogs." not in ext:
-            ext = f"cogs.{ext}"
-        if ext in get_extensions():
-            await self.bot.load_extension(ext)
-            embed = discord.Embed(
-                title="Cogs - Load",
-                description=f"Loaded cog: {ext}",
-                color=Colors.light_purple,
-            )
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(
-                title="Cogs - Load",
-                description=f"Cog '{ext}' not found.",
-                color=Colors.light_purple,
-            )
-            await ctx.send(embed=embed)
-
-    @cogs.command(aliases=["restart"])
-    @is_botAdmin2
-    async def reload(self, ctx, ext):
-        if ext == "all":
-            embed = discord.Embed(
-                title="Cogs - Reload",
-                description="Reloaded all cogs",
-                color=Colors.light_purple,
-            )
-            for extension in get_extensions():
-                await self.bot.reload_extension(extension)
-            await ctx.send(embed=embed)
-            return
-
-        if "cogs." not in ext:
-            ext = f"cogs.{ext}"
-
-        if ext in get_extensions():
-            await self.bot.reload_extension(ext)
-            embed = discord.Embed(
-                title="Cogs - Reload",
-                description=f"Reloaded cog: {ext}",
-                color=Colors.light_purple,
-            )
-            await ctx.send(embed=embed)
-
-        else:
-            embed = discord.Embed(
-                title="Cogs - Reload",
-                description=f"Cog '{ext}' not found.",
-                color=Colors.light_purple,
-            )
-            await ctx.send(embed=embed)
-
-    @cogs.command()
-    @is_botAdmin2
-    async def view(self, ctx):
-        msg = " ".join(get_extensions())
-        embed = discord.Embed(
-            title="Cogs - View", description=msg, color=Colors.light_purple
-        )
-        await ctx.send(embed=embed)
-
-    @commands.command(name="gitpull")
-    @is_botAdmin2
-    async def _gitpull(self, ctx, mode="-a", branch=None):
-        output = ""
-        hostDir = getHostDir()
-
-        if branch is not None:
-            if hostDir == "/home/timmya":
-                branch = "origin/main"
-                directory = "TimmyMain-SS"
-
-            elif hostDir == "/home/timmy-beta":
-                branch = "origin/beta"
-                directory = "TimmyBeta-SS"
-
-            else:
-                raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
-        else:
-            if hostDir == "/home/timmya":
-                raise ValueError("Branch can not be changed when running production.")
-            branch = branch
-            directory = "TimmyBeta-SS"
-
-        try:
-            p = subprocess.run(
-                "git fetch --all",
-                shell=True,
-                text=True,
-                capture_output=True,
-                check=True,
-            )
-            output += p.stdout
-        except Exception as e:
-            await ctx.send("⛔️ Unable to fetch the Current Repo Header!")
-            await ctx.send(f"**Error:**\n{e}")
-        try:
-            p = subprocess.run(
-                f"git reset --hard {branch}",
-                shell=True,
-                text=True,
-                capture_output=True,
-                check=True,
-            )
-            output += p.stdout
-        except Exception as e:
-            await ctx.send("⛔️ Unable to apply changes!")
-            await ctx.send(f"**Error:**\n{e}")
-
-        embed = discord.Embed(
-            title="GitHub Local Reset",
-            description=f"Local Files changed to match {branch}",
-            color=Colors.green,
-        )
-        embed.add_field(name="Shell Output", value=f"```shell\n$ {output}\n```")
-        if mode == "-a":
-            embed.set_footer(text="Attempting to restart the bot...")
-        elif mode == "-c":
-            embed.set_footer(text="Attempting to reloading cogs...")
-
-        await ctx.send(embed=embed)
-
-        if mode == "-a":
-            await force_restart(ctx, directory)
-        elif mode == "-c":
-            await ctx.invoke(self.bot.get_command("cogs reload"), ext="all")
+        await interaction.response.send_message(embed=embed)
 
     @command()
     @slash_is_bot_admin_2()
@@ -327,7 +207,7 @@ class CoreBotConfig(commands.Cog):
     ) -> None:
         output = ""
 
-        hostDir = getHostDir()
+        hostDir = get_host_dir()
         if hostDir == "/home/timmya":
             branch = "origin/main"
             directory = "TimmyMain-SS"
@@ -337,7 +217,10 @@ class CoreBotConfig(commands.Cog):
             directory = "TimmyBeta-SS"
 
         else:
-            raise ValueError("Host directory is neither 'timmya' nor 'timmy-beta'.")
+            return await interaction.response.send_message(
+                "Host directory is neither 'timmya' nor "
+                "'timmy-beta'.\nSomeone else is currently hosting the bot."
+            )
 
         try:
             p = subprocess.run(
@@ -375,7 +258,7 @@ class CoreBotConfig(commands.Cog):
         if mode == "-a":
             embed.set_footer(text="Attempting to restart the bot...")
         elif mode == "-c":
-            embed.set_footer(text="Attempting to reloading cogs...")
+            embed.set_footer(text="Attempting to reload cogs...")
 
         await interaction.response.send_message(embed=embed)
 
@@ -385,7 +268,7 @@ class CoreBotConfig(commands.Cog):
             try:
                 embed = discord.Embed(
                     title="Cogs - Reload",
-                    description="Reloaded all cogs",
+                    description="Reloaded all cogs.",
                     color=discord.Color.brand_green(),
                 )
                 for extension in get_extensions():
@@ -394,7 +277,7 @@ class CoreBotConfig(commands.Cog):
             except commands.ExtensionError:
                 embed = discord.Embed(
                     title="Cogs - Reload",
-                    description="Failed to reload cogs",
+                    description="Failed to reload cogs.",
                     color=discord.Color.brand_red(),
                 )
                 return await interaction.channel.send(embed=embed)
@@ -402,13 +285,9 @@ class CoreBotConfig(commands.Cog):
         if sync_commands:
             await self.bot.tree.sync()
 
-    @commands.group()
-    async def w(self, ctx):
-        pass
-
-    @w.command()
-    @is_botAdmin
-    async def list(self, ctx):
+    @PM.command(description="Lists all permit levels and users.")
+    @slash_is_bot_admin()
+    async def list(self, interaction: discord.Interaction):
         adminList = []
 
         query1 = database.Administrators.select().where(
@@ -416,6 +295,11 @@ class CoreBotConfig(commands.Cog):
         )
         for admin in query1:
             user = self.bot.get_user(admin.discordID)
+            if user is None:
+                try:
+                    user = await self.bot.fetch_user(admin.discordID)
+                except:
+                    continue
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL1 = "\n".join(adminList)
@@ -426,6 +310,11 @@ class CoreBotConfig(commands.Cog):
         )
         for admin in query2:
             user = self.bot.get_user(admin.discordID)
+            if user is None:
+                try:
+                    user = await self.bot.fetch_user(admin.discordID)
+                except:
+                    continue
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL2 = "\n".join(adminList)
@@ -436,6 +325,11 @@ class CoreBotConfig(commands.Cog):
         )
         for admin in query3:
             user = self.bot.get_user(admin.discordID)
+            if user is None:
+                try:
+                    user = await self.bot.fetch_user(admin.discordID)
+                except:
+                    continue
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL3 = "\n".join(adminList)
@@ -446,6 +340,11 @@ class CoreBotConfig(commands.Cog):
         )
         for admin in query4:
             user = self.bot.get_user(admin.discordID)
+            if user is None:
+                try:
+                    user = await self.bot.fetch_user(admin.discordID)
+                except:
+                    continue
             adminList.append(f"`{user.name}` -> `{user.id}`")
 
         adminLEVEL4 = "\n".join(adminList)
@@ -467,15 +366,18 @@ class CoreBotConfig(commands.Cog):
             text="Only Owners/Permit 4's can modify Bot Administrators. | Permit 4 is the HIGHEST Authorization Level"
         )
 
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
-    @w.command()
-    @is_botAdmin4
-    async def remove(self, ctx, ID: discord.User):
+    @PM.command(description="Remove a user from the Bot Administrators list.")
+    @app_commands.describe(
+        user="The user to remove from the Bot Administrators list.",
+    )
+    @slash_is_bot_admin_4()
+    async def remove(self, interaction: discord.Interaction, user: discord.User):
         database.db.connect(reuse_if_open=True)
 
         query = database.Administrators.select().where(
-            database.Administrators.discordID == ID.id
+            database.Administrators.discordID == user.id
         )
         if query.exists():
             query = query.get()
@@ -484,10 +386,10 @@ class CoreBotConfig(commands.Cog):
 
             embed = discord.Embed(
                 title="Successfully Removed User!",
-                description=f"{ID.name} has been removed from the database!",
+                description=f"{user.name} has been removed from the database!",
                 color=discord.Color.green(),
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         else:
             embed = discord.Embed(
@@ -495,26 +397,29 @@ class CoreBotConfig(commands.Cog):
                 description="Invalid Provided: (No Record Found)",
                 color=discord.Color.red(),
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         database.db.close()
 
-    @w.command()
-    @is_botAdmin4
-    async def add(self, ctx, ID: discord.User, level: int):
+    @PM.command(description="Add a user to the Bot Administrators list.")
+    @app_commands.describe(
+        user="The user to add to the Bot Administrators list.",
+    )
+    @slash_is_bot_admin_4()
+    async def add(
+        self, interaction: discord.Interaction, user: discord.User, level: int
+    ):
         database.db.connect(reuse_if_open=True)
-
         q: database.Administrators = database.Administrators.create(
-            discordID=ID.id, TierLevel=level
+            discordID=user.id, TierLevel=level
         )
         q.save()
-
         embed = discord.Embed(
             title="Successfully Added User!",
-            description=f"{ID.name} has been added successfully with permit level `{str(level)}`.",
+            description=f"{user.name} has been added successfully with permit level `{str(level)}`.",
             color=discord.Color.gold(),
         )
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
         database.db.close()
 
