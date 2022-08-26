@@ -245,7 +245,7 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter a reason for the promotion."
             )
 
-        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
+        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
         ticket_category = discord.utils.get(
             mgm_server.categories, id=StaffID.cat_promote_tickets
         )
@@ -364,7 +364,7 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter a reason for the firing."
             )
 
-        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
+        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
         ticket_category = discord.utils.get(
             mgm_server.categories, id=StaffID.cat_fire_tickets
         )
@@ -488,7 +488,7 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter a reason for the censure."
             )
 
-        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
+        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
         ticket_category = discord.utils.get(
             mgm_server.categories, id=StaffID.cat_censure_tickets
         )
@@ -596,7 +596,7 @@ class AdminAPI(commands.Cog):
         evidence_text: str = None,
         evidence_url: discord.Attachment = None,
     ):
-        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_mgm)
+        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
         manager_role = discord.utils.get(mgm_server.roles, name="Manager")
 
         try:
