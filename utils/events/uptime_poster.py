@@ -27,7 +27,8 @@ class MetricPoster(commands.Cog):
         post request with bot.latency.
         Thanks, GitHub copilot <3
         """
-        if os.getenv("START_API"):
+        if os.getenv("START_API") == "True":
+            print("api")
             ping_payload = {
                 "value": round(self.bot.latency * 1000),
                 "timestamp": time.time(),
