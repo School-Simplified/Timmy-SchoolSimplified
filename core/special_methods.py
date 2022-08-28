@@ -419,7 +419,6 @@ async def on_command_error_(bot: Timmy, ctx: commands.Context, error: Exception)
 async def on_app_command_error_(
     bot: Timmy,
     interaction: discord.Interaction,
-    command: app_commands.AppCommand,
     error: app_commands.AppCommandError,
 ):
     tb = error.__traceback__
