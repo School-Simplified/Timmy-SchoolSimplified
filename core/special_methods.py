@@ -558,15 +558,6 @@ async def on_app_command_error_(
 
 
 async def on_command_(bot: Timmy, ctx: commands.Context):
-    # If User is permit 4, just return.
-    permit_list = []
-
-    query = database.Administrators.select().where(
-        database.Administrators.TierLevel >= 4
-    )
-    for user in query:
-        if ctx.author.id == user.discordID:
-            return
     if ctx.command.name in ["sync", "ping", "kill", "jsk", "py"]:
         return
 
