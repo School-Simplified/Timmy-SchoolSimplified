@@ -90,7 +90,7 @@ class RedirectURL(commands.Cog):
                 "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
             )
         leader_role = discord.utils.get(staff_resources_guild.roles, name="Leadership")
-        if leader_role not in interaction.user.roles:
+        if leader_role not in staff_resources_member.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
@@ -203,7 +203,7 @@ class RedirectURL(commands.Cog):
                 "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
             )
         leader_role = discord.utils.get(staff_resources_guild.roles, name="Leadership")
-        if leader_role not in interaction.user.roles:
+        if leader_role not in staff_resources_member.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
@@ -241,7 +241,7 @@ class RedirectURL(commands.Cog):
                 "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
             )
         leader_role = discord.utils.get(staff_resources_guild.roles, name="Leadership")
-        if leader_role not in interaction.user.roles:
+        if leader_role not in staff_resources_member.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
@@ -287,7 +287,7 @@ class RedirectURL(commands.Cog):
                 "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
             )
         leader_role = discord.utils.get(staff_resources_guild.roles, name="Leadership")
-        if leader_role not in interaction.user.roles:
+        if leader_role not in staff_resources_member.roles:
             return await interaction.response.send_message(
                 f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
             )
