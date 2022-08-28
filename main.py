@@ -50,7 +50,7 @@ logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
 
 _log = get_log(__name__)
-_log.info("Started Timmy")
+_log.info("Starting Timmy...")
 
 
 """class TimmyTranslator(app_commands.Translator):
