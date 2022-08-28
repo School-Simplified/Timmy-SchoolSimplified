@@ -9,12 +9,17 @@ from datetime import datetime
 from difflib import get_close_matches
 from pathlib import Path
 from typing import TYPE_CHECKING
+from typing import Union
 
 import discord
 import requests
 import sentry_sdk
 from discord import app_commands
 from discord.ext import commands
+from fastapi import HTTPException
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from pydantic import BaseModel
 
 from core import database
 from core.common import (
@@ -24,7 +29,7 @@ from core.common import (
     MainID,
     TechID,
     CheckDB_CC,
-    Emoji,
+    Emoji, access_secret,
 )
 from core.gh_modals import FeedbackButton
 from core.logging_module import get_log
@@ -675,3 +680,77 @@ def initializeDB(bot):
     query.PersistantChange = False
     query.save()
     database.db.close()
+
+"""
+# API Routes Below
+"""
+
+SCOPES = [
+    "https://www.googleapis.com/auth/admin.directory.user",
+    "https://www.googleapis.com/auth/admin.directory.group",
+    "https://www.googleapis.com/auth/admin.directory.orgunit",
+    "https://www.googleapis.com/auth/admin.directory.userschema",
+]
+orgUnit = {
+    "Personal Account": "/School Simplified Personal Acc.",
+    "Team Account": "/School Simplified Team Acc.",
+}
+
+creds = access_secret("adm_t", True, 0, SCOPES)
+service = build("admin", "directory_v1", credentials=creds)
+
+class JSONPayload(BaseModel):
+    action: str
+    custom_id: str
+    description: str
+    return_post: Union[str, None] = None
+    payload: str
+
+
+def authenticate_user(token: str):
+    # ODO: add more security later
+    query = database.APIRouteTable.select().where(database.APIRouteTable.hashed_password == token)
+    if query.exists():
+        return query.get()
+    return None
+
+
+def create_gsuite(payload: JSONPayload):
+    """
+    Example payload:
+    {
+        "action": "gsuite",
+        "description": "breadcrums",
+
+        "payload": {
+            "name": {
+                "givenName": firstname,
+                "fullName": firstname + " " + lastname,
+                "familyName": lastname,
+            },
+            "password": temppass,
+            "primaryEmail": f"{firstname}.{lastname}@schoolsimplified.org",
+            "changePasswordAtNextLogin": True,
+            "orgUnitPath": orgUnit[organization_unit],
+        }
+    }
+    """
+    try:
+        user = dict(payload.payload)
+        service.users().insert(body=user).execute()
+    except HttpError as e:
+        """If the error code is 409, send a message to the user saying that the email is already taken."""
+        if e.status_code == 409:
+            raise HTTPException(
+                status_code=409, detail=f"The email {user['primaryEmail']} is already taken."
+            )
+        else:
+            raise HTTPException(
+                status_code=400, detail=f"API Error: {e}"
+            )
+    except TypeError:
+        raise HTTPException(
+            status_code=422, detail=f"The payload is not in the correct format. (Unprocessable Entity)"
+        )
+
+
