@@ -7,6 +7,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
+from difflib import get_close_matches
 
 from core import redirect_sdk, database
 from core.common import Others, TechID, StaffID
@@ -306,6 +307,60 @@ class RedirectURL(commands.Cog):
         embed.add_field(name="Destination", value=obj.destination)
         embed.add_field(name="Created At", value=obj.created_at)
         await interaction.followup.send(embed=embed)
+
+    @RM.command(name="search", description="Search for a redirect. Can be the original, redirect URL, or ID.")
+    @app_commands.describe(
+        entry="The entry you want to search for."
+    )
+    async def rs(self, interaction: discord.Interaction, entry: str):
+        staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
+        try:
+            staff_resources_member = await staff_resources_guild.fetch_member(interaction.user.id)
+        except:
+            return await interaction.response.send_message(
+                "You are not in the staff resources server, please join it to use this command. (Must have the leadership role)"
+            )
+        leader_role = discord.utils.get(staff_resources_guild.roles, name="Leadership")
+        if leader_role not in staff_resources_member.roles:
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} You do not have the permission to use this command. (No leadership role found)"
+            )
+
+        await interaction.response.defer(thinking=True)
+        redirects_obj = self.raOBJ.get_redirects()
+
+        results = []
+        for redirect in redirects_obj:
+            if entry.isdigit():
+                if entry in str(redirect.id):
+                    results.append(redirect)
+            else:
+                if entry.lower() in f"https://{redirect.domain}/{redirect.source}".lower() or entry.lower() in redirect.destination.lower():
+                    results.append(redirect)
+        if results:
+            entries: List[Dict[str, str]] = []
+            for obj in results:
+                entries.append(
+                    dict(
+                        name=f"**ID:** {obj.id}",
+                        value=f"**URL:** `https://{obj.domain}/{obj.source}` -> `{obj.destination}`",
+                    )
+                )
+        else:
+            entries = [dict(name="No results found.", value="Your search did not match any redirect.")]
+        embed = discord.Embed(
+            title=f"Search Results for '{entry}'", color=discord.Color.blue()
+        )
+        embed.set_author(
+            name=interaction.user.name,
+            icon_url=interaction.user.avatar.url,
+            url=interaction.user.avatar.url,
+        )
+
+        source = RedirectPageSource(entries, per_page=6, embed=embed)
+        await RoboPages(
+            source, bot=self.bot, interaction=interaction, compact=True
+        ).start()
 
 
 async def setup(bot):
