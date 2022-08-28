@@ -14,6 +14,7 @@ import logging
 import os
 import time
 from datetime import datetime, timedelta
+from typing import Union
 
 import discord
 import uvicorn
@@ -22,8 +23,10 @@ from discord import app_commands
 from discord.ext import commands
 from discord_sentry_reporting import use_sentry
 from dotenv import load_dotenv
-from fastapi import FastAPI
-
+from fastapi import Depends, FastAPI, HTTPException, status, Header
+from slowapi.errors import RateLimitExceeded
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
 # from googletrans import Translator
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
@@ -38,10 +41,13 @@ from core.special_methods import (
     on_app_command_error_,
     on_command_error_,
     on_ready_,
-    on_command_,
+    on_command_, authenticate_user, JSONPayload, create_gsuite,
 )
 
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 load_dotenv()
 faulthandler.enable()
@@ -180,7 +186,6 @@ class Timmy(commands.Bot):
 
 bot = Timmy(time.time())
 
-
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
     if interaction.type == discord.InteractionType.application_command:
@@ -219,8 +224,8 @@ async def startup_event():
     asyncio.create_task(bot.start(os.getenv("TOKEN")))
 
 
-@app.get("/info")
-async def info():
+@app.get("/")
+async def root():
     current_time = float(time.time())
     difference = int(round(current_time - float(bot.start_time)))
     text = str(timedelta(seconds=difference))
@@ -232,6 +237,41 @@ async def info():
         "start_time": bot.start_time,
         "latency": bot.latency,
     }
+
+
+@app.post("/send")
+@limiter.limit("5/minute")
+async def send_route(token: str = Header(), payload: JSONPayload = Depends()):
+    user = authenticate_user(token)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # check if user is authorized to use this route
+    if payload.action not in user.authorized_routes:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authorized to use this route",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if user.disabled:
+        raise HTTPException(
+            status_code=400, detail="Inactive user"
+        )
+
+    if payload.action == "route_send":
+        print("Creating new record")
+        print(payload.payload)
+        return status.HTTP_200_OK
+
+    elif payload.action == "gsuite":
+        create_gsuite(payload)
+
+
+
 
 
 if __name__ == "__main__":

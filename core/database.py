@@ -4,6 +4,7 @@ from distutils.util import strtobool
 
 from dotenv import load_dotenv
 from flask import Flask
+import peewee
 from peewee import (
     AutoField,
     BigIntegerField,
@@ -906,6 +907,14 @@ class ApprovedSubDomains(BaseModel):
     id = AutoField()
     sub_domain = TextField()
     author_id = BigIntegerField()
+
+
+class APIRouteTable(BaseModel):
+    username = TextField()
+    authorized_routes = TextField()
+    hashed_password = TextField()
+    disabled = BooleanField()
+    created_at = DateTimeField(default=peewee.datetime.datetime.now)
 
 
 app = Flask(__name__)
