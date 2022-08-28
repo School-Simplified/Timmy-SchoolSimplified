@@ -239,7 +239,7 @@ async def root():
     }
 
 
-@app.post("/send")
+"""@app.post("/send")
 @limiter.limit("5/minute")
 async def send_route(token: str = Header(), payload: JSONPayload = Depends()):
     user = authenticate_user(token)
@@ -268,7 +268,7 @@ async def send_route(token: str = Header(), payload: JSONPayload = Depends()):
         return status.HTTP_200_OK
 
     elif payload.action == "gsuite":
-        create_gsuite(payload)
+        create_gsuite(payload)"""
 
 
 
