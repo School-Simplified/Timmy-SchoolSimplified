@@ -364,7 +364,7 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter a reason for the firing."
             )
 
-        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
+        mgm_server = await self.bot.fetch_guild(core.common.StaffID.g_staff_resources)
         ticket_category = discord.utils.get(
             mgm_server.categories, id=StaffID.cat_fire_tickets
         )
