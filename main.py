@@ -89,6 +89,9 @@ class TimmyCommandTree(app_commands.CommandTree):
 
     async def interaction_check(self, interaction: discord.Interaction, /) -> bool:
         blacklisted_users = [p.discordID for p in database.Blacklist]
+        if interaction.user.avatar is None:
+            await interaction.response.send_message("Due to a discord limitation, you must have an avatar set to use this command.")
+            return False
         if interaction.user.id in blacklisted_users:
             await interaction.response.send_message(
                 "You have been blacklisted from using commands!", ephemeral=True
