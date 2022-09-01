@@ -246,9 +246,7 @@ class AdminAPI(commands.Cog):
             )
 
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_promote_tickets
-        )
+        ticket_category = self.bot.get_channel(StaffID.cat_promote_tickets)
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -364,10 +362,9 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter a reason for the firing."
             )
 
-        mgm_server = await self.bot.fetch_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_fire_tickets
-        )
+        mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
+        ticket_category = mgm_server.get_channel(StaffID.cat_fire_tickets)
+
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -489,9 +486,7 @@ class AdminAPI(commands.Cog):
             )
 
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_censure_tickets
-        )
+        ticket_category = self.bot.get_channel(StaffID.cat_censure_tickets)
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -626,9 +621,7 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} This command is only for managers+, contact HR for more information."
             )
 
-        ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_censure_tickets
-        )
+        ticket_category = self.bot.get_channel(StaffID.cat_censure_tickets)
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -745,9 +738,7 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter an end date."
             )
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_break_tickets
-        )
+        ticket_category = self.bot.get_channel(StaffID.cat_break_tickets)
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -850,9 +841,7 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter a expected date."
             )
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_resignation_tickets
-        )
+        ticket_category = self.bot.get_channel(StaffID.cat_resignation_tickets)
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -950,9 +939,7 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter a suggestion."
             )
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_suggestions_tickets
-        )
+        ticket_category = self.bot.get_channel(StaffID.cat_suggestions_tickets)
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -1052,9 +1039,7 @@ class AdminAPI(commands.Cog):
                 f"{interaction.user.mention} You must enter a complaint."
             )
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_complaint_tickets
-        )
+        ticket_category = self.bot.get_channel(StaffID.cat_complaint_tickets)
         member = interaction.guild.get_member(interaction.user.id)
         if member is None:
             try:
@@ -1165,9 +1150,7 @@ class AdminAPI(commands.Cog):
             )
 
         mgm_server = self.bot.get_guild(core.common.StaffID.g_staff_resources)
-        ticket_category = discord.utils.get(
-            mgm_server.categories, id=StaffID.cat_cs_hours_tickets
-        )
+        ticket_category = self.bot.get_channel(StaffID.cat_cs_hours_tickets)
         member = interaction.guild.get_member(interaction.user.id)
 
         if member is None:
