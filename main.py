@@ -181,12 +181,13 @@ class Timmy(commands.Bot):
         current_commit = repo.head
         current_branch = repo.head.shorthand
 
-        version = ...   # type: str
+        version = ...  # type: str
         if current_branch == "HEAD":
             current_tag = repo.describe(committish=current_commit, describe_strategy=GIT_DESCRIBE_TAGS)
             version = f"{current_tag} (stable)"
         else:
-            version = f"main (latest)"
+            version = "development"
+        version += f" | {str(current_commit.target)[:7]}"
 
         return version
 
