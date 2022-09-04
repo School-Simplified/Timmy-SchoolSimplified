@@ -569,11 +569,10 @@ class TicketBT(discord.ui.Button):
                     # "Executive",
                     # "Head Moderator",
                     "Moderator",
-                    "Lead Helper",
-                    "Chat Helper",
+                    "Helper Manager",
+                    "Helper",
                     "Bot: TeXit",
                     "Academics Management",
-                    "Helper",
                 ]
                 for role in roles:
                     RoleOBJ = discord.utils.get(
@@ -629,7 +628,7 @@ class TicketBT(discord.ui.Button):
                             reason="Ticket Perms",
                         )
                 else:
-                    roles = ["Chat Helper", "Lead Helper"]
+                    roles = ["Helper", "Helper Manager", "Academics Management"]
                     for role in roles:
                         RoleOBJ = discord.utils.get(
                             interaction.message.guild.roles, name=role

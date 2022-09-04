@@ -71,9 +71,9 @@ class ConfigCatClient:
     LEADER_ID_CC = configcatclient.create_client(os.getenv("LEADERID_CC"))"""
 
     CHECK_DB_CC = configcatclient.create_client(os.getenv("CHECKDB_CC"))
-    SANDBOX_CONFIG_CC = configcatclient.create_client_with_auto_poll(
+    """SANDBOX_CONFIG_CC = configcatclient.create_client_with_auto_poll(
         os.getenv("SANDBOX_CONFIG_CC"), poll_interval_seconds=10
-    )
+    )"""
 
 
 class ConsoleColors:
@@ -402,8 +402,8 @@ class MainID:
     ch_transcript_logs = 951302924414378005
     ch_action_logs = 951302919364431912
     ch_mod_commands = 951302940264632360
-    ch_control_panel = 951302995008688158
-    ch_start_private_vc = 951302939237040198
+    ch_control_panel = 1015363280212074547
+    ch_start_private_vc = 1015363442544234607
     ch_announcements = 951302912896815215
     ch_mod_announcements = None
     ch_event_announcements = None
@@ -422,7 +422,7 @@ class MainID:
     cat_essay_ticket = 951302871356411914
     cat_language_ticket = 951601792913924166
     cat_other_ticket = 951302868487524443
-    cat_private_vc = 951302858865770566
+    cat_private_vc = 1015236036969894019
 
     # *** Roles ***
     r_coding_club = 883169286665936996
@@ -567,60 +567,22 @@ class SandboxConfig:
         msg: discord.Message
     """
 
-    mode = str(ConfigCatClient.SANDBOX_CONFIG_CC.get_value("mode", "404"))
+    mode = 404
 
     # *** Channels ***
-    ch_TV_console = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_console", 404)
-    )
-    ch_TV_start_vc = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value("ch_tv_startvc", 404)
-    )
+    ch_TV_console = 404
+    ch_TV_start_vc = 404
 
     # *** Categories ***
-    cat_sandbox = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value("cat_sandbox", 945459539967348787)
-    )
-    cat_science_ticket = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_scienceticket", 800479815471333406
-        )
-    )
-    cat_fine_arts_ticket = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_fineartsticket", 833210452758364210
-        )
-    )
-    cat_math_ticket = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_mathticket", 800472371973980181
-        )
-    )
-    cat_social_studies_ticket = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_socialstudiesticket", 800481237608824882
-        )
-    )
-    cat_english_ticket = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_englishticket", 800475854353596469
-        )
-    )
-    cat_essay_ticket = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_essayticket", 854945037875806220
-        )
-    )
-    cat_language_ticket = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_languageticket", 800477414361792562
-        )
-    )
-    cat_other_ticket = int(
-        ConfigCatClient.SANDBOX_CONFIG_CC.get_value(
-            "cat_otherticket", 825917349558747166
-        )
-    )
+    cat_sandbox = 945459539967348787
+    cat_science_ticket = 800479815471333406
+    cat_fine_arts_ticket = 833210452758364210
+    cat_math_ticket = 800472371973980181
+    cat_social_studies_ticket = 800481237608824882
+    cat_english_ticket = 800475854353596469
+    cat_essay_ticket = 854945037875806220
+    cat_language_ticket = 800477414361792562
+    cat_other_ticket = 825917349558747166
 
 
 class ChID:
