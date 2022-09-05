@@ -4,7 +4,6 @@ Copyright (C) School Simplified - All Rights Reserved
  * Written by School Simplified, IT Dept. <timmy@schoolsimplified.org>, March 2022
 """
 
-__version__ = "stable4.1.0"
 __author__ = "School Simplified, IT Dept."
 __author_email__ = "timmy@schoolsimplified.org"
 
@@ -30,6 +29,7 @@ from slowapi.util import get_remote_address
 # from googletrans import Translator
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
+from pygit2 import Repository, GIT_DESCRIBE_TAGS
 
 from core import database
 from core.common import get_extensions
@@ -177,7 +177,33 @@ class Timmy(commands.Bot):
         """
         Returns the current version of the bot.
         """
-        return __version__
+        repo = Repository(".")
+        current_commit = repo.head
+        current_branch = repo.head.shorthand
+
+        version = ...  # type: str
+        if current_branch == "HEAD":
+            current_tag = repo.describe(committish=current_commit, describe_strategy=GIT_DESCRIBE_TAGS)
+            version = f"{current_tag} (stable)"
+        else:
+            version = "development"
+        version += f" | {str(current_commit.target)[:7]}"
+
+        return version
+
+    @property
+    def author(self):
+        """
+        Returns the author of the bot.
+        """
+        return __author__
+
+    @property
+    def author_email(self):
+        """
+        Returns the author email of the bot.
+        """
+        return __author_email__
 
     @property
     def start_time(self):
@@ -234,9 +260,9 @@ async def root():
     text = str(timedelta(seconds=difference))
     return {
         "uptime": text,
-        "version": __version__,
-        "author": __author__,
-        "author_email": __author_email__,
+        "version": bot.version,
+        "author": bot.author,
+        "author_email": bot.author_email,
         "start_time": bot.start_time,
         "latency": bot.latency,
     }

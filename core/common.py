@@ -53,7 +53,7 @@ load_dotenv()
 
 # Module Variables
 CoroutineType = Callable[[Any, Any], Awaitable[Any]]
-g = Github(os.getenv("GH_TOKEN"))
+github_client = Github(os.getenv("GH_TOKEN"))
 _log = get_log(__name__)
 
 
