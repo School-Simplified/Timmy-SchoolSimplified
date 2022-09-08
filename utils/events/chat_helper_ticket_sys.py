@@ -587,6 +587,18 @@ class TicketBT(discord.ui.Button):
                             reason="Ticket Perms",
                         )
                         RoleOBJ = discord.utils.get(guild.roles, name=role)
+                        
+                        if (
+                            RoleOBJ.id == MainID.r_chat_helper 
+                            or RoleOBJ.id == MainID.r_lead_helper
+                        ):
+                            await channel.set_permissions(
+                                RoleOBJ,
+                                read_messages=True,   # helpers and lead helpers 
+                                send_messages=True,   # recieve manage_message perms
+                                manage_messages=True, 
+                                reason="Ticket Perms",
+                        )
                         if (
                             not (
                                 RoleOBJ.id == MainID.r_chat_helper
@@ -628,7 +640,10 @@ class TicketBT(discord.ui.Button):
                             reason="Ticket Perms",
                         )
                 else:
-                    roles = ["Helper", "Helper Manager", "Academics Management"]
+                    roles = ["Academics Management"] # removed helper and lead helper
+                                                     # I believe their presence in roles list caused
+                                                     # them to not have manage_message perms
+                                                          
                     for role in roles:
                         RoleOBJ = discord.utils.get(
                             interaction.message.guild.roles, name=role
