@@ -434,8 +434,8 @@ class MainID:
     r_advocacy_club = 883169000866070539
     r_speech_club = 883170166161149983
     r_club_president = 883160826180173895
-    r_chat_helper = 811416051144458250
-    r_lead_helper = 810684359765393419
+    r_chat_helper = 981764097936859146
+    r_lead_helper = 978082630572597278
     r_essay_reviser = 854135371507171369
     r_moderator = 951302697263452240
     r_debate_ban = 951302659657334784
