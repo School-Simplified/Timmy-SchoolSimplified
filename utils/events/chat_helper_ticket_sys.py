@@ -615,6 +615,7 @@ class TicketBT(discord.ui.Button):
                                         RoleOBJ,
                                         read_messages=True,
                                         send_messages=True,
+                                        manage_messages=True,
                                         reason="Ticket Perms",
                                     )
                                 else:
@@ -624,6 +625,7 @@ class TicketBT(discord.ui.Button):
                                 RoleOBJ,
                                 read_messages=True,
                                 send_messages=True,
+                                manage_messages=True,
                                 reason="Ticket Perms",
                             )
 
@@ -637,6 +639,7 @@ class TicketBT(discord.ui.Button):
                             RoleOBJ,
                             read_messages=True,
                             send_messages=True,
+                            manage_messages=True,
                             reason="Ticket Perms",
                         )
                 else:
@@ -652,6 +655,7 @@ class TicketBT(discord.ui.Button):
                             RoleOBJ,
                             read_messages=True,
                             send_messages=True,
+                            manage_messages=True,
                             reason="Ticket Perms",
                         )
             await channel.set_permissions(
