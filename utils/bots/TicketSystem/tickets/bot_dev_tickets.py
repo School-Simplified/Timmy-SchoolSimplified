@@ -5,7 +5,7 @@ from discord import ui, app_commands
 from discord.ext import commands, tasks
 
 from core import database
-from core.checks import slash_is_bot_admin_3
+from core.checks import slash_is_bot_admin_3, slash_is_bot_admin
 from core.common import TechID, Emoji, StaffID
 
 
@@ -227,7 +227,7 @@ class TechProjectCMD(commands.Cog):
         description="Change the status of a bot commission. | Only to be used by Bot Developer Staff."
     )
     @app_commands.guilds(StaffID.g_staff_resources)
-    @slash_is_bot_admin_3()
+    @slash_is_bot_admin()
     @app_commands.checks.cooldown(1, 5, key=lambda i: (i.guild_id, i.channel.id))
     @app_commands.describe(status="Read options for the list of statuses.")
     async def status_update(
