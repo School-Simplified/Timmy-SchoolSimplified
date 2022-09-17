@@ -751,6 +751,7 @@ class LeaderID:
     ch_tech_announcements = 816733303629414421
     ch_leadership_announcements = 819009569979629569
     ch_com_log = 955991586364334082
+    ch_bot_commissions = 1019692942887227412
 
     # *** Roles ***
     r_corporate_officer = 900940957783056444
@@ -760,9 +761,20 @@ class LeaderID:
     r_director = 892531463482900480
     r_SS_digital_committee = 912472488594771968
     r_information_technology_manager = 943942441357172758
+    r_bot_whitelist_commission = 1019696150342807562
 
     # *** Roles **
     r_hr_staff = 861856418117845033
+
+    # ** Tags **
+    t_bot_commission = 1019706919813918870
+    t_subdomain_commission = 1019707071073095750
+    t_pending_claim = 1019710167736135801
+    t_claimed = 1019711047101337630
+    t_in_progress = 1019707715066536006
+    t_completed = 1019707770947256371
+    t_not_possible = 1019707659118719017
+    t_documentation = 1019721555644792852
 
 
 class DiscID:

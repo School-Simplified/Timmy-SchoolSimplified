@@ -215,6 +215,7 @@ class Timmy(commands.Bot):
 
 bot = Timmy(time.time())
 
+
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
     if interaction.type == discord.InteractionType.application_command:
@@ -298,9 +299,6 @@ async def send_route(token: str = Header(), payload: JSONPayload = Depends()):
 
     elif payload.action == "gsuite":
         create_gsuite(payload)"""
-
-
-
 
 
 if __name__ == "__main__":

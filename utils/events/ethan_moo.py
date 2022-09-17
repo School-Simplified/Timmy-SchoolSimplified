@@ -14,7 +14,8 @@ class EthanMoo(commands.Cog):
 
     @commands.Cog.listener("on_voice_state_update")
     async def ethan_moo(self, member, before, after):
-        # If a user with the ID 544724467709116457 joins a voice channel, play ethan_moo.mp3
+        return
+        # putting on hold for now
         if before.channel is None and after.channel is not None:
             if member.id == 998386623593058394:
                 voice_channel: discord.VoiceChannel = after.channel

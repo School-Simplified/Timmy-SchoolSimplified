@@ -6,7 +6,7 @@ from discord.ext import commands, tasks
 
 from core import database
 from core.checks import slash_is_bot_admin_3, slash_is_bot_admin
-from core.common import TechID, Emoji, StaffID
+from core.common import TechID, Emoji, StaffID, LeaderID
 
 
 class BotRequestModal(ui.Modal, title="Bot Development Request"):
@@ -47,6 +47,10 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
+        member = interaction.guild.get_member(interaction.user.id)
+        c_ch: discord.ForumChannel = self.bot.get_channel(LeaderID.ch_bot_commissions)
+        role = discord.utils.get(interaction.guild.roles, id=LeaderID.r_bot_whitelist_commission)
+
         await interaction.response.send_message(
             content="Got it! Please wait while I create your ticket.", ephemeral=True
         )
@@ -68,18 +72,13 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
         )
         embed.set_footer(text="Bot Developer Commission")
 
-        c_ch: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
-        await c_ch.set_permissions(
-            interaction.guild.get_member(interaction.user.id),
-            read_messages=True,
-            send_messages=True,
-        )
+        thread_with_message = await c_ch.create_thread(name=f"⚪-{self.titleTI.value}", content=interaction.user.mention, embed=embed)
+        thread = thread_with_message.thread
+        await thread.add_tags(discord.Object(LeaderID.t_pending_claim), discord.Object(LeaderID.t_bot_commission))
 
-        msg: discord.Message = await c_ch.send(interaction.user.mention, embed=embed)
-        thread = await msg.create_thread(name=f"⚪-{self.titleTI.value}")
-
+        await member.add_roles(role, reason="Bot Developer Commission")
         await thread.send(
-            f"{interaction.user.mention} has requested a bot development project.\n<@&{TechID.r_bot_developer}>"
+            f"{interaction.user.mention} has requested a bot development project.\n<@ {TechID.r_bot_developer}>"
         )
 
 
@@ -121,6 +120,10 @@ class SubdomainForm(ui.Modal, title="Custom Subdomain Request"):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
+        c_ch: discord.ForumChannel = self.bot.get_channel(LeaderID.ch_bot_commissions)
+        role = discord.utils.get(interaction.guild.roles, id=LeaderID.r_bot_whitelist_commission)
+        member = interaction.guild.get_member(interaction.user.id)
+
         await interaction.response.send_message(
             content="Got it! Please wait while I create your ticket.", ephemeral=True
         )
@@ -141,17 +144,11 @@ class SubdomainForm(ui.Modal, title="Custom Subdomain Request"):
             name="Anything else?", value=f"E: {self.anything_else.value}", inline=False
         )
         embed.set_footer(text="Bot Developer Commission")
+        thread_with_message = await c_ch.create_thread(name=f"⚪-{self.subdomain.value}", content=interaction.user.mention, embed=embed)
+        thread = thread_with_message.thread
 
-        c_ch: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
-        # add the user to have view_messages permissions to c_ch channel
-        await c_ch.set_permissions(
-            interaction.guild.get_member(interaction.user.id),
-            read_messages=True,
-            send_messages=True,
-        )
-        msg: discord.Message = await c_ch.send(interaction.user.mention, embed=embed)
-        thread = await msg.create_thread(name=f"⚪-{self.subdomain.value}")
-
+        await thread.add_tags(discord.Object(LeaderID.t_pending_claim), discord.Object(LeaderID.t_subdomain_commission))
+        await member.add_roles(role, reason="Bot Developer Commission")
         await thread.send(
             f"{interaction.user.mention} has requested a subdomain.\n<@409152798609899530>"
         )
@@ -213,20 +210,28 @@ class TechProjectCMD(commands.Cog):
 
     def __init__(self, bot):
         self.bot: commands.Bot = bot
+        self.emoji_to_tag = {
+            "⚪": LeaderID.t_pending_claim,
+            "🎯": LeaderID.t_claimed,
+            "🟡": LeaderID.t_in_progress,
+            "🟢": LeaderID.t_completed,
+            "🔴": LeaderID.t_not_possible,
+        }
         self.__cog_name__ = "Bot Commissions"
-        self.autoUnarchiveThread.start()
 
     @property
     def display_emoji(self) -> str:
         return Emoji.pythonLogo
 
-    async def cog_unload(self):
-        self.autoUnarchiveThread.cancel()
+    BDC = app_commands.Group(
+        name="bot_commissions",
+        description="Manage bot commissions!",
+        guild_ids=[StaffID.g_staff_resources],
+    )
 
-    @app_commands.command(
+    @BDC.command(
         description="Change the status of a bot commission. | Only to be used by Bot Developer Staff."
     )
-    @app_commands.guilds(StaffID.g_staff_resources)
     @slash_is_bot_admin()
     @app_commands.checks.cooldown(1, 5, key=lambda i: (i.guild_id, i.channel.id))
     @app_commands.describe(status="Read options for the list of statuses.")
@@ -241,7 +246,7 @@ class TechProjectCMD(commands.Cog):
             "🟢 - Complete; pending requestor to accept final product.",
         ],
     ):
-        channel: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
+        channel: discord.ForumChannel = self.bot.get_channel(LeaderID.ch_bot_commissions)
         thread: discord.Thread = interaction.channel
 
         if not isinstance(thread, discord.Thread) or thread.parent_id != channel.id:
@@ -250,22 +255,28 @@ class TechProjectCMD(commands.Cog):
             )
         channel_name = thread.name.split("-")[1]
         status = str(status)
+
         l = status.split(" - ")
         status = l[0]
         definition = l[1]
+        tag_id = self.emoji_to_tag[status]
 
         await thread.edit(name=f"{status}-{channel_name}")
+        for tag in thread.applied_tags:
+            await thread.remove_tags(discord.Object(tag.id))
+
+        await thread.add_tags(discord.Object(LeaderID.t_bot_commission), discord.Object(tag_id), reason="Bot Commission Status Update")
         await interaction.response.send_message(
             f"**{interaction.user.mention}** updated the status of this bot commission to {status} | `{definition}`"
         )
 
-    @app_commands.command()
-    @app_commands.guilds(StaffID.g_staff_resources)
+    @BDC.command(description="Close a bot commission. | Only to be used by Bot Developer Staff.")
+    @slash_is_bot_admin()
     @app_commands.checks.cooldown(1, 300, key=lambda i: (i.guild_id, i.channel.id))
-    async def commission(
-        self, interaction: discord.Interaction, action: Literal["close"]
+    async def close(
+        self, interaction: discord.Interaction
     ):
-        channel: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
+        channel: discord.TextChannel = self.bot.get_channel(LeaderID.ch_bot_commissions)
         thread = interaction.channel
 
         if not isinstance(thread, discord.Thread):
@@ -274,23 +285,22 @@ class TechProjectCMD(commands.Cog):
             )
             return
 
-        if action == "close":
-            query = database.TechCommissionArchiveLog.select().where(
-                database.TechCommissionArchiveLog.ThreadID == thread.id
+        query = database.TechCommissionArchiveLog.select().where(
+            database.TechCommissionArchiveLog.ThreadID == thread.id
+        )
+        if thread not in channel.threads or query.exists():
+            await interaction.response.send_message(
+                "This commission is already closed.", ephemeral=True
             )
-            if thread not in channel.threads or query.exists():
-                await interaction.response.send_message(
-                    "This commission is already closed.", ephemeral=True
-                )
-                return
-            else:
-                query = database.TechCommissionArchiveLog.create(ThreadID=thread.id)
-                query.save()
+            return
+        else:
+            query = database.TechCommissionArchiveLog.create(ThreadID=thread.id)
+            query.save()
 
-                await interaction.response.send_message(
-                    "Commission closed! You can find the commission in the archived threads of that channel."
-                )
-                await thread.edit(archived=True)
+            await interaction.response.send_message(
+                "Commission closed! You can find the commission in the archived threads of that channel."
+            )
+            await thread.edit(archived=True)
 
     @commands.Cog.listener("on_message")
     async def auto_open_commission(self, message: discord.Message):
@@ -310,24 +320,6 @@ class TechProjectCMD(commands.Cog):
                 result.delete_instance()
 
                 await message.reply(content="Commission re-opened!")
-
-    @tasks.loop(seconds=60.0)
-    async def autoUnarchiveThread(self):
-        """
-        Creates a task loop to make sure threads don't automatically archive due to inactivity.
-        """
-
-        channel: discord.TextChannel = self.bot.get_channel(TechID.ch_bot_requests)
-        query = database.TechCommissionArchiveLog.select()
-        closed_threads = [entry.ThreadID for entry in query]
-
-        async for archived_thread in channel.archived_threads():
-            if archived_thread.id not in closed_threads:
-                await archived_thread.edit(archived=False)
-
-    @autoUnarchiveThread.before_loop
-    async def before_loop_(self):
-        await self.bot.wait_until_ready()
 
 
 async def setup(bot: commands.Bot):
