@@ -78,7 +78,7 @@ class BotRequestModal(ui.Modal, title="Bot Development Request"):
 
         await member.add_roles(role, reason="Bot Developer Commission")
         await thread.send(
-            f"{interaction.user.mention} has requested a bot development project.\n<@ {TechID.r_bot_developer}>"
+            f"{interaction.user.mention} has requested a bot development project.\n<@&{TechID.r_bot_developer}>"
         )
 
 
