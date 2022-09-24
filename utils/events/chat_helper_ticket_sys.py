@@ -1314,6 +1314,16 @@ class DropdownTickets(commands.Cog):
             > {Emoji.ss_arrow} Send a picture of your assignment title in your direct messages as per the bot instructions.""",
             view=TicketButton(self.bot),
         )
+    
+    @app_commands.command(
+        name="title", description="Prompts for assignment title."
+    )
+    @app_commands.guilds(MainID.g_main)
+    @slash_is_bot_admin()
+    async def sendTitle(self, interaction: discord.Interaction):
+        await interaction.response.send_message(
+            f"""Please send a screenshot of your assignment title so that the Helper team can confirm its not a quiz or test of any kind!"""
+        )
 
 
 async def setup(bot):
