@@ -31,6 +31,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 from pygit2 import Repository, GIT_DESCRIBE_TAGS
 
+import core.common
 from core import database
 from core.common import get_extensions
 from core.logging_module import get_log
@@ -244,6 +245,17 @@ if os.getenv("DSN_SENTRY") is not None:
 
 
 initializeDB(bot)
+
+
+@bot.tree.context_menu(name='Prompts an assignment title.', guild=discord.Object(id=core.common.MainID.g_main))
+async def report_message(interaction: discord.Interaction, message: discord.Message):
+    await message.reply(
+        "Please send a screenshot or image of the assignment title so that the Helper team can confirm its not a "
+        "quiz or test of any kind!"
+    )
+    await interaction.response.send_message(
+        "Prompted!", ephemeral=True
+    )
 
 """if not os.getenv("StartAPI"):
     bot.run(os.getenv("TOKEN"))"""

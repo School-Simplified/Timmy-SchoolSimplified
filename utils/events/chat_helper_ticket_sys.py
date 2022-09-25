@@ -1321,7 +1321,8 @@ class DropdownTickets(commands.Cog):
     @app_commands.guilds(MainID.g_main)
     async def send_title(self, interaction: discord.Interaction):
         await interaction.response.send_message(
-            "Please send a screenshot or image of the assignment title so that the Helper team can confirm its not a quiz or test of any kind!"
+            "Please send a screenshot or image of the assignment title so that the Helper team can confirm its not a "
+            "quiz or test of any kind! "
         )
 
 
