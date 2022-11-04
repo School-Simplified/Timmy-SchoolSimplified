@@ -931,7 +931,7 @@ class Others:
     timmy_donation_path = "./utils/bots/CoreBot/LogFiles/timmydonation.png"
 
     space_character = "　"
-    ticket_inactive_time = 1440
+    ticket_inactive_time = 4320 # 72 hours
     CHID_default = 905217698865225728
 
 
