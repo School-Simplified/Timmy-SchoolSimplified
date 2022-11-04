@@ -434,8 +434,8 @@ class MainID:
     r_advocacy_club = 883169000866070539
     r_speech_club = 883170166161149983
     r_club_president = 883160826180173895
-    r_chat_helper = 811416051144458250
-    r_lead_helper = 810684359765393419
+    r_chat_helper = 981764097936859146
+    r_lead_helper = 978082630572597278
     r_essay_reviser = 854135371507171369
     r_moderator = 951302697263452240
     r_debate_ban = 951302659657334784
@@ -751,6 +751,7 @@ class LeaderID:
     ch_tech_announcements = 816733303629414421
     ch_leadership_announcements = 819009569979629569
     ch_com_log = 955991586364334082
+    ch_bot_commissions = 1019692942887227412
 
     # *** Roles ***
     r_corporate_officer = 900940957783056444
@@ -760,9 +761,20 @@ class LeaderID:
     r_director = 892531463482900480
     r_SS_digital_committee = 912472488594771968
     r_information_technology_manager = 943942441357172758
+    r_bot_whitelist_commission = 1019696150342807562
 
     # *** Roles **
     r_hr_staff = 861856418117845033
+
+    # ** Tags **
+    t_bot_commission = 1019706919813918870
+    t_subdomain_commission = 1019707071073095750
+    t_pending_claim = 1019710167736135801
+    t_claimed = 1019711047101337630
+    t_in_progress = 1019707715066536006
+    t_completed = 1019707770947256371
+    t_not_possible = 1019707659118719017
+    t_documentation = 1019721555644792852
 
 
 class DiscID:

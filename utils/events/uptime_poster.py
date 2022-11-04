@@ -28,7 +28,6 @@ class MetricPoster(commands.Cog):
         Thanks, GitHub copilot <3
         """
         if os.getenv("START_API") == "True":
-            print("api")
             ping_payload = {
                 "value": round(self.bot.latency * 1000),
                 "timestamp": time.time(),

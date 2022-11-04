@@ -17,8 +17,8 @@ load_dotenv()
 
 
 async def redirect_autocomplete(
-    interaction: discord.Interaction,
-    current: str,
+        interaction: discord.Interaction,
+        current: str,
 ) -> List[app_commands.Choice[str]]:
     # Inactive due to 75 choice limit
     rp_client = redirect_sdk.RedirectClient(
@@ -76,11 +76,11 @@ class RedirectURL(commands.Cog):
         destination_url="The destination URL to redirect to.",
     )
     async def ra(
-        self,
-        interaction: discord.Interaction,
-        redirect_code: str,
-        destination_url: str,
-        sub_domain: str = None,
+            self,
+            interaction: discord.Interaction,
+            redirect_code: str,
+            destination_url: str,
+            sub_domain: str = None,
     ):
 
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
@@ -139,6 +139,10 @@ class RedirectURL(commands.Cog):
                     ),
                     inline=False,
                 )
+                embed.add_field(name="Redirecting to the main website?",
+                                value="It's a problem with your browser, not the bot. Learn how to fix it [here]("
+                                      "https://docs.gitbook.com/troubleshooting/hard-refresh).",
+                                inline=False)
                 embed.set_thumbnail(url=Others.timmy_happy_png)
                 embed.set_author(
                     name=interaction.user.name,
@@ -194,7 +198,7 @@ class RedirectURL(commands.Cog):
         subdomain="Specify the subdomain if using URL Path to remove a redirect.",
     )
     async def rr(
-        self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
+            self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
     ):
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
         try:
@@ -278,7 +282,7 @@ class RedirectURL(commands.Cog):
         subdomain="Specify the subdomain if using URL Path to get info about a redirect.",
     )
     async def ri(
-        self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
+            self, interaction: discord.Interaction, redirect_id: str, subdomain: str = None
     ):
         staff_resources_guild: discord.Guild = await self.bot.fetch_guild(StaffID.g_staff_resources)
         try:
