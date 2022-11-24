@@ -682,13 +682,6 @@ class StaffApps(ui.Modal, title="Staff Applications"):
         )
 
         await channel.set_permissions(
-            HRID.r_hr_staff,
-            read_messages=True,
-            send_messages=True,
-            reason="Ticket Perms (HR Staff)",
-        )
-
-        await channel.set_permissions(
             interaction.user,
             read_messages=True,
             send_messages=True,
