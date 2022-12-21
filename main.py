@@ -315,6 +315,6 @@ async def send_route(token: str = Header(), payload: JSONPayload = Depends()):
 
 if __name__ == "__main__":
     if os.getenv("StartAPI") == "True":
-        uvicorn.run(app, host="0.0.0.0", port=80)
+        uvicorn.run(app, host="0.0.0.0", port=80)   
     else:
         bot.run(os.getenv("TOKEN"))

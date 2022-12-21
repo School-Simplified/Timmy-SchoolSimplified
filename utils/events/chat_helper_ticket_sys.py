@@ -812,7 +812,7 @@ class DropdownTickets(commands.Cog):
             channel = interaction.message.channel
             guild = interaction.message.guild
             author = interaction.user
-
+            print(interaction.channel_id)
             query = (
                 database.TicketInfo.select()
                 .where(database.TicketInfo.ChannelID == interaction.channel_id)
@@ -1255,7 +1255,7 @@ class DropdownTickets(commands.Cog):
                         send_messages=False,
                     )
                 await channel.send(
-                    f"Ticket has been inactive for 24 hours.\nTicket has been closed.",
+                    f"Ticket has been inactive for 48 hours.\nTicket has been closed.",
                     view=ButtonViews2,
                 )
 
