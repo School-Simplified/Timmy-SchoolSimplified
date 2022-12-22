@@ -785,10 +785,10 @@ class DropdownTickets(commands.Cog):
         self.CHID_DEFAULT = Others.CHID_default
         self.EssayCategory = [ChID.cat_essay, ChID.cat_essay]
         self.sheet = gspread_client.open_by_key(essayTicketLog_key).sheet1
-        self.TicketInactive.start()
+        # self.TicketInactive.start()
 
     async def cog_unload(self):
-        self.TicketInactive.cancel()
+        # self.TicketInactive.cancel()
 
     @commands.Cog.listener("on_interaction")
     async def TicketDropdown(self, interaction: discord.Interaction):
@@ -1189,103 +1189,103 @@ class DropdownTickets(commands.Cog):
         else:
             await interaction.response.send_message("Not a ticket.", ephemeral=True)
 
-    @tasks.loop(minutes=1.0)
-    async def TicketInactive(self):
-        TicketInfoTB = database.TicketInfo
-        guild = self.bot.get_guild(MainID.g_main)
-        for entry in TicketInfoTB:
-            channel: discord.TextChannel = self.bot.get_channel(entry.ChannelID)
-            if channel is None:
-                continue
+    # @tasks.loop(minutes=1.0)
+    # async def TicketInactive(self):
+    #     pass
+    #     TicketInfoTB = database.TicketInfo
+    #     guild = self.bot.get_guild(MainID.g_main)
+    #     for entry in TicketInfoTB:
+    #         channel: discord.TextChannel = self.bot.get_channel(entry.ChannelID)
+    #         if channel is None:
+    #             continue
 
-            fetchMessage = [message async for message in channel.history(limit=1)]
-            TicketOwner = guild.get_member(entry.authorID)
-            messages = [message async for message in channel.history(limit=None)]
-            LogCH = self.bot.get_channel(MainID.ch_transcript_logs)
-            authorList = []
-            if len(messages) == 0:
-                continue
+    #         fetchMessage = [message async for message in channel.history(limit=1)]
+    #         TicketOwner = guild.get_member(entry.authorID)
+    #         messages = [message async for message in channel.history(limit=None)]
+    #         LogCH = self.bot.get_channel(MainID.ch_transcript_logs)
+    #         authorList = []
+    #         if len(messages) == 0:
+    #             continue
 
-            if fetchMessage[0].created_at < (
-                datetime.now(pytz.timezone("US/Eastern"))
-                - timedelta(minutes=self.TICKET_INACTIVE_TIME)
-            ):
-                ButtonViews2 = discord.ui.View()
+    #         if fetchMessage[0].created_at < (
+    #             datetime.now(pytz.timezone("US/Eastern"))
+    #             - timedelta(minutes=self.TICKET_INACTIVE_TIME)
+    #         ):
+    #             ButtonViews2 = discord.ui.View()
 
-                ButtonViews2.add_item(
-                    ButtonHandler(
-                        style=discord.ButtonStyle.green,
-                        label="Close & Delete Ticket",
-                        custom_id="ch_lock_C&D",
-                        emoji="🔒",
-                    )
-                )
-                ButtonViews2.add_item(
-                    ButtonHandler(
-                        style=discord.ButtonStyle.grey,
-                        label="Re-Open Ticket",
-                        custom_id="ch_lock_R",
-                        emoji="🔓",
-                    )
-                )
-                ButtonViews2.add_item(
-                    ButtonHandler(
-                        style=discord.ButtonStyle.blurple,
-                        label="Create Transcript",
-                        custom_id="ch_lock_T",
-                        emoji="📝",
-                    )
-                )
-                ButtonViews2.add_item(
-                    ButtonHandler(
-                        style=discord.ButtonStyle.red,
-                        label="Cancel",
-                        custom_id="ch_lock_C",
-                        emoji="❌",
-                    )
-                )
-                """overwrite = discord.PermissionOverwrite()
-                overwrite.read_messages = False
-                overwrite.send_messages = False"""
-                if TicketOwner is not None:
-                    await channel.set_permissions(
-                        TicketOwner,
-                        reason="Ticket Perms Close (User)",
-                        read_messages=False,
-                        send_messages=False,
-                    )
-                await channel.send(
-                    f"Ticket has been inactive for 48 hours.\nTicket has been closed.",
-                    view=ButtonViews2,
-                )
+    #             ButtonViews2.add_item(
+    #                 ButtonHandler(
+    #                     style=discord.ButtonStyle.green,
+    #                     label="Close & Delete Ticket",
+    #                     custom_id="ch_lock_C&D",
+    #                     emoji="🔒",
+    #                 )
+    #             )
+    #             ButtonViews2.add_item(
+    #                 ButtonHandler(
+    #                     style=discord.ButtonStyle.grey,
+    #                     label="Re-Open Ticket",
+    #                     custom_id="ch_lock_R",
+    #                     emoji="🔓",
+    #                 )
+    #             )
+    #             ButtonViews2.add_item(
+    #                 ButtonHandler(
+    #                     style=discord.ButtonStyle.blurple,
+    #                     label="Create Transcript",
+    #                     custom_id="ch_lock_T",
+    #                     emoji="📝",
+    #                 )
+    #             )
+    #             ButtonViews2.add_item(
+    #                 ButtonHandler(
+    #                     style=discord.ButtonStyle.red,
+    #                     label="Cancel",
+    #                     custom_id="ch_lock_C",
+    #                     emoji="❌",
+    #                 )
+    #             )
+    #             """overwrite = discord.PermissionOverwrite()
+    #             overwrite.read_messages = False
+    #             overwrite.send_messages = False"""
+    #             if TicketOwner is not None:
+    #                 await channel.set_permissions(
+    #                     TicketOwner,
+    #                     reason="Ticket Perms Close (User)",
+    #                     read_messages=False,
+    #                     send_messages=False,
+    #                 )
+    #             await channel.send(
+    #                 f"Ticket has been inactive for 48 hours.\nTicket has been closed.",
+    #                 view=ButtonViews2,
+    #             )
 
-                """for msgI in messages:
-                    if msgI.author not in authorList:
-                        authorList.append(msgI.author)
+    #             """for msgI in messages:
+    #                 if msgI.author not in authorList:
+    #                     authorList.append(msgI.author)
 
-                MG, file, S3ink = await TicketExport(
-                    self, channel, None, TicketOwner, authorList
-                )
+    #             MG, file, S3ink = await TicketExport(
+    #                 self, channel, None, TicketOwner, authorList
+    #             )
 
-                embed = discord.Embed(title="Channel Transcript", color=discord.Colour.green())
-                embed.set_author(
-                    name=f"{TicketOwner.name}#{TicketOwner.discriminator}",
-                    url=TicketOwner.display_avatar.url,
-                    icon_url=TicketOwner.display_avatar.url,
-                )
-                embed.add_field(name="Transcript Owner", value=TicketOwner.mention)
-                embed.add_field(name="Ticket Name", value=channel.name, inline=False)
-                embed.add_field(name="Category", value=channel.category.name, inline=False)
-                embed.add_field(name="Transcript Link", value=S3ink, inline=False)
-                embed.set_footer(text="Transcript Attached Above | Ticket was closed due to inactivity")
-                await LogCH.send(embed=embed)
+    #             embed = discord.Embed(title="Channel Transcript", color=discord.Colour.green())
+    #             embed.set_author(
+    #                 name=f"{TicketOwner.name}#{TicketOwner.discriminator}",
+    #                 url=TicketOwner.display_avatar.url,
+    #                 icon_url=TicketOwner.display_avatar.url,
+    #             )
+    #             embed.add_field(name="Transcript Owner", value=TicketOwner.mention)
+    #             embed.add_field(name="Ticket Name", value=channel.name, inline=False)
+    #             embed.add_field(name="Category", value=channel.category.name, inline=False)
+    #             embed.add_field(name="Transcript Link", value=S3ink, inline=False)
+    #             embed.set_footer(text="Transcript Attached Above | Ticket was closed due to inactivity")
+    #             await LogCH.send(embed=embed)
 
-                await channel.delete()
-                entry.delete_instance()"""
-
-    @TicketInactive.before_loop
-    async def before_loop_(self):
-        await self.bot.wait_until_ready()
+    #             await channel.delete()
+    #             entry.delete_instance()"""
+    # @TicketInactive.before_loop
+    # async def before_loop_(self):
+    #     await self.bot.wait_until_ready()
 
     @app_commands.command(
         name="send-chticket-view", description="Send chat helper ticket view"

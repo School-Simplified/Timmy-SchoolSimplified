@@ -202,7 +202,7 @@ class CoreBotConfig(commands.Cog):
     async def gitpull(
         self,
         interaction: discord.Interaction,
-        version: str,
+        # version: str,
         mode: Literal["-a", "-c"] = "-a",
         sync_commands: bool = False,
     ) -> None:
