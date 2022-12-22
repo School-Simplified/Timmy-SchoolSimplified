@@ -788,6 +788,7 @@ class DropdownTickets(commands.Cog):
         # self.TicketInactive.start()
 
     async def cog_unload(self):
+        pass
         # self.TicketInactive.cancel()
 
     @commands.Cog.listener("on_interaction")
